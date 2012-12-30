@@ -55,7 +55,7 @@ public class ResourceLoader {
 	public static void loadShader(String name, String fileName)
 			throws FileNotFoundException {
 		loadShader(name, new File(fileName + EXT_VERTEX), new File(fileName + EXT_FRAGMENT));
-	}	
+	}
 	
 	public static void loadCubeTexture(String name, String ext) {
 		CubeTexture tex = new CubeTexture();

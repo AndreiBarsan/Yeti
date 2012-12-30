@@ -1,7 +1,5 @@
 package barsan.opengl.math;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 /**
  * Contains easy to control transform handles for scale, translation and rotation.
  * NB: Recomputes the resulting matrix on demand! This is to prevent unneeded 
@@ -26,7 +24,7 @@ public class Transform {
 		rotateAxis = new Vector3(0.0f, 0.0f, 0.0f);
 		rotateAngle = 0.0f;
 		
-		throw new NotImplementedException();
+		throw new Error("NYI");
 	}
 	
 	public Vector3 getScale() {

@@ -64,7 +64,9 @@ public class ModelInstance implements Renderable {
 
 		material.bindTextureCoodrinates(model);
 		material.render(rendererState, model);
-		
+		if(material.getTexture() != null) {
+			//gl.glBindTexture(GL2.GL_TEXTURE_2D_MULTISAMPLE, 0);
+		}
 		// Ya need to disable glDisableVertexAttribArray cuz otherwise the
 		// fixed pipeline rendering gets messed up, yo!
 		// Mild bug ~1.5h 28.11.2012

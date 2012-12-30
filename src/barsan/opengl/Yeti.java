@@ -36,6 +36,7 @@ import barsan.opengl.input.GlobalConsoleInput;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
+import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.ModelGraphScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.scenes.TextScene;
@@ -94,12 +95,22 @@ public class Yeti implements GLEventListener {
 	volatile boolean pendingInit = false;	// TODO: better interaction with input thread
 	private Scene pendingScene;	// Used in transitions
 	
-	Class<?>[] availableScenes = new Class[] {
+	/**
+	 * Iterating through a package to find its classes is not as trivial
+	 * as it might seem, so this will do. It's just tempament anyway.
+	 */
+	static Class<?>[] availableScenes = new Class[] {
 			DemoScene.class,
 			TextScene.class,
 			ProceduralScene.class,
-			ModelGraphScene.class
+			ModelGraphScene.class,
+			LightTest.class
 	};
+	static {
+		for(Class<?> c : availableScenes) {
+			assert Scene.class.isAssignableFrom(c) : "Only instances of Scene allowed!";
+		}
+	}
 	
 	private Yeti() {
 		animator = new Animator();
@@ -375,34 +386,8 @@ public class Yeti implements GLEventListener {
 	// TODO: refactor this and fix
 	private GLJPanel createCanvasPanel() {
 		GLCapabilities caps = new GLCapabilities(null);
-		GLCapabilitiesChooser gcc = new DefaultGLCapabilitiesChooser() {
-			
-			@Override
-			public int chooseCapabilities(CapabilitiesImmutable desired,
-					List<? extends CapabilitiesImmutable> available,
-					int windowSystemRecommendedChoice) {
-				boolean anyHaveSampleBuffers = false;
-			      for (int i = 0; i < available.size(); i++) {
-			        GLCapabilitiesImmutable caps = (GLCapabilitiesImmutable) available.get(i);
-			        if (caps != null && caps.getSampleBuffers()) {
-			          anyHaveSampleBuffers = true;
-			          break;
-			        }
-			      }
-			      int selection = super.chooseCapabilities(desired, available, windowSystemRecommendedChoice);
-			      if (!anyHaveSampleBuffers) {
-			        System.err.println("WARNING: antialiasing will be disabled because none of the available pixel formats had it to offer");
-			      } else if(selection>=0) {
-			        GLCapabilitiesImmutable caps = (GLCapabilitiesImmutable) available.get(selection);
-			        if (!caps.getSampleBuffers()) {
-			          System.err.println("WARNING: antialiasing will be disabled because the DefaultGLCapabilitiesChooser didn't supply it");
-			        }
-			      }
-			      return selection;
-			    }
-			};
 		caps.setSampleBuffers(false);
-		//caps.setNumSamples(8);
+		caps.setNumSamples(8);
 		GLJPanel gljp = new GLJPanel(caps);
 		return gljp;
 	}
