@@ -2,8 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="lib" path="lib/jogamp-all-platforms/jar/gluegen-rt.jar" sourcepath="lib/jogamp-all-platforms/gluegen-java-src.zip"/>
 	<classpathentry kind="lib" path="lib/jogamp-all-platforms/jar/jogl-all.jar" sourcepath="lib/jogamp-all-platforms/jogl-java-src.zip"/>
-	<classpathentry kind="lib" path="lib/jogamp-all-platforms/jar/jogl-test.jar"/>
+	<classpathentry kind="lib" path="lib/jogamp-all-platforms/jar/gluegen.jar" sourcepath="lib/jogamp-all-platforms/gluegen-java-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

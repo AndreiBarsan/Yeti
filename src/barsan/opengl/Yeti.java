@@ -270,8 +270,16 @@ public class Yeti implements GLEventListener {
 		if(get().settings.debug) System.out.printf("[DEBUG] %s\n", message);
 	}
 	
+	public static void debug(String format, Object... stuff) {
+		if(get().settings.debug) System.out.printf("[DEBUG] " + format + "\n", stuff);
+	}
+	
 	public static void warn(String message) {
 		if(get().settings.warnings) System.err.printf("[WARNING] %s\n", message);
+	}
+	
+	public static void warn(String format, Object... stuff) {
+		if(get().settings.warnings) System.out.printf("[WARNING] " + format + "\n", stuff);
 	}
 	
 	public static void screwed(String message) {

@@ -68,6 +68,9 @@ public class HeightmapBuilder {
 		// Skip some of the map's pixels
 		int step = 4;
 		Vector3 c1 = new Vector3(), c2 = new Vector3(), c3 = new Vector3(), c4 = new Vector3();
+		
+		// TODO: try and use glGetTexImage instead, avoiding the creation of
+		// an unnecessary FBO
 		gl.glReadPixels(0, 0, w, h, data.getPixelFormat(), GL2.GL_BYTE, buff);
 		for(int x = 0; x < w - 1; x += step) {
 			for(int y = 0; y < h - 1; y += step) {
@@ -129,7 +132,7 @@ public class HeightmapBuilder {
 		}
 		Yeti.debug("Should build " + w * h + " faces!");
 		result.buildVBOs();
-		System.out.printf("DONE! %d ms", System.currentTimeMillis() - start);
+		Yeti.debug("Finished uploadin heightmap data! %d ms", System.currentTimeMillis() - start);
 		
 		fbo.detachAll(gl);
 		fbo.unbind(gl);
