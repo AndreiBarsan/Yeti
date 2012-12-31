@@ -4,6 +4,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
@@ -12,11 +13,8 @@ import barsan.opengl.math.Vector3;
 import com.jogamp.common.nio.Buffers;
 
 /**
- * Java wrapper for a GL data array stored in the graphics
- * device memory.
- * 
- * @author SiegeDog
- *
+ * Java wrapper for a GL data array stored in the graphics device memory.
+ * @author Andrei Barsan
  */
 public class VBO {
 
@@ -24,21 +22,42 @@ public class VBO {
 	public final int type;
 	
 	private FloatBuffer localBuffer;
-	private int elementCount;
-	// private int elementSizeOf;
+	private int elementGroupCount;
+	private int elementSizeOf;
+	private int elementType;
 	private int elementGroupSize;
 	
 	/**
-	 * Default use case - just assumes we're storing floats in groups of 3 (Vector3s).
-	 * @param gl
-	 * @param type
+	 * Default allocation of a GL_ARRAY_BUFFER of FLOATS in groups of 3.
 	 * @param size
 	 */
-	public VBO(GL2 gl, int type, int size) {
-		this(gl, type, size, 3, Buffers.SIZEOF_FLOAT);
+	public VBO(int size) {
+		this(GL.GL_ARRAY_BUFFER, size, 3, Buffers.SIZEOF_FLOAT, GL.GL_FLOAT);
 	}
 	
-	public VBO(GL2 gl, int type, int elementCount, int elementGroupSize, int elementSizeOf) {
+	/**
+	 * Default use case - just assumes we're storing floats in groups of 3 (Vector3s).
+	 * @param gl	The GL contex used.
+	 * @param type	The type of buffer to create (e.g. GL_ARRAY_BUFFER).
+	 * @param size	How many element groups should the buffer be able to hold (assumes each group has three float elements).
+	 */
+	public VBO(int type, int size) {
+		this(type, size, 3, Buffers.SIZEOF_FLOAT, GL.GL_FLOAT);
+	}
+	
+	/**
+	 * @param gl	The GL contex used.
+	 * @param type	The type of buffer to create (e.g. GL_ARRAY_BUFFER).
+	 * @param size	How many element groups should the buffer be able to hold (assumes each group has three float elements).
+	 * @param elementGroupSize How many elements in a group (e.g. 3 for 3D coordinates such as vertices, 2 for 2D texture coords).
+	 */
+	public VBO(int type, int size, int elementGroupSize) {
+		this(type, size, elementGroupSize, Buffers.SIZEOF_FLOAT, GL.GL_FLOAT);
+	}
+	
+	public VBO(int type, int elementGroupCount, int elementGroupSize, int elementSizeOf, int elementType) {
+		GL2 gl = Yeti.get().gl;
+		
 		int buff[] = new int[] { -1 };
 		// TODO: request multiple buffers at once (good optimization when we
 		// need dozens or even hundreds of meshes in one scene) 
@@ -46,9 +65,10 @@ public class VBO {
 		nativeHandle = buff[0];
 		
 		this.type = type;
-		this.elementCount = elementCount;
-		// this.elementSizeOf = elementSizeOf;
+		this.elementGroupCount = elementGroupCount;
 		this.elementGroupSize = elementGroupSize;
+		this.elementSizeOf = elementSizeOf;
+		this.elementType = elementType;
 		
 		if(elementSizeOf < 1 || elementSizeOf > 4) {
 			Yeti.screwed("Only 1, 2, 3 and 4-byte elements allowed!");
@@ -60,7 +80,7 @@ public class VBO {
 		}
 		
 		gl.glBindBuffer(type, nativeHandle);
-		gl.glBufferData(type, elementCount * elementGroupSize * elementSizeOf,
+		gl.glBufferData(type, elementGroupCount * elementGroupSize * elementSizeOf,
 				null, GL2.GL_DYNAMIC_DRAW);
 		
 		localBuffer = gl.glMapBuffer(type, GL2.GL_WRITE_ONLY)
@@ -138,7 +158,7 @@ public class VBO {
 	 * @return This object for chaining.
 	 */
 	public VBO use(int attributeIndex) {
-		return use(attributeIndex, elementGroupSize, GL2.GL_FLOAT, false, 0, 0);
+		return use(attributeIndex, elementGroupSize, elementType, false, 0, 0);
 	}
 	
 	// This guy will be private until further investigation;
@@ -149,14 +169,14 @@ public class VBO {
 		GL2 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glEnableVertexAttribArray(attributeIndex);
-		gl.glVertexAttribPointer(attributeIndex, 
-				groupSize, /* THIS IS NR OF SHIT PER GROUP, NOT SIZEOF FLOAT YOU TOOL*/
-				dataType, normalized, stride, offset);
+		gl.glVertexAttribPointer(	attributeIndex, 
+									groupSize, /* THIS IS NR OF STUFF PER GROUP, NOT SIZEOF FLOAT */
+									dataType, normalized, stride, offset);
 		return this;
 	}
 	
 	public int getSize() {
-		return elementCount;
+		return elementGroupCount;
 	}
 
 	public int getHandle() {

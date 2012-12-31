@@ -41,8 +41,8 @@ public class TextureScene extends Scene {
 		
 		shader = ResourceLoader.shader("basicTex");
 		
-		geometry = new VBO(gl, GL2.GL_ARRAY_BUFFER, 3);
-		textureCoords = new VBO(gl, GL2.GL_ARRAY_BUFFER, 3, 2, Buffers.SIZEOF_FLOAT);
+		geometry = new VBO(GL2.GL_ARRAY_BUFFER, 3);
+		textureCoords = new VBO(GL2.GL_ARRAY_BUFFER, 3, 2);
 		geometry.put(new float[] {
 			0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f,

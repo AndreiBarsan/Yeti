@@ -1,7 +1,6 @@
 #version 330
 
 uniform sampler2DMS colorMap;
-uniform float blurH, blurV;
 
 // Number of MSAA samples
 uniform int sampleCount;
@@ -17,7 +16,5 @@ void main(void) {
 	vFragColor = vec4(0.0f);
 	for(int i = 0; i < sampleCount; i++) {
 		vFragColor += texelFetch(colorMap, ivec2(tmp), i) / sampleCount;
-	} 
-	//vFragColor = texture(colorMap, vVaryingTexCoords);
-	//vFragColor += vec4(0.0f, 0.0f, 0.5f, 0.66f);
+	}
 }	

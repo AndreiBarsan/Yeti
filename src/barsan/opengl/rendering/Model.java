@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
@@ -340,6 +341,40 @@ public class Model {
 		return face;
 	}
 	
+	/**
+	 * Builds a simple quad in the XY plane.
+	 */
+	public static Model buildQuad(GL2 gl, float width, float height) {
+		Model result = new Model(gl, "quad");
+		result.setPointsPerFace(4);
+		
+		float hw = width / 2.0f;
+		float hh = height / 2.0f;
+		
+		Face face = new Face();
+		face.points = new Vector3[] {
+			new Vector3(-hw, -hh, 0),
+			new Vector3(-hw,  hh, 0),
+			new Vector3( hw,  hh, 0),
+			new Vector3( hw, -hh, 0)
+		};
+		face.texCoords = new Vector3[] {
+			new Vector3(0, 0, 0),
+			new Vector3(0, 1, 0),
+			new Vector3(1, 1, 0),
+			new Vector3(1, 0, 0)
+		};
+		face.normals = new Vector3[] {
+			new Vector3(0, 0, -1),
+			new Vector3(0, 0, -1),
+			new Vector3(0, 0, -1)
+		};
+		result.addFace(face);
+		
+		result.buildVBOs();
+		return result;
+	}
+	
 	public Model(GL2 gl, String name) {
 		this.gl = gl;
 		this.name = name;
@@ -350,9 +385,9 @@ public class Model {
 	public void buildVBOs() {
 		// Tried & tested - this is just the right buffer length
 		int size = master.faces.size() *  pointsPerFace;
-		vertices = new VBO(gl, GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT, Buffers.SIZEOF_FLOAT);
-		normals = new VBO(gl, GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT, Buffers.SIZEOF_FLOAT);
-		texcoords = new VBO(gl, GL2.GL_ARRAY_BUFFER, size, T_COORDS_PER_POINT, Buffers.SIZEOF_FLOAT);
+		vertices = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		normals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, T_COORDS_PER_POINT);
 		
 		for(Face f : master.faces) {
 			for(int i = pointsPerFace - 1; i >= 0; i--) {
