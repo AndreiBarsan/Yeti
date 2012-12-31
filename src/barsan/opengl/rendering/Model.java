@@ -382,31 +382,49 @@ public class Model {
 		groups.put("default", new Group());
 	}
 	
+	static float uv[] = new float[2];
+	
 	public void buildVBOs() {
+		assert master.faces.size() > 0 : "Empty model";
 		// Tried & tested - this is just the right buffer length
 		int size = master.faces.size() *  pointsPerFace;
 		vertices = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		normals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, T_COORDS_PER_POINT);
 		
+		vertices.open();
 		for(Face f : master.faces) {
 			for(int i = pointsPerFace - 1; i >= 0; i--) {
-				
-				if(f.normals != null) {
-					normals.put(f.normals[i]);
-				}
-				
-				if(f.texCoords != null) {
-						float[] uv = new float[] {
-								f.texCoords[i].x,
-								f.texCoords[i].y
-						};
-						texcoords.put(uv);
-				}
-				
-				vertices.put(f.points[i]);
+				vertices.append(f.points[i]);
 			}
 		}
+		vertices.close();
+		
+		if(master.faces.get(0).normals != null) {
+			normals.open();
+			for(Face f : master.faces) {
+				
+				for(int i = pointsPerFace - 1; i >= 0; i--) {
+				
+						normals.append(f.normals[i]);
+					
+				}
+			}
+			normals.close();
+		}
+		
+		if(master.faces.get(0).texCoords != null) {
+			texcoords.open();
+			for(Face f : master.faces) {
+				for(int i = pointsPerFace - 1; i >= 0; i--) {
+						uv[0] = f.texCoords[i].x;
+						uv[1] = f.texCoords[i].y;
+						texcoords.append(uv);
+				}
+			}
+			texcoords.close();
+		}
+		
 		Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d; Geometry element count: %d",
 				getName(), vertices.getSize(), normals.getSize()));
 	}

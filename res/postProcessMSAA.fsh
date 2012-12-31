@@ -15,6 +15,9 @@ void main(void) {
     vec2 tmp = floor (textureSize (colorMap) * vVaryingTexCoords);
 	vFragColor = vec4(0.0f);
 	for(int i = 0; i < sampleCount; i++) {
-		vFragColor += texelFetch(colorMap, ivec2(tmp), i) / sampleCount;
+		vFragColor += texelFetch(colorMap, ivec2(tmp), i);
 	}
+	vFragColor /= sampleCount;
+	
+	//vFragColor = texelFetch(colorMap, ivec2(tmp), 1);
 }	

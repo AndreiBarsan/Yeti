@@ -20,6 +20,7 @@ public class VBO {
 
 	private final int nativeHandle;
 	public final int type;
+	private boolean open;
 	
 	private FloatBuffer localBuffer;
 	private int elementGroupCount;
@@ -87,10 +88,75 @@ public class VBO {
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
 		gl.glUnmapBuffer(type);
+		
+		open = false;
+	}
+	
+	/**
+	 * Opens the VBO for quicker mapping.
+	 */
+	public void open() {
+		if(open) {
+			Yeti.screwed("VBO already opened!");
+		}
+		GL2 gl = Yeti.get().gl;
+		gl.glBindBuffer(type, nativeHandle);
+		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
+		open = true;
+	}
+	
+	/**
+	 * Completes the insertion of data.
+	 */
+	public void close() {
+		if(!open) {
+			Yeti.screwed("Closing unopened VBO!");
+		}
+		GL2 gl = Yeti.get().gl;
+		gl.glUnmapBuffer(type);	
+		open = false;
+	}
+	
+	public VBO append(float elements[]) {
+		localBuffer.put(elements);
+		return this;
+	}
+	
+	public VBO append(Vector3 element) {
+		localBuffer.put(element.x);
+		localBuffer.put(element.y);
+		localBuffer.put(element.z);
+		return this;
+	}
+	
+	public VBO append(Vector3 elements[]) {
+		if(elementGroupSize != 3) 
+			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
+		
+		for(Vector3 v : elements) {
+			localBuffer.put(v.x);
+			localBuffer.put(v.y);
+			localBuffer.put(v.z);
+		}		
+		return this;
+	}
+	
+	public VBO append(ArrayList<Vector3> elements) {
+		if(elementGroupSize != 3) 
+			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
+			
+		for(Vector3 v : elements) {
+			localBuffer.put(v.x);
+			localBuffer.put(v.y);
+			localBuffer.put(v.z);
+		}
+		return this;
 	}
 	
 	/**
 	 * Pushes a float array into the buffer.
+	 * 
+	 * @deprecated Use open(); (appends); close(); approach.  
 	 * 
 	 * @param el
 	 * @return this object for chaining
@@ -105,6 +171,9 @@ public class VBO {
 	}
 	
 	// Warning, might involve a bit too many native calls
+	/**
+	 * @deprecated Use open(); (appends); close(); approach.
+	 */
 	public VBO put(Vector3 element) {
 		GL2 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
@@ -116,6 +185,9 @@ public class VBO {
 		return this;
 	}
 	
+	/**
+	 * @deprecated Use open(); (appends); close(); approach.
+	 */
 	public VBO put(Vector3 elements[]) {
 		GL2 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
@@ -133,6 +205,9 @@ public class VBO {
 		return this;
 	}
 	
+	/**
+	 * @deprecated Use open(); (appends); close(); approach.
+	 */
 	public VBO put(ArrayList<Vector3> elements) {
 		GL2 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
@@ -158,13 +233,10 @@ public class VBO {
 	 * @return This object for chaining.
 	 */
 	public VBO use(int attributeIndex) {
-		return use(attributeIndex, elementGroupSize, elementType, false, 0, 0);
+		return useImpl(attributeIndex, elementGroupSize, elementType, false, 0, 0);
 	}
 	
-	// This guy will be private until further investigation;
-	// data type, count and so on should be set in the constructor and *not*
-	// get randomly changed at runtime.
-	private VBO use(int attributeIndex, int groupSize, int dataType, 
+	private VBO useImpl(int attributeIndex, int groupSize, int dataType, 
 			boolean normalized, int stride, long offset) {
 		GL2 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
