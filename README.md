@@ -20,3 +20,11 @@ that's a sibling of the res/ and src/ ones.
 You can get the latest JOGL here: http://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z
 
 The required JARs are: gluegen-rt.jar and jogl-all.jar.
+
+License
+-------
+See the LICENSE file for details.
+Yeti is licensed under the BSD 2-clause license. See the LICENSE file for details.
+
+The JOGL source code is mostly licensed under the New BSD 2-clause license,
+however it contains other licensed material as well. See the jogl.LICENSE file for details.
