@@ -18,6 +18,4 @@ void main(void) {
 		vFragColor += texelFetch(colorMap, ivec2(tmp), i);
 	}
 	vFragColor /= sampleCount;
-	
-	//vFragColor = texelFetch(colorMap, ivec2(tmp), 1);
 }	

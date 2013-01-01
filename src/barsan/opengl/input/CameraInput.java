@@ -155,25 +155,13 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseClicked(MouseEvent e) { }
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mousePressed(MouseEvent e) { }
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		
-	}
-
+	public void mouseReleased(MouseEvent e) { }
 	@Override
 	public void mouseEntered(MouseEvent e) { }
-
 	@Override
 	public void mouseExited(MouseEvent e) { }
 

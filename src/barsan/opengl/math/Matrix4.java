@@ -132,6 +132,10 @@ public class Matrix4 {
 		return this;
 	}
 	
+	public Matrix4 cpy() {
+		return new Matrix4(this);
+	}
+	
 	/**
 	 * PRE Multiplies this matrix with another one, updates the current object
 	 * with the result, and returns a pointer to itsfel to allow operation

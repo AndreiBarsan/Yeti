@@ -51,7 +51,7 @@ void main() {
 		normalize(vVaryingLightDir)
 	));
 
-	vFragColor 	= toonify(intensity);// * diffuseColor;
+	vFragColor 	= toonify(intensity) * diffuseColor;
 	
 	// Ambient light
 	vFragColor += ambientColor;	

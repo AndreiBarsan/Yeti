@@ -88,7 +88,7 @@ public class Shader {
 		gl.glLinkProgram(shaderProgram);
 		gl.glGetProgramiv(shaderProgram, GL2.GL_LINK_STATUS, result, 0);
 		if(result[0] == GL2.GL_FALSE) {
-			shaderError(String.format("Shader \"%s\" failed to link", name), shaderProgram);
+			shaderLinkError(String.format("Shader \"%s\" failed to link", name), shaderProgram);
 		}
 		
 		gl.glValidateProgram(shaderProgram);
@@ -108,6 +108,11 @@ public class Shader {
 		GL2 gl = Yeti.get().gl; 
 		gl.glGetShaderInfoLog(handle, 128, i_buff, b_buff);
 		Yeti.screwed(message + "\n\t" + new String(b_buff.array(), 0, 128));
+	}
+	
+	private void shaderLinkError(String message, int handle) {
+		Yeti.get().gl.glGetProgramInfoLog(handle, 128, i_buff, b_buff);
+		Yeti.screwed("\n\t" + new String(b_buff.array(), 0, 256));
 	}
 	
 	public boolean setUMatrix4(String uniformName, Matrix4 matrix) {

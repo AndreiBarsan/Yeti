@@ -70,6 +70,9 @@ public class BasicMaterial extends Material {
 		
 		shader.setUMatrix4("mvpMatrix", MVP);
 		shader.setUMatrix4("mvMatrix", viewModel);
+		shader.setUMatrix4("vMatrix", view);
+		//shader.setUMatrix4("mMatrix", modelMatrix);
+		//shader.setUMatrix4("imvMatrix", view.cpy().inv());
 		shader.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 		
 		// TODO: implement ARRAYS OF LIGHTS here!
@@ -77,11 +80,17 @@ public class BasicMaterial extends Material {
 		AmbientLight ambient = rendererState.getAmbientLight();
 		shader.setUVector3f("vLightPosition", light.getPosition());
 		
-		shader.setUVector4f("ambientColor", ambient.getColor().getData());
-		shader.setUVector4f("diffuseColor", light.getDiffuse().getData());
-		shader.setUVector4f("specularColor", light.getSpecular().getData());
+		shader.setUVector4f("globalAmbient", ambient.getColor().getData());
 		
-		shader.setUVector4f("matColor", diffuse.getData());
+		shader.setUVector4f("lightDiffuse", light.getDiffuse().getData());
+		shader.setUVector4f("lightSpecular", light.getSpecular().getData());
+		
+		shader.setU1f("constantAt", 0.0f);
+		shader.setU1f("linearAt", 0.01f);
+		shader.setU1f("quadraticAt", 0.000f);
+		shader.setU1f("cubicAt", 0);
+		
+		shader.setUVector4f("matDiffuse", diffuse.getData());
 		
 		// Texture
 		if(texture != null) {

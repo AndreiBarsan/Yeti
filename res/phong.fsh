@@ -1,13 +1,12 @@
 #version 330
 
-// These will soon be
-uniform vec4 ambientColor;
-uniform vec4 diffuseColor;
-uniform vec4 specularColor;
-// ...arrays!
+uniform vec4 globalAmbient;
+uniform vec4 lightDiffuse;
+uniform vec4 lightSpecular;
 
 uniform int shininess;
-uniform vec4 matColor;
+uniform vec4 matDiffuse;
+// TODO: uniform vec4 matSpecular;
 
 // Texture stuff
 uniform bool useTexture;
@@ -21,6 +20,7 @@ smooth in vec3 	vVaryingNormal;
 smooth in vec3 	vVaryingLightDir;
 smooth in vec2 	vVaryingTexCoords;
 smooth in float fogFactor;
+smooth in float attenuation;
 
 out vec4 vFragColor;
 
@@ -35,31 +35,38 @@ void main() {
 		normalize(vVaryingLightDir)
 	));
 
-	vFragColor 	= intensity * diffuseColor;
+	vec3 ct, cf;
+	vec4 texel;
+	float at, af;
 	
-	// Ambient light
-	vFragColor += ambientColor;	
-	
-	// Apply ze texture
+	cf = attenuation * intensity * matDiffuse.rgb;	
+	af = matDiffuse.a;
 	if(useTexture) {
-		vFragColor *= texture(colorMap, vVaryingTexCoords);
+		texel = texture2D(colorMap, vVaryingTexCoords); 
+	} else {
+		texel = vec4(1.0f);
 	}
 	
-	vFragColor *= matColor;
-
-	// Specular light
-	//  - 	added *after* the texture color is multiplied so that
-	//		we get a truly shiny result
-	vec3 vReflection = normalize(reflect(
-		-normalize(vVaryingLightDir),
-		 normalize(vVaryingNormal)));
+	ct = texel.rgb;
+	at = texel.a;
 	
-	float spec = max(0.0, dot(normalize(vVaryingNormal), vReflection));
-	if(intensity != 0) {
-		float fSpec = pow(spec, shininess) * specularColor.a;
-		vFragColor.rgb += vec3(fSpec, fSpec, fSpec) * specularColor.rgb;
+	if(intensity > 0.0f) {
+		// Specular light
+		//  - 	added *after* the texture color is multiplied so that
+		//		we get a truly shiny result
+		vec3 vReflection = normalize(reflect(
+			-normalize(vVaryingLightDir),
+		 	 normalize(vVaryingNormal)));
+	
+		float spec = max(0.0, dot(normalize(vVaryingNormal), vReflection));
+		float fSpec = pow(spec, shininess) * lightSpecular.a;
+		//cf += attenuation * vec3(fSpec) * lightSpecular.rgb;
 	}
 	
+	// Color modulation
+	vFragColor = vec4(ct * cf, at * af);
+	
+	// Add the fog to the mix
 	if(fogEnabled) {
 		vFragColor = mix(vFragColor, fogColor, fogFactor);
 	}

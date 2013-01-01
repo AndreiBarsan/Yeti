@@ -52,7 +52,7 @@ public class DemoScene extends Scene {
 			ResourceLoader.loadTexture("grass", "res/tex/grass01.jpg");
 			ResourceLoader.loadTexture("billboard", "res/tex/tree_billboard.png");
 			
-			ResourceLoader.loadCubeTexture("skybox01", "jpg");
+			ResourceLoader.loadCubeTexture("test", "png");
 			
 			blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f), Color.WHITE);
 			redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
@@ -60,7 +60,7 @@ public class DemoScene extends Scene {
 			// FIXME: this isn't right; the skybox should be drawn last in
 			// order for as few fragments as possible to be processed, not first
 			// so that we overwrite most of it!
-			SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("skybox01"), camera);
+			SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("test"), camera);
 			modelInstances.add(sb);
 			
 			blueShit.setShininess(16);
@@ -108,10 +108,14 @@ public class DemoScene extends Scene {
 					2.0f, 2.0f,
 					-15.0f, 120.0f);
 			//*
+			BasicMaterial gmm = new BasicMaterial();
+			gmm.setTexture(ResourceLoader.texture("grass"));
+			gmm.setShininess(128);
 			modelInstances.add(new ModelInstance(
 					groundMesh,
 					//new HeightMapMaterial(ResourceLoader.texture("grass"), -10, 25),
-					new ToonMaterial(ResourceLoader.texture("grass")),
+					//new ToonMaterial(ResourceLoader.texture("grass")),
+					gmm,
 					new Matrix4().setTranslate(-200.0f, 0.0f, -200.0f)
 							));
 			//*/
@@ -123,7 +127,7 @@ public class DemoScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
-		pointLights.add(new PointLight(new Vector3(0f, 15f, 10f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		pointLights.add(new PointLight(new Vector3(0f, 15f, 10f), new Color(1.0f, 1.0f, 1.0f, 1.0f)));
 		ambientLight.setColor(new Color(0.33f, 0.33f, 0.33f));
 		
 		fog = new Fog(camera.getFrustumFar() - 8.0f, camera.getFrustumFar(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
@@ -162,14 +166,9 @@ public class DemoScene extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		float radius = 3.2f;
 		a += 0.8 * getDelta() * 10;
-		//*
-		redShit.setMode(smoothRendering ? ShadingModel.Gouraud : ShadingModel.Phong);
-		blueShit.setMode(smoothRendering ? ShadingModel.Gouraud : ShadingModel.Phong);
 		
 		
 		a10k.getTransform().setRotate(a, 0.0f, 0.0f, 1.0f)//.setTranslate(1.0f, -1.0f, 2.0f)
-			//.mul(new Matrix4().setRotate(a, 0.0f, 1.0f, 0.0f))
-			//.mul(new Matrix4().setRotate(a, 0.0f, 0.0f, 1.0f));
 			.mul(new Matrix4().setScale(2.0f));
 		
 		PointLight light = pointLights.get(0);
@@ -182,7 +181,6 @@ public class DemoScene extends Scene {
 	}
 	
 	void drawGUI(GLAutoDrawable drawable) {
-		
 		float fps = drawable.getAnimator().getLastFPS();
 		drawable.getGL().getGL2().glUseProgram(0);
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());

@@ -56,7 +56,12 @@ import com.jogamp.opengl.util.Animator;
  * 			- camera info on HUD
  * 			- pie chart render data
  * 			- axes
+ * 			- MOST IMPORTANTLY: tiny circles/spheres to show light positions as
+ * 				well as spotlight dirs
  * TODO: implement directional lights
+ * TODO: when creating post-process effects, compile basic vertex shader, get 
+ * all other fragment shaders, and link all fragments to the same vertex shader,
+ * saving (n-1) useless recompilations of the postprocess vertex shaders
  * TODO: implement spotlights
  * TODO: implement light decay
  * TODO: multiple-component materials
@@ -338,7 +343,7 @@ public class Yeti implements GLEventListener {
 		Yeti.debug("Running in debug GL mode");
 		
 		// TODO: read from config
-		final int lastLoadedScene = 0;
+		final int lastLoadedScene = 4;
 		ResourceLoader.init(drawable.getGL().getGL2());	
 		
 		addKeyListener(this.new TempSceneSwitcher());

@@ -322,8 +322,8 @@ public class Model {
 				// Just compute the face's normal
 				if(face.points.length > 3) {
 					throw new Error("Cannot compute face normal!");
-					/* Yeah I could, if the points were in the same plane, but I'm 
-					 * just lazy and who delivers complex models with quads anyway? */
+					// TODO: maybe compute quad normals if possible
+					// TODO: is auto-splitting of bad quads considered sensible behavior?
 				}
 				Vector3 normal = aux_vector1.set(face.points[1]).sub(face.points[0])
 						.cross(aux_vector2.set(face.points[2]).sub(face.points[0]));
@@ -342,9 +342,10 @@ public class Model {
 	}
 	
 	/**
-	 * Builds a simple quad in the XY plane.
+	 * Builds a simple quad in the XZ plane.
 	 */
-	public static Model buildQuad(GL2 gl, float width, float height) {
+	public static Model buildQuad(float width, float height) {
+		GL2 gl = Yeti.get().gl;
 		Model result = new Model(gl, "quad");
 		result.setPointsPerFace(4);
 		
@@ -353,11 +354,11 @@ public class Model {
 		
 		Face face = new Face();
 		face.points = new Vector3[] {
-			new Vector3(-hw, -hh, 0),
-			new Vector3(-hw,  hh, 0),
-			new Vector3( hw,  hh, 0),
-			new Vector3( hw, -hh, 0)
-		};
+			new Vector3(-hw, 0, -hh),
+			new Vector3(-hw, 0,  hh),
+			new Vector3( hw, 0,  hh),
+			new Vector3( hw, 0, -hh)
+		};//*
 		face.texCoords = new Vector3[] {
 			new Vector3(0, 0, 0),
 			new Vector3(0, 1, 0),
@@ -365,10 +366,11 @@ public class Model {
 			new Vector3(1, 0, 0)
 		};
 		face.normals = new Vector3[] {
-			new Vector3(0, 0, -1),
-			new Vector3(0, 0, -1),
-			new Vector3(0, 0, -1)
-		};
+			new Vector3(0, 1, 0),
+			new Vector3(0, 1, 0),
+			new Vector3(0, 1, 0),
+			new Vector3(0, 1, 0)
+		};//*/
 		result.addFace(face);
 		
 		result.buildVBOs();
@@ -403,11 +405,8 @@ public class Model {
 		if(master.faces.get(0).normals != null) {
 			normals.open();
 			for(Face f : master.faces) {
-				
 				for(int i = pointsPerFace - 1; i >= 0; i--) {
-				
-						normals.append(f.normals[i]);
-					
+					normals.append(f.normals[i]);
 				}
 			}
 			normals.close();
@@ -417,9 +416,9 @@ public class Model {
 			texcoords.open();
 			for(Face f : master.faces) {
 				for(int i = pointsPerFace - 1; i >= 0; i--) {
-						uv[0] = f.texCoords[i].x;
-						uv[1] = f.texCoords[i].y;
-						texcoords.append(uv);
+					uv[0] = f.texCoords[i].x;
+					uv[1] = f.texCoords[i].y;
+					texcoords.append(uv);
 				}
 			}
 			texcoords.close();
