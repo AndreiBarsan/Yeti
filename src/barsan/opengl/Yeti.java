@@ -156,7 +156,7 @@ public class Yeti implements GLEventListener {
 		pendingScene = newScene;
 		
 		if(currentScene != null) {	
-			currentScene.exit(this, newScene);
+			currentScene.postExitFlag(this, newScene);
 		} else {
 			// No scene to transition out of, so we're instantly finished
 			transitionFinished();
@@ -332,8 +332,6 @@ public class Yeti implements GLEventListener {
 		drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
 		gl = drawable.getGL().getGL2();
 		
-		gl.glEnable(GL2.GL_MULTISAMPLE);
-		
 		if(engineInitialized) {
 			Yeti.screwed("GL Context was reset. Yeti cannot handle that yet. :(");
 			return;
@@ -344,7 +342,7 @@ public class Yeti implements GLEventListener {
 		
 		// TODO: read from config
 		final int lastLoadedScene = 4;
-		ResourceLoader.init(drawable.getGL().getGL2());	
+		ResourceLoader.init();	
 		
 		addKeyListener(this.new TempSceneSwitcher());
 

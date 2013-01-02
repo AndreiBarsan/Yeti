@@ -1,5 +1,6 @@
 package barsan.opengl.rendering;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import javax.media.opengl.GLEventListener;
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
 public class Scene implements GLEventListener {
@@ -23,6 +25,7 @@ public class Scene implements GLEventListener {
 	protected Renderer renderer;
 	protected Camera camera;
 	protected CameraInput cameraInput; 
+	private boolean exiting = false;
 	
 	/** Timing ****************************************************************/
 	long lastTime;
@@ -60,8 +63,12 @@ public class Scene implements GLEventListener {
 		gl.glClearDepth(1.0d);
 		
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-		//gl.glHint(GL2.GL_POLYGON_SMOOTH_HINT, GL2.GL_NICEST);
-		//gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL2.GL_NICEST);
+		
+		try {
+			ResourceLoader.loadAllShaders("res");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		// Prepare the renderer
 		renderer = new Renderer(gl);
@@ -78,6 +85,11 @@ public class Scene implements GLEventListener {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
+		
+		if(exiting) {
+			exit();
+			return;
+		}
 		
 		// Setup the renderer
 		RendererState rs = renderer.getState();
@@ -141,9 +153,21 @@ public class Scene implements GLEventListener {
 		cameraInput.setMouseControlled(false);
 	}
 	
-	public void exit(Yeti engine, Scene next) {
+	public void postExitFlag(Yeti engine, Scene next) {
+		exiting = true;
+		this.engine = engine;
+	}
+	
+	private Yeti engine;
+	
+	private void exit() {
+		// Temporary cleanup behavior - at the moment, scenes are independent of each other
+		ResourceLoader.cleanUp();
+		
 		unregisterInputSources(engine);
-		engine.transitionFinished();		
+		engine.transitionFinished();
+		
+		exiting = false;
 	}
 
 }

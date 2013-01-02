@@ -86,8 +86,8 @@ public class BasicMaterial extends Material {
 		shader.setUVector4f("lightSpecular", light.getSpecular().getData());
 		
 		shader.setU1f("constantAt", 0.0f);
-		shader.setU1f("linearAt", 0.01f);
-		shader.setU1f("quadraticAt", 0.000f);
+		shader.setU1f("linearAt", 0.0f);
+		shader.setU1f("quadraticAt", 0.005f);
 		shader.setU1f("cubicAt", 0);
 		
 		shader.setUVector4f("matDiffuse", diffuse.getData());

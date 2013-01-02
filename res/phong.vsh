@@ -8,14 +8,7 @@ uniform mat3 normalMatrix;
 uniform vec3 vLightPosition;
 //uniform vec3 cameraPosition;
 
-// Cubic attenuation parameters
-//                         1
-// att = -------------------------------------
-//       k0 + k1 * d + k2 * d ^ 2 + k3 * d ^ 3
-uniform float constantAt;
-uniform float linearAt;
-uniform float quadraticAt;
-uniform float cubicAt;
+
 
 uniform bool useTexture;
 
@@ -32,13 +25,10 @@ smooth out vec3 	vVaryingNormal;
 smooth out vec3 	vVaryingLightDir;
 smooth out vec2 	vVaryingTexCoords;
 smooth out float 	fogFactor;
-smooth out float	attenuation;
+//smooth out float	attenuation;
 
-// Cubic attenuation function
-float att(float d) {
-	return min(1.0f, 1.0f /
- ( constantAt + d * linearAt + d * d * quadraticAt + d * d * d * cubicAt));
-}
+smooth out vec4 	lightPos_ec;
+smooth out vec4 	vertPos_ec;
 
 void main() {
 	// Surface normal in eye coords
@@ -60,8 +50,11 @@ void main() {
 	// Transformed vertex
 	//cameraSpaceVertex = vPosition3;
 	
+	lightPos_ec = vec4(tLightPos, 1.0f);
+	vertPos_ec = vec4(vPosition3, 1.0f);
+	
 	// Light attenuation factor
-	attenuation = att( length(tLightPos - vPosition3) );
+	
 	
 	// Projected vertex
 	gl_Position = mvpMatrix * vVertex;

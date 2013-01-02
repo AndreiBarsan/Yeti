@@ -26,7 +26,6 @@ public class ResourceLoader {
 	static final String EXT_FRAGMENT 	= ".fsh";
 	
 	static boolean initialized = false;
-	static GL2 gl;
 	
 	static HashMap<String, Shader> shaders = new HashMap<>();
 	static HashMap<String, Model> models = new HashMap<>();
@@ -36,20 +35,14 @@ public class ResourceLoader {
 	static HashMap<String, Texture> textures = new HashMap<>();
 	static HashMap<String, TextureData> textureData = new HashMap<>();
 	
-	public static void init(GL2 gl) {
-		ResourceLoader.gl = gl;
-		System.out.println("Resource loader initialized.");
+	public static void init() {
+		Yeti.debug("Resource loader initialized.");
 		initialized = true;
-		try {
-			loadAllShaders("res");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static void loadObj(String name, String fileName) throws IOException {
 		Scanner s = new Scanner(new File(fileName));
-		models.put(name, Model.fromObj(gl, s));
+		models.put(name, Model.fromObj(Yeti.get().gl, s));
 	}
 	
 	public static void loadShader(String name, String fileName)
@@ -59,7 +52,7 @@ public class ResourceLoader {
 	
 	public static void loadCubeTexture(String name, String ext) {
 		CubeTexture tex = new CubeTexture();
-		GLProfile glp = gl.getGLProfile();
+		GLProfile glp = Yeti.get().gl.getGLProfile();
 		
 		try {
 			for(int i = 0; i < 6; i++) {
@@ -68,7 +61,7 @@ public class ResourceLoader {
 						glp,
 						new File(fname),
 						true, null);
-				tex.getTexture().updateImage(gl, data, tex.cubeSlots[i]);
+				tex.getTexture().updateImage(Yeti.get().gl, data, tex.cubeSlots[i]);
 			}
 		} catch (GLException | IOException e) {
 			Yeti.screwed("Error loading textures", e);
@@ -86,7 +79,7 @@ public class ResourceLoader {
 		
 		Scanner vinput = new Scanner(vertexFile);
 		Scanner finput = new Scanner(fragmentFile);
-		shaders.put(name, new Shader(gl, name,
+		shaders.put(name, new Shader(Yeti.get().gl, name,
 			vinput.useDelimiter("\\Z").next(),
 			finput.useDelimiter("\\Z").next()
 		));
@@ -97,7 +90,7 @@ public class ResourceLoader {
 	public static void loadTexture(String name, String fileName) throws GLException, IOException {
 		//Texture tex = TextureIO.newTexture(new File(fileName), false);
 		TextureData tdata = TextureIO.newTextureData(
-				gl.getGLProfile(),
+				Yeti.get().gl.getGLProfile(),
 				new File(fileName),
 				true, 
 				null);
@@ -140,11 +133,33 @@ public class ResourceLoader {
 	}
 	
 	public static void cleanUp() {
-		for(Shader s : shaders.values())
-			gl.glDeleteProgram(s.getHandle());
 		
-		for(Model m : models.values())
+		GL2 gl = Yeti.get().gl;
+		
+		for(Shader s : shaders.values()) {
+			gl.glDeleteProgram(s.getHandle());
+		}
+		shaders.clear();
+		
+		for(Model m : models.values()) {
 			m.dispose();		
+		}
+		models.clear();
+		
+		for(CubeTexture ct : cubeTextures.values()) {
+			ct.dispose(gl);
+		}
+		cubeTextures.clear();
+		
+		for(Texture t : textures.values()) {
+			t.destroy(gl);
+		}
+		textures.clear();
+		
+		for(TextureData td : textureData.values()) {
+			td.destroy();
+		}
+		textureData.clear();
 	}
 	
 	public static Texture texture(String name) {

@@ -38,4 +38,8 @@ public class CubeTexture {
 	public void bind(GL2 gl) {
 		texture.bind(gl);
 	}
+	
+	public void dispose(GL2 gl) {
+		texture.destroy(gl);
+	}
 }
