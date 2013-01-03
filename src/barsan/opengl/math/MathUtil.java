@@ -13,8 +13,8 @@ public class MathUtil {
 	/**
 	 * According to the proof at:
 	 * http://www.lighthouse3d.com/tutorials/glsl-tutorial/the-normal-matrix/
-	 * @param transform
-	 * @return
+	 * @param The original transform.
+	 * @return	The transpose of its inverse (3x3).
 	 */
 	public static Matrix3 getNormalTransform(Matrix4 transform) {
 		return new Matrix3(transform).inv().transpose();

@@ -64,8 +64,9 @@ void main() {
 	float at, af;	
 	float attenuation = att( length(lightPos_ec - vertPos_ec) );
 	
-	cf = attenuation * intensity * matDiffuse.rgb;	
-	af = matDiffuse.a;
+	cf = globalAmbient.rgb + attenuation * intensity * lightDiffuse.rgb * matDiffuse.rgb;	
+	af = lightDiffuse.a * matDiffuse.a;
+
 	if(useTexture) {
 		texel = texture2D(colorMap, vVaryingTexCoords); 
 	} else {
@@ -98,6 +99,6 @@ void main() {
 	
 	//vFragColor -= vFragColor;
 	//vFragColor += vec4(attenuation, attenuation, attenuation, 1.0f);
-	
-	
+	//vFragColor += vec4(vVaryingLightDir, 1.0f);
+	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
 }

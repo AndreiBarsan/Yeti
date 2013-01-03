@@ -25,6 +25,9 @@ smooth out vec4 	vVaryingColor;
 smooth out vec2 	vVaryingTexCoords;
 smooth out float 	fogFactor;
 
+/*
+Gouraud shading model
+*/
 void main() {
 	// Surface normal in eye coords
 	// Why aren't we using the mvMatrix? ANSWERED IN OpenGL bible + that awesome tut

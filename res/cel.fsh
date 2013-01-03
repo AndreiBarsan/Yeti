@@ -4,12 +4,12 @@
 precision highp float;
 #endif
 
-uniform vec4 ambientColor;
-uniform vec4 diffuseColor;
-uniform vec4 specularColor;
+uniform vec4 globalAmbient;
+uniform vec4 lightDiffuse;
+uniform vec4 lightSpecular;
 
 uniform int shininess;
-uniform vec4 matColor;
+uniform vec4 matDiffuse;
 
 // Texture stuff
 uniform bool useTexture;
@@ -32,6 +32,7 @@ smooth in float fogFactor;
 
 out vec4 vFragColor;
 
+// TODO: use 1D sampler
 vec4 toonify(float intensity) {
 	if(intensity < .2f) {
 		return vec4(0.0f);
@@ -51,17 +52,17 @@ void main() {
 		normalize(vVaryingLightDir)
 	));
 
-	vFragColor 	= toonify(intensity) * diffuseColor;
+	vFragColor 	= toonify(intensity) * lightDiffuse;
 	
 	// Ambient light
-	vFragColor += ambientColor;	
+	vFragColor += globalAmbient;	
 	
 	// Apply ze texture
 	if(useTexture) {
 		vFragColor *= texture(colorMap, vVaryingTexCoords);
 	}
 		
-	vFragColor *= matColor;
+	vFragColor *= matDiffuse;
 
 	if(useEdgeContour) {
 		float edge = dot(normalize(vVaryingNormal), -normalize(cameraDirection));

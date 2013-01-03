@@ -1,11 +1,9 @@
 package barsan.opengl.scenes;
 
-import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
-import javax.media.opengl.DebugGL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -24,8 +22,6 @@ import barsan.opengl.resources.HeightmapBuilder;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.TextHelper;
-
-import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class DemoScene extends Scene {
 	

@@ -14,7 +14,7 @@ public class Matrix4 {
 	private static float tmp[] = new float[16];
 	private static Quaternion aux_quaternion = new Quaternion();
 	private static Vector3 aux_vector = new Vector3();
-	// private static Matrix4 auxM = new Matrix4();
+	private static Matrix4 aux_matrix4 = new Matrix4();
 	
 	public static final int M00 = 0;	// 0;
 	public static final int M01 = 4;	// 1;
@@ -32,13 +32,6 @@ public class Matrix4 {
 	public static final int M31 = 7;	// 13;
 	public static final int M32 = 11;	// 14;
 	public static final int M33 = 15;	// 15;
-	
-	private static final float[] id = new float[] {
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	};
 	
 	public Matrix4() {
 		setIdentity();
@@ -97,7 +90,7 @@ public class Matrix4 {
 	/**
 	 * Creates a rotation matrix from the Quaternion q.
 	 * @param q
-	 * @return
+	 * @return This matrix for chaining.
 	 */
 	public Matrix4 set(Quaternion quaternion) {
 		float l_xx = quaternion.x * quaternion.x;
@@ -222,7 +215,22 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 setIdentity() {
-		set(id);
+		data[M00] = 1;
+		data[M01] = 0;
+		data[M02] = 0;
+		data[M03] = 0;
+		data[M10] = 0;
+		data[M11] = 1;
+		data[M12] = 0;
+		data[M13] = 0;
+		data[M20] = 0;
+		data[M21] = 0;
+		data[M22] = 1;
+		data[M23] = 0;
+		data[M30] = 0;
+		data[M31] = 0;
+		data[M32] = 0;
+		data[M33] = 1;
 		return this;
 	}
 	
@@ -263,6 +271,30 @@ public class Matrix4 {
 		return this;
 	}
 
+	public Matrix4 setTranslateScale(float tx, float ty, float tz, 
+			float sx, float sy, float sz) {
+		setIdentity();
+		data[M03] = tx;
+		data[M13] = ty;
+		data[M23] = tz;
+		
+		data[M00] = sx;
+		data[M11] = sy;
+		data[M22] = sz;
+		return this;
+	}
+	
+	public Matrix4 setTranslateScale(float tx, float ty, float tz, float s) {
+		setIdentity();
+		data[M03] = tx;
+		data[M13] = ty;
+		data[M23] = tz;
+		
+		data[M00] = s;
+		data[M11] = s;
+		data[M22] = s;
+		return this;
+	}
 	
 	// Angle + axis rotation
 	public Matrix4 setRotate(float angle, float x, float y, float z) {
@@ -270,28 +302,6 @@ public class Matrix4 {
 		if(angle == 0) return this;
 		return this.set(aux_quaternion.set(aux_vector.set(x, y, z), angle));
 	}
-	
-	/*
-	public Matrix4 setRotateNoQ(float angle, float x, float y, float z) {
-		setIdentity();
-		if(angle == 0) return this;
-		
-		float ca = (float) Math.cos(angle);
-		float sa = (float) Math.sin(angle);
-		
-		// TODO: use quaternions		
-		data[M00] = ca + x * x * (1 - ca);
-		data[M01] = x * y * (1 - ca) - z * sa;
-		data[M02] = x * z * (1 - ca) + y * sa;
-		data[M10] = y * x * (1 - ca) + z * sa;
-		data[M11] = ca + y * y * (1 - ca);
-		data[M12] = y * z * (1 - ca) - x * sa;
-		data[M20] = z * x * (1 - ca) - y * sa;
-		data[M21] = z * y * (1 - ca) + x * sa;
-		data[M22] = ca + z * z * (1 - ca);
-		return this;
-	}
-	//*/
 	
 	public Matrix4 setEuler(float yaw, float pitch, float roll) {
 		setIdentity();
@@ -398,14 +408,15 @@ public class Matrix4 {
 		return this;
 	}
 
+	static Vector3 forward = new Vector3(), side = new Vector3(), newUp = new Vector3();
 	public Matrix4 setLookAt(Vector3 eye, Vector3 center, Vector3 up) {
 				
 		// We're just computing the new axes based on our camera position
-		Vector3 forward = new Vector3(center).sub(eye).normalize();
-		Vector3 side = new Vector3(forward).cross(up).normalize();
-		Vector3 newUp = new Vector3(side).cross(forward);
+		forward.set(center).sub(eye).normalize();
+		side.set(forward).cross(up).normalize();
+		newUp.set(side).cross(forward);
 		
-		return set(side, newUp, forward.mul(-1.0f)).mul(new Matrix4().setTranslate(-eye.x, -eye.y, -eye.z));
+		return set(side, newUp, forward.mul(-1.0f)).mul(aux_matrix4.setTranslate(-eye.x, -eye.y, -eye.z));
 	}
 	
 	public Matrix4 setOrthogonalProjection(int x, int y, int width, int height, float near, float far) {

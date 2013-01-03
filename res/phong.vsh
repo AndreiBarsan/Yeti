@@ -8,8 +8,6 @@ uniform mat3 normalMatrix;
 uniform vec3 vLightPosition;
 //uniform vec3 cameraPosition;
 
-
-
 uniform bool useTexture;
 
 uniform bool	fogEnabled;
@@ -41,7 +39,7 @@ void main() {
 
 	// Diffuse light
 	// Vector to light source
-	vVaryingLightDir = normalize( tLightPos - vPosition3 );
+	vVaryingLightDir = tLightPos - vPosition3;
 
 	if(useTexture) {
 		vVaryingTexCoords = vTexCoord;
