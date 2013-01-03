@@ -4,10 +4,16 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
+/**
+ * A simple flat material that doesn't apply any shading.
+ * Note: it does, however, take fog into account.
+ * 
+ * @author Andrei Bârsan
+ */
 public class FlatMaterial extends Material {
 
 	public FlatMaterial(Color diffuse) {
-		super(ResourceLoader.shader("flat"), diffuse, Color.WHITE);
+		super(ResourceLoader.shader("flat"), Color.WHITE, diffuse, Color.WHITE);
 	}
 
 	@Override

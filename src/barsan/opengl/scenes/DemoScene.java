@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -12,6 +13,7 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.ShadingModel;
 import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.HeightMapMaterial;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
@@ -46,11 +48,12 @@ public class DemoScene extends Scene {
 			
 			ResourceLoader.loadTexture("heightmap01", "res/tex/height.png");
 			ResourceLoader.loadTexture("grass", "res/tex/grass01.jpg");
+			ResourceLoader.loadTexture("stone", "res/tex/stone03.jpg");
 			ResourceLoader.loadTexture("billboard", "res/tex/tree_billboard.png");
 			
 			ResourceLoader.loadCubeTexture("test", "png");
 			
-			blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f), Color.WHITE);
+			blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 			redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
 			
 			// FIXME: this isn't right; the skybox should be drawn last in
@@ -103,18 +106,19 @@ public class DemoScene extends Scene {
 					ResourceLoader.textureData("heightmap01"),
 					2.0f, 2.0f,
 					-15.0f, 120.0f);
-			//*
-			BasicMaterial gmm = new BasicMaterial();
-			gmm.setTexture(ResourceLoader.texture("grass"));
-			gmm.setShininess(128);
+			
+			//BasicMaterial gmm = new BasicMaterial();
+			//gmm.setTexture(ResourceLoader.texture("grass"));
+			//gmm.setShininess(128);
 			modelInstances.add(new ModelInstance(
 					groundMesh,
-					//new HeightMapMaterial(ResourceLoader.texture("grass"), -10, 25),
+					new HeightMapMaterial(ResourceLoader.texture("stone"),
+							ResourceLoader.texture("grass"), -10, 25),
 					//new ToonMaterial(ResourceLoader.texture("grass")),
-					gmm,
-					new Matrix4().setTranslate(-200.0f, 0.0f, -200.0f)
-							));
-			//*/
+					//gmm,
+					new Matrix4()
+					));
+			
 		} catch (IOException e) {
 			System.out.println("Could not load the resources.");
 			e.printStackTrace();
@@ -124,7 +128,7 @@ public class DemoScene extends Scene {
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
 		pointLights.add(new PointLight(new Vector3(0f, 15f, 10f), new Color(1.0f, 1.0f, 1.0f, 1.0f)));
-		ambientLight.setColor(new Color(0.33f, 0.33f, 0.33f));
+		ambientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		
 		fog = new Fog(camera.getFrustumFar() - 8.0f, camera.getFrustumFar(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		fogEnabled = true;
@@ -148,9 +152,6 @@ public class DemoScene extends Scene {
 				}
 			}
 		});
-		
-		//Font GUIFont = new Font("serif", Font.BOLD, 24);
-		
 	}
 	
 	@Override

@@ -1,10 +1,18 @@
 package barsan.opengl.util;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.HashMap;
+
+import barsan.opengl.Yeti;
 
 public class Settings implements Serializable {
 	// The configuration layout is changing fast, and persistance is not really
@@ -18,11 +26,9 @@ public class Settings implements Serializable {
 	
 	private final static transient String SETTINGS_FILE = "settings.dat";
 	
-	// Logging flags
-	public boolean warnings = true;
-	public boolean debug = true;
+	// Actual settings and stats
+	public int lastSceneIndex = 0; 
 	
-
 	// Allows any sort of custom entries to be saved and read
 	private HashMap<String, Object> customSetting = new HashMap<>();
 	
@@ -38,14 +44,41 @@ public class Settings implements Serializable {
 		customSetting.remove(setting);
 	}
 	
-	public static void load() {
-		Object.class.getResourceAsStream(SETTINGS_FILE);
+	public static Settings load() {
+		Object result = null;
+		try(InputStream es = new FileInputStream(SETTINGS_FILE)) {
+			if(es != null) {
+				ObjectInputStream oi = new ObjectInputStream(es);
+				result = oi.readObject();
+				oi.close();
+			}
+		} catch(IOException e) {
+			Yeti.screwed("Cannot get settings resource stream!", e);
+		} catch(ClassNotFoundException e) {
+			Yeti.screwed("Problem loaded settings!", e);
+		}
 		
+		if(result == null) {
+			Yeti.debug("No previous settings found - creating new profile!");
+			result = new Settings();
+		} else {
+			assert result instanceof Settings : "Must read a valid settings object.";
+		}
+		
+		Settings settings = (Settings)result;
+		return settings;
 	}
 	
-	public static void save() {
-		
-		//OutputStream os = new FileOutputStream(file);
-		//ObjectOutputStream out = new ObjectOutputStream(os);
+	public static void save(Settings settings) {
+		synchronized(settings) {
+			File outFile = new File(SETTINGS_FILE);
+			try(OutputStream os = new FileOutputStream(outFile)) {
+				ObjectOutputStream out = new ObjectOutputStream(os);
+				out.writeObject(settings);
+				out.close();
+			} catch (IOException e) {
+				Yeti.screwed("Cannot save settings!", e);
+			}
+		}
 	}
 }

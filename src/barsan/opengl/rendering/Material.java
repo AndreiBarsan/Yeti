@@ -19,7 +19,7 @@ public abstract class Material {
 	
 	private int positionIndex, normalIndex, texcoordIndex;
 	protected Shader shader;
-	protected Color diffuse, specular;
+	protected Color ambient, diffuse, specular;
 	
 	protected boolean writesDepthBuffer = true;
 	protected boolean checksDepthBuffer = true;
@@ -32,18 +32,19 @@ public abstract class Material {
 	protected Texture texture = null;
 	
 	public Material(Shader shader) {
-		this(shader, Color.WHITE, Color.WHITE);
+		this(shader, Color.WHITE, Color.WHITE, Color.WHITE);
 	}
 	
-	public Material(Shader shader, Color diffuse, Color specular) {
+	public Material(Shader shader, Color ambient, Color diffuse, Color specular) {
 		this.shader = shader;
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);
 		this.normalIndex = shader.getAttribLocation(Shader.A_NORMAL);
 		this.texcoordIndex = shader.getAttribLocation(Shader.A_TEXCOORD);
+		this.ambient = ambient;
 		this.diffuse = diffuse;
 		this.specular = specular;
 	}
-	
+
 	/**
 	 * Called by the renderer before the modelinstance to which this material is
 	 * assigned to gets rendered. Sets up the required shader state. 
@@ -157,5 +158,12 @@ public abstract class Material {
 	public void setCheckDepthBuffer(boolean checkDepthBuffer) {
 		this.checksDepthBuffer = checkDepthBuffer;
 	}
+	
+	public Color getAmbient() {
+		return ambient;
+	}
 
+	public void setAmbient(Color ambient) {
+		this.ambient = ambient;
+	}
 }

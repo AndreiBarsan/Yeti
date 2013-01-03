@@ -2,13 +2,14 @@ package barsan.opengl.rendering;
 
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
 /**
  * Note - Gouraud is pretty much 100% replaceable with Phong. They're the same
  * anyway, so only the actual shader programs differ. The uniforms are the same.
- * @author SiegeDog
+ * @author Andrei Barsan
  *
  */
 public class BasicMaterial extends Material {	
@@ -29,12 +30,16 @@ public class BasicMaterial extends Material {
 	
 	private ShadingModel mode = ShadingModel.Phong;
 	
-	public BasicMaterial(Color diffuse, Color specular) {
-		super(ResourceLoader.shader(PHONG_NAME), diffuse, specular);
+	public BasicMaterial(Color diffuse) {
+		this(Color.WHITE, diffuse, Color.WHITE);
+	}
+	
+	public BasicMaterial(Color ambient, Color diffuse, Color specular) {
+		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
 	}
 
 	public BasicMaterial() {
-		this(Color.WHITE, Color.WHITE);
+		this(Color.WHITE, Color.WHITE, Color.WHITE);
 	}
 	
 	public void setMode(ShadingModel mode) {
@@ -64,33 +69,44 @@ public class BasicMaterial extends Material {
 		// The following line does not equal projection * viewModel
 		Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
 		
-		// FFFFFFFFFUUUuuu 2 hours wasted 22.11.2012 because I forgot to actually
+		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
 		// set a shader... :|
 		enableShader(rendererState);
 		
 		shader.setUMatrix4("mvpMatrix", MVP);
 		shader.setUMatrix4("mvMatrix", viewModel);
 		shader.setUMatrix4("vMatrix", view);
-		//shader.setUMatrix4("mMatrix", modelMatrix);
-		//shader.setUMatrix4("imvMatrix", view.cpy().inv());
 		shader.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 		
 		// TODO: implement ARRAYS OF LIGHTS here!
 		PointLight light = rendererState.getPointLights().get(0);
-		AmbientLight ambient = rendererState.getAmbientLight();
+		AmbientLight ambientLight = rendererState.getAmbientLight();
 		shader.setUVector3f("vLightPosition", light.getPosition());
 		
-		shader.setUVector4f("globalAmbient", ambient.getColor().getData());
-		
+		shader.setUVector4f("globalAmbient", ambientLight.getColor().getData());
 		shader.setUVector4f("lightDiffuse", light.getDiffuse().getData());
 		shader.setUVector4f("lightSpecular", light.getSpecular().getData());
 		
-		shader.setU1f("constantAt", 0.0f);
-		shader.setU1f("linearAt", 0.0f);
-		shader.setU1f("quadraticAt", 0.003f);
-		shader.setU1f("cubicAt", 0);
+		shader.setU1f("constantAt", light.getConstantAttenuation());
+		shader.setU1f("linearAt", light.getLinearAttenuation());
+		shader.setU1f("quadraticAt", light.getQuadraticAttenuation());
+		shader.setU1f("cubicAt", light.getCubicAttenuation());
 		
+		// This isn't very clean - TODO: think of something nicer
+		if(light instanceof SpotLight) {
+			SpotLight sl = (SpotLight)light;
+			shader.setU1f("lightTheta", sl.getTheta());
+			shader.setU1f("lightPhi", sl.getPhi());
+			shader.setUVector3f("spotDirection", sl.getDirection());
+		} else {
+			shader.setU1f("lightTheta", 0);
+			shader.setU1f("lightPhi", 0);
+			shader.setUVector3f("lightDirection", Vector3.ZERO);
+		}
+		
+		shader.setUVector4f("matAmbient", ambient.getData());
 		shader.setUVector4f("matDiffuse", diffuse.getData());
+		shader.setUVector4f("matSpecular", specular.getData());
 		
 		// Texture
 		if(texture != null) {

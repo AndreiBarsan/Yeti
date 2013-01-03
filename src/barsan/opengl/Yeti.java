@@ -63,7 +63,6 @@ import com.jogamp.opengl.util.Animator;
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
  * TODO: implement spotlights
- * TODO: implement light decay
  * TODO: multiple-component materials
  * TODO: editable camera viewing angle (derp ---> quake pro)
  * TODO: editor GUI						~
@@ -80,7 +79,11 @@ import com.jogamp.opengl.util.Animator;
  */
 public class Yeti implements GLEventListener {
 	
-	public final Settings settings = new Settings();	
+	// Miscellaneous settings
+	public Settings settings;
+	// Logging flags
+	public boolean warnings = true;
+	public boolean debug = true;
 	
 	// TODO: scene manager with a stack / graph of scenes
 	private Scene currentScene;
@@ -122,6 +125,7 @@ public class Yeti implements GLEventListener {
 	}
 	
 	private void startup() {
+		settings = Settings.load();
 		debug("Starting up Yeti...");		
 		
 		// Create the default scene
@@ -130,9 +134,7 @@ public class Yeti implements GLEventListener {
 			debug(c.getCanonicalName());
 		}
 		
-		// Setup
-		settings.debug = true;
-		settings.warnings = true;
+		// Setup transient fields
 		settings.width = 1024;
 		settings.height = 768;
 		settings.playing = false;
@@ -272,19 +274,19 @@ public class Yeti implements GLEventListener {
 	}
 	
 	public static void debug(String message) {
-		if(get().settings.debug) System.out.printf("[DEBUG] %s\n", message);
+		if(get().debug) System.out.printf("[DEBUG] %s\n", message);
 	}
 	
 	public static void debug(String format, Object... stuff) {
-		if(get().settings.debug) System.out.printf("[DEBUG] " + format + "\n", stuff);
+		if(get().debug) System.out.printf("[DEBUG] " + format + "\n", stuff);
 	}
 	
 	public static void warn(String message) {
-		if(get().settings.warnings) System.err.printf("[WARNING] %s\n", message);
+		if(get().warnings) System.err.printf("[WARNING] %s\n", message);
 	}
 	
 	public static void warn(String format, Object... stuff) {
-		if(get().settings.warnings) System.out.printf("[WARNING] " + format + "\n", stuff);
+		if(get().warnings) System.out.printf("[WARNING] " + format + "\n", stuff);
 	}
 	
 	public static void screwed(String message) {
@@ -300,6 +302,9 @@ public class Yeti implements GLEventListener {
 	
 	public static void quit() {
 		Yeti.debug("Shutting down...");
+		Yeti.debug("Saving settings...");
+		Settings.save(get().settings);
+		Yeti.debug("Settings saved.");
 		System.exit(0);		
 	}
 	
@@ -314,6 +319,7 @@ public class Yeti implements GLEventListener {
 				if(selection < availableScenes.length) {
 					try {
 						loadScene( (Scene)availableScenes[selection].newInstance());
+						settings.lastSceneIndex = selection;
 					} catch (InstantiationException | IllegalAccessException e1) {
 						e1.printStackTrace();
 					}
@@ -340,8 +346,7 @@ public class Yeti implements GLEventListener {
 		// Run in debug mode
 		Yeti.debug("Running in debug GL mode");
 		
-		// TODO: read from config
-		final int lastLoadedScene = 4;
+		final int lastLoadedScene = settings.lastSceneIndex;
 		ResourceLoader.init();	
 		
 		addKeyListener(this.new TempSceneSwitcher());

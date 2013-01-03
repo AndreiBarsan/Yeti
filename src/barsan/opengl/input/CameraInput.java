@@ -25,7 +25,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 		System.out.println("============================================");
 		System.out.println("==        Initialized camera input.       ==");
 		System.out.println("== Use WASD and the mouse to move around. ==");
-		System.out.println("=============================================");
+		System.out.println("============================================");
 	}
 	
 	public CameraInput(Camera camera) {

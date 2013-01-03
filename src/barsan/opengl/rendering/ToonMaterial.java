@@ -53,7 +53,7 @@ public class ToonMaterial extends BasicMaterial {
 	}
 	
 	public ToonMaterial(Color color) {
-		super(color, Color.WHITE);
+		super(Color.WHITE, color, Color.WHITE);
 		shader = ResourceLoader.shader("cel");
 	}
 	

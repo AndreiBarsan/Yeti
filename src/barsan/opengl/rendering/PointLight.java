@@ -9,6 +9,11 @@ public class PointLight {
 	private Color diffuseColor;
 	private Color specularColor;
 	
+	private float 	constantAttenuation,
+					linearAttenuation,
+					quadraticAttenuation,
+					cubicAttenuation;
+	
 	public PointLight(Vector3 position) {
 		this(position, Color.WHITE, Color.WHITE);
 	}
@@ -45,6 +50,38 @@ public class PointLight {
 
 	public void setSpecular(Color specularColor) {
 		this.specularColor = specularColor;
+	}
+
+	public float getConstantAttenuation() {
+		return constantAttenuation;
+	}
+
+	public void setConstantAttenuation(float constantAttenuation) {
+		this.constantAttenuation = constantAttenuation;
+	}
+
+	public float getLinearAttenuation() {
+		return linearAttenuation;
+	}
+
+	public void setLinearAttenuation(float linearAttenuation) {
+		this.linearAttenuation = linearAttenuation;
+	}
+
+	public float getQuadraticAttenuation() {
+		return quadraticAttenuation;
+	}
+
+	public void setQuadraticAttenuation(float quadraticAttenuation) {
+		this.quadraticAttenuation = quadraticAttenuation;
+	}
+
+	public float getCubicAttenuation() {
+		return cubicAttenuation;
+	}
+
+	public void setCubicAttenuation(float cubicAttenuation) {
+		this.cubicAttenuation = cubicAttenuation;
 	}
 
 	

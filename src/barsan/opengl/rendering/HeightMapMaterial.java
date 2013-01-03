@@ -1,13 +1,14 @@
 package barsan.opengl.rendering;
 
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * Just like a regular material (responds to light, has a texture) but 
- * with the added option of mapping its color based on a heightmap.
  * @author Andrei Bârsan
  *
  */
@@ -15,18 +16,13 @@ public class HeightMapMaterial extends BasicMaterial {
 
 	private float minHeight;
 	private float maxHeight;
+	private Texture upperTexture;
 	
-	private boolean useHeight = false;
-	
-	public HeightMapMaterial(Texture groundTexture) {
-		this(groundTexture, -10, 10);
-		
+	public HeightMapMaterial(Texture lowerTexture, Texture upperTexture,
+			float minHeight, float maxHeight) {
 		shininess = 1;
-	}
-	
-	public HeightMapMaterial(Texture heightTexture, float minHeight, float maxHeight) {
-		super();
-		setTexture(heightTexture);
+		setTexture(lowerTexture);
+		this.upperTexture = upperTexture;
 		this.minHeight = minHeight;
 		this.maxHeight = maxHeight;
 		shader = ResourceLoader.shader("heightMapPhong"); 
@@ -39,7 +35,14 @@ public class HeightMapMaterial extends BasicMaterial {
 		
 		shader.setU1f("minHeight", minHeight);
 		shader.setU1f("maxHeight", maxHeight);
-		shader.setU1i("useHeight", useHeight);
 		
+		shader.setU1i("colorMapB", 1);
+		
+		GL2 gl = rendererState.getGl();
+		gl.glActiveTexture(GL.GL_TEXTURE1);
+		upperTexture.bind(rendererState.getGl());
+		
+		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
+	
 }

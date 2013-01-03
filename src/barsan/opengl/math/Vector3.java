@@ -2,6 +2,8 @@ package barsan.opengl.math;
 
 public class Vector3 {
 	
+	public static final Vector3 ZERO = new Vector3();
+	
 	// Computation helpers
 	static Quaternion aux1 = new Quaternion();
 	static Quaternion aux2 = new Quaternion();

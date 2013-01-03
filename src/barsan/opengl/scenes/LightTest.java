@@ -2,6 +2,7 @@ package barsan.opengl.scenes;
 
 import java.io.IOException;
 
+import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -13,13 +14,16 @@ import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.FPCameraAdapter;
 
 public class LightTest extends Scene {
 
 	ModelInstance plane, chosenOne;
 	PointLight testLight;
+	SpotLight sl;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -32,13 +36,12 @@ public class LightTest extends Scene {
 			e.printStackTrace();
 		}
 		
-		//Model quad = Model.buildQuad(100.0f, 100.0f);
-		Model quad = new Cube(Yeti.get().gl, 100.0f);
-		BasicMaterial material = new BasicMaterial(new Color(1.0f, 0.33f, 0.33f), Color.WHITE);
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f), Color.WHITE);
+		Model quad = Model.buildQuad(200.0f, 200.0f);
+		//Model quad = new Cube(Yeti.get().gl, 100.0f);
+		BasicMaterial material = new BasicMaterial(new Color(1.0f, 0.33f, 0.33f));
+		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		modelInstances.add(plane = new ModelInstance(quad, material, new Matrix4()));
 		//plane.getTransform().setTranslate(10.0f, 0.0f, 0.0f);
-		plane.getTransform().setTranslate(0.0f, -50.0f, 0.0f);
 		
 		float step = 10.0f;
 		for(int i = -5; i < 5; i++) {
@@ -48,8 +51,12 @@ public class LightTest extends Scene {
 		}
 		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("sphere"), monkeyMat, new Matrix4().setScale(0.33f)));
 		 
-		
-		pointLights.add(testLight = new PointLight(new Vector3(35.0f, 2.50f, 0.0f)));
+		sl = new SpotLight(new Vector3(0.0f, 2.50f, 0.0f), 
+				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
+				0.8f, 0.9f);
+		testLight = new PointLight(new Vector3(35.0f, 2.50f, 0.0f));
+		pointLights.add(sl);
+		//pointLights.add(testLight);
 	}
 	
 	float a = 0.0f;
@@ -59,7 +66,19 @@ public class LightTest extends Scene {
 		//testLight.getPosition().z = -10 - (float)Math.sin(a * 2) * 20.0f;
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		testLight.getPosition().x = lx;
+		
+		sl.getDirection().x =  (float)Math.sin(a) * 10.0f;
+		sl.getDirection().z = -(float)Math.cos(a) * 10.0f;
+		
 		chosenOne.getTransform().setTranslateScale(lx, 2.5f, 0.0f, 1.0f);
 		super.display(drawable);
+		
+		GL2 gl = Yeti.get().gl;
+		FPCameraAdapter ca = new FPCameraAdapter(camera);
+		ca.prepare(gl);
+		gl.glBegin(GL2.GL_TRIANGLES);
+			// helper stuff
+		gl.glEnd();
+		gl.glPopMatrix();
 	}
 }

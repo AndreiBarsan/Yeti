@@ -4,6 +4,9 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -58,8 +61,13 @@ public class App {
 		engine = Yeti.get();
 		
 		frmYeti.setTitle("Hosted inside SWING");
-		//frmYeti.setBounds(0, 0, );
-		frmYeti.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frmYeti.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmYeti.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Yeti.quit();
+			}
+		});
 		
 		
 		frmYeti.getContentPane().setLayout(new BoxLayout(frmYeti.getContentPane(), BoxLayout.Y_AXIS));

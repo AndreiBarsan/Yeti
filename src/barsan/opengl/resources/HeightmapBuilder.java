@@ -72,6 +72,10 @@ public class HeightmapBuilder {
 		// TODO: try and use glGetTexImage instead, avoiding the creation of
 		// an unnecessary FBO
 		gl.glReadPixels(0, 0, w, h, data.getPixelFormat(), GL2.GL_BYTE, buff);
+		
+		int hw = w / 2;
+		int hh = h / 2;
+		
 		for(int x = 0; x < w - 1; x += step) {
 			for(int y = 0; y < h - 1; y += step) {
 				
@@ -84,10 +88,10 @@ public class HeightmapBuilder {
 				int tl = buff.get( (y * w + x ) * 3 );
 				
 				face = new Face();
-				c1.set(x * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)tr / 255.0f), nextY * gridSizeY);
-				c2.set(nextX * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)br / 255.0f), nextY * gridSizeY);
-				c3.set(nextX * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)bl / 255.0f), y * gridSizeY);
-				c4.set(x * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)tl / 255.0f), y * gridSizeY);
+				c1.set( (x - hw) * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)tr / 255.0f), (nextY - hh) * gridSizeY);
+				c2.set( (nextX - hw) * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)br / 255.0f), (nextY - hh) * gridSizeY);
+				c3.set( (nextX - hw) * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)bl / 255.0f), (y - hh) * gridSizeY);
+				c4.set( (x - hw) * gridSizeX, MathUtil.lerp(minHeight, maxHeight, (float)tl / 255.0f), (y - hh) * gridSizeY);
 				face.points = new Vector3[] {
 						new Vector3(c1), new Vector3(c2), new Vector3(c3)
 				};
