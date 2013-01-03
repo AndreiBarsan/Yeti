@@ -13,7 +13,7 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.ShadingModel;
 import barsan.opengl.rendering.Fog;
-import barsan.opengl.rendering.HeightMapMaterial;
+import barsan.opengl.rendering.MultiTextureMaterial;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
@@ -112,7 +112,7 @@ public class DemoScene extends Scene {
 			//gmm.setShininess(128);
 			modelInstances.add(new ModelInstance(
 					groundMesh,
-					new HeightMapMaterial(ResourceLoader.texture("stone"),
+					new MultiTextureMaterial(ResourceLoader.texture("stone"),
 							ResourceLoader.texture("grass"), -10, 25),
 					//new ToonMaterial(ResourceLoader.texture("grass")),
 					//gmm,
