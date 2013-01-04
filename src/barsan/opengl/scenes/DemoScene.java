@@ -128,7 +128,7 @@ public class DemoScene extends Scene {
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
 		pointLights.add(new PointLight(new Vector3(0f, 15f, 10f), new Color(1.0f, 1.0f, 1.0f, 1.0f)));
-		ambientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
+		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		
 		fog = new Fog(camera.getFrustumFar() - 8.0f, camera.getFrustumFar(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		fogEnabled = true;

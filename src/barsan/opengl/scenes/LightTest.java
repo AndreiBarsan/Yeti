@@ -53,7 +53,7 @@ public class LightTest extends Scene {
 		 
 		sl = new SpotLight(new Vector3(0.0f, 2.50f, 0.0f), 
 				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
-				0.8f, 0.9f);
+				0.75f, 0.9f, 1.0f);
 		testLight = new PointLight(new Vector3(35.0f, 2.50f, 0.0f));
 		pointLights.add(sl);
 		//pointLights.add(testLight);

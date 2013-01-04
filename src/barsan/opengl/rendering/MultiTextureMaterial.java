@@ -32,16 +32,14 @@ public class MultiTextureMaterial extends BasicMaterial {
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		// Map everything
 		super.setup(rendererState, modelMatrix);
+		GL2 gl = rendererState.getGl();
 		
 		shader.setU1f("minHeight", minHeight);
 		shader.setU1f("maxHeight", maxHeight);
-		
 		shader.setU1i("colorMapB", 1);
 		
-		GL2 gl = rendererState.getGl();
 		gl.glActiveTexture(GL.GL_TEXTURE1);
 		upperTexture.bind(rendererState.getGl());
-		
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}
 	

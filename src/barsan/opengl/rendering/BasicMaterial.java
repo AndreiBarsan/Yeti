@@ -97,10 +97,12 @@ public class BasicMaterial extends Material {
 			SpotLight sl = (SpotLight)light;
 			shader.setU1f("lightTheta", sl.getTheta());
 			shader.setU1f("lightPhi", sl.getPhi());
+			shader.setU1f("lightExponent", sl.getExponent());
 			shader.setUVector3f("spotDirection", sl.getDirection());
 		} else {
-			shader.setU1f("lightTheta", 0);
-			shader.setU1f("lightPhi", 0);
+			shader.setU1f("lightTheta", 0.0f);
+			shader.setU1f("lightPhi", 0.0f);
+			shader.setU1f("lightExponent", 1.0f);
 			shader.setUVector3f("lightDirection", Vector3.ZERO);
 		}
 		

@@ -32,19 +32,12 @@ public class Scene implements GLEventListener {
 	
 	/** Lights ****************************************************************/
 	protected ArrayList<PointLight> pointLights = new ArrayList<>();
-	// TODO: implement
-	protected ArrayList<DirectionalLight> directionalLights = new ArrayList<>();
-	// TODO: implement
-	//protected ArrayList<SpotLight> spotLights = new ArrayList<>();
-	
-	protected AmbientLight ambientLight = new AmbientLight(new Color(0.1f, 0.1f, 0.1f, 1.0f));
+	protected AmbientLight globalAmbientLight = new AmbientLight(new Color(0.1f, 0.1f, 0.1f, 1.0f));
 	
 	/** Fog *******************************************************************/
 	protected boolean fogEnabled = false;
 	protected Fog fog;
 
-	
-	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		// Setup basic elements
@@ -94,10 +87,9 @@ public class Scene implements GLEventListener {
 		// Setup the renderer
 		RendererState rs = renderer.getState();
 		rs.setGl(gl);
-		rs.setAmbientLight(ambientLight);
+		rs.setAmbientLight(globalAmbientLight);
 		rs.setCamera(camera);
 		rs.setPointLights(pointLights);
-		rs.setDirectionalLights(directionalLights);
 		if(fogEnabled) {
 			rs.setFog(fog);
 		} else {
@@ -105,14 +97,11 @@ public class Scene implements GLEventListener {
 		}
 		
 		renderer.render(this);
-		
 		lastTime = System.currentTimeMillis();
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
-		//System.out.printf("Scene reshape: x=%d y=%d\n", x, y);
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		camera.reshape(x, y, width, height);
 	}
 
@@ -153,11 +142,18 @@ public class Scene implements GLEventListener {
 		cameraInput.setMouseControlled(false);
 	}
 	
+	/**
+	 * Tells the OpenGL engine to shutdown before its next render cycle.
+	 * Note: this might just begin a transition to quit the scene - the shutdown
+	 * is not guaranteed to be immediate.
+	 * 
+	 * @param engine	Reference to the central engine.
+	 * @param next		(NYI) The next scene to transition to.
+	 */
 	public void postExitFlag(Yeti engine, Scene next) {
 		exiting = true;
 		this.engine = engine;
 	}
-	
 	private Yeti engine;
 	
 	private void exit() {
