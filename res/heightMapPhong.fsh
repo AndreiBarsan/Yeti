@@ -71,7 +71,7 @@ void main() {
 	ct = texel.rgb;
 	at = texel.a;
 	
-	if(intensity > 0.0f) {
+	if(intensity > 0.0f && shininess > 0.0f) {
 		// Specular light
 		//  - 	added *after* the texture color is multiplied so that
 		//		we get a truly shiny result

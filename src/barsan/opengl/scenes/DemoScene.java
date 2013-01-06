@@ -51,7 +51,7 @@ public class DemoScene extends Scene {
 			ResourceLoader.loadTexture("stone", "res/tex/stone03.jpg");
 			ResourceLoader.loadTexture("billboard", "res/tex/tree_billboard.png");
 			
-			ResourceLoader.loadCubeTexture("test", "png");
+			ResourceLoader.loadCubeTexture("skybox01", "jpg");
 			
 			blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 			redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
@@ -59,63 +59,22 @@ public class DemoScene extends Scene {
 			// FIXME: this isn't right; the skybox should be drawn last in
 			// order for as few fragments as possible to be processed, not first
 			// so that we overwrite most of it!
-			SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("test"), camera);
+			SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("skybox01"), camera);
 			modelInstances.add(sb);
 			
 			blueShit.setShininess(16);
 			
-			a10k = new ModelInstance(
-							ResourceLoader.model("bunny"),
-							blueShit,
-							new Matrix4()
-						);
-			
-			ModelInstance a1k = new ModelInstance(
-							ResourceLoader.model("asteroid10k"),
-							redShit,
-							new Matrix4().setTranslate(0.0f, 20.0f, 20.0f)
-							);
-			
-			BasicMaterial gMat = new BasicMaterial();
-			gMat.setMode(ShadingModel.Gouraud);
-			
-			BasicMaterial pMat = new BasicMaterial();
-			pMat.setMode(ShadingModel.Phong);
-			
-			
-			// Setup the iron box (which has texture mapping)
-			/*
-			ironbox = new BasicMaterial();
-			ironbox.setTexture(TextureIO.newTexture(
-					new File("res/tex/cubetex.png"), false
-					));
-			ModelInstance texcube = new ModelInstance(
-					ResourceLoader.model("texcube"),
-					ironbox,
-					new Matrix4()
-					);
-			*/
-			
-			
-			modelInstances.add(a10k);
-			modelInstances.add(a1k);
-			//modelInstances.add(texcube);
-			
 			Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl,
 					ResourceLoader.texture("heightmap01"),
 					ResourceLoader.textureData("heightmap01"),
-					2.0f, 2.0f,
+					4.0f, 4.0f,
 					-15.0f, 120.0f);
 			
-			//BasicMaterial gmm = new BasicMaterial();
-			//gmm.setTexture(ResourceLoader.texture("grass"));
-			//gmm.setShininess(128);
 			modelInstances.add(new ModelInstance(
 					groundMesh,
 					new MultiTextureMaterial(ResourceLoader.texture("stone"),
 							ResourceLoader.texture("grass"), -10, 25),
 					//new ToonMaterial(ResourceLoader.texture("grass")),
-					//gmm,
 					new Matrix4()
 					));
 			
@@ -124,10 +83,13 @@ public class DemoScene extends Scene {
 			e.printStackTrace();
 		}
 		
-		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
+		camera.setPosition(new Vector3(0.0f, 45.00f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
-		pointLights.add(new PointLight(new Vector3(0f, 15f, 10f), new Color(1.0f, 1.0f, 1.0f, 1.0f)));
+		
+		PointLight pl;
+		pointLights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
+		
 		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		
 		fog = new Fog(camera.getFrustumFar() - 8.0f, camera.getFrustumFar(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
@@ -161,13 +123,14 @@ public class DemoScene extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		float radius = 3.2f;
+		//float radius = 3.2f;
 		a += 0.8 * getDelta() * 10;
 		
 		
+		/*
 		a10k.getTransform().setRotate(a, 0.0f, 0.0f, 1.0f)//.setTranslate(1.0f, -1.0f, 2.0f)
 			.mul(new Matrix4().setScale(2.0f));
-		
+		*/
 		PointLight light = pointLights.get(0);
 		light.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		

@@ -7,7 +7,6 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.AmbientLight;
 import barsan.opengl.rendering.BasicMaterial;
@@ -17,8 +16,6 @@ import barsan.opengl.rendering.PointLight;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
-
-import com.jogamp.opengl.util.gl2.GLUT;
 
 public class ModelGraphScene extends Scene {
 	
@@ -65,9 +62,10 @@ public class ModelGraphScene extends Scene {
 		);
 		modelInstances.add(s3);
 		
-		
 		camera.setPosition(new Vector3(0.0f, 0.0f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f).normalize());
+		
+		pointLights.add(light);
 	}
 	
 	@Override

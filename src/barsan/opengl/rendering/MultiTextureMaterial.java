@@ -20,7 +20,7 @@ public class MultiTextureMaterial extends BasicMaterial {
 	
 	public MultiTextureMaterial(Texture lowerTexture, Texture upperTexture,
 			float minHeight, float maxHeight) {
-		shininess = 1;
+		shininess = 0;
 		setTexture(lowerTexture);
 		this.upperTexture = upperTexture;
 		this.minHeight = minHeight;
@@ -30,7 +30,6 @@ public class MultiTextureMaterial extends BasicMaterial {
 	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
-		// Map everything
 		super.setup(rendererState, modelMatrix);
 		GL2 gl = rendererState.getGl();
 		

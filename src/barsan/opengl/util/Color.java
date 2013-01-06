@@ -14,6 +14,24 @@ public class Color {
 		this.set(r, g, b, a);
 	}
 	
+	public Color(float r, float g, float b) {
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = 1.0f;
+	}
+	
+	public Color(Color other) {
+		r = other.r;
+		g = other.g;
+		b = other.b;
+		a = other.a;
+	}
+	
+	public Color copy() {
+		return new Color(this);
+	}
+	
 	public Color set(float r, float g, float b) {
 		return this.set(r, g, b, 1.0f);
 	}
@@ -25,13 +43,6 @@ public class Color {
 		this.a = a;
 		
 		return this;
-	}
-	
-	public Color(float r, float g, float b) {
-		this.r = r;
-		this.g = g;
-		this.b = b;
-		this.a = 1.0f;
 	}
 	
 	public float[] getData() {

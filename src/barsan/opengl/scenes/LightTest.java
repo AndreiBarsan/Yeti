@@ -40,6 +40,8 @@ public class LightTest extends Scene {
 		//Model quad = new Cube(Yeti.get().gl, 100.0f);
 		BasicMaterial material = new BasicMaterial(new Color(1.0f, 0.33f, 0.33f));
 		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
+		material.setAmbient(Color.BLACK);
 		modelInstances.add(plane = new ModelInstance(quad, material, new Matrix4()));
 		//plane.getTransform().setTranslate(10.0f, 0.0f, 0.0f);
 		

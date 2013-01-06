@@ -23,9 +23,19 @@ public class PointLight {
 	}
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular) {
+		this(position, diffuse, specular, 0.0f, 0.0f, 0.0f, 0.0f);
+	}
+	
+	public PointLight(Vector3 position, Color diffuse, Color specular,
+			float ka, float la, float qa, float ca) {
 		this.setPosition(position);
 		this.setDiffuse(diffuse);
 		this.setSpecular(specular);
+		
+		constantAttenuation = ka;
+		linearAttenuation = la;
+		quadraticAttenuation = qa;
+		cubicAttenuation = ca;
 	}
 	
 	public Vector3 getPosition() {

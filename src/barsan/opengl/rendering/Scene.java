@@ -2,8 +2,6 @@ package barsan.opengl.rendering;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -11,7 +9,6 @@ import javax.media.opengl.GLEventListener;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
-import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 

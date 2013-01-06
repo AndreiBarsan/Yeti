@@ -97,7 +97,7 @@ void main() {
 	cf = matAmbient.rgb * globalAmbient.rgb + intensity * lightDiffuse.rgb * matDiffuse.rgb;	
 	af = matAmbient.a * globalAmbient.a + lightDiffuse.a * matDiffuse.a;
 	
-	if(intensity > 0.0f) {
+	if(intensity > 0.0f && shininess > 0.0f) {
 		// Specular light
 		//  - 	added *after* the texture color is multiplied so that
 		//		we get a truly shiny result
