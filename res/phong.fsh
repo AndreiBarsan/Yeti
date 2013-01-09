@@ -24,6 +24,9 @@ uniform float cubicAt;
 uniform bool useTexture;
 uniform sampler2D colorMap;
 
+uniform bool useBump;
+uniform sampler2D normalMap;
+
 // Fog
 uniform bool 	fogEnabled;
 uniform vec4	fogColor;
@@ -49,8 +52,7 @@ float att(float d) {
 	return min(1.0f, 1.0f / den);
 }
 
-float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
-	
+float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {	
 	float intensity = max(0.0f, dot(nNormal, nLightDir));
 	float cos_outer_cone = lightTheta;
 	float cos_inner_cone = lightPhi;
@@ -92,6 +94,11 @@ void main() {
 
 	vec3 nNormal = normalize(vVaryingNormal);
 	vec3 nLightDir = normalize(vVaryingLightDir);
+	
+	// TODO: employ IFDEFS and perform shader generation instead
+	if(useBump) {
+		// make nNormal (I think) be affected by the normal map
+	}
 
 	float intensity = computeIntensity(nNormal, nLightDir);	
 	cf = matAmbient.rgb * globalAmbient.rgb + intensity * lightDiffuse.rgb * matDiffuse.rgb;	

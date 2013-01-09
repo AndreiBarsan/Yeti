@@ -1,10 +1,19 @@
 package barsan.opengl.rendering;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.media.opengl.GL;
+
+import com.jogamp.opengl.util.texture.Texture;
+
+import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.GLHelp;
 
 /**
  * Note - Gouraud is pretty much 100% replaceable with Phong. They're the same
@@ -13,6 +22,57 @@ import barsan.opengl.util.Color;
  *
  */
 public class BasicMaterial extends Material {	
+	
+	interface MaterialComponent {
+		/**
+		 * Sets this component of the complex material up. Multiple components
+		 * make up a whole material. This method doesn't handle textures. 
+		 * @param m		The material being set up. 
+		 * @param rs	The rendering context.
+		 */
+		/* pp */ void setup(Material m, RendererState rs);
+		/**
+		 * Fills up 0 or more texture slots and binds other related variables.
+		 * @return The number of texture slots occupied.
+		 */
+		/* pp */ int setupTexture(Material m, RendererState rs, int slot);
+		/**
+		 * Frees up whatever resources were bound on setup! 
+		 * Do not destroy texutures and such here! Use dispose() for that!
+		 */
+		/* pp */ void cleanup();
+		
+		/* pp */ void dispose();
+	}
+	
+	class BumpComponent implements MaterialComponent {
+		
+		Texture normalMap;
+		
+		public BumpComponent(Texture normalMap) {
+			this.normalMap = normalMap;
+		}
+		
+		@Override
+		public void setup(Material m, RendererState rs) {
+			m.shader.setU1i("useNormal", true);
+		}
+		
+		@Override
+		public int setupTexture(Material m, RendererState rs, int slot) {
+			m.shader.setU1i("normalMap", slot);	
+			rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
+			normalMap.bind(rs.getGl());
+			
+			return 1;
+		}
+		
+		@Override
+		public void cleanup() {	}
+		@Override
+		public void dispose() { }
+	}
+	
 	
 	// TODO: flags to ignore certain light types
 	// TODO: consistent uniform names to ease automatic material management in the future
@@ -30,16 +90,28 @@ public class BasicMaterial extends Material {
 	
 	private ShadingModel mode = ShadingModel.Phong;
 	
+	private List<MaterialComponent> components = new ArrayList<>();
+	
 	public BasicMaterial(Color diffuse) {
 		this(Color.WHITE, diffuse, Color.WHITE);
+	}
+
+	public BasicMaterial() {
+		this(Color.WHITE, Color.WHITE, Color.WHITE);
 	}
 	
 	public BasicMaterial(Color ambient, Color diffuse, Color specular) {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
 	}
-
-	public BasicMaterial() {
-		this(Color.WHITE, Color.WHITE, Color.WHITE);
+	
+	public void addComponent(MaterialComponent component) {
+		components.add(component);
+	}
+	
+	public void removeComponent(MaterialComponent component) {
+		if(!components.remove(component)) {
+				Yeti.screwed("Tried to remove non-existing material component!");
+		}
 	}
 	
 	public void setMode(ShadingModel mode) {
@@ -117,6 +189,12 @@ public class BasicMaterial extends Material {
 			texture.bind(rendererState.getGl());
 		} else {
 			shader.setU1i("useTexture", 0);
+		}
+		
+		int textureIndex = 0;
+		for (MaterialComponent c : components) {
+			c.setup(this, rendererState);
+			textureIndex += c.setupTexture(this, rendererState, textureIndex);
 		}
 		
 		// Fog

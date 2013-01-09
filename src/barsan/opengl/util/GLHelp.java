@@ -8,6 +8,16 @@ import com.jogamp.opengl.FBObject;
 import barsan.opengl.Yeti;
 
 public class GLHelp {
+	
+	/** Lookup table for converting between integer-defined texture slots
+	 * 	and GL flags.
+	 */
+	public static final int[] textureSlot = new int[] {
+		GL.GL_TEXTURE0, GL.GL_TEXTURE1, GL.GL_TEXTURE2,
+		GL.GL_TEXTURE3,	GL.GL_TEXTURE4,	GL.GL_TEXTURE5,
+		GL.GL_TEXTURE6,	GL.GL_TEXTURE7,	GL.GL_TEXTURE8
+	};
+	
 	public static void checkError(GL gl) {
 		int code = gl.glGetError();
 		if (code == GL.GL_NO_ERROR) {

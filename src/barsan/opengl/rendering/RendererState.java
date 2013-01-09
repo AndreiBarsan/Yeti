@@ -10,7 +10,7 @@ import javax.media.opengl.GL2;
  */
 public class RendererState {
 	
-	private GL2 gl;
+	/* pp */ GL2 gl;
 	private ArrayList<PointLight> pointLights;
 	private ArrayList<DirectionalLight> directionalLights;
 	
