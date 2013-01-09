@@ -28,6 +28,8 @@ public class Model {
 		public Vector3[] points;
 		public Vector3[] texCoords;
 		public Vector3[] normals;
+		public Vector3 tangent;
+		public Vector3 bitangent;
 		
 		public int[] pindex, tindex, nindex;
 		
@@ -42,30 +44,22 @@ public class Model {
 	}
 	
 	static class Group {
+		// TODO: only use these things as temporary storage (or use them to optimize
+		// the rendering later)
 		public ArrayList<Vector3> geometry = new ArrayList<>();
 		public ArrayList<Vector3> texture = new ArrayList<>();
 		public ArrayList<Vector3> normals = new ArrayList<>();
+		// tangents not here since this class is only used as a helper building
+		// the object - tangents are all computed on the fly
 		public ArrayList<Face> faces = new ArrayList<>();
-		
-		// Allows manual building of geometry
-		/*
-		public void addVertex(float x, float y, float z) {
-			geometry.add(new Vector3(x, y, z));
-		}
-		
-		public void addNormal(float x, float y, float z) {
-			normals.add(new Vector3(x, y, z));
-		}
-
-		public void addNormal(Vector3 v) {
-			normals.add(v);
-		}*/
 	}
 	
 	// Vertex buffers for faster rendering
 	private VBO vertices;
 	private VBO texcoords;
 	private VBO normals;
+	//private VBO tangents;
+	//private VBO bitangents;
 	
 	protected HashMap<String, Group> groups = new HashMap<>();
 	protected Group master = new Group();
@@ -341,6 +335,46 @@ public class Model {
 		return face;
 	}
 	
+	public static Model buildPlane(float width, float height, int sdivw, int sdivh) {
+		GL2 gl = Yeti.get().gl;
+		Model result = new Model(gl, "plane");
+		
+		float uw = width / sdivw;
+		float uh = height / sdivh;
+		
+		int tw = (sdivw % 2 == 0) ? sdivw / 2 - 1 : sdivw / 2;
+		int th = (sdivh % 2 == 0) ? sdivh / 2 - 1 : sdivh / 2;
+		for(int x = -sdivw / 2; x < tw; x++) {
+			for(int y = -sdivh / 2; y < th; y++) {
+				Face f = new Face();
+				f.points = new Vector3[] {
+					new Vector3(x * uw, 0, y * uh),
+					new Vector3(x * uw, 0, (y + 1) * uh),
+					new Vector3((x + 1) * uw, 0, (y + 1) * uh),
+					new Vector3((x + 1) * uw, 0, y * uh)
+				};
+				f.texCoords = new Vector3[] {
+					new Vector3(0, 0, 0),
+					new Vector3(0, 1, 0),
+					new Vector3(1, 1, 0),
+					new Vector3(1, 0, 0)
+				};
+				f.normals = new Vector3[] {
+					new Vector3(0, 1, 0),
+					new Vector3(0, 1, 0),
+					new Vector3(0, 1, 0),
+					new Vector3(0, 1, 0)
+				};
+				
+				result.addFace(f);
+			}
+		}
+		
+		result.setPointsPerFace(4);
+		result.buildVBOs();
+		return result;
+	}
+	
 	/**
 	 * Builds a simple quad in the XZ plane.
 	 */
@@ -390,9 +424,12 @@ public class Model {
 		assert master.faces.size() > 0 : "Empty model";
 		// Tried & tested - this is just the right buffer length
 		int size = master.faces.size() *  pointsPerFace;
+		
 		vertices = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		normals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, T_COORDS_PER_POINT);
+		//tangents = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		//bitangents = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		
 		vertices.open();
 		for(Face f : master.faces) {
@@ -424,10 +461,49 @@ public class Model {
 			texcoords.close();
 		}
 		
+		/*
+		if(master.faces.get(0).texCoords != null && master.faces.get(0).normals != null) {
+			
+			for(Face f : master.faces) {
+				
+				Vector3 dp1 = f.points[1].copy().sub(f.points[0]);
+				Vector3 dp2 = f.points[2].copy().sub(f.points[1]);
+				
+				float duv1x = f.points[1].x - f.points[0].x;
+				float duv2x = f.points[2].x - f.points[1].x;
+				
+				float duv1y = f.points[1].y - f.points[0].y;
+				float duv2y = f.points[2].y - f.points[1].y;
+				
+				float r = 1.0f / (duv1x * duv2y - duv1y * duv2x);
+				f.tangent = dp1.copy().mul(duv2y).sub(dp2.copy().mul(duv1y)).mul(r);
+				f.bitangent = dp2.copy().mul(duv1x).sub(dp1.copy().mul(duv2x)).mul(r);
+			}
+			
+			tangents.open();
+			for(Face f : master.faces) {
+				tangents.append(f.tangent);
+				tangents.append(f.tangent);
+				tangents.append(f.tangent);
+			}
+			tangents.close();
+			bitangents.open();
+			for(Face f : master.faces) {
+				bitangents.append(f.bitangent);
+				bitangents.append(f.bitangent);
+				bitangents.append(f.bitangent);
+			}
+			bitangents.close();
+		}
+		//*/
+		
 		Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d; Geometry element count: %d",
 				getName(), vertices.getSize(), normals.getSize()));
 	}
 	
+	public void addFace(Face face) {
+		addFace("default", face);
+	}
 	
 	public void addFace(String groupName, Face face) {
 		groups.get(groupName).faces.add(face);
@@ -437,7 +513,9 @@ public class Model {
 	public void dispose() {
 		gl.glDeleteBuffers(3, new int[] { 	vertices.getHandle(), 
 											normals.getHandle(),
-											texcoords.getHandle()
+											texcoords.getHandle(),
+										//	tangents.getHandle(),
+										//	bitangents.getHandle()
 										}, 0);
 	}
 	
@@ -460,6 +538,16 @@ public class Model {
 	public VBO getTexcoords() {
 		return texcoords;
 	}	
+	
+	/*
+	public VBO getTangents() {
+		return tangents;
+	}
+	
+	public VBO getBitangents() {
+		return bitangents;
+	}
+	//*/
 
 	public int getFaceMode() {
 		return faceMode;
@@ -479,10 +567,4 @@ public class Model {
 	public int getPointsPerFace() {
 		return pointsPerFace;
 	}
-
-	
-	public void addFace(Face face) {
-		addFace("default", face);
-	}
-	
 }

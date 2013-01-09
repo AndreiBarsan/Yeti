@@ -9,6 +9,9 @@ uniform float lightTheta;
 uniform float lightPhi;
 uniform float lightExponent;
 
+// testing?
+uniform mat3 normalMatrix;
+
 uniform int shininess;
 uniform vec4 matAmbient;
 uniform vec4 matDiffuse;
@@ -35,9 +38,13 @@ smooth in vec3 	vVaryingNormal;
 smooth in vec3 	vVaryingLightDir;
 smooth in vec2 	vVaryingTexCoords;
 smooth in float fogFactor;
+
+smooth in vec4 	vertPos_wc;
 smooth in vec4 	vertPos_ec;
 smooth in vec4 	lightPos_ec;
 smooth in vec3 	spotDirection_ec;
+
+smooth in mat3 	mNTB;
 
 out vec4 vFragColor;
 
@@ -95,9 +102,12 @@ void main() {
 	vec3 nNormal = normalize(vVaryingNormal);
 	vec3 nLightDir = normalize(vVaryingLightDir);
 	
-	// TODO: employ IFDEFS and perform shader generation instead
+	// TODO: employ #ifdefs and perform shader generation instead
+	vec3 mapNormal;
 	if(useBump) {
-		// make nNormal (I think) be affected by the normal map
+		vec3 vBump = 2.0f * texture2D(normalMap, vVaryingTexCoords).rgb - 1.0f;
+		vBump = normalize(mNTB * vBump);
+		nNormal = vBump;
 	}
 
 	float intensity = computeIntensity(nNormal, nLightDir);	
@@ -121,4 +131,8 @@ void main() {
 	if(fogEnabled) {
 		vFragColor = mix(vFragColor, fogColor, fogFactor);
 	}
+	
+	//vFragColor -= vFragColor;
+	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
+	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
 }

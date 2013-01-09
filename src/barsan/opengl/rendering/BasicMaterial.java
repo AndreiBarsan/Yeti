@@ -9,6 +9,7 @@ import com.jogamp.opengl.util.texture.Texture;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
+import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ResourceLoader;
@@ -45,7 +46,7 @@ public class BasicMaterial extends Material {
 		/* pp */ void dispose();
 	}
 	
-	class BumpComponent implements MaterialComponent {
+	public static class BumpComponent implements MaterialComponent {
 		
 		Texture normalMap;
 		
@@ -55,7 +56,7 @@ public class BasicMaterial extends Material {
 		
 		@Override
 		public void setup(Material m, RendererState rs) {
-			m.shader.setU1i("useNormal", true);
+			m.shader.setU1i("useBump", true);
 		}
 		
 		@Override
@@ -141,12 +142,16 @@ public class BasicMaterial extends Material {
 		// The following line does not equal projection * viewModel
 		Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
 		
+		// TODO: maybe remove me
+		Matrix3 MV3 = new Matrix3(viewModel);
+		
 		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
 		// set a shader... :|
 		enableShader(rendererState);
 		
 		shader.setUMatrix4("mvpMatrix", MVP);
 		shader.setUMatrix4("mvMatrix", viewModel);
+		shader.setUMatrix3("mvMatrix3", MV3);
 		shader.setUMatrix4("vMatrix", view);
 		shader.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 		
@@ -182,8 +187,12 @@ public class BasicMaterial extends Material {
 		shader.setUVector4f("matDiffuse", diffuse.getData());
 		shader.setUVector4f("matSpecular", specular.getData());
 		
+		int textureIndex = 0;
+		
 		// Texture
 		if(texture != null) {
+			rendererState.gl.glActiveTexture(GLHelp.textureSlot[0]);
+			textureIndex++;
 			shader.setU1i("useTexture", 1);
 			shader.setU1i("colorMap", 0);
 			texture.bind(rendererState.getGl());
@@ -191,7 +200,7 @@ public class BasicMaterial extends Material {
 			shader.setU1i("useTexture", 0);
 		}
 		
-		int textureIndex = 0;
+		shader.setU1i("useBump", 0);
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);

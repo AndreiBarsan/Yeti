@@ -61,6 +61,17 @@ public class ModelInstance implements Renderable {
 		if (!material.ignoresLights()) {
 			model.getNormals().use(nindex);
 		}
+		
+		/*
+		if(model.getTangents() != null) {
+			int tangentsIndex = material.getTangentIndex();
+			model.getTangents().use(tangentsIndex);
+		}
+		if(model.getBitangents() != null) {
+			int bitangentsIndex = material.getBitangentIndex();
+			model.getBitangents().use(bitangentsIndex);
+		}
+		//*/
 
 		material.bindTextureCoodrinates(model);
 		material.render(rendererState, model);
