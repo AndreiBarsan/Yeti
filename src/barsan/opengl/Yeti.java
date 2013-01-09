@@ -50,6 +50,7 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
+ * TODO: finish transform objects (!) and integrate them
  * TODO: actually find and write down the matrix multiplication BUG !!!
  * TODO: light lists for point lights
  * TODO: optional utility to draw:
@@ -57,12 +58,11 @@ import com.jogamp.opengl.util.Animator;
  * 			- pie chart render data
  * 			- axes
  * 			- MOST IMPORTANTLY: tiny circles/spheres to show light positions as
- * 				well as spotlight dirs
+ * 				well as spotlight dirs; NORMALS!
  * TODO: implement directional lights
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
- * TODO: implement spotlights
  * TODO: multiple-component materials
  * TODO: editable camera viewing angle (derp ---> quake pro)
  * TODO: editor GUI						~
