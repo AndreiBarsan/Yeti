@@ -35,6 +35,10 @@ public class Vector3 {
 		this.z = z;
 		return this;
 	}
+	
+	public Vector3 copy() {
+		return new Vector3(this);
+	}
 
 	public Vector3 add(Vector3 other) {
 		x += other.x;
