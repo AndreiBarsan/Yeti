@@ -14,6 +14,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.FBObject;
 import com.jogamp.opengl.FBObject.Attachment;
@@ -167,6 +168,7 @@ public class Renderer {
 		
 		// This is where the magic happens!
 		// The texture we rendered on is passed as an input to the second stage!
+		gl.glActiveTexture(GLHelp.textureSlot[0]);
 		gl.glBindTexture(texType, name[0]);
 		
 		gl.glDrawArrays(GL2.GL_QUADS, 0, quad.getVertices().getSize());

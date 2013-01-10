@@ -14,6 +14,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.BumpComponent;
+import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
@@ -31,6 +32,8 @@ public class LightTest extends Scene {
 	SpotLight sl;
 	BumpComponent bc;
 	
+	float lightX = -35.0f;
+	float lightZ = 0.0f;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -52,10 +55,15 @@ public class LightTest extends Scene {
 		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
 		
+		//camera.setFrustumFar(150.0f);
+		fog = new Fog(Color.TRANSPARENTBLACK);
+		fog.fadeCamera(camera);
+		//fogEnabled = true;
+		
 		final BasicMaterial floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
-		floorMat.addComponent(bc);
+		//floorMat.addComponent(bc);
 		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
 		
 		modelInstances.add(new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("test"), getCamera()));
@@ -63,8 +71,6 @@ public class LightTest extends Scene {
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 		
 		float step = 10.0f;
-		float lightX = -35.0f;
-		float lightZ = 0.0f;
 		for(int i = -5; i < 5; i++) {
 			for(int j = -5; j < 5; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 2.0f, j * step);
@@ -102,12 +108,11 @@ public class LightTest extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		a += getDelta() / 2;
-		//testLight.getPosition().z = -10 - (float)Math.sin(a * 2) * 20.0f;
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
 		sl.getDirection().x =  (float)Math.sin(a) * 10.0f;
 		sl.getDirection().z = -(float)Math.cos(a) * 10.0f;
-		
+		testLight.getPosition().z = lightZ + (float)Math.cos(a * 4) * 20.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f);
 		super.display(drawable);
 		

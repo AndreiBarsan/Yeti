@@ -50,7 +50,7 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
- * TODO: finish transform objects (!) and integrate them
+ * TODO: perpixel fog & fix fog computation
  * TODO: actually find and write down the matrix multiplication BUG !!!
  * TODO: light lists for point lights
  * TODO: optional utility to draw:

@@ -91,7 +91,8 @@ public class DemoScene extends Scene {
 		
 		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		
-		fog = new Fog(camera.getFrustumFar() - 8.0f, camera.getFrustumFar(), new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		fog = new Fog(new Color(0.0f, 0.0f, 0.0f, 0.0f));
+		fog.fadeCamera(camera);
 		fogEnabled = true;
 		Yeti.get().gl.glClearColor(0.1f, 0.33f, 0.2f, 1.0f);
 		
