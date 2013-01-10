@@ -83,7 +83,7 @@ public class Yeti implements GLEventListener {
 	public Settings settings;
 	// Logging flags
 	public boolean warnings = true;
-	public boolean debug = true;
+	public boolean debug = false;
 	
 	// TODO: scene manager with a stack / graph of scenes
 	private Scene currentScene;
@@ -335,7 +335,9 @@ public class Yeti implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 
 		// Get the new context
-		drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+		if(debug) {
+			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+		}
 		gl = drawable.getGL().getGL2();
 		
 		if(engineInitialized) {

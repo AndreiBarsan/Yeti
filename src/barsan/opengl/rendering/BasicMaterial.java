@@ -138,18 +138,18 @@ public class BasicMaterial extends Material {
 		}
 	}
 
+	static Matrix4 view = new Matrix4(), projection = new Matrix4(), viewModel = new Matrix4();
+	static Matrix4 MVP = new Matrix4();
+	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
-		Matrix4 view = rendererState.getCamera().getView();
-		Matrix4 projection = rendererState.getCamera().getProjection();
-		Matrix4 viewModel = new Matrix4(view).mul(modelMatrix);
+		view.set(rendererState.getCamera().getView());
+		projection.set(rendererState.getCamera().getProjection());
+		viewModel.set(view).mul(modelMatrix);
 		
 		// WARNING: A * B * C != A * (B * C) with matrices
 		// The following line does not equal projection * viewModel
-		Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
-		
-		// TODO: maybe remove me
-		Matrix3 MV3 = new Matrix3(viewModel);
+		MVP.set(projection).mul(view).mul(modelMatrix);
 		
 		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
 		// set a shader... :|
@@ -157,7 +157,6 @@ public class BasicMaterial extends Material {
 		
 		shader.setUMatrix4("mvpMatrix", MVP);
 		shader.setUMatrix4("mvMatrix", viewModel);
-		shader.setUMatrix3("mvMatrix3", MV3);
 		shader.setUMatrix4("vMatrix", view);
 		shader.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 		
@@ -175,7 +174,7 @@ public class BasicMaterial extends Material {
 		shader.setU1f("quadraticAt", light.getQuadraticAttenuation());
 		shader.setU1f("cubicAt", light.getCubicAttenuation());
 		
-		// This isn't very clean - TODO: think of something nicer
+		// This isn't very clean - TODO: delegate this to special components
 		if(light instanceof SpotLight) {
 			SpotLight sl = (SpotLight)light;
 			shader.setU1f("lightTheta", sl.getTheta());
@@ -186,7 +185,7 @@ public class BasicMaterial extends Material {
 			shader.setU1f("lightTheta", 0.0f);
 			shader.setU1f("lightPhi", 0.0f);
 			shader.setU1f("lightExponent", 1.0f);
-			shader.setUVector3f("lightDirection", Vector3.ZERO);
+			shader.setUVector3f("spotDirection", Vector3.ZERO);
 		}
 		
 		shader.setUVector4f("matAmbient", ambient.getData());

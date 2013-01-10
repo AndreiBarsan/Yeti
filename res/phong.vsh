@@ -2,7 +2,6 @@
 
 uniform mat4 mvpMatrix;
 uniform mat4 mvMatrix;
-uniform mat3 mvMatrix3;	// TODO: remove me if needed
 uniform mat4 vMatrix;
 
 

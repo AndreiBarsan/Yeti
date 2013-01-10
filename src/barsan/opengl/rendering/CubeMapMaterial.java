@@ -24,7 +24,7 @@ public class CubeMapMaterial extends Material {
 		
 		rendererState.getGl().glUseProgram(shader.getHandle());
 		shader.setUMatrix4("mvpMatrix", mvp);
-		shader.setU1f("samplerCube", 0);
+		shader.setU1f("cubeMap", 0);
 		
 		// It contains the texture wrapped by the CubeTexture
 		texture.bind(rendererState.getGl());
