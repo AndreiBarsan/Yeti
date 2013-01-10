@@ -1,6 +1,7 @@
 package barsan.opengl.rendering;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL;
@@ -91,7 +92,8 @@ public class BasicMaterial extends Material {
 	
 	private ShadingModel mode = ShadingModel.Phong;
 	
-	private List<MaterialComponent> components = new ArrayList<>();
+	// TODO: move up!
+	private List<MaterialComponent> components = Collections.synchronizedList(new ArrayList<MaterialComponent>());
 	
 	public BasicMaterial(Color diffuse) {
 		this(Color.WHITE, diffuse, Color.WHITE);
@@ -113,6 +115,10 @@ public class BasicMaterial extends Material {
 		if(!components.remove(component)) {
 				Yeti.screwed("Tried to remove non-existing material component!");
 		}
+	}
+	
+	public boolean containsComponent(MaterialComponent component) {
+		return components.contains(component);
 	}
 	
 	public void setMode(ShadingModel mode) {

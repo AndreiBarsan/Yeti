@@ -2,29 +2,25 @@ package barsan.opengl.math;
 
 /**
  * Contains easy to control transform handles for scale, translation and rotation.
- * NB: Recomputes the resulting matrix on demand! This is to prevent unneeded 
- * calculations whenever setting multiple types of attributes at once.
+ * Allows easier management of combined transformations (rotate, scale, translate)
+ * helping avoid the required (verbose) matrix multiplications.
  * 
  * @author Andrei Bârsan
  *
  */
 public class Transform {
-	private Matrix4 data;
+	private Matrix4 transformMatrix;
 	
 	private Vector3 scale;
 	private Vector3 translate;
-	
-	// TODO: QUATERNIONS QUATERNIONS QUATERNIONS
-	private Vector3 rotateAxis;
-	private float rotateAngle;
+	private Quaternion rotation;
 	
 	public Transform() {
 		scale = new Vector3(1.0f, 1.0f, 1.0f);
 		translate = new Vector3(0.0f, 0.0f, 0.0f);
-		rotateAxis = new Vector3(0.0f, 0.0f, 0.0f);
-		rotateAngle = 0.0f;
+		rotation = new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), 0.0f);
 		
-		throw new Error("NYI");
+		transformMatrix = new Matrix4();
 	}
 	
 	public Vector3 getScale() {
@@ -35,86 +31,223 @@ public class Transform {
 		return translate;
 	}
 
-	public Vector3 getRotateAxis() {
-		return rotateAxis;
-	}
-
-	public float getRotateAngle() {
-		return rotateAngle;
+	public Quaternion getRotation() {
+		return rotation;
 	}
 	
-	public void setScale(Vector3 scale) {
+	/**
+	 * Sets the scale component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setScale(float scale) {
+		this.scale.set(scale, scale, scale);
+		return this;
+	}
+	
+	/**
+	 * Sets the scale component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setScale(float sx, float sy, float sz) {
+		this.scale.set(sx, sy, sz);
+		return this;
+	}
+	
+	/**
+	 * Sets the scale component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setScale(Vector3 scale) {
 		this.scale.set(scale);
+		return this;
 	}
 	
-	public void setTranslate(Vector3 translate) {
+	/**
+	 * Sets the translate component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setTranslate(float tx, float ty, float tz) {
+		this.translate.set(tx, ty, tz);
+		return this;
+	}
+	
+	/**
+	 * Sets the translate component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setTranslate(Vector3 translate) {
 		this.translate.set(translate);
+		return this;
 	}
 	
-	public void setRotateAxis(Vector3 axis) {
-		this.rotateAxis.set(axis);
+	/**
+	 * Sets the translate component and the scale (uniformly, with the value 
+	 * scale on all 3 dimensions). Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setTranslateScale(float tx, float ty, float tz, float scale) {
+		this.translate.set(tx, ty, tz);
+		this.scale.set(scale, scale, scale);
+		return this;
 	}
 	
-	public void setRotateAngle(float angle) {
-		this.rotateAngle = angle;
+	/**
+	 * Sets the translate and the scale components. Does NOT refresh the internal 
+	 * matrix. Follow with a call to refresh() to apply.
+	 */
+	public Transform setTranslateScale(float tx, float ty, float tz, 
+			float sx, float sy, float sz) {
+		this.translate.set(tx, ty, tz);
+		this.scale.set(sx, sy, sz);
+		return this;
+	}
+	
+	/**
+	 * Sets the rotation component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setRotation(Quaternion rotation) {
+		this.rotation.set(rotation);
+		return this;
+	}
+	
+	/**
+	 * Sets the rotation component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setRotation(Vector3 axis, float angle) {
+		this.rotation.set(axis, angle);
+		return this;
+	}
+	
+	/**
+	 * Sets the rotation component. Does NOT refresh the internal matrix.
+	 * Follow with a call to refresh() to apply.
+	 */
+	public Transform setRotation(float ax, float ay, float az, float angle) {
+		this.rotation.set(av.set(ax, ay, az), angle);
+		return this;
+	}
+	private static Vector3 av = new Vector3();
+		
+	/**
+	 * Overwrites this transform with a new matrix.
+	 * @param matrix
+	 */
+	public Transform setMatrix(Matrix4 matrix) {
+		this.transformMatrix.set(matrix);
+		return this;
+	}
+	
+	/**
+	 * Sets the scale component and recomputes the matrix.
+	 */
+	public Transform updateScale(float scale) {
+		this.scale.set(scale, scale, scale);
+		computeMatrix();
+		return this;
+	}
+	
+	/**
+	 * Sets the scale component and recomputes the matrix.
+	 */
+	public Transform updateScale(float sx, float sy, float sz) {
+		this.scale.set(sx, sy, sz);
+		computeMatrix();
+		return this;
 	}
 	
 	/**
 	 * Updates the scale and recomputes the matrix.
 	 * @param scale
 	 */
-	public void updateScale(Vector3 scale) {
+	public Transform updateScale(Vector3 scale) {
 		setScale(scale); 
 		computeMatrix();
+		return this;
+	}
+	
+	/**
+	 * Updates the translation component and recomputes the matrix.
+	 */
+	public Transform updateTranslate(float tx, float ty, float tz) {
+		setTranslate(tx, ty, tz);
+		computeMatrix();
+		return this;
 	}
 	
 	/**
 	 * Updates the translate component and recomputes the matrix.
-	 * @param translate
 	 */
-	public void updateTranslate(Vector3 translate) {
+	public Transform updateTranslate(Vector3 translate) {
 		setTranslate(translate);
 		computeMatrix();
+		return this;
 	}
 	
 	/**
-	 * Updates the rotation axis and recomputes the matrix.
-	 * @param axis
+	 * Sets the translate component and the scale (uniformly, with the value 
+	 * scale on all 3 dimensions) and recomputes the matrix.
 	 */
-	public void updateRotateAxis(Vector3 axis) {
-		setRotateAxis(axis);
+	public Transform updateTranslateScale(float tx, float ty, float tz, float scale) {
+		setTranslate(tx, ty, tz);
+		setScale(scale, scale, scale);
 		computeMatrix();
+		return this;
 	}
 	
-	public void updateRotate(Vector3 axis, float angle) {
-		setRotateAxis(axis); 
-		setRotateAngle(angle);
+	/**
+	 * Sets the translate and the scale components and recomputes the matrix.
+	 */
+	public Transform updateTranslateScale(float tx, float ty, float tz, 
+			float sx, float sy, float sz) {
+		setTranslate(tx, ty, tz);
+		setScale(sx, sy, sz);
 		computeMatrix();
+		return this;
+	}
+
+	
+	/**
+	 * Updates the rotation component and recomputes the matrix.
+	 */
+	public Transform updateRotation(Quaternion rotation) {
+		setRotation(rotation);
+		computeMatrix();
+		return this;
 	}
 	
-	private static Matrix4 	hackR = new Matrix4(), 
-							hackS = new Matrix4(),
-							hackT = new Matrix4(); 
+	
+	private static Matrix4 	auxS = new Matrix4(),
+							auxT = new Matrix4(),
+							auxR = new Matrix4();
 	
 	private void computeMatrix() {
-		float ca = (float) Math.cos(rotateAngle);
-		float sa = (float) Math.sin(rotateAngle);
+		auxS.setScale(scale.x, scale.y, scale.z);
+		auxT.setTranslate(translate.x, translate.y, translate.z);
 		
-		// TODO: use pre-multiplied formulas
-		hackR.setRotate(rotateAngle, rotateAxis.x, rotateAxis.y, rotateAxis.z);
-		hackS.setScale(scale.x, scale.y, scale.z);
-		hackT.setTranslate(translate.x, translate.y, translate.z);
-		
-		data.set(hackR).mul(hackS).mul(hackT);
+		transformMatrix.set(auxT).mul(auxS).mul(auxR.set(rotation));
 	}
 	
 	/**
 	 * Shorthand public alias of computeMatrix().
 	 * Explicitly refreshes the internal matrix;
 	 */
-	public void f5() {
+	public void refresh() {
 		computeMatrix();
 	}
 	
+	/**
+	 * Outputs the internal matrix representation for use in GL computations.
+	 */
+	public Matrix4 get() {
+		return transformMatrix;
+	}
 	
+	/**
+	 * Outputs the internal matrix data for use in GL computations.
+	 */
+	public float[] getData() {
+		return transformMatrix.data;
+	}
 }

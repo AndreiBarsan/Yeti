@@ -296,6 +296,10 @@ public class Matrix4 {
 		return this;
 	}
 	
+	public Matrix4 setRotate(Quaternion q) {
+		return set(q);
+	}
+	
 	// Angle + axis rotation
 	public Matrix4 setRotate(float angle, float x, float y, float z) {
 		setIdentity();

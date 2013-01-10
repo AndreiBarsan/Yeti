@@ -12,7 +12,7 @@ public class SkyBox extends ModelInstance {
 	private Camera camera;
 
 	public SkyBox(GL2 gl, CubeTexture cubeTexture, Camera toFollow) {
-		super(new Cube(gl, 20.0f, true), new CubeMapMaterial(), new Matrix4());
+		super(new Cube(gl, 20.0f, true), new CubeMapMaterial());
 
 		Texture t = cubeTexture.getTexture();
 		CubeMapMaterial cmm = (CubeMapMaterial) getMaterial();
@@ -29,12 +29,12 @@ public class SkyBox extends ModelInstance {
 
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack mstack) {
-		getTransform().set(camera.getView());
+		getTransform().setMatrix(camera.getView());
 		
 		// Invert the camera transform
 		// Then clear the rotation, so it stands still around the player. Otherwise,
 		// the camera rotation and the skybox rotation cancel each other out!
-		getTransform().inv().clearRotation();
+		getTransform().get().inv().clearRotation();
 		
 		super.render(rendererState, mstack);
 	}

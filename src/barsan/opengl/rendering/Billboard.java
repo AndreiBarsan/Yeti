@@ -6,6 +6,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.resources.ResourceLoader;
@@ -72,12 +73,13 @@ public class Billboard extends ModelInstance {
 	
 	// TODO: warning! don't forget to make sure this works with nesting as well!
 	// The user should be able to have (actual) models as kids of billboards
-	// and vice-versa.
+	// and vice-versa. Wait, do poly kids of 2d billboards make sense? Kind of,
+	// their parent transform would be flattened - so they would look right.
 	public Billboard(GL2 gl, Texture texture) {
-		this(gl, texture, new Matrix4());
+		this(gl, texture, new Transform());
 	}
 	
-	public Billboard(GL2 gl, Texture texture, Matrix4 transform) {
+	public Billboard(GL2 gl, Texture texture, Transform transform) {
 		super(new Model(gl, "billboard_tex{" + texture + "}"), new BillboardMaterial(AxisClamp.None), transform);
 		
 		getMaterial().setTexture(texture);

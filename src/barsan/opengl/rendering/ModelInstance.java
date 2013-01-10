@@ -9,31 +9,31 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.math.Transform;
 
 public class ModelInstance implements Renderable {
 
 	protected Model model;
 	private Material material;
-	private Matrix4 localTransform;
+	private Transform localTransform;
 
 	protected ModelInstance parent = null;
 	protected ArrayList<ModelInstance> children;
 
-	//*
 	public ModelInstance(Model model) {
-		this(model, new BasicMaterial(), new Matrix4());
+		this(model, new BasicMaterial(), new Transform());
+	}
+	
+	public ModelInstance(Model model, Material material) {
+		this(model, material, new Transform());
 	}
 	
 	/*
 	public ModelInstance(Model model, Matrix4 transform) {
 		this(model, null, transform);
 	}
-	
-	public ModelInstance(Model model, Shader shader) {
-		this(model, shader, new Matrix4());
-	}*/
-
-	public ModelInstance(Model model, Material material, Matrix4 localTransform) {
+	*/
+	public ModelInstance(Model model, Material material, Transform localTransform) {
 		this.model = model;
 		this.material = material;
 		this.localTransform = localTransform;
@@ -45,7 +45,7 @@ public class ModelInstance implements Renderable {
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
 		GL2 gl = rendererState.getGl();
 
-		transformStack.push(localTransform);
+		transformStack.push(localTransform.get());
 
 		if (material != null) {
 			material.setup(rendererState, transformStack.result());
@@ -96,11 +96,15 @@ public class ModelInstance implements Renderable {
 		this.material = material;
 	}
 
-	public Matrix4 getTransform() {
+	public Transform getTransform() {
 		return localTransform;
 	}
+	
+	public void setTransform(Matrix4 matrix) {
+		this.localTransform.setMatrix(matrix);
+	}
 
-	public void setTransform(Matrix4 transform) {
+	public void setTransform(Transform transform) {
 		this.localTransform = transform;
 	}
 

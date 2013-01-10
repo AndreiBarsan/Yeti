@@ -217,8 +217,8 @@ public class Renderer {
 			@Override
 			public int compare(Billboard o1, Billboard o2) {
 				Vector3 cpos = scene.getCamera().getPosition();
-				Float d1 = o1.getTransform().getPosition().dist(cpos);
-				Float d2 = o2.getTransform().getPosition().dist(cpos);
+				Float d1 = o1.getTransform().getTranslate().dist(cpos);
+				Float d2 = o2.getTransform().getTranslate().dist(cpos);
 				return d2.compareTo(d1);
 			}
 		});

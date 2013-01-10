@@ -38,10 +38,8 @@ public class ProceduralScene extends Scene {
 		
 		GL2 gl = Yeti.get().gl;
 		
-		modelInstances.add(cylinder = new ModelInstance(
-				new Cylinder(gl, precision, diameter, height),
-				new BasicMaterial(),
-				new Matrix4()));
+		cylinder = new ModelInstance(new Cylinder(gl, precision, diameter, height));
+		modelInstances.add(cylinder);
 		
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));

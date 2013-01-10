@@ -73,9 +73,8 @@ public class DemoScene extends Scene {
 			modelInstances.add(new ModelInstance(
 					groundMesh,
 					new MultiTextureMaterial(ResourceLoader.texture("stone"),
-							ResourceLoader.texture("grass"), -10, 25),
-					//new ToonMaterial(ResourceLoader.texture("grass")),
-					new Matrix4()
+							ResourceLoader.texture("grass"), -10, 25)
+					//new ToonMaterial(ResourceLoader.texture("grass"))
 					));
 			
 		} catch (IOException e) {

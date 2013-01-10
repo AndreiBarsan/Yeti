@@ -7,6 +7,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.AmbientLight;
 import barsan.opengl.rendering.BasicMaterial;
@@ -43,22 +44,20 @@ public class ModelGraphScene extends Scene {
 		
 		s1 = new ModelInstance(
 				new Cube(gl, 1.0f),
-				red,
-				new Matrix4()
+				red
 				);
 		modelInstances.add(s1);
 		
 		s2 =  new ModelInstance(
 				ResourceLoader.model("bunny"),
-				blue,
-				new Matrix4()
+				blue
 				);
 		s1.addChild(s2);
 		
 		s3 = new ModelInstance(
 				new Cube(gl, 2.0f),
 			yellow,
-			new Matrix4().setTranslate(0.0f, 3.0f, 0.0f)
+			new Transform().updateTranslate(0.0f, 3.0f, 0.0f)
 		);
 		modelInstances.add(s3);
 		
