@@ -9,7 +9,6 @@ public class CubeMapMaterial extends Material {
 	
 	public CubeMapMaterial() {
 		super(ResourceLoader.shader(SHADER_NAME));
-		
 		ignoreLights = true;
 	}
 
@@ -24,7 +23,7 @@ public class CubeMapMaterial extends Material {
 		
 		rendererState.getGl().glUseProgram(shader.getHandle());
 		shader.setUMatrix4("mvpMatrix", mvp);
-		shader.setU1f("cubeMap", 0);
+		shader.setU1i("cubeMap", 0);
 		
 		// It contains the texture wrapped by the CubeTexture
 		texture.bind(rendererState.getGl());
@@ -32,8 +31,7 @@ public class CubeMapMaterial extends Material {
 	
 	@Override
 	public void bindTextureCoodrinates(Model model) {
-		// nop?
-		// FIXME: use dynbinding to solve all material peculiarites !!!
+		// nop!
 	}
 	
 	@Override

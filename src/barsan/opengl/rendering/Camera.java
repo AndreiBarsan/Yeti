@@ -183,10 +183,10 @@ public class Camera {
 		if(pitchAccum >  la) pitchAccum =  la;
 		if(pitchAccum < -la) pitchAccum = -la;
 		
-		Quaternion cur = new Quaternion().setEuler(yawAccum, pitchAccum, 0.0f);
+		currentRotation.setEuler(yawAccum, pitchAccum, 0.0f);
 		
 		direction.set(0.0f, 0.0f, 1.0f);
-		cur.transform(direction);
+		currentRotation.transform(direction);
 
 		//currentRotation.mul(yq);
 	}

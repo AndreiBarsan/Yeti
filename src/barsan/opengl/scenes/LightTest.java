@@ -21,6 +21,7 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.BumpComponent;
 import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.Material;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
@@ -60,7 +61,7 @@ public class LightTest extends Scene {
 		}
 		
 		Model quad = Model.buildPlane(200.0f, 200.0f, 50, 50);
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		Material monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
 		
 		//camera.setFrustumFar(150.0f);
@@ -120,8 +121,12 @@ public class LightTest extends Scene {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				dist -= e.getWheelRotation();
 				if(dist < 1.0f) dist = 1.0f;
-				linearAtt = 1.0f / dist;
-				System.out.println(linearAtt);
+				if(dist > 100.0f) {
+					dist = 100.0f;
+					linearAtt = 0.0f;	// No more attenuation
+				} else {
+					linearAtt = 1.0f / dist;
+				}
 			}
 		});
 	}

@@ -141,9 +141,6 @@ public class BasicMaterial extends Material {
 		}
 	}
 
-	static Matrix4 view = new Matrix4(), projection = new Matrix4(), viewModel = new Matrix4();
-	static Matrix4 MVP = new Matrix4();
-	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		view.set(rendererState.getCamera().getView());

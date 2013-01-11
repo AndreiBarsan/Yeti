@@ -17,6 +17,10 @@ import com.jogamp.opengl.util.texture.Texture;
  */
 public abstract class Material {
 	
+	protected static Matrix4 view = new Matrix4();
+	protected static Matrix4 projection = new Matrix4();
+	protected static Matrix4 viewModel = new Matrix4();
+	protected static Matrix4 MVP = new Matrix4();
 	private int positionIndex, normalIndex, texcoordIndex, tangentIndex, bitangentIndex;
 	protected Shader shader;
 	protected Color ambient, diffuse, specular;

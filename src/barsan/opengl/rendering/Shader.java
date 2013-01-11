@@ -88,7 +88,7 @@ public class Shader {
 		
 		gl.glGetShaderiv(vertex, GL2.GL_COMPILE_STATUS, result, 0);
 		if(result[0] == GL2.GL_FALSE) {
-			shaderError("Vertex shader failed to compile: ", vertex);
+			shaderError("Vertex shader [" + name + "] failed to compile: ", vertex);
 		}
 		
 		// The null int[] is required -> otherwise the source code somehow
@@ -98,7 +98,7 @@ public class Shader {
 		
 		gl.glGetShaderiv(fragment, GL2.GL_COMPILE_STATUS, result, 0);
 		if(result[0] == GL2.GL_FALSE) {
-			shaderError("Fragment shader failed to compile: ", fragment);
+			shaderError("Fragment shader [" + name + "] failed to compile: ", fragment);
 		}
 		
 		int shaderProgram = gl.glCreateProgram();
@@ -139,8 +139,8 @@ public class Shader {
 	
 	private void shaderError(String message, int handle) {
 		GL2 gl = Yeti.get().gl; 
-		gl.glGetShaderInfoLog(handle, 128, i_buff, b_buff);
-		Yeti.screwed(message + "\n\t" + new String(b_buff.array(), 0, 128));
+		gl.glGetShaderInfoLog(handle, 512, i_buff, b_buff);
+		Yeti.screwed(message + "\n\t" + new String(b_buff.array(), 0, 512));
 	}
 	
 	private void shaderLinkError(String message, int handle) {

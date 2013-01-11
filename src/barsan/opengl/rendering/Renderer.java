@@ -147,7 +147,7 @@ public class Renderer {
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		renderDebug(gl, scene);		
+		//renderDebug(gl, scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		// Clear the main (screen) FrameBuffer

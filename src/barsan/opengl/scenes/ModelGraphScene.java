@@ -12,6 +12,7 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.AmbientLight;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.Cube;
+import barsan.opengl.rendering.Material;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
 import barsan.opengl.rendering.Scene;
@@ -30,9 +31,9 @@ public class ModelGraphScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		BasicMaterial red = new BasicMaterial(new Color(0.9f, 0.2f, 0.4f, 1.0f));
-		BasicMaterial blue = new BasicMaterial(new Color(0.4f, 0.3f, 0.9f, 1.0f));
-		BasicMaterial yellow = new BasicMaterial(new Color(0.8f, 0.9f, 0.2f, 1.0f));
+		Material red = new BasicMaterial(new Color(0.9f, 0.2f, 0.4f, 1.0f));
+		Material blue = new BasicMaterial(new Color(0.4f, 0.3f, 0.9f, 1.0f));
+		Material yellow = new BasicMaterial(new Color(0.8f, 0.9f, 0.2f, 1.0f));
 		
 		GL2 gl = Yeti.get().gl;
 		

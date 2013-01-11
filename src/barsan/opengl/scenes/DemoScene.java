@@ -9,10 +9,13 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.ShadingModel;
+import barsan.opengl.rendering.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.Material;
 import barsan.opengl.rendering.MultiTextureMaterial;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
@@ -29,8 +32,8 @@ public class DemoScene extends Scene {
 	
 	private ModelInstance a10k;
 	float a = 0.0f;
-	BasicMaterial ironbox;
-	BasicMaterial redShit, blueShit;
+	Material ironbox;
+	Material redShit, blueShit;
 	boolean smoothRendering = true;
 	
 	SkyBox sb;
@@ -42,7 +45,7 @@ public class DemoScene extends Scene {
 		try {
 			ResourceLoader.loadObj("asteroid10k", "res/models/asteroid10k.obj");
 			ResourceLoader.loadObj("asteroid1k", "res/models/asteroid1k.obj");
-			ResourceLoader.loadObj("sphere", "res/models/sphere.obj");
+			ResourceLoader.loadObj("sphere", "res/models/prettysphere.obj");
 			ResourceLoader.loadObj("bunny", "res/models/bunny.obj");
 			ResourceLoader.loadObj("texcube", "res/models/texcube.obj");
 			
@@ -53,34 +56,39 @@ public class DemoScene extends Scene {
 			
 			ResourceLoader.loadCubeTexture("skybox01", "jpg");
 			
-			blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
-			redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
-			
-			// FIXME: this isn't right; the skybox should be drawn last in
-			// order for as few fragments as possible to be processed, not first
-			// so that we overwrite most of it!
-			SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("skybox01"), camera);
-			modelInstances.add(sb);
-			
-			blueShit.setShininess(16);
-			
-			Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl,
-					ResourceLoader.texture("heightmap01"),
-					ResourceLoader.textureData("heightmap01"),
-					4.0f, 4.0f,
-					-15.0f, 120.0f);
-			
-			modelInstances.add(new ModelInstance(
-					groundMesh,
-					new MultiTextureMaterial(ResourceLoader.texture("stone"),
-							ResourceLoader.texture("grass"), -10, 25)
-					//new ToonMaterial(ResourceLoader.texture("grass"))
-					));
-			
 		} catch (IOException e) {
 			System.out.println("Could not load the resources.");
 			e.printStackTrace();
 		}
+		
+		blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
+		redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
+		
+		// FIXME: this isn't right; the skybox should be drawn last in
+		// order for as few fragments as possible to be processed, not first
+		// so that we overwrite most of it!
+		SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("skybox01"), camera);
+		modelInstances.add(sb);
+		
+		blueShit.setShininess(16);
+		
+		Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl,
+				ResourceLoader.texture("heightmap01"),
+				ResourceLoader.textureData("heightmap01"),
+				4.0f, 4.0f,
+				-15.0f, 120.0f);
+		
+		modelInstances.add(new ModelInstance(
+				groundMesh,
+				new MultiTextureMaterial(ResourceLoader.texture("stone"),
+						ResourceLoader.texture("grass"), -10, 25)
+				//new ToonMaterial(ResourceLoader.texture("grass"))
+				));
+		
+		
+		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
+				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01")),
+				new Transform().updateTranslate(0.0f, 50.0f, -20.0f).updateScale(1.0f)));
 		
 		camera.setPosition(new Vector3(0.0f, 45.00f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
@@ -126,11 +134,6 @@ public class DemoScene extends Scene {
 		//float radius = 3.2f;
 		a += 0.8 * getDelta() * 10;
 		
-		
-		/*
-		a10k.getTransform().setRotate(a, 0.0f, 0.0f, 1.0f)//.setTranslate(1.0f, -1.0f, 2.0f)
-			.mul(new Matrix4().setScale(2.0f));
-		*/
 		PointLight light = pointLights.get(0);
 		light.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		

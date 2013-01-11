@@ -87,7 +87,7 @@ public class Yeti implements GLEventListener {
 	public Settings settings;
 	// Logging flags
 	public boolean warnings = true;
-	public boolean debug = false;
+	public boolean debug = true;
 	
 	// TODO: scene manager with a stack / graph of scenes
 	private Scene currentScene;

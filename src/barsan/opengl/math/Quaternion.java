@@ -228,6 +228,11 @@ public class Quaternion {
 		return (float)Math.atan2(2*(x*y + w*z), 1 - 2 * (y * y + z * z));  
 	}
 	//*/
+	
+	public Matrix4 toMatrix4() {
+		return new Matrix4(this);
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("qu {%.2f | %.2f | %.2f | %.2f}", x, y, z, w);
