@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -65,7 +66,9 @@ public class BasicMaterial extends Material {
 			m.shader.setU1i("normalMap", slot);	
 			rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
 			normalMap.bind(rs.getGl());
+			normalMap.setTexParameterf(rs.getGl(), GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 			
+			// We only used one slot
 			return 1;
 		}
 		
@@ -201,6 +204,7 @@ public class BasicMaterial extends Material {
 			shader.setU1i("useTexture", 1);
 			shader.setU1i("colorMap", 0);
 			texture.bind(rendererState.getGl());
+			texture.setTexParameterf(rendererState.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rendererState.getAnisotropySamples());
 		} else {
 			shader.setU1i("useTexture", 0);
 		}

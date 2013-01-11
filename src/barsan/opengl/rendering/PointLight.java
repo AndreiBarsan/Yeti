@@ -94,5 +94,11 @@ public class PointLight {
 		this.cubicAttenuation = cubicAttenuation;
 	}
 
+	public void setAttenuation(float ka, float la, float qa, float ca) {
+		constantAttenuation = ka;
+		linearAttenuation = la;
+		quadraticAttenuation = qa;
+		cubicAttenuation = ca;
+	}
 	
 }

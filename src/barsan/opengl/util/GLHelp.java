@@ -9,6 +9,8 @@ import barsan.opengl.Yeti;
 
 public class GLHelp {
 	
+	private static float[] out = new float[] { -1 };
+	
 	/** Lookup table for converting between integer-defined texture slots
 	 * 	and GL flags.
 	 */
@@ -32,6 +34,11 @@ public class GLHelp {
 		if (code != GL.GL_NO_ERROR) {
 			Yeti.screwed("GL fatal error: #" + code);
 		}
+	}
+	
+	public static float get1f(GL2 gl, int name) {
+		gl.glGetFloatv(GL2.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, out, 0);
+		return out[0];
 	}
 
 	public static void fboErr(GL2 gl) {

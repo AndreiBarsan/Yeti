@@ -3,10 +3,16 @@ package barsan.opengl.scenes;
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+
+import com.jogamp.opengl.util.gl2.GLUT;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -32,8 +38,10 @@ public class LightTest extends Scene {
 	SpotLight sl;
 	BumpComponent bc;
 	
-	float lightX = -35.0f;
+	float lightX = 0.0f;
 	float lightZ = 0.0f;
+	
+	float linearAtt = 0.0f;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -102,26 +110,38 @@ public class LightTest extends Scene {
 				}
 			}
 		});
+		
+		linearAtt = 1.0f;
+		Yeti.get().addMouseWheelListener(new MouseWheelListener() {
+			
+			float dist = 1.0f;
+			
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				dist -= e.getWheelRotation();
+				if(dist < 1.0f) dist = 1.0f;
+				linearAtt = 1.0f / dist;
+				System.out.println(linearAtt);
+			}
+		});
 	}
 	
 	float a = 0.0f;
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		a += getDelta() / 2;
+		a += getDelta();
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
 		sl.getDirection().x =  (float)Math.sin(a) * 10.0f;
 		sl.getDirection().z = -(float)Math.cos(a) * 10.0f;
-		testLight.getPosition().z = lightZ + (float)Math.cos(a * 4) * 20.0f;
+		testLight.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
+		testLight.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
+		
+		//camera.setPosition(new Vector3(-10.0f, 8.0f, 0.0f));
+		//camera.setDirection(new Vector3(camera.getPosition()).sub(testLight.getPosition().copy().setY(0.0f)).normalize());
+		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f);
 		super.display(drawable);
 		
-		GL2 gl = Yeti.get().gl;
-		FPCameraAdapter ca = new FPCameraAdapter(camera);
-		ca.prepare(gl);
-		gl.glBegin(GL2.GL_TRIANGLES);
-			// helper stuff; TODO
-		gl.glEnd();
-		gl.glPopMatrix();
 	}
 }

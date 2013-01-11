@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.media.opengl.GL2;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -17,16 +18,22 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.util.GLHelp;
 
 public class App {
 
 	private JFrame frmYeti;
 	private Yeti engine;
 	
+	private JSlider anisotropicSlider;
+	private JLabel anisotropicLabel;
 	
 	/**
 	 * Launch the application.
@@ -77,13 +84,12 @@ public class App {
 		toolBar.setAlignmentX(Component.LEFT_ALIGNMENT);
 		frmYeti.getContentPane().add(toolBar);
 		
-		JButton btnOption = new JButton("Option 1");
-		toolBar.add(btnOption);
+		anisotropicSlider = new JSlider(1, 1);
+		anisotropicLabel = new JLabel("Anisotropic filtering:");
+		toolBar.add(anisotropicLabel);
+		toolBar.add(anisotropicSlider);
 		
-		JButton btnOption_1 = new JButton("Option 2");
-		toolBar.add(btnOption_1);
-		
-		JLabel lblPressEscapeTo = new JLabel("Press Escape to release the mouse");
+		JLabel lblPressEscapeTo = new JLabel(" Press Escape to release the mouse. ");
 		lblPressEscapeTo.setHorizontalAlignment(SwingConstants.RIGHT);
 		toolBar.add(lblPressEscapeTo);
 		
@@ -108,7 +114,19 @@ public class App {
 		});
 		mnFile.add(mntmQuit);
 		
-		engine.hackStartLoop(frmYeti, frmYeti.getContentPane());
-		
+		engine.hackStartLoop(this, frmYeti, frmYeti.getContentPane());		
+	}
+	
+	public void generateGLKnobs(GL2 gl) {
+		anisotropicSlider.setMaximum( (int) GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT));
+		anisotropicSlider.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider source = (JSlider)e.getSource();
+				Yeti.get().settings.anisotropySamples = source.getValue();
+				anisotropicLabel.setText("Anisotropic filtering: " + source.getValue());
+			}
+		});
+		anisotropicSlider.setValue(Yeti.get().settings.anisotropySamples);		
 	}
 }

@@ -11,9 +11,11 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -32,6 +34,7 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 
+import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsoleInput;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
@@ -40,6 +43,7 @@ import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.ModelGraphScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.scenes.TextScene;
+import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -92,6 +96,9 @@ public class Yeti implements GLEventListener {
 	
 	// I draw on this
 	private Component canvasHost;
+	
+	// Swing application Yeti is hosted in
+	private App hostApp;
 	
 	// Active OpenGL context
 	public GL2 gl;
@@ -165,7 +172,7 @@ public class Yeti implements GLEventListener {
 		}
 	}
 	
-	public void hackStartLoop(Frame frame, Container hostContainer) {
+	public void hackStartLoop(App app, Frame frame, Container hostContainer) {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				new Thread(new Runnable() {
@@ -178,9 +185,10 @@ public class Yeti implements GLEventListener {
 		});
 				
 		this.frame = frame;
+		this.hostApp = app;
 		
 		final GLJPanel glpanel = createCanvasPanel();
-		glpanel.setContextCreationFlags(GL2.GL_MULTISAMPLE);
+		//glpanel.setContextCreationFlags(GL2.GL_MULTISAMPLE);
 		glpanel.addGLEventListener(this);
 		glpanel.setSize(settings.width, settings.height);
 		animator.add(glpanel);
@@ -199,14 +207,7 @@ public class Yeti implements GLEventListener {
 		animator.setUpdateFPSFrames(10, null);
 		animator.start();
 		
-		
-		glpanel.addMouseListener(new MouseListener() {
-			
-			public void mouseReleased(MouseEvent e) { }
-			public void mousePressed(MouseEvent e) { }
-			public void mouseExited(MouseEvent e) {	}
-			public void mouseEntered(MouseEvent e) { }
-			
+		glpanel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				focusMouse();
@@ -345,6 +346,9 @@ public class Yeti implements GLEventListener {
 			return;
 		}
 
+		if(hostApp != null)
+			hostApp.generateGLKnobs(gl);
+		
 		// Run in debug mode
 		Yeti.debug("Running in debug GL mode");
 		
@@ -404,8 +408,6 @@ public class Yeti implements GLEventListener {
 	// TODO: refactor this and fix
 	private GLJPanel createCanvasPanel() {
 		GLCapabilities caps = new GLCapabilities(null);
-		caps.setSampleBuffers(false);
-		caps.setNumSamples(8);
 		GLJPanel gljp = new GLJPanel(caps);
 		return gljp;
 	}
@@ -422,7 +424,7 @@ public class Yeti implements GLEventListener {
 	
 	public void addMouseListener(MouseListener mouseListener) {
 		frame.addMouseListener(mouseListener);
-		canvasHost.addMouseListener(mouseListener);		
+		canvasHost.addMouseListener(mouseListener);
 	}
 	
 	public void removeMouseListener(MouseListener mouseListener) {
@@ -438,6 +440,16 @@ public class Yeti implements GLEventListener {
 	public void removeMouseMotionListener(MouseMotionListener mouseListener) {
 		frame.removeMouseMotionListener(mouseListener);
 		canvasHost.removeMouseMotionListener(mouseListener);		
+	}
+	
+	public void addMouseWheelListener(MouseWheelListener mouseListener) {
+		frame.addMouseWheelListener(mouseListener);
+		canvasHost.addMouseWheelListener(mouseListener);		
+	}
+	
+	public void removeMouseWheelListener(MouseWheelListener mouseListener) {
+		frame.removeMouseWheelListener(mouseListener);
+		canvasHost.removeMouseWheelListener(mouseListener);		
 	}
 	
 	public Component getHostComponent() {

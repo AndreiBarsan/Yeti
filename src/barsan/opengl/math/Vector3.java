@@ -62,6 +62,21 @@ public class Vector3 {
 		return this;
 	}
 	
+	public Vector3 setX(float x) {
+		this.x = x;
+		return this;
+	}
+	
+	public Vector3 setY(float y) {
+		this.y = y;
+		return this;
+	}
+	
+	public Vector3 setZ(float z) {
+		this.z = z;
+		return this;
+	}
+	
 	/** Multiplies the vector by the given matrix. */
 	public Vector3 mul (Matrix4 matrix) {
 		float l_mat[] = matrix.getData();

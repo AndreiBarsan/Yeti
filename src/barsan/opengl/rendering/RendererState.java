@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
+
 /**
  * 	The current state of the renderer
  *	Contains a list of lights, a gl context, a readonly camera state
@@ -22,18 +24,22 @@ public class RendererState {
 	
 	private Camera camera;
 
+	int maxAnisotropySamples = -1;
+	int anisotropySamples = 1;
+	
 	public RendererState(GL2 gl) {
 		this.gl = gl;
 	}
 
 	public RendererState(GL2 gl, ArrayList<PointLight> pointLights,
 			ArrayList<DirectionalLight> directionalLights,
-			AmbientLight ambientLight, Camera camera) {
+			AmbientLight ambientLight, Camera camera, int anisotropySamples) {
 		this.gl = gl;
 		this.pointLights = pointLights;
 		this.directionalLights = directionalLights;
 		this.ambientLight = ambientLight;
 		this.camera = camera;
+		this.anisotropySamples = anisotropySamples;
 	}
 
 	public void setPointLights(ArrayList<PointLight> pointLights) {
@@ -90,5 +96,18 @@ public class RendererState {
 	
 	public Fog getFog() {
 		return fog;
+	}
+	
+	public int getAnisotropySamples() {
+		return anisotropySamples;
+	}
+	
+	public void setAnisotropySamples(int value) {
+		if(value > maxAnisotropySamples) {
+			Yeti.warn("Given %d anisotropic samples, only supporting %d - clamping!", value, maxAnisotropySamples);
+			anisotropySamples = maxAnisotropySamples;
+		} else {
+			anisotropySamples = value;
+		}
 	}
 }

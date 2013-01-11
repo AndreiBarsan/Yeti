@@ -79,6 +79,7 @@ public class Billboard extends ModelInstance {
 		this(gl, texture, new Transform());
 	}
 	
+	// TODO: use point sprites!
 	public Billboard(GL2 gl, Texture texture, Transform transform) {
 		super(new Model(gl, "billboard_tex{" + texture + "}"), new BillboardMaterial(AxisClamp.None), transform);
 		

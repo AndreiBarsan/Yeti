@@ -28,6 +28,7 @@ public class Settings implements Serializable {
 	
 	// Actual settings and stats
 	public int lastSceneIndex = 0; 
+	public int anisotropySamples = 0;
 	
 	// Allows any sort of custom entries to be saved and read
 	private HashMap<String, Object> customSetting = new HashMap<>();

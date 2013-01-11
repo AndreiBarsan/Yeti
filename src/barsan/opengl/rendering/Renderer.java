@@ -14,6 +14,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.FBObject;
@@ -22,6 +23,7 @@ import com.jogamp.opengl.FBObject.Attachment.Type;
 import com.jogamp.opengl.FBObject.ColorAttachment;
 import com.jogamp.opengl.FBObject.RenderAttachment;
 import com.jogamp.opengl.FBObject.TextureAttachment;
+import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 
 public class Renderer {
@@ -29,17 +31,19 @@ public class Renderer {
 	private RendererState state;
 	private FBObject fbo_tex, fbo_ren;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
-	private int MSAASamples = 4;
 	
 	TextureAttachment tta;
 	final int[] name = new int[] { -1 };
 	
 	int texType = -1;
-	boolean MSAAEnabled = true;
 	int regTexHandle = -1;
 	
+	boolean MSAAEnabled = true;
+	private int MSAASamples = 4;
+		
 	public Renderer(GL2 gl) {	
 		state = new RendererState(gl);
+		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
 		int fboWidth = Yeti.get().settings.width;
 		int fboHeight = Yeti.get().settings.height;
@@ -133,14 +137,17 @@ public class Renderer {
 	public RendererState getState() {
 		return state;
 	}
+	
 	Model quad;
 	public void render(final Scene scene) {
 		GL2 gl = state.getGl();
+		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gl.glDepthMask(true);
 		
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
+		renderDebug(gl, scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		// Clear the main (screen) FrameBuffer
@@ -229,5 +236,19 @@ public class Renderer {
 		for(Billboard b : scene.billbords) {
 			b.render(state, matrixstack);
 		}
+	}
+	
+	private void renderDebug(GL2 gl, Scene scene) {
+		FPCameraAdapter ca = new FPCameraAdapter(scene.camera);
+		GLUT glut = new GLUT();
+		ca.prepare(gl);
+		gl.glBegin(GL2.GL_TRIANGLES);
+			for(PointLight pl : scene.pointLights) {
+				gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
+				glut.glutSolidSphere(0.5d, 10, 10);
+			}
+		gl.glEnd();
+		gl.glPopMatrix();
+
 	}
 }
