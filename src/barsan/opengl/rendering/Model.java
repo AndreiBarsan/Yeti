@@ -251,11 +251,13 @@ public class Model {
 		String[] res = s.split("\\s");
 		
 		if(res.length < 3) {
-			throw new InputMismatchException("Bad number of geometry/texture/normal coordinates.");
+			throw new InputMismatchException(String.format("Bad number of geometry/texture/normal coordinates (%d)!", res.length));
 		}
 		
 		if(model.pointsPerFace != 0 && model.pointsPerFace != res.length) {
-			throw new UnsupportedOperationException("Meshes with varying face sizes (quads and triangles mixsed together, for instance) not supported.");
+			throw new UnsupportedOperationException(String.format(
+				"Meshes with varying face sizes (quads and triangles mixsed together, for instance) not supported. " +
+				"(found %d points per face when expecting %d)", res.length, model.pointsPerFace));
 		} else {
 			if(model.pointsPerFace == 0) {
 				model.pointsPerFace = res.length;

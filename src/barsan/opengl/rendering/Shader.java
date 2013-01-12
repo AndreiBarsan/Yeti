@@ -160,6 +160,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}
@@ -177,6 +178,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}
@@ -194,6 +196,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}
@@ -212,6 +215,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}
@@ -234,6 +238,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}
@@ -251,6 +256,7 @@ public class Shader {
 			pos = uLocCache.get(uniformName); 
 		} else {
 			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
 			if(pos != -1) {
 				uLocCache.put(uniformName, pos);
 			}

@@ -1,29 +1,27 @@
-#version 330
+#version 400 core
 
 uniform mat4 mvpMatrix;
 uniform mat4 mvMatrix;
-uniform mat4 mInverseCameraRot;
-
-uniform vec3 cameraPosition;
-uniform mat3 mvMatrix3x3;
-
 uniform mat3 normalMatrix;
 
 layout(location = 0) in vec4 vVertex;
 layout(location = 1) in vec3 vNormal;
+layout(location = 2) in vec2 vTexCoord;
 
 smooth out vec3 vVaryingTexCoords; 
+smooth out vec2 texCoords2d;
 
 void main(void) {
-	vec3 eyeNormal = normalMatrix * vNormal;
 	
-	vec4 vert4 = mvMatrix * vVertex;
-	vec3 eyeVertex = normalize(vert4.xyz / vert4.w);
+	vec3 n = normalize(normalMatrix * vNormal);
+	vec4 pos = mvMatrix * vVertex;
+	vec3 d = reflect(pos.xyz, n);
+	mat3 m = normalMatrix;
 
-	vec4 coords = vec4(reflect(eyeVertex, eyeNormal), 1.0);
-
-	coords = mInverseCameraRot * coords;
-	vVaryingTexCoords.xyz = normalize(coords.xyz);
-
+	vVaryingTexCoords.x = dot(m[0], d);
+	vVaryingTexCoords.y = dot(m[1], d);
+	vVaryingTexCoords.z = dot(m[2], d);
+	
+	texCoords2d = vTexCoord;
 	gl_Position = mvpMatrix * vVertex;
 }

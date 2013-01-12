@@ -309,7 +309,7 @@ public class Yeti implements GLEventListener {
 		System.exit(0);		
 	}
 	
-	private class TempSceneSwitcher implements KeyListener {
+	private class QuickSceneSwitcher implements KeyListener {
 		public void keyTyped(KeyEvent e) { }
 		public void keyPressed(KeyEvent e) { }
 		
@@ -346,16 +346,19 @@ public class Yeti implements GLEventListener {
 			return;
 		}
 
-		if(hostApp != null)
+		if(hostApp != null) {
+			// TODO: list of callbaks (also maybe make host apps implement
+			// some hook functionality)
 			hostApp.generateGLKnobs(gl);
+		}
 		
-		// Run in debug mode
-		Yeti.debug("Running in debug GL mode");
+		// Runing in debug mode
+		Yeti.debug("Running in debug GL mode"); 
 		
 		final int lastLoadedScene = settings.lastSceneIndex;
 		ResourceLoader.init();	
 		
-		addKeyListener(this.new TempSceneSwitcher());
+		addKeyListener(this.new QuickSceneSwitcher());
 
 		// Soon-to-be global controller of GL settings
 		addKeyListener(new GlobalConsoleInput());

@@ -78,8 +78,6 @@ public class BasicMaterial extends Material {
 		public void dispose() { }
 	}
 	
-	
-	// TODO: flags to ignore certain light types
 	// TODO: consistent uniform names to ease automatic material management in the future
 	
 	static final String GOURAUD_NAME 	= "basic";
@@ -96,7 +94,7 @@ public class BasicMaterial extends Material {
 	private ShadingModel mode = ShadingModel.Phong;
 	
 	// TODO: move up!
-	private List<MaterialComponent> components = Collections.synchronizedList(new ArrayList<MaterialComponent>());
+	private List<MaterialComponent> components = new ArrayList<MaterialComponent>();
 	
 	public BasicMaterial(Color diffuse) {
 		this(Color.WHITE, diffuse, Color.WHITE);

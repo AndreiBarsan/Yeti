@@ -234,6 +234,10 @@ public class Matrix4 {
 		return this;
 	}
 	
+	public Matrix4 setTranslate(Vector3 v) {
+		return setTranslate(v.x, v.y, v.z);
+	}
+
 	
 	/*
 	 * 01 00 00 tx

@@ -4,19 +4,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 
-import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
-import barsan.opengl.rendering.BasicMaterial.ShadingModel;
+import barsan.opengl.rendering.BasicMaterial.BumpComponent;
 import barsan.opengl.rendering.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Material;
-import barsan.opengl.rendering.MultiTextureMaterial;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PointLight;
@@ -30,7 +27,7 @@ import barsan.opengl.util.TextHelper;
 
 public class DemoScene extends Scene {
 	
-	private ModelInstance a10k;
+	PointLight pl;
 	float a = 0.0f;
 	Material ironbox;
 	Material redShit, blueShit;
@@ -52,6 +49,7 @@ public class DemoScene extends Scene {
 			ResourceLoader.loadTexture("heightmap01", "res/tex/height.png");
 			ResourceLoader.loadTexture("grass", "res/tex/grass01.jpg");
 			ResourceLoader.loadTexture("stone", "res/tex/stone03.jpg");
+			ResourceLoader.loadTexture("stone.bump", "res/tex/stone03.bump.jpg");
 			ResourceLoader.loadTexture("billboard", "res/tex/tree_billboard.png");
 			
 			ResourceLoader.loadCubeTexture("skybox01", "jpg");
@@ -78,23 +76,30 @@ public class DemoScene extends Scene {
 				4.0f, 4.0f,
 				-15.0f, 120.0f);
 		
+		BasicMaterial m = new BasicMaterial();
+		m.setTexture(ResourceLoader.texture("stone"));
+		m.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
+		Transform t  = new Transform();
+		t.setScale(8.0f).setTranslate(0.0f, 50.0f, 20.0f).refresh();
+		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), m, t));
+		/*
 		modelInstances.add(new ModelInstance(
 				groundMesh,
 				new MultiTextureMaterial(ResourceLoader.texture("stone"),
 						ResourceLoader.texture("grass"), -10, 25)
 				//new ToonMaterial(ResourceLoader.texture("grass"))
 				));
+		//*/
 		
-		
+		//*
 		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
-				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01")),
-				new Transform().updateTranslate(0.0f, 50.0f, -20.0f).updateScale(1.0f)));
-		
+				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
+				new Transform().updateTranslate(0.0f, 50.0f, 0.0f).updateScale(1.0f)));
+		//*/
 		camera.setPosition(new Vector3(0.0f, 45.00f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
 		
-		PointLight pl;
 		pointLights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
 		
 		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
@@ -125,27 +130,19 @@ public class DemoScene extends Scene {
 	}
 	
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		super.reshape(drawable, x, y, width, height);
-	}
-	
-	@Override
 	public void display(GLAutoDrawable drawable) {
-		//float radius = 3.2f;
 		a += 0.8 * getDelta() * 10;
 		
-		PointLight light = pointLights.get(0);
-		light.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
+		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		
 		// Calls the renderer
 		super.display(drawable);
-		
 		drawGUI(drawable);
 	}
 	
 	void drawGUI(GLAutoDrawable drawable) {
 		float fps = drawable.getAnimator().getLastFPS();
-		drawable.getGL().getGL2().glUseProgram(0);
+		Yeti.get().gl.glUseProgram(0);
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{
 			Vector3 cp = camera.getPosition();

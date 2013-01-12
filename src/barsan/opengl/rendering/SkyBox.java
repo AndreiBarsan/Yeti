@@ -19,7 +19,7 @@ public class SkyBox extends ModelInstance {
 		cmm.setTexture(t);
 		
 		cmm.setWriteDepthBuffer(false);
-		cmm.setCheckDepthBuffer(true);
+		cmm.setCheckDepthBuffer(false);
 		
 
 		// this.cubeTexture = cubeTexture;

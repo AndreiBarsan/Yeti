@@ -74,6 +74,7 @@ public class LightTest extends Scene {
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		//floorMat.addComponent(bc);
 		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
+		floorMat.setShininess(256);
 		
 		modelInstances.add(new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("test"), getCamera()));
 		
@@ -96,8 +97,8 @@ public class LightTest extends Scene {
 				0.75f, 0.9f, 1.0f);
 		sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
 		testLight = new PointLight(new Vector3(lightX, 2.50f, lightZ));
-		//pointLights.add(sl);
-		pointLights.add(testLight);
+		pointLights.add(sl);
+		//pointLights.add(testLight);
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
 			@Override

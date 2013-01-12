@@ -168,11 +168,6 @@ public class Camera {
 	float pitchAccum = 0.0f;
 	
 	public void move3D(int dx, int dy) {		
-		// PITCH
-		pq.set(aux_v3.set(direction).cross(up).normalize(), dy);
-		// YAW
-		yq.set(up, -dx);
-		
 		yawAccum -= dx;
 		pitchAccum -= dy;
 		
