@@ -18,7 +18,7 @@ public class CubicEnvMappingMaterial extends Material {
 	public CubicEnvMappingMaterial(CubeTexture texture, Texture tex2d) {
 		super(ResourceLoader.shader("cubicEnvMapping"));
 		this.ctex = texture;
-		setTexture(tex2d);
+		//setTexture(tex2d);
 	}
 
 	@Override
@@ -31,10 +31,11 @@ public class CubicEnvMappingMaterial extends Material {
 		shader.setU1i("cubeMap", 0);
 		ctex.bind(gl);
 		
+		/*
 		gl.glActiveTexture(GLHelp.textureSlot[1]);
 		shader.setU1i("colorMap", 1);
 		texture.bind(gl);
-		
+		//*/
 		Camera cam = rendererState.getCamera();
 		projection.set(rendererState.getCamera().getProjection());
 		view.set(cam.getView());

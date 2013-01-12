@@ -76,12 +76,6 @@ public class DemoScene extends Scene {
 				4.0f, 4.0f,
 				-15.0f, 120.0f);
 		
-		BasicMaterial m = new BasicMaterial();
-		m.setTexture(ResourceLoader.texture("stone"));
-		m.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
-		Transform t  = new Transform();
-		t.setScale(8.0f).setTranslate(0.0f, 50.0f, 20.0f).refresh();
-		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), m, t));
 		/*
 		modelInstances.add(new ModelInstance(
 				groundMesh,
@@ -94,9 +88,9 @@ public class DemoScene extends Scene {
 		//*
 		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
 				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
-				new Transform().updateTranslate(0.0f, 50.0f, 0.0f).updateScale(1.0f)));
+				new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
 		//*/
-		camera.setPosition(new Vector3(0.0f, 45.00f, -4.0f));
+		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
 		
