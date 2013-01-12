@@ -4,6 +4,7 @@ uniform mat4 mvpMatrix;
 uniform mat4 mvMatrix;
 uniform mat4 vMatrix;
 
+uniform mat3 vMatrix3x3;
 
 uniform mat3 normalMatrix;
 uniform vec3 vLightPosition;
@@ -52,9 +53,9 @@ void main() {
 	
 	if(useBump) {
 		vec3 vNormal = normalize(vNormal);
-		vec3 vTang = normalize(vec3(-vNormal.z,0,vNormal.x));
-		if( vNormal.z == vNormal.x) vTang = vec3 (1.0,0.0,0.0);
-		vec3 vBinorm = normalize(cross(vTang,vNormal));
+		vec3 vTang = normalize(vec3(-vNormal.z, 0, vNormal.x));
+		if( vNormal.z == vNormal.x) vTang = vec3 (1.0, 0.0, 0.0);
+		vec3 vBinorm = normalize(cross(vTang, vNormal));
 		mNTB[0]=vTang; mNTB[1]=vBinorm; mNTB[2]=vNormal;
 		mNTB = normalMatrix * mNTB;
 	}
@@ -63,10 +64,14 @@ void main() {
 	vertPos_ec = vec4(vPosition3, 1.0f);
 	
 	// Transform the light direction (for spotlights) 
-	vec4 spotDirection_ec4 = vec4(spotDirection, 1.0f);
-	spotDirection_ec = spotDirection_ec4.xyz / spotDirection_ec4.w; 
+	//vec4 spotDirection_ec4 = vec4(spotDirection, 1.0f);
+	//spotDirection_ec = spotDirection_ec4.xyz / spotDirection_ec4.w; 
 	// Do not use the vMatrix here - it's a direction not a position!
-	spotDirection_ec = normalMatrix * spotDirection;	// Important! 
+	// Do not use the normalMatrix here. It might seem it works, but once
+	// you try to light a rotated object it blows up in your face. It's a
+	// direction, not a normal. (not mathematically different, but still 
+	// different in our case)
+	spotDirection_ec = vMatrix3x3 * spotDirection;	// Important! 
 	
 	// Projected vertex
 	gl_Position = mvpMatrix * vVertex;

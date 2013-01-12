@@ -158,6 +158,8 @@ public class BasicMaterial extends Material {
 		shader.setUMatrix4("vMatrix", view);
 		shader.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 		
+		shader.setUMatrix3("vMatrix3x3", new Matrix3(view));
+		
 		// TODO: implement ARRAYS OF LIGHTS here!
 		PointLight light = rendererState.getPointLights().get(0);
 		AmbientLight ambientLight = rendererState.getAmbientLight();

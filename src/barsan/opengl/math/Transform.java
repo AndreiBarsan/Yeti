@@ -129,6 +129,7 @@ public class Transform {
 		return this;
 	}
 	private static Vector3 av = new Vector3();
+	private static Quaternion aq = new Quaternion();
 		
 	/**
 	 * Overwrites this transform with a new matrix.
@@ -208,6 +209,10 @@ public class Transform {
 	}
 
 	
+	public Transform updateRotation(float ax, float ay, float az, float angle) {
+		return updateRotation(aq.set(av.set(ax, ay, az), angle));
+	}
+	
 	/**
 	 * Updates the rotation component and recomputes the matrix.
 	 */
@@ -225,8 +230,9 @@ public class Transform {
 	private void computeMatrix() {
 		auxS.setScale(scale.x, scale.y, scale.z);
 		auxT.setTranslate(translate.x, translate.y, translate.z);
+		auxR.setRotate(rotation);
 		
-		transformMatrix.set(auxT).mul(auxS).mul(auxR.set(rotation));
+		transformMatrix.set(auxT).mul(auxR).mul(auxS);
 	}
 	
 	/**
