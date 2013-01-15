@@ -28,7 +28,7 @@ public class Settings implements Serializable {
 	
 	// Actual settings and stats
 	public int lastSceneIndex = 0; 
-	public int anisotropySamples = 0;
+	public int anisotropySamples = 1;
 	
 	// Allows any sort of custom entries to be saved and read
 	private HashMap<String, Object> customSetting = new HashMap<>();
@@ -54,18 +54,17 @@ public class Settings implements Serializable {
 				oi.close();
 			}
 		} catch(IOException e) {
-			Yeti.screwed("Cannot get settings resource stream!", e);
-		} catch(ClassNotFoundException e) {
-			Yeti.screwed("Problem loaded settings!", e);
-		}
-		
-		if(result == null) {
 			Yeti.debug("No previous settings found - creating new profile!");
 			result = new Settings();
-		} else {
-			assert result instanceof Settings : "Must read a valid settings object.";
+		} catch(ClassNotFoundException e) {
+			Yeti.screwed("Problem loading settings!", e);
 		}
 		
+		if(! (result instanceof Settings)) {
+			Yeti.warn("Incompatible settings object loaded. Creating new profile.");
+			result = new Settings();
+		}
+	
 		Settings settings = (Settings)result;
 		return settings;
 	}
