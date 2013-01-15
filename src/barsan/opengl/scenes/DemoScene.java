@@ -3,6 +3,7 @@ package barsan.opengl.scenes;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.util.Collections;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -84,7 +85,6 @@ public class DemoScene extends Scene {
 				//new ToonMaterial(ResourceLoader.texture("grass"))
 				));
 		//*/
-		
 		//*
 		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
 				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
