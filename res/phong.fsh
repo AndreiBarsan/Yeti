@@ -9,9 +9,6 @@ uniform float lightTheta;
 uniform float lightPhi;
 uniform float lightExponent;
 
-// testing?
-uniform mat3 normalMatrix;
-
 uniform int shininess;
 uniform vec4 matAmbient;
 uniform vec4 matDiffuse;
