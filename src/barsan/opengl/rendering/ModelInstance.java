@@ -10,6 +10,8 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.Material;
 
 public class ModelInstance implements Renderable {
 
@@ -43,7 +45,7 @@ public class ModelInstance implements Renderable {
 
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		GL2 gl = rendererState.getGl();
+		GL2 gl = rendererState.gl;
 
 		transformStack.push(localTransform.get());
 

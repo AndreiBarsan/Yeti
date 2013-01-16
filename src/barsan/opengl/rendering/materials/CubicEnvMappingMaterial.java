@@ -1,4 +1,4 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.materials;
 
 import javax.media.opengl.GL2;
 
@@ -6,6 +6,10 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Quaternion;
+import barsan.opengl.rendering.Camera;
+import barsan.opengl.rendering.CubeTexture;
+import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
 
@@ -23,7 +27,7 @@ public class CubicEnvMappingMaterial extends Material {
 
 	@Override
 	public void setup(RendererState rendererState, Matrix4 transform) {
-		GL2 gl = rendererState.getGl();
+		GL2 gl = rendererState.gl;
 		
 		enableShader(rendererState);
 		

@@ -1,6 +1,8 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.materials;
 
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 

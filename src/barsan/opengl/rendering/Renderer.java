@@ -140,7 +140,7 @@ public class Renderer {
 	
 	Model quad;
 	public void render(final Scene scene) {
-		GL2 gl = state.getGl();
+		GL2 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gl.glDepthMask(true);
 		

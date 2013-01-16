@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.Material;
 
 /**
  * 	The current state of the renderer
@@ -12,7 +14,7 @@ import barsan.opengl.Yeti;
  */
 public class RendererState {
 	
-	/* pp */ GL2 gl;
+	public final GL2 gl;
 	private ArrayList<PointLight> pointLights;
 	private ArrayList<DirectionalLight> directionalLights;
 	
@@ -62,14 +64,6 @@ public class RendererState {
 		this.camera = camera;
 	}
 	
-	public void setGl(GL2 gl) {
-		this.gl = gl;
-	}
-	
-	public GL2 getGl() {
-		return gl;
-	}
-
 	public ArrayList<PointLight> getPointLights() {
 		return pointLights;
 	}

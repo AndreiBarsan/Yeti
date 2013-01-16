@@ -4,6 +4,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.rendering.materials.CubeMapMaterial;
 
 import com.jogamp.opengl.util.texture.Texture;
 

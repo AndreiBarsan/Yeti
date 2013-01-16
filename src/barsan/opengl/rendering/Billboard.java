@@ -9,6 +9,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -65,7 +66,7 @@ public class Billboard extends ModelInstance {
 			enableShader(rendererState);
 			shader.setUMatrix4("mvpMatrix", mvp);
 			shader.setU1i("colorMap", 0);
-			texture.bind(rendererState.getGl());
+			texture.bind(rendererState.gl);
 		}
 	}
 	
@@ -110,7 +111,7 @@ public class Billboard extends ModelInstance {
 	
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		GL2 gl = rendererState.getGl();
+		GL2 gl = rendererState.gl;
 
 		ByteBuffer out = ByteBuffer.allocate(1);
 		gl.glGetBooleani_v(GL2.GL_BLEND, 0, out);

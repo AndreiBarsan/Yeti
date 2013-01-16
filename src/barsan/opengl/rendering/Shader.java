@@ -44,9 +44,9 @@ import barsan.opengl.math.Vector3;
  * @author Andrei Bârsan
  */
 public class Shader {
-	static final String A_POSITION = "vVertex";
-	static final String A_NORMAL = "vNormal";
-	static final String A_TEXCOORD = "vTexCoord";
+	public static final String A_POSITION = "vVertex";
+	public static final String A_NORMAL = "vNormal";
+	public static final String A_TEXCOORD = "vTexCoord";
 	
 	// Utility buffers
 	static final IntBuffer i_buff = IntBuffer.allocate(8);

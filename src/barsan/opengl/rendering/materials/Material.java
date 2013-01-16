@@ -1,9 +1,12 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.materials;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.Shader;
 import barsan.opengl.util.Color;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -65,7 +68,7 @@ public abstract class Material {
 	public abstract void setup(RendererState rendererState, Matrix4 transform);
 	
 	public void render(RendererState rendererState, Model model) {
-		GL gl = rendererState.getGl();
+		GL gl = rendererState.gl;
 		enableShader(rendererState);
 		
 		gl.glDepthMask(writesDepthBuffer);
@@ -79,7 +82,7 @@ public abstract class Material {
 	}
 
 	protected void enableShader(RendererState rendererState) {
-		rendererState.getGl().glUseProgram(shader.getHandle());
+		rendererState.gl.glUseProgram(shader.getHandle());
 	}
 	
 	public void bindTextureCoodrinates(Model model) {

@@ -74,7 +74,9 @@ public class Scene implements GLEventListener {
 	 */
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+		// Doing this to prepare from when Yeti will start indirectly delegating
+		// to these display methods.
+		GL2 gl = Yeti.get().gl;
 		
 		if(exiting) {
 			exit();
@@ -83,7 +85,6 @@ public class Scene implements GLEventListener {
 		
 		// Setup the renderer
 		RendererState rs = renderer.getState();
-		rs.setGl(gl);
 		rs.setAmbientLight(globalAmbientLight);
 		rs.setCamera(camera);
 		rs.setPointLights(pointLights);

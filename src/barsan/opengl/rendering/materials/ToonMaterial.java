@@ -1,12 +1,14 @@
 /**
  * 
  */
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.materials;
 
 import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
@@ -85,7 +87,7 @@ public class ToonMaterial extends BasicMaterial {
 	}
 	
 	void doFlatAndLines(RendererState rs, Model model) {
-		GL2 gl = rs.getGl();
+		GL2 gl = rs.gl;
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 		gl.glLineWidth(2.5f);
 		//gl.glPolygonOffset(2.5f, 2.5f);

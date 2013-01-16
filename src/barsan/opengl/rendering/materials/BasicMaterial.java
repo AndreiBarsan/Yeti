@@ -1,4 +1,4 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.materials;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +14,11 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.AmbientLight;
+import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.PointLight;
+import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
@@ -65,8 +70,8 @@ public class BasicMaterial extends Material {
 		public int setupTexture(Material m, RendererState rs, int slot) {
 			m.shader.setU1i("normalMap", slot);	
 			rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
-			normalMap.bind(rs.getGl());
-			normalMap.setTexParameterf(rs.getGl(), GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+			normalMap.bind(rs.gl);
+			normalMap.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 			
 			// We only used one slot
 			return 1;
@@ -200,7 +205,7 @@ public class BasicMaterial extends Material {
 			textureIndex++;
 			shader.setU1i("useTexture", 1);
 			shader.setU1i("colorMap", 0);
-			texture.bind(rendererState.getGl());
+			texture.bind(rendererState.gl);
 			texture.setTexParameterf(rendererState.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rendererState.getAnisotropySamples());
 		} else {
 			shader.setU1i("useTexture", 0);
