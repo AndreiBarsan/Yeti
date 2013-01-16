@@ -1,4 +1,4 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.lights;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.util.Color;

@@ -9,6 +9,8 @@ import javax.media.opengl.GLEventListener;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
+import barsan.opengl.rendering.lights.AmbientLight;
+import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 

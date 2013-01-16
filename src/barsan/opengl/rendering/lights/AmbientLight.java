@@ -1,4 +1,4 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.lights;
 
 import barsan.opengl.util.Color;
 

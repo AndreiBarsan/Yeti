@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.lights.AmbientLight;
+import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 

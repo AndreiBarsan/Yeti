@@ -13,6 +13,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
+import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;

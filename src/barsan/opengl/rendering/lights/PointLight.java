@@ -1,8 +1,14 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.lights;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.util.Color;
 
+/**
+ * Basic point light support with custom diffuse and specular colors, as well as
+ * constant, linear, quadratic and cubic attenuation.
+ *  
+ * @author Andrei Bârsan
+ */
 public class PointLight {
 
 	private Vector3 position;

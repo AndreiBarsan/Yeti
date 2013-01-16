@@ -13,16 +13,16 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.BasicMaterial.BumpComponent;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
-import barsan.opengl.rendering.PointLight;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
-import barsan.opengl.rendering.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
