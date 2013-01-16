@@ -4,21 +4,20 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.util.Color;
 
 /**
- * Basic point light support with custom diffuse and specular colors, as well as
- * constant, linear, quadratic and cubic attenuation.
+ * Basic point/directional light support with custom diffuse and specular colors,
+ * as well as constant, linear, quadratic and cubic attenuation.
  *  
  * @author Andrei Bârsan
  */
-public class PointLight {
+public class PointLight extends Light {
 
 	private Vector3 position;
-	private Color diffuseColor;
-	private Color specularColor;
 	
-	private float 	constantAttenuation,
-					linearAttenuation,
-					quadraticAttenuation,
-					cubicAttenuation;
+	/**
+	 * Scaling factor of the position. Usually 1 for point lights and 0 for
+	 * directional lights.
+	 */
+	private float factor;			
 	
 	public PointLight(Vector3 position) {
 		this(position, Color.WHITE, Color.WHITE);
@@ -34,14 +33,10 @@ public class PointLight {
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular,
 			float ka, float la, float qa, float ca) {
+		super(diffuse, specular, ka, la, qa, ca);
 		this.setPosition(position);
-		this.setDiffuse(diffuse);
-		this.setSpecular(specular);
 		
-		constantAttenuation = ka;
-		linearAttenuation = la;
-		quadraticAttenuation = qa;
-		cubicAttenuation = ca;
+		
 	}
 	
 	public Vector3 getPosition() {
@@ -52,59 +47,17 @@ public class PointLight {
 		this.position = position;
 	}
 
-	public Color getDiffuse() {
-		return diffuseColor;
+	public float getFactor() {
+		return factor;
 	}
 
-	public void setDiffuse(Color color) {
-		this.diffuseColor = color;
+	public void setFactor(float factor) {
+		this.factor = factor;
 	}
-
-	public Color getSpecular() {
-		return specularColor;
-	}
-
-	public void setSpecular(Color specularColor) {
-		this.specularColor = specularColor;
-	}
-
-	public float getConstantAttenuation() {
-		return constantAttenuation;
-	}
-
-	public void setConstantAttenuation(float constantAttenuation) {
-		this.constantAttenuation = constantAttenuation;
-	}
-
-	public float getLinearAttenuation() {
-		return linearAttenuation;
-	}
-
-	public void setLinearAttenuation(float linearAttenuation) {
-		this.linearAttenuation = linearAttenuation;
-	}
-
-	public float getQuadraticAttenuation() {
-		return quadraticAttenuation;
-	}
-
-	public void setQuadraticAttenuation(float quadraticAttenuation) {
-		this.quadraticAttenuation = quadraticAttenuation;
-	}
-
-	public float getCubicAttenuation() {
-		return cubicAttenuation;
-	}
-
-	public void setCubicAttenuation(float cubicAttenuation) {
-		this.cubicAttenuation = cubicAttenuation;
-	}
-
-	public void setAttenuation(float ka, float la, float qa, float ca) {
-		constantAttenuation = ka;
-		linearAttenuation = la;
-		quadraticAttenuation = qa;
-		cubicAttenuation = ca;
+	
+	@Override
+	public LightType getType() {
+		return LightType.Point;
 	}
 	
 }

@@ -10,6 +10,7 @@ import javax.media.opengl.GLEventListener;
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.rendering.lights.AmbientLight;
+import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -30,7 +31,7 @@ public class Scene implements GLEventListener {
 	long lastTime;
 	
 	/** Lights ****************************************************************/
-	protected ArrayList<PointLight> pointLights = new ArrayList<>();
+	protected ArrayList<Light> lights = new ArrayList<>();
 	protected AmbientLight globalAmbientLight = new AmbientLight(new Color(0.1f, 0.1f, 0.1f, 1.0f));
 	
 	/** Fog *******************************************************************/
@@ -43,26 +44,14 @@ public class Scene implements GLEventListener {
 		camera = new Camera(Yeti.get().settings.width, Yeti.get().settings.height);
 		GL2 gl = drawable.getGL().getGL2();
 		gl = drawable.getGL().getGL2();
-		
-		// Setup the initial GL state
-		gl.setSwapInterval(1);
-		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LEQUAL);
-		gl.glEnable(GL2.GL_CULL_FACE);
-		gl.glCullFace(GL2.GL_BACK);
-		gl.glFrontFace(GL2.GL_CCW);
-		gl.glClearDepth(1.0d);
-		
-		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-		
+				
 		try {
 			ResourceLoader.loadAllShaders("res");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		// Prepare the renderer
+		// Prepare the renderer; use the default renderer
 		renderer = new Renderer(gl);
 		
 		lastTime = System.currentTimeMillis();
@@ -71,15 +60,9 @@ public class Scene implements GLEventListener {
 	@Override
 	public void dispose(GLAutoDrawable drawable) {	}
 
-	/**
-	 * Coming soon: actual optimizations!!!
-	 */
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		// Doing this to prepare from when Yeti will start indirectly delegating
-		// to these display methods.
-		GL2 gl = Yeti.get().gl;
-		
+				
 		if(exiting) {
 			exit();
 			return;
@@ -89,7 +72,7 @@ public class Scene implements GLEventListener {
 		RendererState rs = renderer.getState();
 		rs.setAmbientLight(globalAmbientLight);
 		rs.setCamera(camera);
-		rs.setPointLights(pointLights);
+		rs.setLights(lights);
 		if(fogEnabled) {
 			rs.setFog(fog);
 		} else {
@@ -125,6 +108,14 @@ public class Scene implements GLEventListener {
 		yeti.removeKeyListener(cameraInput);
 		yeti.removeMouseListener(cameraInput);
 		yeti.removeMouseMotionListener(cameraInput);
+	}
+	
+	public void setRenderer(Renderer renderer) {
+		this.renderer = renderer;
+	}
+	
+	public Renderer getRenderer() {
+		return renderer;
 	}
 
 	/**

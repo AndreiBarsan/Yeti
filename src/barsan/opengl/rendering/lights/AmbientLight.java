@@ -2,6 +2,7 @@ package barsan.opengl.rendering.lights;
 
 import barsan.opengl.util.Color;
 
+// TODO: get rid of this and just classically use ambient components in lights
 public class AmbientLight {
 	
 	private Color color;

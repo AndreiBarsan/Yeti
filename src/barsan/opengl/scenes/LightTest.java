@@ -1,7 +1,10 @@
 package barsan.opengl.scenes;
 
+import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.IOException;
@@ -13,24 +16,30 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.lights.SpotLight;
-import barsan.opengl.rendering.materials.BasicMaterial;
-import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.rendering.materials.BasicMaterial.BumpComponent;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.rendering.lights.Light.LightType;
+import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.BasicMaterial.BumpComponent;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
 public class LightTest extends Scene {
 
 	ModelInstance plane, chosenOne;
-	PointLight testLight;
-	SpotLight sl;
+	PointLight test_pl;
+	SpotLight test_sl;
+	DirectionalLight test_dl;
+
+	LightType currentlyActive = LightType.Point;
+	
 	BumpComponent bc;
 	
 	float lightX = 0.0f;
@@ -88,13 +97,16 @@ public class LightTest extends Scene {
 		}
 		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
-		sl = new SpotLight(new Vector3(0.0f, 2.50f, 0.0f), 
+		test_sl = new SpotLight(new Vector3(0.0f, 2.50f, 0.0f), 
 				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
 				0.75f, 0.8f, 2.0f);
-		sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
-		sl.setQuadraticAttenuation(0.003f);
-		testLight = new PointLight(new Vector3(lightX, 2.50f, lightZ));
-		pointLights.add(sl);
+		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
+		test_sl.setQuadraticAttenuation(0.003f);
+		
+		test_pl = new PointLight(new Vector3(lightX, 2.50f, lightZ));
+		
+		test_dl = new DirectionalLight(new Vector3(0.0f, 1.0f, 1.0f).normalize());
+		lights.add(test_dl);
 		//pointLights.add(testLight);
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
@@ -127,19 +139,42 @@ public class LightTest extends Scene {
 				}
 			}
 		});
+		
+		Yeti.get().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				lights.clear();
+				currentlyActive = LightType.values()[(currentlyActive.ordinal() + 1) % LightType.values().length];
+				switch(currentlyActive) {
+				case Directional:
+					lights.add(test_dl);
+					break;
+				case Point:
+					lights.add(test_pl);
+					break;
+				case Spot:
+					lights.add(test_sl);
+					break;
+				}
+			}
+		});
 	}
 	
+	Vector3 tv = new Vector3();
 	float a = 0.0f;
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		a += getDelta();
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
-		sl.getDirection().x =  (float)Math.sin(a / 4) * 10.0f;
-		sl.getDirection().z = -(float)Math.cos(a / 4) * 10.0f;
+		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 10.0f;
+		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 10.0f;
 		
-		testLight.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
-		testLight.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
+		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
+		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
+		
+		tv.set((float)Math.sin(a * 3), 1.0f, 1.0f);
+		test_dl.getDirection().set(tv).normalize();
 		
 		//camera.setPosition(new Vector3(-10.0f, 8.0f, 0.0f));
 		//camera.setDirection(new Vector3(camera.getPosition()).sub(testLight.getPosition().copy().setY(0.0f)).normalize());

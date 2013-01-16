@@ -7,15 +7,18 @@ uniform mat4 vMatrix;
 uniform mat3 vMatrix3x3;
 
 uniform mat3 normalMatrix;
-uniform vec3 vLightPosition;
+uniform vec4 vLightPosition;
 uniform vec3 spotDirection;
 uniform bool useTexture;
 
 uniform bool useBump;
 
-uniform bool	fogEnabled;
+uniform bool 	fogEnabled;
 uniform float 	minFogDistance;
 uniform float 	maxFogDistance;
+
+uniform bool 	useShadows;
+uniform mat4 	mvpMatrixShadows;
 
 layout(location = 0) in vec4 vVertex;
 layout(location = 1) in vec3 vNormal;
@@ -33,6 +36,8 @@ smooth out vec3 	spotDirection_ec;
 
 smooth out mat3 	mNTB;
 
+smooth out vec4 	vertPos_dmc;	// Used in shadow mapping
+
 void main() {
 	// Surface normal in eye coords
 	vVaryingNormal = normalMatrix * vNormal;
@@ -40,13 +45,19 @@ void main() {
 	vec4 vPosition4 = mvMatrix * vVertex;
 	vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 	
-	vec4 tLightPos4 = vMatrix * vec4(vLightPosition, 1.0);
+	vec4 tLightPos4 = vMatrix * vLightPosition;
 	vec3 tLightPos  = tLightPos4.xyz / tLightPos4.w;
 
-	// Diffuse light
-	// Vector to light source (do NOT normalize this!)
-	vVaryingLightDir = tLightPos - vPosition3;
-
+	if(vLightPosition.w == 0.0f) {
+		// Directional light
+		vVaryingLightDir = tLightPos4.xyz;
+	} else {
+		// Point light
+		// Vector to light source (do NOT normalize this!)
+		vVaryingLightDir = tLightPos - vPosition3;
+	}
+	
+	
 	if(useTexture) {
 		vVaryingTexCoords = vTexCoord;
 	}
@@ -60,12 +71,14 @@ void main() {
 		mNTB = normalMatrix * mNTB;
 	}
 	
+	if(useShadows) {
+		// Convert the vertex to shadowmap coordinates
+		vertPos_dmc = mvpMatrixShadows * vVertex;
+	}
+	
 	lightPos_ec = vec4(tLightPos, 1.0f);
 	vertPos_ec = vec4(vPosition3, 1.0f);
 	
-	// Transform the light direction (for spotlights) 
-	//vec4 spotDirection_ec4 = vec4(spotDirection, 1.0f);
-	//spotDirection_ec = spotDirection_ec4.xyz / spotDirection_ec4.w; 
 	// Do not use the vMatrix here - it's a direction not a position!
 	// Do not use the normalMatrix here. It might seem it works, but once
 	// you try to light a rotated object it blows up in your face. It's a

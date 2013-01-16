@@ -13,7 +13,9 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
+import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
@@ -30,11 +32,10 @@ import com.jogamp.opengl.util.texture.Texture;
 public class Renderer {
 
 	private RendererState state;
-	private FBObject fbo_tex, fbo_ren;
+	private FBObject fbo_tex;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
 	TextureAttachment tta;
-	final int[] name = new int[] { -1 };
 	
 	int texType = -1;
 	int regTexHandle = -1;
@@ -46,38 +47,38 @@ public class Renderer {
 		state = new RendererState(gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
+		// Setup the initial GL state
+		gl.setSwapInterval(1);
+		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		gl.glDepthFunc(GL2.GL_LEQUAL);
+		gl.glEnable(GL2.GL_CULL_FACE);
+		gl.glCullFace(GL2.GL_BACK);
+		gl.glFrontFace(GL2.GL_CCW);
+		gl.glClearDepth(1.0d);
+		
+		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+		
 		int fboWidth = Yeti.get().settings.width;
 		int fboHeight = Yeti.get().settings.height;
 		
 		fbo_tex = new FBObject();
-		fbo_tex.reset(gl, fboWidth, fboHeight);
+		fbo_tex.reset(gl, fboWidth, fboHeight, 0);
 		fbo_tex.bind(gl);
 		
 		fbo_tex.attachTexture2D(gl, 0, true);
-		//*
-		TextureAttachment ta = new TextureAttachment(
-				Attachment.Type.COLOR_TEXTURE,
-				GL.GL_RGBA8,
-				fboWidth,
-				fboHeight, 
-				GL2.GL_BGRA, // !!!
-				GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV, // !!! GL.GL_UNSIGNED_BYTE for non-alpha stuff
-				GL.GL_LINEAR, 
-				GL.GL_LINEAR,	// ! Might get away with GL_NEAREST
-				GL.GL_CLAMP_TO_EDGE,
-				GL.GL_CLAMP_TO_EDGE,
-				0);
-		//*/
-		//fbo_tex.attachTexture2D(gl, 0, ta);
+		
 		if(MSAAEnabled) {
 			texType = GL2.GL_TEXTURE_2D_MULTISAMPLE;
 		} else {
 			texType = GL2.GL_TEXTURE_2D;
 		}
-		//*
+		
+		final int[] name = new int[] { -1 };
 		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
         gl.glGenTextures(1, name, 0);
-        gl.glBindTexture(texType, name[0]);
+        regTexHandle = name[0];
+        gl.glBindTexture(texType, regTexHandle);
         if(MSAAEnabled) {
         	gl.glTexImage2DMultisample(texType, MSAASamples, GL.GL_RGBA8, fboWidth, fboHeight, true);
         } else {
@@ -89,19 +90,23 @@ public class Renderer {
         }
         
 		gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0 + 0, texType, name[0], 0);
-				//*/
-		// FIXME: leaks the texture
 		
-		// Blah blah, basic
         //fbo_tex.attachRenderbuffer(gl, Attachment.Type.DEPTH, 32);
-		/* NOPE, doesn't work, since the way samples are set -> JOGL == retarded
-		 * (in JOGL, in order to use the default FBObject functionality, one has
-		 *  to specify a number of samples and stick with it. makes sense, of course.
-		 *  BUT if you want to use MS, you can't use textures with JOGL, since
-		 *  it complains when you use textures and more than 0 samples. So if you
-		 *  roll your own MS texture support, you need to roll your own depth
-		 *  buffer/ depth texture support.
-		 *  )
+		/* 
+		 * NOPE, this doesn't work with multisampling. JOGL doesn't help you here.
+		 * In JOGL, in order to use the default FBObject functionality, one has
+		 *  to specify a number of samples when creating the FBObject and stick
+		 *  with it. This makes sense, of course. To an extent.
+		 *  If you want to use MS with FBOs (which you kind of have to, if you 
+		 *  plan to do multi-pass rendering), you have to render on multi-sampled
+		 *  textures. And you can't use those textures with JOGL framebuffers, since
+		 *  it complains when you use textures and more than 0 samples. 
+		 *  
+		 *  And don't even think about just binding MS textures to the FBO using
+		 *  the JOGL functionality. GL_TEXTURE_2D is hardcoded everywhere. :(
+		 *  
+		 *  So if you want to roll your own MS texture support, you also need to
+		 *  roll your own color/ depth texture support.
 		 *  
 		 *   Dang.
 		 */
@@ -177,7 +182,7 @@ public class Renderer {
 		// This is where the magic happens!
 		// The texture we rendered on is passed as an input to the second stage!
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
-		gl.glBindTexture(texType, name[0]);
+		gl.glBindTexture(texType, regTexHandle);
 		
 		gl.glDrawArrays(GL2.GL_QUADS, 0, quad.getVertices().getSize());
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
@@ -244,9 +249,12 @@ public class Renderer {
 		GLUT glut = new GLUT();
 		ca.prepare(gl);
 		gl.glBegin(GL2.GL_TRIANGLES);
-			for(PointLight pl : scene.pointLights) {
-				gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
-				glut.glutSolidSphere(0.5d, 10, 10);
+			for(Light l : scene.lights) {
+				if(l.getType() != LightType.Directional) {
+					PointLight pl = (PointLight)l;
+					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
+					glut.glutSolidSphere(0.5d, 10, 10);
+				}
 			}
 		gl.glEnd();
 		gl.glPopMatrix();

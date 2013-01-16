@@ -94,7 +94,7 @@ public class DemoScene extends Scene {
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		camera.setFOV(45.0f);
 		
-		pointLights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
+		lights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
 		
 		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		

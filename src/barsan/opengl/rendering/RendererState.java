@@ -6,6 +6,8 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.lights.AmbientLight;
+import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
@@ -17,8 +19,7 @@ import barsan.opengl.rendering.materials.Material;
 public class RendererState {
 	
 	public final GL2 gl;
-	private ArrayList<PointLight> pointLights;
-	private ArrayList<DirectionalLight> directionalLights;
+	private ArrayList<Light> pointLights;
 	
 	private AmbientLight ambientLight;
 	private Fog fog; 
@@ -35,25 +36,19 @@ public class RendererState {
 		this.gl = gl;
 	}
 
-	public RendererState(GL2 gl, ArrayList<PointLight> pointLights,
-			ArrayList<DirectionalLight> directionalLights,
+	public RendererState(GL2 gl, ArrayList<Light> pointLights,
 			AmbientLight ambientLight, Camera camera, int anisotropySamples) {
 		this.gl = gl;
 		this.pointLights = pointLights;
-		this.directionalLights = directionalLights;
 		this.ambientLight = ambientLight;
 		this.camera = camera;
 		this.anisotropySamples = anisotropySamples;
 	}
 
-	public void setPointLights(ArrayList<PointLight> pointLights) {
+	public void setLights(ArrayList<Light> pointLights) {
 		this.pointLights = pointLights;
 	}
-
-	public void setDirectionalLights(ArrayList<DirectionalLight> directionalLights) {
-		this.directionalLights = directionalLights;
-	}
-
+	
 	public void setAmbientLight(AmbientLight ambientLight) {
 		this.ambientLight = ambientLight;
 	}
@@ -66,12 +61,8 @@ public class RendererState {
 		this.camera = camera;
 	}
 	
-	public ArrayList<PointLight> getPointLights() {
+	public ArrayList<Light> getLights() {
 		return pointLights;
-	}
-
-	public ArrayList<DirectionalLight> getDirectionalLights() {
-		return directionalLights;
 	}
 
 	public AmbientLight getAmbientLight() {

@@ -17,6 +17,9 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.lights.AmbientLight;
+import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.rendering.lights.Light;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
@@ -166,9 +169,19 @@ public class BasicMaterial extends Material {
 		shader.setUMatrix3("vMatrix3x3", new Matrix3(view));
 		
 		// TODO: implement ARRAYS OF LIGHTS here!
-		PointLight light = rendererState.getPointLights().get(0);
+		Light light = rendererState.getLights().get(0);
 		AmbientLight ambientLight = rendererState.getAmbientLight();
-		shader.setUVector3f("vLightPosition", light.getPosition());
+		
+		if(light.getType() == LightType.Point || light.getType() == LightType.Spot) {
+			Vector3 lp = ((PointLight)light).getPosition();
+			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 1.0f };
+			shader.setUVector4f("vLightPosition", buff4f);
+		} else {
+			// Directional light
+			Vector3 lp = ((DirectionalLight)light).getDirection();
+			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 0.0f };
+			shader.setUVector4f("vLightPosition", buff4f);
+		}
 		
 		shader.setUVector4f("globalAmbient", ambientLight.getColor().getData());
 		shader.setUVector4f("lightDiffuse", light.getDiffuse().getData());
@@ -180,12 +193,12 @@ public class BasicMaterial extends Material {
 		shader.setU1f("cubicAt", light.getCubicAttenuation());
 		
 		// This isn't very clean - TODO: delegate this to special components
-		if(light instanceof SpotLight) {
+		if(light.getType() == LightType.Spot) {
 			SpotLight sl = (SpotLight)light;
 			shader.setU1f("lightTheta", sl.getTheta());
 			shader.setU1f("lightPhi", sl.getPhi());
 			shader.setU1f("lightExponent", sl.getExponent());
-			shader.setUVector3f("spotDirection", sl.getDirection());
+			shader.setUVector3f("spotDirection", sl.getDirection());		
 		} else {
 			shader.setU1f("lightTheta", 0.0f);
 			shader.setU1f("lightPhi", 0.0f);

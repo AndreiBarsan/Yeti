@@ -65,7 +65,7 @@ public class ModelGraphScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 0.0f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f).normalize());
 		
-		pointLights.add(light);
+		lights.add(light);
 	}
 	
 	@Override

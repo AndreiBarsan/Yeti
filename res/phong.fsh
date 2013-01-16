@@ -27,9 +27,13 @@ uniform sampler2D colorMap;
 uniform bool useBump;
 uniform sampler2D normalMap;
 
+// Shadow mapping
+uniform bool 	useShadows;
+uniform sampler2D shadowMap;
+
 // Fog
 uniform bool 	fogEnabled;
-uniform vec4	fogColor;
+uniform vec4 	fogColor;
 
 smooth in vec3 	vVaryingNormal;
 smooth in vec3 	vVaryingLightDir;
@@ -40,6 +44,8 @@ smooth in vec4 	vertPos_wc;
 smooth in vec4 	vertPos_ec;
 smooth in vec4 	lightPos_ec;
 smooth in vec3 	spotDirection_ec;
+
+smooth in vec4 	vertPos_dmc;	// Used in shadow mapping
 
 smooth in mat3 	mNTB;
 
@@ -106,8 +112,16 @@ void main() {
 		vBump = normalize(mNTB * vBump);
 		nNormal = vBump;
 	}
-
-	float intensity = computeIntensity(nNormal, nLightDir);	
+	
+	float visibility = 1.0f;
+	if(useShadows) {
+		if ( texture( shadowMap, vertPos_dmc.xy ).z  <  vertPos_dmc.z) {
+    		visibility = 0.5;
+		}
+	}
+	
+	float intensity = computeIntensity(nNormal, nLightDir);
+	intensity *= visibility;	
 	cf = matAmbient.rgb * globalAmbient.rgb + intensity * lightDiffuse.rgb * matDiffuse.rgb;	
 	af = matAmbient.a * globalAmbient.a + lightDiffuse.a * matDiffuse.a;
 	

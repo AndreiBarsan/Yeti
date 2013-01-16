@@ -43,7 +43,7 @@ public class ProceduralScene extends Scene {
 		
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
-		pointLights.add(mainLight = new PointLight(new Vector3(0f, 20f, 10f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		lights.add(mainLight = new PointLight(new Vector3(0f, 20f, 10f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		
 		Yeti.debug("J & K to increase/decrease cylinder precision.");
 		Yeti.get().addKeyListener(new KeyListener() {

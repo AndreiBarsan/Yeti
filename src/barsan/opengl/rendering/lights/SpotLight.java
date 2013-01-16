@@ -58,4 +58,9 @@ public class SpotLight extends PointLight {
 	public void setExponent(float exponent) {
 		this.exponent = exponent;
 	}
+	
+	@Override
+	public LightType getType() {
+		return LightType.Spot;
+	}
 }
