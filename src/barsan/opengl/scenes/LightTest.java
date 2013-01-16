@@ -1,18 +1,12 @@
 package barsan.opengl.scenes;
 
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.IOException;
 
-import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-
-import com.jogamp.opengl.util.gl2.GLUT;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -21,7 +15,6 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.BasicMaterial;
 import barsan.opengl.rendering.BasicMaterial.BumpComponent;
-import barsan.opengl.rendering.Cube;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Material;
 import barsan.opengl.rendering.Model;
@@ -32,7 +25,6 @@ import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
-import barsan.opengl.util.FPCameraAdapter;
 
 public class LightTest extends Scene {
 
