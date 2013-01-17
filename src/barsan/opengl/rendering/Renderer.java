@@ -18,6 +18,7 @@ import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.lights.Light.LightType;
+import barsan.opengl.rendering.materials.DepthWriterDirectional;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
@@ -172,9 +173,15 @@ public class Renderer {
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gl.glDepthMask(true);
 		
+		prepareBillboards(scene);
+		
 		if(shadowsEnabled) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
-			renderShadows(gl, scene);
+			state.forceMaterial(new DepthWriterDirectional());
+			// TODO: alternative - this is quite dirty
+			Camera aux = state.getCamera();	
+			renderScene(gl, scene);
+			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			
 			// Bind the shadowmap to a certain slot; 
@@ -260,6 +267,13 @@ public class Renderer {
 			assert matrixstack.getSize() == 1;
 		}
 		
+		// Render the billboards separately
+		for(Billboard b : scene.billbords) {
+			b.render(state, matrixstack);
+		}
+	}
+	
+	private void prepareBillboards(final Scene scene) {
 		// Sort and render the non-additionally-blended billboards
 		Collections.sort(scene.billbords, new Comparator<Billboard>() {
 			@Override
@@ -270,15 +284,6 @@ public class Renderer {
 				return d2.compareTo(d1);
 			}
 		});
-		
-		// Render the billboards separately
-		for(Billboard b : scene.billbords) {
-			b.render(state, matrixstack);
-		}
-	}
-	
-	private void renderShadows(GL2 gl, Scene scene) {
-		// TODO: simple render pass FORCING everything to use the depthWriter material
 	}
 	
 	private void renderDebug(GL2 gl, Scene scene) {

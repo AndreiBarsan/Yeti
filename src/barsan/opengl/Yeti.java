@@ -49,11 +49,11 @@ import barsan.opengl.util.Settings;
 import com.jogamp.opengl.util.Animator;
 
 /**
- * 
  * @author Andrei Barsan
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
+ * TODO: basic shadow mapping
  * TODO: perpixel fog & fix fog computation
  * TODO: actually find and write down the matrix multiplication BUG !!!
  * TODO: light lists for point lights
@@ -63,7 +63,6 @@ import com.jogamp.opengl.util.Animator;
  * 			- axes
  * 			- MOST IMPORTANTLY: tiny circles/spheres to show light positions as
  * 				well as spotlight dirs; NORMALS!
- * TODO: implement directional lights
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
@@ -73,6 +72,8 @@ import com.jogamp.opengl.util.Animator;
  * TODO: render depth buffer only
  * TODO: smooth camera movement 		~
  * TODO: depth of field
+ * TODO: uniform blocks for shaders (with possibility of loading multiple items
+ * in a single action from the App)
  * TODO: global cel-shading effect (with no double drawing, just take depth-buffer
  * 			slap an uncanny edge detection, render found edges black on color-buffer)
  * TODO: list of all lights and entities
@@ -234,7 +235,7 @@ public class Yeti implements GLEventListener {
 		currentScene.pause();		
 	}
 	
-	public void startRenderLoop(Frame frame, Container hostContainer, boolean insertCanvas) {
+	public void startRenderLoop(Frame frame, Container hostContainer) {
 		
 		// Create and setup the canvas
 		GLCanvas canvas = createCanvas();
@@ -255,9 +256,7 @@ public class Yeti implements GLEventListener {
 		
 		this.frame = frame;
 		
-		if(insertCanvas) {
-			hostContainer.add(canvas);
-		}
+		hostContainer.add(canvas);
 		
 		// ...and away we go!
 		frame.setVisible(true);
@@ -382,11 +381,6 @@ public class Yeti implements GLEventListener {
 		currentScene.display(drawable);
 	}
 
-	@Override
-	public void dispose(GLAutoDrawable drawable) {
-		currentScene.dispose(drawable);
-		ResourceLoader.cleanUp();
-	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
@@ -397,6 +391,12 @@ public class Yeti implements GLEventListener {
 			pendingInit = false;
 		}
 		currentScene.reshape(drawable, x, y, width, height);
+	}
+	
+	@Override
+	public void dispose(GLAutoDrawable drawable) {
+		currentScene.dispose(drawable);
+		ResourceLoader.cleanUp();
 	}
 	
 	private GLCanvas createCanvas() {
@@ -500,8 +500,8 @@ public class Yeti implements GLEventListener {
 		Yeti yeti = Yeti.get();
 		
 		Frame frame = new Frame("Sup");
-		frame.setSize(Yeti.width, Yeti.height);
+		frame.setSize(yeti.settings.width, yeti.settings.height);
 		
 		yeti.startRenderLoop(frame, frame, true);
-	}*/
+	}//*/
 }

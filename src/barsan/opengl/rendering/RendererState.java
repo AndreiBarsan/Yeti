@@ -26,6 +26,7 @@ public class RendererState {
 	
 	// Default material - Gouraud with basic white color
 	private Material defaultMaterial = new BasicMaterial();
+	private Material forcedMaterial = null;
 	
 	private Camera camera;
 
@@ -87,6 +88,18 @@ public class RendererState {
 	
 	public int getAnisotropySamples() {
 		return anisotropySamples;
+	}
+	
+	public void forceMaterial(Material material) {
+		forcedMaterial = material;
+	}
+	
+	public boolean hasForcedMaterial() {
+		return forcedMaterial != null;
+	}
+	
+	public Material getForcedMaterial() {
+		return forcedMaterial;
 	}
 	
 	public void setAnisotropySamples(int value) {

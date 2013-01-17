@@ -45,11 +45,13 @@ public class ModelInstance implements Renderable {
 
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		GL2 gl = rendererState.gl;
+		//GL2 gl = rendererState.gl;
 
 		transformStack.push(localTransform.get());
 
-		if (material != null) {
+		if(rendererState.hasForcedMaterial()) {
+			rendererState.getForcedMaterial().setup(rendererState, transformStack.result());
+		} else if (material != null) {
 			material.setup(rendererState, transformStack.result());
 		} else {
 			rendererState.getDefaultMaterial().setup(rendererState, transformStack.result());
