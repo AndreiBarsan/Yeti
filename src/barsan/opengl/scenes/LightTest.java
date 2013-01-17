@@ -107,7 +107,6 @@ public class LightTest extends Scene {
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, 1.0f, 1.0f).normalize());
 		lights.add(test_dl);
-		//pointLights.add(testLight);
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
 			@Override
@@ -143,18 +142,22 @@ public class LightTest extends Scene {
 		Yeti.get().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				lights.clear();
-				currentlyActive = LightType.values()[(currentlyActive.ordinal() + 1) % LightType.values().length];
-				switch(currentlyActive) {
-				case Directional:
-					lights.add(test_dl);
-					break;
-				case Point:
-					lights.add(test_pl);
-					break;
-				case Spot:
-					lights.add(test_sl);
-					break;
+				if(e.getButton() != MouseEvent.BUTTON3) return;	// right-click only!
+				
+				synchronized(lights) {
+					lights.clear();
+					currentlyActive = LightType.values()[(currentlyActive.ordinal() + 1) % LightType.values().length];
+					switch(currentlyActive) {
+					case Directional:
+						lights.add(test_dl);
+						break;
+					case Point:
+						lights.add(test_pl);
+						break;
+					case Spot:
+						lights.add(test_sl);
+						break;
+					}
 				}
 			}
 		});

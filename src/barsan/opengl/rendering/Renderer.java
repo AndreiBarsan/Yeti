@@ -10,11 +10,13 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLException;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
@@ -33,6 +35,7 @@ public class Renderer {
 
 	private RendererState state;
 	private FBObject fbo_tex;
+	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
 	TextureAttachment tta;
@@ -42,6 +45,19 @@ public class Renderer {
 	
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
+	private Model screenQuad;
+	
+	public boolean shadowsEnabled = false;
+	
+	// TODO: multiply the lightMVP with this before sending it to the 
+	// main rendering pass
+	private static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
+			{
+				0.5f, 0.0f, 0.0f, 0.0f,
+				0.0f, 0.5f, 0.0f, 0.0f,
+				0.0f, 0.0f, 0.5f, 0.0f,
+				0.0f, 0.0f, 0.0f, 1.0f
+			}); 
 		
 	public Renderer(GL2 gl) {	
 		state = new RendererState(gl);
@@ -121,7 +137,7 @@ public class Renderer {
 		
 		fbo_tex.unbind(gl);
 		
-		quad = new Model(gl, "derp");
+		screenQuad = new Model(gl, "derp");
 		Face mainFace = new Face();
 		mainFace.points = new Vector3[] {
 				new Vector3(-1.0f, -1.0f, 0.0f),
@@ -135,25 +151,42 @@ public class Renderer {
 				new Vector3(1.0f, 1.0f, 0.0f),
 				new Vector3(1.0f, 0.0f, 0.0f)
 		};
-		quad.master.faces.add(mainFace);
-		quad.setPointsPerFace(4);
-		quad.buildVBOs();
+		screenQuad.master.faces.add(mainFace);
+		screenQuad.setPointsPerFace(4);
+		screenQuad.buildVBOs();
+		
+		// Prepare shadow mapping
+		fbo_shadows = new FBObject();
+		int shadowMapW = 2048;
+		int shadowMapH = 2048;
+		fbo_shadows.reset(gl, shadowMapW, shadowMapH, 0);
+		
 	}
 	
 	public RendererState getState() {
 		return state;
 	}
-	
-	Model quad;
+		
 	public void render(final Scene scene) {
 		GL2 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gl.glDepthMask(true);
 		
+		if(shadowsEnabled) {
+			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
+			renderShadows(gl, scene);
+			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
+			
+			// Bind the shadowmap to a certain slot; 
+			// TODO: rewrite system to allow this - right slots are allocated 
+			// starting from 0 by the materials; the renderer needs to be 
+			// able to use slots too!
+		}
+		
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		//renderDebug(gl, scene);		
+		renderDebug(gl, scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		// Clear the main (screen) FrameBuffer
@@ -174,24 +207,24 @@ public class Renderer {
 		pps.setU1i("colorMap", 0);
 		
 		int pindex = pps.getAttribLocation(Shader.A_POSITION);
-		quad.getVertices().use(pindex);
+		screenQuad.getVertices().use(pindex);
 
 		int tindex = pps.getAttribLocation(Shader.A_TEXCOORD);
-		quad.getTexcoords().use(tindex);
+		screenQuad.getTexcoords().use(tindex);
 		
 		// This is where the magic happens!
 		// The texture we rendered on is passed as an input to the second stage!
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
 		gl.glBindTexture(texType, regTexHandle);
 		
-		gl.glDrawArrays(GL2.GL_QUADS, 0, quad.getVertices().getSize());
+		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		
-		//fbo_tex.unuse(gl);
+		fbo_tex.unuse(gl);
 		gl.glBindTexture(texType, 0); 
 		
-		quad.getVertices().cleanUp(pindex);
-		quad.getTexcoords().cleanUp(tindex);
+		screenQuad.getVertices().cleanUp(pindex);
+		screenQuad.getTexcoords().cleanUp(tindex);
 	}
 	
 	public void dispose(GL2 gl) {
@@ -244,19 +277,26 @@ public class Renderer {
 		}
 	}
 	
+	private void renderShadows(GL2 gl, Scene scene) {
+		// TODO: simple render pass FORCING everything to use the depthWriter material
+	}
+	
 	private void renderDebug(GL2 gl, Scene scene) {
 		FPCameraAdapter ca = new FPCameraAdapter(scene.camera);
+		gl.glUseProgram(0);
 		GLUT glut = new GLUT();
 		ca.prepare(gl);
-		gl.glBegin(GL2.GL_TRIANGLES);
-			for(Light l : scene.lights) {
-				if(l.getType() != LightType.Directional) {
-					PointLight pl = (PointLight)l;
+		for(Light l : scene.lights) {
+			if(l.getType() != LightType.Directional) {
+				PointLight pl = (PointLight)l;
+				if(l.getType() == LightType.Point) {
 					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
-					glut.glutSolidSphere(0.5d, 10, 10);
+					glut.glutSolidSphere(0.5d, 64, 64);
 				}
-			}
-		gl.glEnd();
+				// need quaternion slerp to align a spotlight cone to the 
+				// spotlight direction
+			} 
+		}
 		gl.glPopMatrix();
 
 	}
