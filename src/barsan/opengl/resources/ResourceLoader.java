@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
 
@@ -133,8 +134,7 @@ public class ResourceLoader {
 	}
 	
 	public static void cleanUp() {
-		
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		
 		for(Shader s : shaders.values()) {
 			gl.glDeleteProgram(s.getHandle());

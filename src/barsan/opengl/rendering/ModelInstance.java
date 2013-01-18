@@ -60,9 +60,8 @@ public class ModelInstance implements Renderable {
 		int pindex = material.getPositionIndex();
 		model.getVertices().use(pindex);
 
-		int nindex = material.getNormalIndex();
-
 		if (!material.ignoresLights()) {
+			int nindex = material.getNormalIndex();
 			model.getNormals().use(nindex);
 		}
 		

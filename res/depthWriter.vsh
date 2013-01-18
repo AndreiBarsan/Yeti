@@ -2,8 +2,8 @@
 
 uniform mat4 	lightMVP;
 
-layout(location = 0) in vec4 vPosition;
+layout(location = 0) in vec4 vVertex;
 
 void main(void) {
-	gl_Position =  lightMVP * vPosition;
+	gl_Position =  lightMVP * vVertex;
 }

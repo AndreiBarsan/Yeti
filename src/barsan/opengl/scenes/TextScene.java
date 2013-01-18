@@ -3,6 +3,8 @@ package barsan.opengl.scenes;
 import java.awt.Font;
 
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
+import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 
@@ -15,13 +17,12 @@ public class TextScene extends Scene{
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
-		GL2 gl = Yeti.get().gl;
 	}
 	
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-		GL2 gl = drawable.getGL().getGL2();
+		GL3bc gl = Yeti.get().gl;
 		GLU glu = new GLU();
 
 		if (height == 0) {
@@ -41,7 +42,7 @@ public class TextScene extends Scene{
 		
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
 		gl.glMatrixMode(GL2.GL_MODELVIEW);

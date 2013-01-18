@@ -29,19 +29,19 @@ public class GLHelp {
 		}
 	}
 
-	public static void assertOK(GL2 gl) {
+	public static void assertOK(GL gl) {
 		int code = gl.glGetError();
 		if (code != GL.GL_NO_ERROR) {
 			Yeti.screwed("GL fatal error: #" + code);
 		}
 	}
 	
-	public static float get1f(GL2 gl, int name) {
-		gl.glGetFloatv(GL2.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, out, 0);
+	public static float get1f(GL gl, int name) {
+		gl.glGetFloatv(GL.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, out, 0);
 		return out[0];
 	}
 
-	public static void fboErr(GL2 gl) {
+	public static void fboErr(GL gl) {
 		int result = gl.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
 		System.out.println(FBObject.getStatusString(result));
 	}

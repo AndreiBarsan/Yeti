@@ -7,7 +7,6 @@ import java.util.List;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import com.jogamp.opengl.util.texture.Texture;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -33,58 +32,6 @@ import barsan.opengl.util.GLHelp;
  *
  */
 public class BasicMaterial extends Material {	
-	
-	interface MaterialComponent {
-		/**
-		 * Sets this component of the complex material up. Multiple components
-		 * make up a whole material. This method doesn't handle textures. 
-		 * @param m		The material being set up. 
-		 * @param rs	The rendering context.
-		 */
-		/* pp */ void setup(Material m, RendererState rs);
-		/**
-		 * Fills up 0 or more texture slots and binds other related variables.
-		 * @return The number of texture slots occupied.
-		 */
-		/* pp */ int setupTexture(Material m, RendererState rs, int slot);
-		/**
-		 * Frees up whatever resources were bound on setup! 
-		 * Do not destroy texutures and such here! Use dispose() for that!
-		 */
-		/* pp */ void cleanup();
-		
-		/* pp */ void dispose();
-	}
-	
-	public static class BumpComponent implements MaterialComponent {
-		
-		Texture normalMap;
-		
-		public BumpComponent(Texture normalMap) {
-			this.normalMap = normalMap;
-		}
-		
-		@Override
-		public void setup(Material m, RendererState rs) {
-			m.shader.setU1i("useBump", true);
-		}
-		
-		@Override
-		public int setupTexture(Material m, RendererState rs, int slot) {
-			m.shader.setU1i("normalMap", slot);	
-			rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
-			normalMap.bind(rs.gl);
-			normalMap.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
-			
-			// We only used one slot
-			return 1;
-		}
-		
-		@Override
-		public void cleanup() {	}
-		@Override
-		public void dispose() { }
-	}
 	
 	// TODO: consistent uniform names to ease automatic material management in the future
 	
@@ -114,6 +61,9 @@ public class BasicMaterial extends Material {
 	
 	public BasicMaterial(Color ambient, Color diffuse, Color specular) {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
+		
+		// TODO: remove me and do this right
+		addComponent(new ShadowReceiver());
 	}
 	
 	public void addComponent(MaterialComponent component) {
@@ -151,7 +101,12 @@ public class BasicMaterial extends Material {
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		view.set(rendererState.getCamera().getView());
 		projection.set(rendererState.getCamera().getProjection());
+		
+		
+		//view.set(rendererState.depthView);
+		//projection.set(rendererState.depthProjection);
 		viewModel.set(view).mul(modelMatrix);
+		
 		
 		// WARNING: A * B * C != A * (B * C) with matrices
 		// The following line does not equal projection * viewModel
@@ -226,7 +181,7 @@ public class BasicMaterial extends Material {
 		
 		shader.setU1i("useBump", 0);
 		for (MaterialComponent c : components) {
-			c.setup(this, rendererState);
+			c.setup(this, rendererState, modelMatrix);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);
 		}
 		

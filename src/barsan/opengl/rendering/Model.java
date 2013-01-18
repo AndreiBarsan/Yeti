@@ -11,8 +11,6 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
 
-import com.jogamp.common.nio.Buffers;
-
 // TODO: IMPORTANT! Interactively add to VBO for faster building!!!
 // TODO: fail on freeform geomerty
 // TODO: future - load & render freeform stuff
@@ -43,7 +41,7 @@ public class Model {
 		}
 	}
 	
-	static class Group {
+	public static class Group {
 		// TODO: only use these things as temporary storage (or use them to optimize
 		// the rendering later)
 		public ArrayList<Vector3> geometry = new ArrayList<>();
@@ -62,10 +60,10 @@ public class Model {
 	//private VBO bitangents;
 	
 	protected HashMap<String, Group> groups = new HashMap<>();
-	protected Group master = new Group();
+	public Group master = new Group();
 	
 	private String name;
-	protected final GL2 gl;
+	protected final GL gl;
 	
 	/**
 	 * Whether GL_TRIANGLES or GL_QUADS is being used.
@@ -85,7 +83,7 @@ public class Model {
 	 * @param input Input source.
 	 * @return		The newly loaded model, fresh from the oven!
 	 */
-	public static Model fromObj(GL2 gl, Scanner input) {
+	public static Model fromObj(GL gl, Scanner input) {
 		Model model = new Model(gl, "");
 		
 		// Counters
@@ -338,7 +336,7 @@ public class Model {
 	}
 	
 	public static Model buildPlane(float width, float height, int sdivw, int sdivh) {
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		Model result = new Model(gl, "plane");
 		
 		float uw = width / sdivw;
@@ -377,11 +375,17 @@ public class Model {
 		return result;
 	}
 	
-	/**
-	 * Builds a simple quad in the XZ plane.
-	 */
 	public static Model buildQuad(float width, float height) {
-		GL2 gl = Yeti.get().gl;
+		return buildQuad(width, height, true);
+	}
+	
+	/**
+	 * Builds a simple quad.
+	 * 
+	 * @param xz whether to build the quad in the xz plane. xy otherwise.
+	 */
+	public static Model buildQuad(float width, float height, boolean xz) {
+		GL2 gl = Yeti.get().gl.getGL2();
 		Model result = new Model(gl, "quad");
 		result.setPointsPerFace(4);
 		
@@ -389,31 +393,46 @@ public class Model {
 		float hh = height / 2.0f;
 		
 		Face face = new Face();
-		face.points = new Vector3[] {
-			new Vector3(-hw, 0, -hh),
-			new Vector3(-hw, 0,  hh),
-			new Vector3( hw, 0,  hh),
-			new Vector3( hw, 0, -hh)
-		};//*
 		face.texCoords = new Vector3[] {
-			new Vector3(0, 0, 0),
-			new Vector3(0, 1, 0),
-			new Vector3(1, 1, 0),
-			new Vector3(1, 0, 0)
-		};
-		face.normals = new Vector3[] {
-			new Vector3(0, 1, 0),
-			new Vector3(0, 1, 0),
-			new Vector3(0, 1, 0),
-			new Vector3(0, 1, 0)
-		};//*/
+				new Vector3(0, 0, 0),
+				new Vector3(0, 1, 0),
+				new Vector3(1, 1, 0),
+				new Vector3(1, 0, 0)
+			};
+		if(xz) {
+			face.points = new Vector3[] {
+				new Vector3(-hw, 0, -hh),
+				new Vector3(-hw, 0,  hh),
+				new Vector3( hw, 0,  hh),
+				new Vector3( hw, 0, -hh)
+			};
+			face.normals = new Vector3[] {
+				new Vector3(0, 1, 0),
+				new Vector3(0, 1, 0),
+				new Vector3(0, 1, 0),
+				new Vector3(0, 1, 0)
+			};
+		} else {
+			face.points = new Vector3[] {
+				new Vector3(-hw, -hh, 0),
+				new Vector3(-hw,  hh, 0),
+				new Vector3( hw,  hh, 0),
+				new Vector3( hw, -hh, 0)
+			};
+			face.normals = new Vector3[] {
+				new Vector3(0, 0, 1),
+				new Vector3(0, 0, 1),
+				new Vector3(0, 0, 1),
+				new Vector3(0, 0, 1)
+			};
+		}
 		result.addFace(face);
 		
 		result.buildVBOs();
 		return result;
 	}
 	
-	public Model(GL2 gl, String name) {
+	public Model(GL gl, String name) {
 		this.gl = gl;
 		this.name = name;
 		this.pointsPerFace = 3; // default

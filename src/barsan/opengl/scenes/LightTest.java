@@ -19,6 +19,7 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.OrthographicCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -26,7 +27,7 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
-import barsan.opengl.rendering.materials.BasicMaterial.BumpComponent;
+import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -63,7 +64,7 @@ public class LightTest extends Scene {
 			e.printStackTrace();
 		}
 		
-		Model quad = Model.buildPlane(500.0f, 500.0f, 100, 100);
+		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
 		Material monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
 		
@@ -72,23 +73,22 @@ public class LightTest extends Scene {
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
 		
+		
 		final BasicMaterial floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
-		//floorMat.addComponent(bc);
 		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
 		floorMat.setShininess(256);
 		
-		modelInstances.add(new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("test"), getCamera()));
+		modelInstances.add(new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera()));
 		
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
-		
-		camera.setFrustumFar(3000.0f);
 			
 		float step = 10.0f;
-		for(int i = -5; i < 5; i++) {
-			for(int j = -5; j < 5; j++) {
-				Transform pm = new Transform().setTranslate(i * step, 2.0f, j * step);
+		int monkeys = 5;
+		for(int i = -monkeys; i < monkeys; i++) {
+			for(int j = -monkeys; j < monkeys; j++) {
+				Transform pm = new Transform().setTranslate(i * step, 1.0f, j * step);
 				float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
 				pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
@@ -105,7 +105,7 @@ public class LightTest extends Scene {
 		
 		test_pl = new PointLight(new Vector3(lightX, 2.50f, lightZ));
 		
-		test_dl = new DirectionalLight(new Vector3(0.0f, 1.0f, 1.0f).normalize());
+		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		lights.add(test_dl);
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
@@ -176,11 +176,8 @@ public class LightTest extends Scene {
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		
-		tv.set((float)Math.sin(a * 3), 1.0f, 1.0f);
+		tv.set(1.0f, 1.0f, 4.0f);
 		test_dl.getDirection().set(tv).normalize();
-		
-		//camera.setPosition(new Vector3(-10.0f, 8.0f, 0.0f));
-		//camera.setDirection(new Vector3(camera.getPosition()).sub(testLight.getPosition().copy().setY(0.0f)).normalize());
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		super.display(drawable);

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
@@ -57,7 +58,7 @@ public class VBO {
 	}
 	
 	public VBO(int type, int elementGroupCount, int elementGroupSize, int elementSizeOf, int elementType) {
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		
 		int buff[] = new int[] { -1 };
 		// TODO: request multiple buffers at once (good optimization when we
@@ -99,7 +100,7 @@ public class VBO {
 		if(open) {
 			Yeti.screwed("VBO already opened!");
 		}
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
 		open = true;
@@ -112,7 +113,7 @@ public class VBO {
 		if(!open) {
 			Yeti.screwed("Closing unopened VBO!");
 		}
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		gl.glUnmapBuffer(type);	
 		open = false;
 	}
@@ -154,78 +155,6 @@ public class VBO {
 	}
 	
 	/**
-	 * Pushes a float array into the buffer.
-	 * 
-	 * @deprecated Use open(); (appends); close(); approach.  
-	 * 
-	 * @param el
-	 * @return this object for chaining
-	 */
-	public VBO put(float elements[]) {
-		GL2 gl = Yeti.get().gl;
-		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
-		localBuffer.put(elements);		
-		gl.glUnmapBuffer(type);		
-		return this;
-	}
-	
-	// Warning, might involve a bit too many native calls
-	/**
-	 * @deprecated Use open(); (appends); close(); approach.
-	 */
-	public VBO put(Vector3 element) {
-		GL2 gl = Yeti.get().gl;
-		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
-		localBuffer.put(element.x);
-		localBuffer.put(element.y);
-		localBuffer.put(element.z);
-		gl.glUnmapBuffer(type);
-		return this;
-	}
-	
-	/**
-	 * @deprecated Use open(); (appends); close(); approach.
-	 */
-	public VBO put(Vector3 elements[]) {
-		GL2 gl = Yeti.get().gl;
-		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
-		
-		if(elementGroupSize != 3) 
-			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
-		
-		for(Vector3 v : elements) {
-			localBuffer.put(v.x);
-			localBuffer.put(v.y);
-			localBuffer.put(v.z);
-		}		
-		gl.glUnmapBuffer(type);		
-		return this;
-	}
-	
-	/**
-	 * @deprecated Use open(); (appends); close(); approach.
-	 */
-	public VBO put(ArrayList<Vector3> elements) {
-		GL2 gl = Yeti.get().gl;
-		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY); 	// we need to map it first!
-													// otherwise unmap triggers GL_INVALID_OPERATION
-		if(elementGroupSize != 3) 
-			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
-			
-		for(Vector3 v : elements) {
-			localBuffer.put(v.x);
-			localBuffer.put(v.y);
-			localBuffer.put(v.z);
-		}		
-		gl.glUnmapBuffer(type);		
-		return this;
-	}
-	
-	/**
 	 * Most common use case. Assumes the data in the buffer is composed of float
 	 * vectors of three elements each.
 	 * 
@@ -238,7 +167,7 @@ public class VBO {
 	
 	private VBO useImpl(int attributeIndex, int groupSize, int dataType, 
 			boolean normalized, int stride, long offset) {
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glEnableVertexAttribArray(attributeIndex);
 		gl.glVertexAttribPointer(	attributeIndex, 
@@ -256,7 +185,7 @@ public class VBO {
 	}
 
 	public void cleanUp(int indexUsed) {
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		gl.glBindBuffer(type, 0);
 		gl.glDisableVertexAttribArray(indexUsed);
 	}

@@ -1,6 +1,7 @@
 package barsan.opengl.math;
 
 
+
 /**
  * Matrix helper. Inspired by libgdx implementation by badlogicgames@gmail.com
  * @author Andrei Barsan
@@ -391,8 +392,7 @@ public class Matrix4 {
 			* data[M33] - data[M10] * data[M01] * data[M22] * data[M33] + data[M00] * data[M11] * data[M22] * data[M33];
 	}
 
-	public Matrix4 setFrustum(float fov, float aspect, float near, float far) {
-		setIdentity();
+	public Matrix4 setPerspectiveProjection(float fov, float aspect, float near, float far) {
 		float l_fd = (float)(1.0 / Math.tan((fov * (Math.PI / 180)) / 2.0));
 		float l_a1 = (far + near) / (near - far);
 		float l_a2 = (2 * far * near) / (near - far);
@@ -416,6 +416,60 @@ public class Matrix4 {
 		return this;
 	}
 
+	public Matrix4 setOrthogonalProjection(int x, int y, int width, int height, float near, float far) {
+		return setToOrtho(x, x + width, y, y + height, near, far);
+		/*
+		data[M00] = 2.0f / (float)width;
+		data[M10] = 0;
+		data[M20] = 0;
+		data[M30] = 0;
+		data[M01] = 0;
+		data[M11] = 2.0f / (float)height;
+		data[M21] = 0;
+		data[M31] = 0;
+		data[M02] = 0;
+		data[M12] = 0;
+		data[M22] = -2.0f / ( far - near );
+		data[M32] = 0;
+		data[M03] = 0;
+		data[M13] = 0;
+		data[M23] = -(far + near) / (far - near);
+		data[M33] = 1;
+
+		return this;
+		//*/
+	}
+	
+	public Matrix4 setToOrtho (float left, float right, float bottom, float top, float near, float far) {
+
+		float x_orth = 2 / (right - left);
+		float y_orth = 2 / (top - bottom);
+		float z_orth = -2 / (far - near);
+
+		float tx = -(right + left) / (right - left);
+		float ty = -(top + bottom) / (top - bottom);
+		float tz = -(far + near) / (far - near);
+
+		data[M00] = x_orth;
+		data[M10] = 0;
+		data[M20] = 0;
+		data[M30] = 0;
+		data[M01] = 0;
+		data[M11] = y_orth;
+		data[M21] = 0;
+		data[M31] = 0;
+		data[M02] = 0;
+		data[M12] = 0;
+		data[M22] = z_orth;
+		data[M32] = 0;
+		data[M03] = tx;
+		data[M13] = ty;
+		data[M23] = tz;
+		data[M33] = 1;
+		
+		return this;
+	}
+	
 	static Vector3 forward = new Vector3(), side = new Vector3(), newUp = new Vector3();
 	public Matrix4 setLookAt(Vector3 eye, Vector3 center, Vector3 up) {
 				
@@ -427,27 +481,7 @@ public class Matrix4 {
 		return set(side, newUp, forward.mul(-1.0f)).mul(aux_matrix4.setTranslate(-eye.x, -eye.y, -eye.z));
 	}
 	
-	public Matrix4 setOrthogonalProjection(int x, int y, int width, int height, float near, float far) {
-		data[M00] = 2.0f / (float)width;
-		data[M10] = 0;
-		data[M20] = 0;
-		data[M30] = 0;
-		data[M01] = 0;
-		data[M11] = 2.0f / (float)height;
-		data[M21] = 0;
-		data[M31] = 0;
-		data[M02] = 0;
-		data[M12] = 0;
-		data[M22] = 1.0f / ( far - near );
-		data[M32] = 0;
-		data[M03] = 0;
-		data[M13] = 0;
-		data[M23] = - near / (far - near);
-		data[M33] = 1;
-		
-		return this;
-	}
-
+	
 	/**
 	 * Removes the translation information from this transform. Useful for e.g.
 	 * skyboxes.

@@ -1,6 +1,7 @@
 package barsan.opengl.rendering.materials;
 
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 
@@ -21,7 +22,7 @@ public class DepthWriterDirectional extends Material {
 		// of the directional light
 		view.set(rendererState.getCamera().getView());
 		projection.set(rendererState.getCamera().getProjection());
-		viewModel.set(view).mul(transform);
+		//viewModel.set(view).mul(transform);
 		MVP.set(projection).mul(view).mul(transform);
 		
 		shader.setUMatrix4("lightMVP", MVP);

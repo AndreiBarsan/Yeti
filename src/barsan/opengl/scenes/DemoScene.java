@@ -15,10 +15,10 @@ import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ToonMaterial;
-import barsan.opengl.rendering.materials.BasicMaterial.BumpComponent;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.PerspectiveCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.resources.HeightmapBuilder;
@@ -66,12 +66,12 @@ public class DemoScene extends Scene {
 		// FIXME: this isn't right; the skybox should be drawn last in
 		// order for as few fragments as possible to be processed, not first
 		// so that we overwrite most of it!
-		SkyBox sb = new SkyBox(Yeti.get().gl, ResourceLoader.cubeTexture("skybox01"), camera);
+		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("skybox01"), camera);
 		modelInstances.add(sb);
 		
 		blueShit.setShininess(16);
 		
-		Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl,
+		Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl.getGL2(),
 				ResourceLoader.texture("heightmap01"),
 				ResourceLoader.textureData("heightmap01"),
 				4.0f, 4.0f,
@@ -92,7 +92,7 @@ public class DemoScene extends Scene {
 		//*/
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
-		camera.setFOV(45.0f);
+		((PerspectiveCamera)camera).setFOV(45.0f);
 		
 		lights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
 		

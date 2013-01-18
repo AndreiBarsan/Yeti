@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -14,14 +15,12 @@ import barsan.opengl.rendering.Shader;
 import barsan.opengl.rendering.VBO;
 import barsan.opengl.resources.ResourceLoader;
 
-import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureIO;
 
 public class TextureScene extends Scene {
 
 	VBO geometry, textureCoords;
-	GL2 gl;
 	Shader shader;
 	
 	int gindex, tindex, samplerIndex;
@@ -32,7 +31,7 @@ public class TextureScene extends Scene {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
-		gl = drawable.getGL().getGL2();
+
 		try {
 			ResourceLoader.loadShader("basicTex", "res/basicTex");
 		} catch (FileNotFoundException e) {
@@ -43,17 +42,21 @@ public class TextureScene extends Scene {
 		
 		geometry = new VBO(GL2.GL_ARRAY_BUFFER, 3);
 		textureCoords = new VBO(GL2.GL_ARRAY_BUFFER, 3, 2);
-		geometry.put(new float[] {
+		geometry.open();
+		geometry.append(new float[] {
 			0.0f, 0.0f, 0.0f,
 			0.0f, 1.0f, 0.0f,
 			1.0f, 1.0f, 0.0f,
 		});
+		geometry.close();
 		
-		textureCoords.put(new float[] {
+		textureCoords.open();
+		textureCoords.append(new float[] {
 				0.0f, 0.0f,
 				0.0f, 1.0f,
 				1.0f, 1.0f
 			});
+		textureCoords.close();
 		
 		gindex = shader.getAttribLocation("vVertex");
 		tindex = shader.getAttribLocation("vTexCoords");
@@ -70,7 +73,7 @@ public class TextureScene extends Scene {
 
 		camera.setPosition(new Vector3(0.0f, 0.0f, -3.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
-		gl.glUseProgram(shader.getHandle());
+		Yeti.get().gl.glUseProgram(shader.getHandle());
 	}
 	
 	@Override
@@ -78,7 +81,7 @@ public class TextureScene extends Scene {
 		super.display(drawable);
 		
 		shader.setU1i("colorMap", 0);
-		
+		GL3 gl = Yeti.get().gl;
 		texture.bind(gl);
 		
 		geometry.use(gindex);

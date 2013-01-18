@@ -26,7 +26,9 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix3;
@@ -53,7 +55,7 @@ public class Shader {
 	static final ByteBuffer b_buff = ByteBuffer.allocate(1024);
 	static final int[] result = new int[1];
 	
-	public static HashMap<String, Shader> compileBulk(GL2 gl, String[] vertexData, String[] fragmentData) {
+	public static HashMap<String, Shader> compileBulk(GL2GL3 gl, String[] vertexData, String[] fragmentData) {
 		assert vertexData.length == fragmentData.length;
 		
 		HashMap<String, Shader> result = new HashMap<>(vertexData.length);
@@ -67,7 +69,7 @@ public class Shader {
 	/* pp */ String name = "";
 	private HashMap<String, Integer> uLocCache = new HashMap<>(); 
 	
-	public Shader(GL2 gl, String name, String vertexSrc, String fragmentSrc) {
+	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc) {
 		this(gl, name, vertexSrc, fragmentSrc, new String[] {
 			A_POSITION,
 			A_NORMAL
@@ -78,7 +80,7 @@ public class Shader {
 		return handle;
 	}
 	
-	public Shader(GL2 gl, String name, String vertexSrc, String fragmentSrc, String[] args) {
+	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc, String[] args) {
 		
 		int vertex = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragment = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
@@ -87,7 +89,7 @@ public class Shader {
 		gl.glCompileShader(vertex);
 		
 		gl.glGetShaderiv(vertex, GL2.GL_COMPILE_STATUS, result, 0);
-		if(result[0] == GL2.GL_FALSE) {
+		if(result[0] == GL.GL_FALSE) {
 			shaderError("Vertex shader [" + name + "] failed to compile: ", vertex);
 		}
 		
@@ -119,7 +121,7 @@ public class Shader {
 		
 		gl.glLinkProgram(shaderProgram);
 		gl.glGetProgramiv(shaderProgram, GL2.GL_LINK_STATUS, result, 0);
-		if(result[0] == GL2.GL_FALSE) {
+		if(result[0] == GL.GL_FALSE) {
 			shaderLinkError(String.format("Shader \"%s\" failed to link", name), shaderProgram);
 		}
 		
@@ -133,12 +135,12 @@ public class Shader {
 	}
 
 	void dispose() {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		gl.glDeleteShader(handle);
 	}
 	
 	private void shaderError(String message, int handle) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		gl.glGetShaderInfoLog(handle, 512, i_buff, b_buff);
 		Yeti.screwed(message + "\n\t" + new String(b_buff.array(), 0, 512));
 	}
@@ -149,12 +151,12 @@ public class Shader {
 	}
 	
 	public int getAttribLocation(String name) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		return gl.glGetAttribLocation(handle, name);
 	}
 	
 	public boolean setUMatrix4(String uniformName, Matrix4 matrix) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 
@@ -172,7 +174,7 @@ public class Shader {
 	}
 	
 	public boolean setUVector4f(String uniformName, float[] value) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 
@@ -190,7 +192,7 @@ public class Shader {
 	}
 
 	public boolean setUMatrix3(String uniformName, Matrix3 matrix) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 
@@ -209,7 +211,7 @@ public class Shader {
 	}
 
 	public boolean setUVector3f(String uniformName, Vector3 value) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 
@@ -232,7 +234,7 @@ public class Shader {
 	}
 	
 	public boolean setU1i(String uniformName, int value) {
-		GL2 gl = Yeti.get().gl; 
+		GL2GL3 gl = Yeti.get().gl; 
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 
@@ -250,7 +252,7 @@ public class Shader {
 	}
 
 	public boolean setU1f(String uniformName, float value) {
-		GL2 gl = Yeti.get().gl;
+		GL2GL3 gl = Yeti.get().gl;
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
 			pos = uLocCache.get(uniformName); 

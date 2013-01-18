@@ -2,13 +2,12 @@ package barsan.opengl.rendering;
 
 import java.util.ArrayList;
 
-import javax.media.opengl.GL2;
+import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.lights.AmbientLight;
-import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
-import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 
@@ -18,13 +17,12 @@ import barsan.opengl.rendering.materials.Material;
  */
 public class RendererState {
 	
-	public final GL2 gl;
+	public final GL3 gl;
 	private ArrayList<Light> pointLights;
 	
 	private AmbientLight ambientLight;
 	private Fog fog; 
 	
-	// Default material - Gouraud with basic white color
 	private Material defaultMaterial = new BasicMaterial();
 	private Material forcedMaterial = null;
 	
@@ -33,11 +31,15 @@ public class RendererState {
 	int maxAnisotropySamples = -1;
 	int anisotropySamples = 1;
 	
-	public RendererState(GL2 gl) {
+	public Matrix4 depthView;
+	public Matrix4 depthProjection;
+	public int shadowTexture;
+	
+	public RendererState(GL3 gl) {
 		this.gl = gl;
 	}
 
-	public RendererState(GL2 gl, ArrayList<Light> pointLights,
+	public RendererState(GL3 gl, ArrayList<Light> pointLights,
 			AmbientLight ambientLight, Camera camera, int anisotropySamples) {
 		this.gl = gl;
 		this.pointLights = pointLights;

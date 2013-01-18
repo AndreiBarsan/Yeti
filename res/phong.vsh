@@ -57,7 +57,6 @@ void main() {
 		vVaryingLightDir = tLightPos - vPosition3;
 	}
 	
-	
 	if(useTexture) {
 		vVaryingTexCoords = vTexCoord;
 	}

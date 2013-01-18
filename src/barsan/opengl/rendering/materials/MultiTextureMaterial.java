@@ -3,6 +3,7 @@ package barsan.opengl.rendering.materials;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
@@ -32,7 +33,7 @@ public class MultiTextureMaterial extends BasicMaterial {
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		super.setup(rendererState, modelMatrix);
-		GL2 gl = rendererState.gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		
 		shader.setU1f("minHeight", minHeight);
 		shader.setU1f("maxHeight", maxHeight);

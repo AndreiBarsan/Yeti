@@ -1,5 +1,7 @@
 #version 330
 
+const float bias = 0.015f;
+
 uniform vec4 globalAmbient;
 
 // ADS shading model
@@ -24,6 +26,7 @@ uniform float cubicAt;
 uniform bool useTexture;
 uniform sampler2D colorMap;
 
+// Normal mapping
 uniform bool useBump;
 uniform sampler2D normalMap;
 
@@ -86,7 +89,6 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 
 /**
  *	Phong per-pixel lighting shading model.
- * 	Implements basic texture mapping and fog.
  */
 void main() {		
 	vec3 ct, cf;
@@ -94,7 +96,7 @@ void main() {
 	float at, af;
 
 	if(useTexture) {
-		texel = texture2D(colorMap, vVaryingTexCoords); 
+		texel = texture(colorMap, vVaryingTexCoords); 
 	} else {
 		texel = vec4(1.0f);
 	}
@@ -114,9 +116,20 @@ void main() {
 	}
 	
 	float visibility = 1.0f;
+	
 	if(useShadows) {
-		if ( texture( shadowMap, vertPos_dmc.xy ).z  <  vertPos_dmc.z) {
-    		visibility = 0.5;
+		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
+		vec2 sc  = vertPos_dmc.xy;
+
+		if( sc4.w == 0 ) {
+			visibility = 1.0f;
+		} else if(sc.x < 0 || sc.x > 1 || sc.y < 0 || sc.y > 1) {
+			visibility = 1.0f;
+		} else {
+			float shadow = texture( shadowMap, sc ).z;
+			if ( shadow + bias  <  sc4.z) {
+    			visibility = 0.33f;
+			}
 		}
 	}
 	
@@ -146,4 +159,8 @@ void main() {
 	//vFragColor -= vFragColor;
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
+	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z);
+	//vFragColor += vec4(texture(shadowMap, vVaryingTexCoords));
+	//vFragColor += vec4(vertPos_dmc.z);
+	//vFragColor.a = 1.0f;
 }

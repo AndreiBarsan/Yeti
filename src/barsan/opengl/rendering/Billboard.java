@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
@@ -111,7 +112,7 @@ public class Billboard extends ModelInstance {
 	
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		GL2 gl = rendererState.gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 
 		ByteBuffer out = ByteBuffer.allocate(1);
 		gl.glGetBooleani_v(GL2.GL_BLEND, 0, out);

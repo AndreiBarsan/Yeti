@@ -3,6 +3,7 @@ package barsan.opengl.rendering;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -41,10 +42,8 @@ public class Scene implements GLEventListener {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		// Setup basic elements
-		camera = new Camera(Yeti.get().settings.width, Yeti.get().settings.height);
-		GL2 gl = drawable.getGL().getGL2();
-		gl = drawable.getGL().getGL2();
-				
+		camera = new PerspectiveCamera(Yeti.get().settings.width, Yeti.get().settings.height);
+		
 		try {
 			ResourceLoader.loadAllShaders("res");
 		} catch (IOException e) {
@@ -52,7 +51,7 @@ public class Scene implements GLEventListener {
 		}
 		
 		// Prepare the renderer; use the default renderer
-		renderer = new Renderer(gl);
+		renderer = new Renderer(Yeti.get().gl.getGL3());
 		
 		lastTime = System.currentTimeMillis();
 	}

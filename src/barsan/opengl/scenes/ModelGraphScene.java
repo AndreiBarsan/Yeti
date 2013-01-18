@@ -35,7 +35,7 @@ public class ModelGraphScene extends Scene {
 		Material blue = new BasicMaterial(new Color(0.4f, 0.3f, 0.9f, 1.0f));
 		Material yellow = new BasicMaterial(new Color(0.8f, 0.9f, 0.2f, 1.0f));
 		
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		
 		try {
 			ResourceLoader.loadObj("bunny", "res/models/bunny.obj");

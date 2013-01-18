@@ -1,6 +1,7 @@
 package barsan.opengl.rendering;
 
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2GL3;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -35,11 +36,11 @@ public class CubeTexture {
 		return texture;
 	}
 	
-	public void bind(GL2 gl) {
+	public void bind(GL2GL3 gl) {
 		texture.bind(gl);
 	}
 	
-	public void dispose(GL2 gl) {
+	public void dispose(GL2GL3 gl) {
 		texture.destroy(gl);
 	}
 }

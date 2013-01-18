@@ -19,16 +19,12 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
-import javax.media.nativewindow.CapabilitiesImmutable;
-import javax.media.opengl.DebugGL2;
-import javax.media.opengl.DefaultGLCapabilitiesChooser;
-import javax.media.opengl.GL2;
+import javax.media.opengl.DebugGL3bc;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLCapabilitiesChooser;
-import javax.media.opengl.GLCapabilitiesImmutable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
@@ -43,7 +39,7 @@ import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.ModelGraphScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.scenes.TextScene;
-import barsan.opengl.util.GLHelp;
+import barsan.opengl.scenes.ZRenderTest;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -54,6 +50,8 @@ import com.jogamp.opengl.util.Animator;
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
  * TODO: basic shadow mapping
+ * TODO: camera update() method (automatically called by the scene - keep everything
+ * in sync, prevent recalculations of the view matrix etc.)
  * TODO: perpixel fog & fix fog computation
  * TODO: actually find and write down the matrix multiplication BUG !!!
  * TODO: light lists for point lights
@@ -101,8 +99,9 @@ public class Yeti implements GLEventListener {
 	// Swing application Yeti is hosted in
 	private App hostApp;
 	
-	// Active OpenGL context
-	public GL2 gl;
+	// Active OpenGL context. Use GL3.0 by default, with backwards compatibility
+	// for the fixed pipeline to allow debug drawing.
+	public GL3bc gl;
 	
 	// Keeps everything in sync.
 	private final Animator animator;
@@ -120,7 +119,8 @@ public class Yeti implements GLEventListener {
 			TextScene.class,
 			ProceduralScene.class,
 			ModelGraphScene.class,
-			LightTest.class
+			LightTest.class,
+			ZRenderTest.class
 	};
 	static {
 		for(Class<?> c : availableScenes) {
@@ -336,15 +336,15 @@ public class Yeti implements GLEventListener {
 
 		// Get the new context
 		if(debug) {
-			drawable.setGL(new DebugGL2(drawable.getGL().getGL2()));
+			drawable.setGL(new DebugGL3bc(drawable.getGL().getGL3bc()));
 		}
-		gl = drawable.getGL().getGL2();
-		
+		gl = drawable.getGL().getGL3bc();
+			
 		if(engineInitialized) {
 			Yeti.screwed("GL Context was reset. Yeti cannot handle that yet. :(");
 			return;
 		}
-
+		
 		if(hostApp != null) {
 			// TODO: list of callbaks (also maybe make host apps implement
 			// some hook functionality)
@@ -390,6 +390,11 @@ public class Yeti implements GLEventListener {
 			currentScene.registerInputSources(this);
 			pendingInit = false;
 		}
+		// TODO: if hosted in an application - make sure the sizes stay right
+		// FIXME: currently makes the panel higher, although the originally 
+		// requested size is 1024 x 768 (->1024x801)
+		// Increasing toolbar height doesn't increase the height of the gray 
+		// band. Then it has to be the window decorations.
 		currentScene.reshape(drawable, x, y, width, height);
 	}
 	

@@ -3,6 +3,11 @@ package barsan.opengl.math;
 public class Vector3 {
 	
 	public static final Vector3 ZERO = new Vector3();
+	public static final Vector3 X = new Vector3(1.0f, 0.0f, 0.0f);
+	public static final Vector3 Y = new Vector3(0.0f, 1.0f, 0.0f);
+	public static final Vector3 Z = new Vector3(0.0f, 0.0f, 1.0f);
+	public static final Vector3 UP = Y;
+	
 	
 	// Computation helpers
 	static Quaternion aux1 = new Quaternion();

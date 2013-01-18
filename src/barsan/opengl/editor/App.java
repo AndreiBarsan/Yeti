@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -117,7 +118,7 @@ public class App {
 		engine.hackStartLoop(this, frmYeti, frmYeti.getContentPane());		
 	}
 	
-	public void generateGLKnobs(GL2 gl) {
+	public void generateGLKnobs(GL gl) {
 		anisotropicSlider.setMaximum( (int) GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT));
 		anisotropicSlider.addChangeListener(new ChangeListener() {
 			@Override

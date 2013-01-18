@@ -36,7 +36,7 @@ public class ProceduralScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		
 		cylinder = new ModelInstance(new Cylinder(gl, precision, diameter, height));
 		modelInstances.add(cylinder);
@@ -94,7 +94,7 @@ public class ProceduralScene extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = Yeti.get().gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		long time = System.currentTimeMillis() - start;
 		float factor = (float)time / 400.0f;
 		mainLight.setPosition(new Vector3(

@@ -2,6 +2,7 @@ package barsan.opengl.rendering.materials;
 
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
@@ -27,7 +28,7 @@ public class CubicEnvMappingMaterial extends Material {
 
 	@Override
 	public void setup(RendererState rendererState, Matrix4 transform) {
-		GL2 gl = rendererState.gl;
+		GL2 gl = Yeti.get().gl.getGL2();
 		
 		enableShader(rendererState);
 		

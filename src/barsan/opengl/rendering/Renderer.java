@@ -7,17 +7,16 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3;
-import javax.media.opengl.GLException;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model.Face;
+import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
-import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.lights.Light.LightType;
+import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
@@ -26,11 +25,9 @@ import barsan.opengl.util.GLHelp;
 import com.jogamp.opengl.FBObject;
 import com.jogamp.opengl.FBObject.Attachment;
 import com.jogamp.opengl.FBObject.Attachment.Type;
-import com.jogamp.opengl.FBObject.ColorAttachment;
 import com.jogamp.opengl.FBObject.RenderAttachment;
 import com.jogamp.opengl.FBObject.TextureAttachment;
 import com.jogamp.opengl.util.gl2.GLUT;
-import com.jogamp.opengl.util.texture.Texture;
 
 public class Renderer {
 
@@ -44,23 +41,24 @@ public class Renderer {
 	int texType = -1;
 	int regTexHandle = -1;
 	
+	int shadowMapW = 4096;
+	int shadowMapH = 4096;
+	
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
 	private Model screenQuad;
 	
-	public boolean shadowsEnabled = false;
+	public boolean shadowsEnabled = true;
 	
-	// TODO: multiply the lightMVP with this before sending it to the 
-	// main rendering pass
-	private static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
+	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
 			{
 				0.5f, 0.0f, 0.0f, 0.0f,
 				0.0f, 0.5f, 0.0f, 0.0f,
 				0.0f, 0.0f, 0.5f, 0.0f,
-				0.0f, 0.0f, 0.0f, 1.0f
+				0.5f, 0.5f, 0.5f, 1.0f
 			}); 
 		
-	public Renderer(GL2 gl) {	
+	public Renderer(GL3 gl) {	
 		state = new RendererState(gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
@@ -106,7 +104,7 @@ public class Renderer {
             gl.glTexParameteri(texType, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
         }
         
-		gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0 + 0, texType, name[0], 0);
+		gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0 + 0, texType, regTexHandle, 0);
 		
         //fbo_tex.attachRenderbuffer(gl, Attachment.Type.DEPTH, 32);
 		/* 
@@ -138,30 +136,37 @@ public class Renderer {
 		
 		fbo_tex.unbind(gl);
 		
-		screenQuad = new Model(gl, "derp");
-		Face mainFace = new Face();
-		mainFace.points = new Vector3[] {
-				new Vector3(-1.0f, -1.0f, 0.0f),
-				new Vector3(-1.0f, 1.0f,  0.0f),
-				new Vector3( 1.0f, 1.0f,  0.0f),
-				new Vector3( 1.0f, -1.0f, 0.0f)
-		};
-		mainFace.texCoords = new Vector3[] {
-				new Vector3(0.0f, 0.0f, 0.0f),
-				new Vector3(0.0f, 1.0f, 0.0f),
-				new Vector3(1.0f, 1.0f, 0.0f),
-				new Vector3(1.0f, 0.0f, 0.0f)
-		};
-		screenQuad.master.faces.add(mainFace);
-		screenQuad.setPointsPerFace(4);
-		screenQuad.buildVBOs();
+		screenQuad = Model.buildQuad(2.0f, 2.0f, false);
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();
-		int shadowMapW = 2048;
-		int shadowMapH = 2048;
 		fbo_shadows.reset(gl, shadowMapW, shadowMapH, 0);
+		fbo_shadows.bind(gl);
 		
+		gl.glGenTextures(1, name, 0);
+		state.shadowTexture = name[0];
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+		gl.glTexImage2D(GL2.GL_TEXTURE_2D,
+				0,
+				GL2.GL_DEPTH_COMPONENT16, 
+				shadowMapW, shadowMapH,
+				0,
+				GL2.GL_DEPTH_COMPONENT,
+				GL2.GL_UNSIGNED_BYTE,//GL2.GL_FLOAT, 
+				null);
+		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_FUNC, GL2.GL_LEQUAL);
+		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_MODE, GL2.GL_COMPARE_R_TO_TEXTURE);
+		 
+		 gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
+		 
+		 gl.glDrawBuffer(GL2.GL_NONE);
+		 GLHelp.fboErr(gl);		
+		 
+		 fbo_shadows.unbind(gl);
 	}
 	
 	public RendererState getState() {
@@ -169,7 +174,7 @@ public class Renderer {
 	}
 		
 	public void render(final Scene scene) {
-		GL2 gl = state.gl;
+		GL3 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gl.glDepthMask(true);
 		
@@ -177,31 +182,49 @@ public class Renderer {
 		
 		if(shadowsEnabled) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
+			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 			state.forceMaterial(new DepthWriterDirectional());
-			// TODO: alternative - this is quite dirty
-			Camera aux = state.getCamera();	
-			renderScene(gl, scene);
-			state.setCamera(aux);
-			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			
-			// Bind the shadowmap to a certain slot; 
-			// TODO: rewrite system to allow this - right slots are allocated 
-			// starting from 0 by the materials; the renderer needs to be 
-			// able to use slots too!
+			// TODO: alternative - this is quite dirty
+			Camera aux = state.getCamera();
+			OrthographicCamera oc = new OrthographicCamera(100, 100);
+			oc.setFrustumFar(100);
+			oc.setFrustumNear(-100);
+			// hack - crashes when there's another light type
+			
+			DirectionalLight light = (DirectionalLight)state.getLights().get(0);
+			Vector3 ld = light.getDirection();
+			oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
+			state.setCamera(oc);
+			state.depthProjection = oc.getProjection().cpy();
+			state.depthView = oc.getView().cpy();
+			// NOTE: depth writer mat. takes the proj and view from the state,
+			// not the camera it gets. does this make sense?
+			gl.glViewport(0, 0, shadowMapW, shadowMapH);
+			renderScene(gl, scene);
+			
+			// Restore old state
+			gl.glViewport(0, 0, 1024, 768);
+			state.setCamera(aux);
+			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+
 		}
+		
+		state.forceMaterial(null);
 		
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		renderDebug(gl, scene);		
+		renderDebug(Yeti.get().gl.getGL2(), scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
-		// Clear the main (screen) FrameBuffer
+		// Render to the screen
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
 		// Begin post-processing
 		Shader pps;
 		
+		//*
 		if(MSAAEnabled) {
 			pps = ResourceLoader.shader("postProcessMSAA");
 			gl.glUseProgram(pps.handle);
@@ -210,7 +233,7 @@ public class Renderer {
 		} else {
 			pps = ResourceLoader.shader("postProcess");
 			gl.glUseProgram(pps.handle);
-		}
+		}//*/
 		pps.setU1i("colorMap", 0);
 		
 		int pindex = pps.getAttribLocation(Shader.A_POSITION);
@@ -232,13 +255,33 @@ public class Renderer {
 		
 		screenQuad.getVertices().cleanUp(pindex);
 		screenQuad.getTexcoords().cleanUp(tindex);
+		
+		// Tiny debug renders
+		Shader dr = ResourceLoader.shader("depthRender");
+		gl.glUseProgram(dr.handle);
+		dr.setU1i("colorMap", 0);
+		
+		
+		gl.glActiveTexture(GLHelp.textureSlot[0]);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+		
+		int sqi = dr.getAttribLocation(Shader.A_POSITION);
+		gl.glViewport(10, 10, 200, 200);
+		screenQuad.getVertices().use(sqi);
+		
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		screenQuad.getVertices().cleanUp(sqi);
+		gl.glViewport(0, 0, Yeti.get().settings.width, Yeti.get().settings.height);
 	}
 	
-	public void dispose(GL2 gl) {
+	public void dispose(GL3 gl) {
 		fbo_tex.destroy(gl);
 	}
 	
-	private void renderScene(GL2 gl, final Scene scene) {
+	private void renderScene(GL3 gl, final Scene scene) {
 		/*		    _.' :  `._                                            
        		    .-.'`.  ;   .'`.-.                                        
        __      / : ___\ ;  /___ ; \      __                               
@@ -262,14 +305,13 @@ public class Renderer {
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
 			modelInstance.render(state, matrixstack);
-			// Make sure everyone pops what they push. If you know what I mean! ;)
-			// ...It's matrices :(
 			assert matrixstack.getSize() == 1;
 		}
 		
-		// Render the billboards separately
+		// Render the billboards separately (always forward)
 		for(Billboard b : scene.billbords) {
 			b.render(state, matrixstack);
+			assert matrixstack.getSize() == 1;
 		}
 	}
 	
