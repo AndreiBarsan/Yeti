@@ -103,7 +103,8 @@ public class Quaternion {
 		
 		// WARNING: after setting from an axis, the quaternion needs
 		// to be normalized
-		return this.set(axis.x * as, axis.y * as, axis.z * as, ac).nor();
+		Vector3 vt = new Vector3(axis).normalize();
+		return this.set(vt.x * as, vt.y * as, vt.z * as, ac).nor();
 	}
 	
 	public Matrix4 asMatrix4() {

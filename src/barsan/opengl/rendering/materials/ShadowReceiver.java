@@ -8,7 +8,7 @@ import barsan.opengl.rendering.RendererState;
 import barsan.opengl.util.GLHelp;
 
 public class ShadowReceiver implements MaterialComponent {
-
+	
 	@Override
 	public void setup(Material m, RendererState rs, Matrix4 modelMatrix) {
 		Matrix4 projection = rs.depthProjection;
@@ -21,6 +21,7 @@ public class ShadowReceiver implements MaterialComponent {
 		
 		m.shader.setUMatrix4("mvpMatrixShadows", biasMVP);
 		m.shader.setU1i("useShadows", true);
+		m.shader.setU1i("shadowQuality", 3);
 	}
 
 	@Override

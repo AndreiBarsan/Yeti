@@ -50,6 +50,7 @@ uniform sampler2D normalMap;
 
 // Shadow mapping
 uniform bool 	useShadows;
+uniform int		shadowQuality;
 uniform sampler2D shadowMap;
 
 // Fog
@@ -144,27 +145,34 @@ void main() {
 	
 	float visibility = 1.0f;
 	if(useShadows) {
-		// This should technically only be needed when dealing with point
-		// lights
+		// This should technically only be needed when dealing with point lights
 		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 		vec2 sc  = sc4.xy;		
-
-		// this dot prod. can be cached
-		float t_bias = bias * tan(acos(dot(nNormal, nLightDir)));	
-		t_bias = clamp(t_bias, 0.00f, 0.01f);
-	
+		
+		float t_bias = bias;
+		if(shadowQuality > 1) {
+			// this dot prod. can be cached
+			t_bias *= tan(acos(dot(nNormal, nLightDir)));	
+			t_bias  = clamp(t_bias, 0.00f, 0.01f);
+		}
+		
 		if( vertPos_dmc.w == 0 ) {
 			visibility = 1.0f;
-		// TODO: fix the dark stripe bug
 		} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
 			visibility = 1.0f;
 		} else {
-			for (int i=0; i < 4; i++) {
-				int index = int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
- 				if ( texture2D( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
-    				visibility -= 0.2;
+			if(shadowQuality > 2) {
+				for (int i=0; i < 4; i++) {
+					int index = int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
+ 					if ( texture2D( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
+    					visibility -= 0.2;
+  					}
+				}
+			} else {
+				if ( texture2D( shadowMap, sc ).z + t_bias < sc4.z) {
+    				visibility = 0.5;
   				}
-			}
+  			}
 		}
 	}
 

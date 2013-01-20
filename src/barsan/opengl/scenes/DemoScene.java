@@ -39,6 +39,8 @@ public class DemoScene extends Scene {
 	SkyBox sb;
 	Transform tct;
 	
+	ModelInstance m2;
+	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
@@ -106,6 +108,14 @@ public class DemoScene extends Scene {
 		daddy.addChild(new ModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(10.0f, 0.5f, 0.0f)));
 		
+		ModelInstance m1;
+		daddy.addChild(m1 = new ModelInstance(ResourceLoader.model("sphere"),
+				bumpMat, new Transform().updateTranslate(-10.0f, 0.5f, 0.0f)));
+		
+		m1.addChild(m2 = new ModelInstance(ResourceLoader.model("sphere"),
+				bumpMat, new Transform().updateTranslate(-2.0f, 0.5f, 0.0f).updateScale(0.33f)));
+		
+		
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		((PerspectiveCamera)camera).setFOV(45.0f);
@@ -147,6 +157,11 @@ public class DemoScene extends Scene {
 		
 		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);
+		
+		m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
+		float orbit = 2.0f;
+		m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
+		
 		
 		// Calls the renderer
 		super.display(drawable);		

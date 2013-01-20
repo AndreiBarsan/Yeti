@@ -90,21 +90,25 @@ public class LightTest extends Scene {
 		modelInstances.add(new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera()));
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 			
-		float step = 8.0f;
+		float step = 6.0f;
 		int monkeys = 4;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 2f, j * step);
 				float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
-				pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
+				//pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
 				modelInstances.add(new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
 			}
 		}
 		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
-		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), new BasicMaterial(),
-				new Transform().updateTranslate(-96.0f, 0.0f, -75.0f).updateScale(12.0f)));
+		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+			new Transform().updateTranslate(28.0f, 30.0f, -4.0f).updateScale(4.0f)));
+		
+		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+				new Transform().updateTranslate(35.0f, 25.0f, -10.0f).updateScale(6.0f)));
+			
 		
 		test_sl = new SpotLight(new Vector3(0.0f, 4.50f, 0.0f), 
 				new Vector3(-1.0f, -2.0f, 0.0f).normalize(),

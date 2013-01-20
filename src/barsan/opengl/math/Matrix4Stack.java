@@ -34,7 +34,8 @@ public class Matrix4Stack {
 		if(stack.size() == 1) {
 			cachedValues.push(new Matrix4(matrix));
 		} else {
-			cachedValues.push(new Matrix4(matrix).mul(cachedValues.peek()));
+			//cachedValues.push(new Matrix4(matrix).mul(cachedValues.peek()));
+			cachedValues.push(new Matrix4(cachedValues.peek()).mul(matrix));
 		}
 	}
 	

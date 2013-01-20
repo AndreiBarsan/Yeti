@@ -237,7 +237,6 @@ public class Renderer {
 			gl.glCullFace(GL2.GL_BACK);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
-
 		}
 		
 		state.forceMaterial(null);

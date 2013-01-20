@@ -22,10 +22,10 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 	private boolean mouseControlled = true;
 	
 	void showHelp() {
-		System.out.println("============================================");
-		System.out.println("==        Initialized camera input.       ==");
-		System.out.println("== Use WASD and the mouse to move around. ==");
-		System.out.println("============================================");
+		Yeti.debug("============================================");
+		Yeti.debug("==        Initialized camera input.       ==");
+		Yeti.debug("== Use WASD and the mouse to move around. ==");
+		Yeti.debug("============================================");
 	}
 	
 	public CameraInput(Camera camera) {
@@ -50,7 +50,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) { }
+	public void keyTyped(KeyEvent e) {	}
 	
 	@Override
 	public void keyReleased(KeyEvent e) { }
