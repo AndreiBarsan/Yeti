@@ -29,7 +29,6 @@ import barsan.opengl.util.GLHelp;
  * Note - Gouraud is pretty much 100% replaceable with Phong. They're the same
  * anyway, so only the actual shader programs differ. The uniforms are the same.
  * @author Andrei Barsan
- *
  */
 public class BasicMaterial extends Material {	
 	
@@ -72,7 +71,7 @@ public class BasicMaterial extends Material {
 	
 	public void removeComponent(MaterialComponent component) {
 		if(!components.remove(component)) {
-				Yeti.screwed("Tried to remove non-existing material component!");
+			Yeti.screwed("Tried to remove non-existing material component!");
 		}
 	}
 	
@@ -101,12 +100,7 @@ public class BasicMaterial extends Material {
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		view.set(rendererState.getCamera().getView());
 		projection.set(rendererState.getCamera().getProjection());
-		
-		
-		//view.set(rendererState.depthView);
-		//projection.set(rendererState.depthProjection);
 		viewModel.set(view).mul(modelMatrix);
-		
 		
 		// WARNING: A * B * C != A * (B * C) with matrices
 		// The following line does not equal projection * viewModel

@@ -126,6 +126,8 @@ public class ZRenderTest extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		
+		if(exiting) { exit(); }
+		
 		GL2 gl = Yeti.get().gl;
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 		
@@ -139,6 +141,7 @@ public class ZRenderTest extends Scene {
 		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		rs.forceMaterial(new DepthWriterDirectional());
 		mi.render(rs, new Matrix4Stack());
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		

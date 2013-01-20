@@ -45,44 +45,34 @@ public class ModelInstance implements Renderable {
 
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		//GL2 gl = rendererState.gl;
-
 		transformStack.push(localTransform.get());
 
+		Material activeMaterial;
 		if(rendererState.hasForcedMaterial()) {
-			rendererState.getForcedMaterial().setup(rendererState, transformStack.result());
+			activeMaterial = rendererState.getForcedMaterial();
 		} else if (material != null) {
-			material.setup(rendererState, transformStack.result());
+			activeMaterial = material;
 		} else {
-			rendererState.getDefaultMaterial().setup(rendererState, transformStack.result());
-		}
-
-		int pindex = material.getPositionIndex();
-		model.getVertices().use(pindex);
-
-		if (!material.ignoresLights()) {
-			int nindex = material.getNormalIndex();
-			model.getNormals().use(nindex);
+			activeMaterial = rendererState.getDefaultMaterial();
 		}
 		
-		/*
-		if(model.getTangents() != null) {
-			int tangentsIndex = material.getTangentIndex();
-			model.getTangents().use(tangentsIndex);
-		}
-		if(model.getBitangents() != null) {
-			int bitangentsIndex = material.getBitangentIndex();
-			model.getBitangents().use(bitangentsIndex);
-		}
-		//*/
+		activeMaterial.setup(rendererState, transformStack.result());
 
-		material.bindTextureCoodrinates(model);
-		material.render(rendererState, model);
+		int pindex = activeMaterial.getPositionIndex();
+		model.getVertices().use(pindex);
+
+		if (!activeMaterial.ignoresLights()) {
+			int nindex = activeMaterial.getNormalIndex();
+			model.getNormals().use(nindex);
+		}
+
+		activeMaterial.bindTextureCoodrinates(model);
+		activeMaterial.render(rendererState, model);
 		// Ya need to disable glDisableVertexAttribArray cuz otherwise the
 		// fixed pipeline rendering gets messed up, yo!
 		// Mild bug ~1.5h 28.11.2012
 
-		material.unsetBuffers(model);
+		activeMaterial.unsetBuffers(model);
 		
 		for (ModelInstance mi : children) {
 			mi.render(rendererState, transformStack);

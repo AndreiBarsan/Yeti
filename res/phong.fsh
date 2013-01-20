@@ -1,6 +1,6 @@
-#version 330
+#version 400 core
 
-const float bias = 0.015f;
+const float bias = 0.025f;
 
 uniform vec4 globalAmbient;
 

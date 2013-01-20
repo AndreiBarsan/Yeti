@@ -25,7 +25,7 @@ public class DepthWriterDirectional extends Material {
 		//viewModel.set(view).mul(transform);
 		MVP.set(projection).mul(view).mul(transform);
 		
-		shader.setUMatrix4("lightMVP", MVP);
+		shader.setUMatrix4("mvpMatrix", MVP);
 	}
 
 	

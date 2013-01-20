@@ -183,7 +183,8 @@ public class Renderer {
 		if(shadowsEnabled) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
-			state.forceMaterial(new DepthWriterDirectional());
+			//gl.glCullFace(GL2.GL_FRONT);
+			//state.forceMaterial(new DepthWriterDirectional());
 			
 			// TODO: alternative - this is quite dirty
 			Camera aux = state.getCamera();
@@ -198,13 +199,13 @@ public class Renderer {
 			state.setCamera(oc);
 			state.depthProjection = oc.getProjection().cpy();
 			state.depthView = oc.getView().cpy();
-			// NOTE: depth writer mat. takes the proj and view from the state,
-			// not the camera it gets. does this make sense?
+
 			gl.glViewport(0, 0, shadowMapW, shadowMapH);
 			renderScene(gl, scene);
 			
 			// Restore old state
 			gl.glViewport(0, 0, 1024, 768);
+			//gl.glCullFace(GL2.GL_BACK);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 
@@ -260,7 +261,6 @@ public class Renderer {
 		Shader dr = ResourceLoader.shader("depthRender");
 		gl.glUseProgram(dr.handle);
 		dr.setU1i("colorMap", 0);
-		
 		
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);

@@ -26,7 +26,7 @@ public class Scene implements GLEventListener {
 	protected Renderer renderer;
 	protected Camera camera;
 	protected CameraInput cameraInput; 
-	private boolean exiting = false;
+	protected boolean exiting = false;
 	
 	/** Timing ****************************************************************/
 	long lastTime;
@@ -146,7 +146,7 @@ public class Scene implements GLEventListener {
 	}
 	private Yeti engine;
 	
-	private void exit() {
+	protected void exit() {
 		// Temporary cleanup behavior - at the moment, scenes are independent of each other
 		ResourceLoader.cleanUp();
 		
