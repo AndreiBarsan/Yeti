@@ -26,6 +26,8 @@ public class SkyBox extends ModelInstance {
 		// this.cubeTexture = cubeTexture;
 		setTransform(new Matrix4());
 		camera = toFollow;
+		
+		setCastsShadows(false);
 	}
 
 	@Override

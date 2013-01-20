@@ -210,7 +210,7 @@ public class Transform {
 
 	
 	public Transform updateRotation(float ax, float ay, float az, float angle) {
-		return updateRotation(aq.set(av.set(ax, ay, az), angle));
+		return updateRotation(aq.set(av.set(ax, ay, az).normalize(), angle));
 	}
 	
 	/**

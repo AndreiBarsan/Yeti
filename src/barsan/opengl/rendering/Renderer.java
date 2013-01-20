@@ -12,11 +12,11 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
@@ -47,8 +47,6 @@ public class Renderer {
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
 	private Model screenQuad;
-	
-	public boolean shadowsEnabled = true;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
 			{
@@ -158,8 +156,9 @@ public class Renderer {
 		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
 		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+		 gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
 		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_FUNC, GL2.GL_LEQUAL);
-		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_MODE, GL2.GL_COMPARE_R_TO_TEXTURE);
+		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_MODE, GL2.GL_COMPARE_R_TO_TEXTURE);	
 		 
 		 gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
 		 
@@ -176,36 +175,66 @@ public class Renderer {
 	public void render(final Scene scene) {
 		GL3 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
-		gl.glDepthMask(true);
+		
+		// Get the original viewport size; We cannot rely on Yeti's dimensions
+		// since the GLJPanel is doing witchcraft which results in a viewport
+		// with a greate height than it's supposed to
+		int oldDim[] = new int[4];
+		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
 		
 		prepareBillboards(scene);
 		
-		if(shadowsEnabled) {
+		boolean canCast = false;
+		if(state.getLights().get(0).getType() != LightType.Point) {
+			// Placeholder test
+			canCast = true;
+		}
+		
+		if(scene.shadowsEnabled && canCast) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
-			//gl.glCullFace(GL2.GL_FRONT);
-			//state.forceMaterial(new DepthWriterDirectional());
+			gl.glCullFace(GL2.GL_FRONT);
+			state.forceMaterial(new DepthWriterDirectional());
 			
-			// TODO: alternative - this is quite dirty
+			Light light = state.getLights().get(0);
 			Camera aux = state.getCamera();
-			OrthographicCamera oc = new OrthographicCamera(100, 100);
-			oc.setFrustumFar(100);
-			oc.setFrustumNear(-100);
-			// hack - crashes when there's another light type
 			
-			DirectionalLight light = (DirectionalLight)state.getLights().get(0);
-			Vector3 ld = light.getDirection();
-			oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
-			state.setCamera(oc);
-			state.depthProjection = oc.getProjection().cpy();
-			state.depthView = oc.getView().cpy();
-
+			if(light.getType() == LightType.Directional) {
+				DirectionalLight dlight = (DirectionalLight)light;
+				
+				// TODO: alternative - this is quite dirty	
+				OrthographicCamera oc = new OrthographicCamera(100, 100);
+				oc.setFrustumFar(80);
+				oc.setFrustumNear(-80);
+				
+				Vector3 ld = dlight.getDirection();
+				oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
+				state.setCamera(oc);
+				state.depthProjection = oc.getProjection().cpy();
+				state.depthView = oc.getView().cpy();
+			} else if(light.getType() == LightType.Spot) {
+				SpotLight slight = (SpotLight)light;
+				
+				PerspectiveCamera pc = new PerspectiveCamera(
+						slight.getPosition(),
+						slight.getDirection(),
+						1024, 
+						1024); 	//..?
+				pc.refreshProjection();
+				
+				state.setCamera(pc);
+				state.depthProjection = pc.getProjection().cpy();
+				state.depthView = pc.getView().cpy();
+			} else {
+				assert false : "Point lights not yet supported!";
+			}
+			
 			gl.glViewport(0, 0, shadowMapW, shadowMapH);
-			renderScene(gl, scene);
+			renderOccluders(gl, scene);
 			
 			// Restore old state
-			gl.glViewport(0, 0, 1024, 768);
-			//gl.glCullFace(GL2.GL_BACK);
+			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+			gl.glCullFace(GL2.GL_BACK);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 
@@ -258,27 +287,46 @@ public class Renderer {
 		screenQuad.getTexcoords().cleanUp(tindex);
 		
 		// Tiny debug renders
-		Shader dr = ResourceLoader.shader("depthRender");
-		gl.glUseProgram(dr.handle);
-		dr.setU1i("colorMap", 0);
-		
-		gl.glActiveTexture(GLHelp.textureSlot[0]);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
-		
-		int sqi = dr.getAttribLocation(Shader.A_POSITION);
-		gl.glViewport(10, 10, 200, 200);
-		screenQuad.getVertices().use(sqi);
-		
-		gl.glDisable(GL2.GL_DEPTH_TEST);
-		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		
-		screenQuad.getVertices().cleanUp(sqi);
-		gl.glViewport(0, 0, Yeti.get().settings.width, Yeti.get().settings.height);
+		if(scene.shadowsEnabled && canCast) {
+			Shader dr = ResourceLoader.shader("depthRender");
+			gl.glUseProgram(dr.handle);
+			dr.setU1i("colorMap", 0);
+			
+			gl.glActiveTexture(GLHelp.textureSlot[0]);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+			
+			int sqi = dr.getAttribLocation(Shader.A_POSITION);
+			gl.glViewport(10, 10, 200, 200);
+			screenQuad.getVertices().use(sqi);
+			
+			gl.glDisable(GL2.GL_DEPTH_TEST);
+			gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+			gl.glEnable(GL2.GL_DEPTH_TEST);
+			
+			screenQuad.getVertices().cleanUp(sqi);
+			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+		}
 	}
 	
 	public void dispose(GL3 gl) {
 		fbo_tex.destroy(gl);
+	}
+	
+	private void renderOccluders(GL3 gl, final Scene scene) {
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		
+		for(ModelInstance modelInstance : scene.modelInstances) {
+			if(! modelInstance.castsShadows()) continue;
+			
+			modelInstance.render(state, matrixstack);
+			assert matrixstack.getSize() == 1;
+		}
+		
+		// Render the billboards separately (always forward)
+		for(Billboard b : scene.billbords) {
+			b.render(state, matrixstack);
+			assert matrixstack.getSize() == 1;
+		}
 	}
 	
 	private void renderScene(GL3 gl, final Scene scene) {

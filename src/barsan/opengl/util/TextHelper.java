@@ -6,13 +6,13 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 
 public class TextHelper {
 
-	static TextRenderer ren = new TextRenderer(new Font("serif", Font.PLAIN, 16));
+	static TextRenderer ren = new TextRenderer(new Font("sans-serif", Font.PLAIN, 20));
 	
 	public static void drawText(int x, int y, String text) {
 		ren.setColor(new java.awt.Color(0.0f, 0.0f, 0.0f));
 		ren.draw(text, x + 1, y - 1);
 		
-		ren.setColor(new java.awt.Color(1.0f, 0.4f, 0.5f));
+		ren.setColor(new java.awt.Color(1.0f, 1.0f, 1.0f));
 		ren.draw(text, x, y);
 	}
 	

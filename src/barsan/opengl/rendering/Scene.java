@@ -15,6 +15,7 @@ import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.GUI;
 
 public class Scene implements GLEventListener {
 
@@ -38,6 +39,10 @@ public class Scene implements GLEventListener {
 	/** Fog *******************************************************************/
 	protected boolean fogEnabled = false;
 	protected Fog fog;
+	
+	protected GUI gui;
+	
+	public boolean shadowsEnabled = false;
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -79,6 +84,11 @@ public class Scene implements GLEventListener {
 		}
 		
 		renderer.render(this);
+		
+		if(gui != null) {
+			gui.render();
+		}
+		
 		lastTime = System.currentTimeMillis();
 	}
 

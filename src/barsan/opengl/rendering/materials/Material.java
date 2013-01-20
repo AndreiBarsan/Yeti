@@ -43,6 +43,8 @@ public abstract class Material {
 	}
 	
 	public Material(Shader shader, Color ambient, Color diffuse, Color specular) {
+		assert shader != null;
+		
 		this.shader = shader;
 		
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);

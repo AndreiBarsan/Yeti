@@ -1,7 +1,5 @@
 package barsan.opengl.rendering;
 
-import barsan.opengl.math.Matrix4;
-import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Vector3;
 
 /**
@@ -11,7 +9,7 @@ public class PerspectiveCamera extends Camera {
 	
 	static final float DEFAULT_FOV = 	45.0f;
 	
-	float FOV;; /* Degrees */
+	float FOV; /* Degrees */
 
 	public PerspectiveCamera(int width, int height) {
 		this(new Vector3(-4, 2, 0), new Vector3(1, -0.5f, 0).normalize(), width, height);

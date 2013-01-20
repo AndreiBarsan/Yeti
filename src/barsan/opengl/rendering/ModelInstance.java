@@ -18,6 +18,7 @@ public class ModelInstance implements Renderable {
 	protected Model model;
 	private Material material;
 	private Transform localTransform;
+	private boolean castsShadows;
 
 	protected ModelInstance parent = null;
 	protected ArrayList<ModelInstance> children;
@@ -40,6 +41,7 @@ public class ModelInstance implements Renderable {
 		this.material = material;
 		this.localTransform = localTransform;
 
+		castsShadows = true;
 		children = new ArrayList<>();
 	}
 
@@ -107,6 +109,14 @@ public class ModelInstance implements Renderable {
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+	
+	public void setCastsShadows(boolean value) {
+		castsShadows = value;
+	}
+	
+	public boolean castsShadows() {
+		return castsShadows;
 	}
 
 	public void addChild(ModelInstance child) {

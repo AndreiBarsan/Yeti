@@ -11,6 +11,8 @@ import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
+import jogamp.newt.Debug;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
@@ -29,8 +31,10 @@ import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.DebugGUI;
 
 public class LightTest extends Scene {
 
@@ -64,11 +68,13 @@ public class LightTest extends Scene {
 			e.printStackTrace();
 		}
 		
-		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
-		Material monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
-		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
+		shadowsEnabled = true;
 		
-		//camera.setFrustumFar(150.0f);
+		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
+		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
+		monkeyMat.addComponent(new ShadowReceiver());
+		//camera.setFrustumFar(180.0f);
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
@@ -79,16 +85,16 @@ public class LightTest extends Scene {
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
 		floorMat.setShininess(256);
+		floorMat.addComponent(new ShadowReceiver());
 		
 		modelInstances.add(new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera()));
-		
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 			
-		float step = 10.0f;
-		int monkeys = 5;
+		float step = 8.0f;
+		int monkeys = 4;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
-				Transform pm = new Transform().setTranslate(i * step, 1.0f, j * step);
+				Transform pm = new Transform().setTranslate(i * step, 2f, j * step);
 				float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
 				pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
@@ -97,16 +103,23 @@ public class LightTest extends Scene {
 		}
 		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
-		test_sl = new SpotLight(new Vector3(0.0f, 2.50f, 0.0f), 
-				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
+		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), new BasicMaterial(),
+				new Transform().updateTranslate(-96.0f, 0.0f, -75.0f).updateScale(12.0f)));
+		
+		test_sl = new SpotLight(new Vector3(0.0f, 4.50f, 0.0f), 
+				new Vector3(-1.0f, -2.0f, 0.0f).normalize(),
 				0.75f, 0.8f, 2.0f);
 		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
 		test_sl.setQuadraticAttenuation(0.003f);
 		
-		test_pl = new PointLight(new Vector3(lightX, 2.50f, lightZ));
+		test_pl = new PointLight(new Vector3(lightX, 1.50f, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		lights.add(test_dl);
+		//lights.add(test_sl);
+		
+		gui = new DebugGUI(drawable.getAnimator(), camera);
+		gui.setPosition(new Vector3(220, 10, 0));
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
 			@Override
@@ -170,17 +183,22 @@ public class LightTest extends Scene {
 		a += getDelta();
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
-		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 10.0f;
-		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 10.0f;
+		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
+		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
+		test_sl.getDirection().y = -20.0f;
+		test_sl.getDirection().normalize();
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		
-		tv.set(1.0f, 1.0f, 4.0f);
+		//tv.set(1.0f, 1.0f, 4.0f);
+		tv.set(1.0f, 1.0f, (float)Math.sin(a));
 		test_dl.getDirection().set(tv).normalize();
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
-		super.display(drawable);
 		
+		//plane.getTransform().getTranslate().y = -1.0f + (float)Math.sin(a) * 2.5f;
+		//plane.getTransform().refresh();
+		super.display(drawable);
 	}
 }

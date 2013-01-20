@@ -49,12 +49,13 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
- * TODO: basic shadow mapping
+ * TODO: fix dark stripes in shadow mapping
+ * TODO: make spotlight shadow mapping work
  * TODO: camera update() method (automatically called by the scene - keep everything
  * in sync, prevent recalculations of the view matrix etc.)
  * TODO: perpixel fog & fix fog computation
  * TODO: actually find and write down the matrix multiplication BUG !!!
- * TODO: light lists for point lights
+ * TODO: light lists
  * TODO: optional utility to draw:
  * 			- camera info on HUD
  * 			- pie chart render data
@@ -406,7 +407,7 @@ public class Yeti implements GLEventListener {
 	
 	private GLCanvas createCanvas() {
 		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL2);
+		GLProfile glp = GLProfile.get(GLProfile.GL2GL3);
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(capabilities);
 		
@@ -415,8 +416,10 @@ public class Yeti implements GLEventListener {
 	
 	// TODO: refactor this and fix
 	private GLJPanel createCanvasPanel() {
-		GLCapabilities caps = new GLCapabilities(null);
-		GLJPanel gljp = new GLJPanel(caps);
+		GLProfile.initSingleton();
+		GLProfile glp = GLProfile.get(GLProfile.GL2GL3);
+		GLCapabilities capabilities = new GLCapabilities(glp);
+		GLJPanel gljp = new GLJPanel(capabilities);		
 		return gljp;
 	}
 	

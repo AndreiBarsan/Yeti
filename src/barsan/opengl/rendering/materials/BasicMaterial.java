@@ -60,9 +60,6 @@ public class BasicMaterial extends Material {
 	
 	public BasicMaterial(Color ambient, Color diffuse, Color specular) {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
-		
-		// TODO: remove me and do this right
-		addComponent(new ShadowReceiver());
 	}
 	
 	public void addComponent(MaterialComponent component) {
@@ -172,6 +169,9 @@ public class BasicMaterial extends Material {
 		} else {
 			shader.setU1i("useTexture", 0);
 		}
+		
+		// This might be the problem that kills the whole component concept
+		shader.setU1i("useShadows", false);
 		
 		shader.setU1i("useBump", 0);
 		for (MaterialComponent c : components) {

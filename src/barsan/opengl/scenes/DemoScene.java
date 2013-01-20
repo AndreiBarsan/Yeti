@@ -12,6 +12,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ToonMaterial;
@@ -24,6 +25,7 @@ import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.resources.HeightmapBuilder;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.DebugGUI;
 import barsan.opengl.util.TextHelper;
 
 public class DemoScene extends Scene {
@@ -35,6 +37,7 @@ public class DemoScene extends Scene {
 	boolean smoothRendering = true;
 	
 	SkyBox sb;
+	Transform tct;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -85,11 +88,24 @@ public class DemoScene extends Scene {
 				//new ToonMaterial(ResourceLoader.texture("grass"))
 				));
 		//*/
-		//*
+		/*
 		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
 				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
 				new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
 		//*/
+		
+		BasicMaterial bumpMat = new BasicMaterial();
+		bumpMat.setTexture(ResourceLoader.texture("stone"));
+		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
+		
+		ModelInstance daddy;
+		tct = new Transform().updateTranslate(15.0f, 50.0f, -40.0f).updateScale(1.0f);
+		modelInstances.add(daddy = new ModelInstance(ResourceLoader.model("texcube"), 
+				bumpMat, tct));
+		
+		daddy.addChild(new ModelInstance(ResourceLoader.model("sphere"),
+				bumpMat, new Transform().updateTranslate(10.0f, 0.5f, 0.0f)));
+		
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		((PerspectiveCamera)camera).setFOV(45.0f);
@@ -102,6 +118,8 @@ public class DemoScene extends Scene {
 		fog.fadeCamera(camera);
 		fogEnabled = true;
 		Yeti.get().gl.glClearColor(0.1f, 0.33f, 0.2f, 1.0f);
+		
+		gui = new DebugGUI(drawable.getAnimator(), getCamera());
 		
 		Yeti.debug("\n\tRendering controls: \n\tF - toggle Fog\n\tM - toggle sMoothing");
 		Yeti.get().addKeyListener(new KeyListener() {
@@ -128,23 +146,9 @@ public class DemoScene extends Scene {
 		a += 0.8 * getDelta() * 10;
 		
 		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
+		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);
 		
 		// Calls the renderer
-		super.display(drawable);
-		drawGUI(drawable);
-	}
-	
-	void drawGUI(GLAutoDrawable drawable) {
-		float fps = drawable.getAnimator().getLastFPS();
-		Yeti.get().gl.glUseProgram(0);
-		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
-		{
-			Vector3 cp = camera.getPosition();
-			String hud = String.format("FPS: %.2f\nCamera: X:%.2f Y:%.2f Z:%.2f", fps,
-					cp.x, cp.y, cp.z);
-			
-			TextHelper.drawTextMultiLine(20, 20, hud);
-		}
-		TextHelper.endRendering();		
+		super.display(drawable);		
 	}
 }
