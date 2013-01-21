@@ -163,7 +163,7 @@ void main() {
 		} else {
 			if(shadowQuality > 2) {
 				for (int i=0; i < 4; i++) {
-					int index = int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
+					int index = i; //= int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
  					if ( texture2D( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
     					visibility -= 0.2;
   					}
