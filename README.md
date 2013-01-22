@@ -17,9 +17,32 @@ Eclipse in, and as you can see, it requires, by default, two libraries. The
 easiest way to get it to run is to download jogl and unzip it in a lib/ folder
 that's a sibling of the res/ and src/ ones.
 
+Of course, Eclipse isn't *required* to build the engine. You can javac' it, no 
+problem, you can use a different folder for the libs and so on.
+
 You can get the latest JOGL here: http://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z
 
 The required JARs are: gluegen-rt.jar and jogl-all.jar.
+
+Miscellaneous things & philosophy
+---------------------------------
+First and foremost, this is a learning experience. I am learning OpenGL as I'm
+writing this, so don't expect the engine to be in any way clean, optimized or
+well-done in any way. Some things worth noting are the major roadblocks I've hit
+while developing this project - for most of them, I've left some sort of "monument"
+in the source code, describing the nature of the problem and how I've fixed it. I
+find that by actually writing this down and then seeing it over and over again helps
+you remember common mistakes that you've made and thus helps you avoid them in the
+future.
+
+I obviously don't recommend doing this in an actual serious project (that's what
+bug trackers are for!), but I like to use it in small personal projects.
+
+The code is designed to fail as often as possible. And by that I mean that whenever
+it detects something that's wrong, it instantly crashes telling you what went 
+wrong. It doesn't struggle to chug along at any cost. Again, for a professional
+project this might not be the right technique all of the time, and you'd probably 
+want to have some sort of crash recovery system in some of the cases.
 
 License
 -------

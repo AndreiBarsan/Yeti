@@ -55,6 +55,9 @@ public class Renderer {
 				0.0f, 0.0f, 0.5f, 0.0f,
 				0.5f, 0.5f, 0.5f, 1.0f
 			});
+	// 18.01.2013 - make sure you write your matrices down right! If this matrix,
+	// for instance, is missing the 0.5fs from the last line, you won't see any
+	// shadows!
 	
 	public Renderer(GL3 gl) {	
 		state = new RendererState(gl);
