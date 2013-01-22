@@ -48,9 +48,16 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
- * TODO: fix dark stripes in shadow mapping
  * TODO: fix scene switch glitches
+ * TODO: figure out what to with textures - if I'm going to move them to the
+ * respective component altogether, how will we interact with the VBO with the
+ * texture coords? Maybe some sort of VBO channel interface that belongs to a
+ * component? Texture -> UV, WorldTransform -> Geometry, WTNormals -> Geometry + normals
+ * Bump component (example) -> Tangents
+ * 
+ * TODO: fix dark stripes in shadow mapping
  * TODO: make spotlight shadow mapping work (most likely tied to the above bug!)
+ * 
  * TODO: camera update() method (automatically called by the scene - keep everything
  * in sync, prevent recalculations of the view matrix etc.)
  * TODO: perpixel fog & fix fog computation
@@ -63,7 +70,6 @@ import com.jogamp.opengl.util.Animator;
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
- * TODO: multiple-component materials
  * TODO: editable camera viewing angle (derp ---> quake pro)
  * TODO: editor GUI						~
  * TODO: smooth camera movement 		~

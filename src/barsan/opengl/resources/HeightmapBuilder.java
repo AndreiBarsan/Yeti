@@ -63,7 +63,7 @@ public class HeightmapBuilder {
 		int w = map.getWidth(), h = map.getHeight();
 		
 		ByteBuffer buff = ByteBuffer.allocate(Buffers.SIZEOF_BYTE * 3 * w * h);
-		Yeti.debug("Building heightmap. Waring - coercing bytes to GL_BYTE size!");
+		Yeti.debug("Building heightmap. Warning - coercing bytes to GL_BYTE size!");
 		long start = System.currentTimeMillis();
 		// Skip some of the map's pixels
 		int step = 4;
@@ -136,7 +136,7 @@ public class HeightmapBuilder {
 		}
 		Yeti.debug("Should build " + w * h + " faces!");
 		result.buildVBOs();
-		Yeti.debug("Finished uploadin heightmap data! %d ms", System.currentTimeMillis() - start);
+		Yeti.debug("Finished uploading heightmap data! %d ms", System.currentTimeMillis() - start);
 		
 		fbo.detachAll(gl);
 		fbo.unbind(gl);
