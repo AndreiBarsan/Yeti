@@ -21,7 +21,7 @@ public class ShadowReceiver implements MaterialComponent {
 		
 		m.shader.setUMatrix4("mvpMatrixShadows", biasMVP);
 		m.shader.setU1i("useShadows", true);
-		m.shader.setU1i("shadowQuality", 3);
+		m.shader.setU1i("shadowQuality", 0);
 	}
 
 	@Override
@@ -34,8 +34,9 @@ public class ShadowReceiver implements MaterialComponent {
 	}
 
 	@Override
-	public void cleanup() {
-		
+	public void cleanUp(Material m, RendererState rs) {
+		m.shader.setU1i("useShadows", false);
+		m.shader.setU1i("shadowQuality", 0);
 	}
 
 	@Override

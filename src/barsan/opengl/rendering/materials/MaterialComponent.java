@@ -27,7 +27,7 @@ import barsan.opengl.rendering.RendererState;
 	 * Frees up whatever resources were bound on setup! 
 	 * Do not destroy texutures and such here! Use dispose() for that!
 	 */
-	/* pp */ void cleanup();
+	/* pp */ void cleanUp(Material m, RendererState rs);
 	
 	/* pp */ void dispose();
 }

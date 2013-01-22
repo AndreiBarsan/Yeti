@@ -156,22 +156,27 @@ void main() {
 			t_bias  = clamp(t_bias, 0.00f, 0.01f);
 		}
 		
-		if( vertPos_dmc.w == 0 ) {
+		if( vertPos_dmc.w <= 0 ) {
 			visibility = 1.0f;
 		} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
 			visibility = 1.0f;
 		} else {
 			if(shadowQuality > 2) {
+// not being worked on!
 				for (int i=0; i < 4; i++) {
 					int index = i; //= int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
- 					if ( texture2D( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
+ 					if ( texture( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
     					visibility -= 0.2;
   					}
 				}
 			} else {
-				if ( texture2D( shadowMap, sc ).z + t_bias < sc4.z) {
-    				visibility = 0.5;
-  				}
+				if(textureProj(shadowMap, vertPos_dmc.xyw ).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
+					visibility = 0.5;
+				}
+
+				//if ( texture( shadowMap, sc ).x + t_bias < sc4.z) {
+    				
+  				//}
   			}
 		}
 	}
@@ -201,10 +206,11 @@ void main() {
 	//vFragColor -= vFragColor;
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
-	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z);	
+	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
 	//vFragColor += vec4(vertPos_dmc.z) * 0.5;
+	//vFragColor += vec4((vertPos_dmc.z) /  vertPos_dmc.w);
 	//float diff = texture2D( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4();
 	//vFragColor += vec4(visibility);
-	//vFragColor.a = 1.0f;
+	vFragColor.a = 1.0f;
 }

@@ -27,6 +27,9 @@ public class DepthWriterDirectional extends Material {
 		
 		shader.setUMatrix4("mvpMatrix", MVP);
 	}
+	
+	@Override
+	public void cleanUp(RendererState rendererState) { 	}
 
 	
 }

@@ -1,6 +1,5 @@
 package barsan.opengl.scenes;
 
-import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -11,8 +10,6 @@ import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import jogamp.newt.Debug;
-
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
@@ -21,7 +18,6 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
-import barsan.opengl.rendering.OrthographicCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -30,7 +26,6 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
-import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -95,7 +90,7 @@ public class LightTest extends Scene {
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 2f, j * step);
-				float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
+				//float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
 				//pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
 				modelInstances.add(new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
@@ -196,7 +191,7 @@ public class LightTest extends Scene {
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		
 		//tv.set(1.0f, 1.0f, 4.0f);
-		tv.set(1.0f, 1.0f, (float)Math.sin(a));
+		tv.set(1.0f, 1.0f, (float)Math.sin(a / 2.5f) * 3.0f);
 		test_dl.getDirection().set(tv).normalize();
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);

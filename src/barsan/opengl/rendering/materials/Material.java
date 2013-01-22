@@ -69,6 +69,17 @@ public abstract class Material {
 	 */
 	public abstract void setup(RendererState rendererState, Matrix4 transform);
 	
+	/**
+	 * Called by the renderer after it is finished with the batch of items with
+	 * this material. Cleans up the shader state so that (possibly) other 
+	 * materials using the same shader program don't break. This is usually
+	 * associated with shader components, as they can cause bugs if they don't
+	 * clean after themselves.
+	 * 
+	 * @param rendererState
+	 */
+	public abstract void cleanUp(RendererState rendererState);
+	
 	public void render(RendererState rendererState, Model model) {
 		GL gl = rendererState.gl;
 		enableShader(rendererState);

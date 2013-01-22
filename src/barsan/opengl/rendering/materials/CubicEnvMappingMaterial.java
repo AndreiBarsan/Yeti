@@ -53,6 +53,9 @@ public class CubicEnvMappingMaterial extends Material {
 	}
 	
 	@Override
+	public void cleanUp(RendererState rendererState) { }
+	
+	@Override
 	public void bindTextureCoodrinates(Model model) {
 		// nop!
 	}

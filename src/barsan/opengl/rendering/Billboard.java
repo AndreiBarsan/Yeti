@@ -69,6 +69,11 @@ public class Billboard extends ModelInstance {
 			shader.setU1i("colorMap", 0);
 			texture.bind(rendererState.gl);
 		}
+		
+		@Override
+		public void cleanUp(RendererState rendererState) {
+			// nop
+		}
 	}
 	
 	private BillboardMaterial b_ref;

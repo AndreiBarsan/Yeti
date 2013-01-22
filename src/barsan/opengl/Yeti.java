@@ -21,7 +21,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
 import javax.media.opengl.DebugGL3bc;
-import javax.media.opengl.GL;
 import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -50,25 +49,23 @@ import com.jogamp.opengl.util.Animator;
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
  * TODO: fix dark stripes in shadow mapping
- * TODO: make spotlight shadow mapping work
+ * TODO: fix scene switch glitches
+ * TODO: make spotlight shadow mapping work (most likely tied to the above bug!)
  * TODO: camera update() method (automatically called by the scene - keep everything
  * in sync, prevent recalculations of the view matrix etc.)
  * TODO: perpixel fog & fix fog computation
  * TODO: actually find and write down the matrix multiplication BUG !!!
  * TODO: light lists
  * TODO: optional utility to draw:
- * 			- camera info on HUD
  * 			- pie chart render data
  * 			- axes
- * 			- MOST IMPORTANTLY: tiny circles/spheres to show light positions as
- * 				well as spotlight dirs; NORMALS!
+ * 			- MOST IMPORTANTLY: draw spotlight dirs; NORMALS!
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
  * TODO: multiple-component materials
  * TODO: editable camera viewing angle (derp ---> quake pro)
  * TODO: editor GUI						~
- * TODO: render depth buffer only
  * TODO: smooth camera movement 		~
  * TODO: depth of field
  * TODO: uniform blocks for shaders (with possibility of loading multiple items

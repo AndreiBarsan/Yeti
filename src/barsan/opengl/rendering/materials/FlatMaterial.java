@@ -42,7 +42,9 @@ public class FlatMaterial extends Material {
 		} else {
 			shader.setU1i("fogEnabled", 0);
 		}
-
 	}
+	
+	@Override
+	public void cleanUp(RendererState rendererState) {	}
 
 }

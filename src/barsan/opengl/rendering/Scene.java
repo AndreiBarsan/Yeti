@@ -66,7 +66,7 @@ public class Scene implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-				
+
 		if(exiting) {
 			exit();
 			return;

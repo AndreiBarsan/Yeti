@@ -54,8 +54,8 @@ public class Renderer {
 				0.0f, 0.5f, 0.0f, 0.0f,
 				0.0f, 0.0f, 0.5f, 0.0f,
 				0.5f, 0.5f, 0.5f, 1.0f
-			}); 
-		
+			});
+	
 	public Renderer(GL3 gl) {	
 		state = new RendererState(gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
@@ -150,7 +150,7 @@ public class Renderer {
 				shadowMapW, shadowMapH,
 				0,
 				GL2.GL_DEPTH_COMPONENT,
-				GL2.GL_UNSIGNED_BYTE,//GL2.GL_FLOAT, 
+				GL2.GL_UNSIGNED_BYTE, //GL2.GL_FLOAT, 
 				null);
 		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
@@ -193,7 +193,7 @@ public class Renderer {
 		if(scene.shadowsEnabled && canCast) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
-			gl.glCullFace(GL2.GL_FRONT);
+			//gl.glCullFace(GL2.GL_FRONT);
 			state.forceMaterial(new DepthWriterDirectional());
 			
 			Light light = state.getLights().get(0);
@@ -215,11 +215,24 @@ public class Renderer {
 			} else if(light.getType() == LightType.Spot) {
 				SpotLight slight = (SpotLight)light;
 				
+				Vector3 camDir = slight.getDirection().copy();
+				//camDir.y = -camDir.y;
+				
 				PerspectiveCamera pc = new PerspectiveCamera(
-						slight.getPosition(),
-						slight.getDirection(),
-						1024, 
-						1024); 	//..?
+						slight.getPosition().copy(),
+						camDir,
+						shadowMapW, 
+						shadowMapH); 	//..?
+				pc.setFOV(45.0f);
+				pc.setFrustumNear(0.5f);
+				pc.setFrustumFar(8.0f);
+				
+				//pc.lookAt(slight.getPosition().copy(), 
+					//	new Vector3(slight.getPosition()).add(camDir),
+					//	new Vector3(0.0f, 1.0f, 0.0f));
+				
+				//System.out.println(pc.getDirection());
+				
 				pc.refreshProjection();
 				
 				state.setCamera(pc);
@@ -234,7 +247,7 @@ public class Renderer {
 			
 			// Restore old state
 			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
-			gl.glCullFace(GL2.GL_BACK);
+			//gl.glCullFace(GL2.GL_BACK);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		}
@@ -329,18 +342,18 @@ public class Renderer {
 	}
 	
 	private void renderScene(GL3 gl, final Scene scene) {
-		/*		    _.' :  `._                                            
-       		    .-.'`.  ;   .'`.-.                                        
-       __      / : ___\ ;  /___ ; \      __                               
+        /*          _.' :  `._                                            
+                .-.'`.  ;   .'`.-.                                        
+               / : ___\ ;  /___ ; \      __                               
      ,'_ ""--.:__;".-.";: :".-.":__;.--"" _`,                             
      :' `.t""--.. '<@.`;_  ',@>` ..--""j.' `;                             
-		  `:-.._J '-.-'L__ `-- ' L_..-;'                                  
-		    "-.__ ;  .-"  "-.  : __.-"    Clear the bound buffer 
-		        L ' /.------.\ ' J           you must!
-		         "-.   "--"   .-"         
-		        __.l"-:_JL_;-";.__        
-		     .-j/'.;  ;""""  / .'\"-.                                     
-		*/
+          `:-.._J '-.-'L__ `-- ' L_..-;'                                  
+            "-.__ ;  .-"  "-.  : __.-"    Clear the bound buffer 
+                L ' /.------.\ ' J           you must!
+                 "-.   "--"   .-"         
+                __.l"-:_JL_;-";.__        
+             .-j/'.;  ;""""  / .'\"-.                                     
+		 */
 		// At first I was clearing the default fbo, then binding the auxiliary
 		// one, forcing the depth and color bits to never actually get cleared!
 		// Nice one. 26.12.2012

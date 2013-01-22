@@ -32,6 +32,11 @@ public class CubeMapMaterial extends Material {
 	}
 	
 	@Override
+	public void cleanUp(RendererState rendererState) {
+		// this will be refactored away soon
+	}
+	
+	@Override
 	public void bindTextureCoodrinates(Model model) {
 		// nop!
 	}

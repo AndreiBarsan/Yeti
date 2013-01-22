@@ -170,10 +170,6 @@ public class BasicMaterial extends Material {
 			shader.setU1i("useTexture", 0);
 		}
 		
-		// This might be the problem that kills the whole component concept
-		shader.setU1i("useShadows", false);
-		
-		shader.setU1i("useBump", 0);
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState, modelMatrix);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);
@@ -191,5 +187,12 @@ public class BasicMaterial extends Material {
 		}
 		
 		shader.setU1i("shininess", shininess);
+	}
+	
+	@Override
+	public void cleanUp(RendererState rendererState) {
+		for (MaterialComponent c : components) {
+			c.cleanUp(this, rendererState);
+		}
 	}
 }

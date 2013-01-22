@@ -40,5 +40,10 @@ public class NormalDisplacementMaterial extends Material {
 			shader.setU1i("fogEnabled", 0);
 		}
 	}
+	
+	@Override
+	public void cleanUp(RendererState rendererState) {
+		// nop
+	}
 
 }
