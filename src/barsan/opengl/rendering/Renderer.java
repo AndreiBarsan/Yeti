@@ -1,5 +1,6 @@
 package barsan.opengl.rendering;
 
+import java.security.interfaces.RSAKey;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -193,6 +194,8 @@ public class Renderer {
 			canCast = true;
 		}
 		
+		state.setFog(scene.fog);
+		
 		if(scene.shadowsEnabled && canCast) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
@@ -279,8 +282,7 @@ public class Renderer {
 			pps = ResourceLoader.shader("postProcess");
 			gl.glUseProgram(pps.handle);
 		}//*/
-		pps.setU1i("colorMap", 0);
-		
+				
 		int pindex = pps.getAttribLocation(Shader.A_POSITION);
 		screenQuad.getVertices().use(pindex);
 
@@ -289,6 +291,7 @@ public class Renderer {
 		
 		// This is where the magic happens!
 		// The texture we rendered on is passed as an input to the second stage!
+		pps.setU1i("colorMap", 0);
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
 		gl.glBindTexture(texType, regTexHandle);
 		

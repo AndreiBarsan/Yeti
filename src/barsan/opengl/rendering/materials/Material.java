@@ -1,8 +1,12 @@
 package barsan.opengl.rendering.materials;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
@@ -20,10 +24,6 @@ import com.jogamp.opengl.util.texture.Texture;
  */
 public abstract class Material {
 	
-	protected static Matrix4 view = new Matrix4();
-	protected static Matrix4 projection = new Matrix4();
-	protected static Matrix4 viewModel = new Matrix4();
-	protected static Matrix4 MVP = new Matrix4();
 	private int positionIndex, normalIndex, texcoordIndex, tangentIndex, bitangentIndex;
 	protected Shader shader;
 	protected Color ambient, diffuse, specular;
@@ -37,6 +37,7 @@ public abstract class Material {
 	 */
 	protected int shininess = 128;
 	protected Texture texture = null;
+	protected List<MaterialComponent> components = new ArrayList<MaterialComponent>();
 	
 	public Material(Shader shader) {
 		this(shader, Color.WHITE, Color.WHITE, Color.WHITE);
@@ -65,9 +66,15 @@ public abstract class Material {
 	 * Note: this doesn't actually render anything yet!
 	 * 
 	 * @param rendererState	Information about the shader.
-	 * @param transform		Model transform of the current model instance.
+	 * @param modelMatrix	Model transform of the current model instance.
 	 */
-	public abstract void setup(RendererState rendererState, Matrix4 transform);
+	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
+		int textureIndex = 0;
+		for (MaterialComponent c : components) {
+			c.setup(this, rendererState, modelMatrix);
+			textureIndex += c.setupTexture(this, rendererState, textureIndex);
+		}
+	}
 	
 	/**
 	 * Called by the renderer after it is finished with the batch of items with
@@ -78,7 +85,11 @@ public abstract class Material {
 	 * 
 	 * @param rendererState
 	 */
-	public abstract void cleanUp(RendererState rendererState);
+	public void cleanUp(RendererState rendererState) {
+		for (MaterialComponent c : components) {
+			c.cleanUp(this, rendererState);
+		}
+	}
 	
 	public void render(RendererState rendererState, Model model) {
 		GL gl = rendererState.gl;
@@ -197,5 +208,19 @@ public abstract class Material {
 
 	public void setAmbient(Color ambient) {
 		this.ambient = ambient;
+	}
+
+	public void addComponent(MaterialComponent component) {
+		components.add(component);
+	}
+
+	public void removeComponent(MaterialComponent component) {
+		if(!components.remove(component)) {
+			Yeti.screwed("Tried to remove non-existing material component!");
+		}
+	}
+
+	public boolean containsComponent(MaterialComponent component) {
+		return components.contains(component);
 	}
 }

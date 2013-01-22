@@ -26,7 +26,9 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ShadowReceiver;
+import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.DebugGUI;
@@ -66,7 +68,7 @@ public class LightTest extends Scene {
 		shadowsEnabled = true;
 		
 		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		Material monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
 		monkeyMat.addComponent(new ShadowReceiver());
 		//camera.setFrustumFar(180.0f);
@@ -75,12 +77,13 @@ public class LightTest extends Scene {
 		//fogEnabled = true;
 		
 		
-		final BasicMaterial floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
+		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
 		floorMat.setShininess(256);
 		floorMat.addComponent(new ShadowReceiver());
+		floorMat.addComponent(new TextureComponent());
 		
 		modelInstances.add(new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera()));
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));

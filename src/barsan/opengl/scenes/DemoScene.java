@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.Threading;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Transform;
@@ -15,6 +16,7 @@ import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.rendering.materials.ToonMaterial;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
@@ -96,8 +98,9 @@ public class DemoScene extends Scene {
 				new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
 		//*/
 		
-		BasicMaterial bumpMat = new BasicMaterial();
+		Material bumpMat = new BasicMaterial();
 		bumpMat.setTexture(ResourceLoader.texture("stone"));
+		bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
 		
 		ModelInstance daddy;
@@ -161,7 +164,6 @@ public class DemoScene extends Scene {
 		m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
 		float orbit = 2.0f;
 		m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
-		
 		
 		// Calls the renderer
 		super.display(drawable);		

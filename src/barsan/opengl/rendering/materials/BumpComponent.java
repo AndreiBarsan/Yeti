@@ -34,6 +34,7 @@ public class BumpComponent implements MaterialComponent {
 	
 	@Override
 	public void cleanUp(Material m, RendererState rs) {
+		m.shader.setU1i("useBump", false);
 		m.shader.setU1i("normalMap", 0);
 		normalMap.disable(rs.gl);
 	}

@@ -31,11 +31,10 @@ public class ModelInstance implements Renderable {
 		this(model, material, new Transform());
 	}
 	
-	/*
-	public ModelInstance(Model model, Matrix4 transform) {
-		this(model, null, transform);
+	public ModelInstance(Model model, Transform transform) {
+		this(model, new BasicMaterial(), transform);
 	}
-	*/
+	
 	public ModelInstance(Model model, Material material, Transform localTransform) {
 		this.model = model;
 		this.material = material;
@@ -69,12 +68,19 @@ public class ModelInstance implements Renderable {
 		}
 
 		activeMaterial.bindTextureCoodrinates(model);
+		
+		// This should actually be something like:
+		// Batcher.getBatch(activeMaterial).add(this, new ImmutableRS(rendererState));
+		// - if we do this, the number of uniform sets will drop dramatically!
+		// - challenge - optimizing the rendererstate so that it really only
+		// holds the information that influence the corresponding object
 		activeMaterial.render(rendererState, model);
 		// Ya need to disable glDisableVertexAttribArray cuz otherwise the
 		// fixed pipeline rendering gets messed up, yo!
 		// Mild bug ~1.5h 28.11.2012
 
 		activeMaterial.unsetBuffers(model);
+		activeMaterial.cleanUp(rendererState);
 		
 		for (ModelInstance mi : children) {
 			mi.render(rendererState, transformStack);

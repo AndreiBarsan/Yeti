@@ -171,7 +171,7 @@ void main() {
 				}
 			} else {
 				if(textureProj(shadowMap, vertPos_dmc.xyw ).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
-					visibility = 0.5;
+					visibility = 0.33;
 				}
 
 				//if ( texture( shadowMap, sc ).x + t_bias < sc4.z) {
