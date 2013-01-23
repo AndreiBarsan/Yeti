@@ -71,13 +71,13 @@ public abstract class Camera {
 	}
 
 	public void strafeLeft() {
-		Vector3 d = new Vector3(up).cross(new Vector3(direction)).normalize().mul(speed);
+		Vector3 d = new Vector3(direction).cross(new Vector3(up)).normalize().mul(speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}
 
 	public void strafeRight() {
-		Vector3 d = new Vector3(direction).cross(new Vector3(up)).normalize().mul(speed);
+		Vector3 d = new Vector3(up).cross(new Vector3(direction)).normalize().mul(speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}

@@ -56,8 +56,11 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TODO: use input polling for the camera (needed later for the char controls)
  * 
- * TODO: fix dark stripes in shadow mapping
- * TODO: make spotlight shadow mapping work (most likely tied to the above bug!)
+ * TODO: more math; were the previous bugs really only caused by poorly configured
+ * shadowmap generation projection matrices?
+ * 
+ * TODO: if so, start working on binding volumes to start doing lighting the right
+ * way!
  * 
  * TODO: camera update() method (automatically called by the scene - keep everything
  * in sync, prevent recalculations of the view matrix etc.)

@@ -212,7 +212,7 @@ public class Renderer {
 				
 				// TODO: alternative - this is quite dirty	
 				OrthographicCamera oc = new OrthographicCamera(100, 100);
-				oc.setFrustumFar(80);
+				oc.setFrustumFar(180);
 				oc.setFrustumNear(-80);
 				
 				Vector3 ld = dlight.getDirection();
