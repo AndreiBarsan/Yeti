@@ -7,6 +7,15 @@ import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.util.GLHelp;
 
+/**
+ * Shadow quality:
+ * 	- 1: basic mapping and bias
+ *  - 2: bias now depends on the fragments' normals
+ *  - 3: multiple poisson sampling
+ *  - 4: randomized poisson sampling 
+ * @author Andrei Bârsan
+ *
+ */
 public class ShadowReceiver implements MaterialComponent {
 	
 	@Override
@@ -21,7 +30,7 @@ public class ShadowReceiver implements MaterialComponent {
 		
 		m.shader.setUMatrix4("mvpMatrixShadows", biasMVP);
 		m.shader.setU1i("useShadows", true);
-		m.shader.setU1i("shadowQuality", 0);
+		m.shader.setU1i("shadowQuality", 3);
 	}
 
 	@Override

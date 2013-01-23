@@ -222,26 +222,16 @@ public class Renderer {
 				state.depthView = oc.getView().cpy();
 			} else if(light.getType() == LightType.Spot) {
 				SpotLight slight = (SpotLight)light;
-				
 				Vector3 camDir = slight.getDirection().copy();
-				//camDir.y = -camDir.y;
 				
 				PerspectiveCamera pc = new PerspectiveCamera(
 						slight.getPosition().copy(),
 						camDir,
 						shadowMapW, 
-						shadowMapH); 	//..?
-				pc.setFOV(90.0f);
+						shadowMapH);
+				pc.setFOV(120.0f);
 				pc.setFrustumNear(0.5f);
-				pc.setFrustumFar(80.0f);
-				
-				//pc.lookAt(slight.getPosition().copy(), 
-					//	new Vector3(slight.getPosition()).add(camDir),
-					//	new Vector3(0.0f, 1.0f, 0.0f));
-				
-				//System.out.println(pc.getDirection());
-				
-				pc.refreshProjection();
+				pc.setFrustumFar(240.0f);
 				
 				state.setCamera(pc);
 				state.depthProjection = pc.getProjection().cpy();
@@ -265,7 +255,7 @@ public class Renderer {
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		renderDebug(Yeti.get().gl.getGL2(), scene);		
+		//renderDebug(Yeti.get().gl.getGL2(), scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		//Render to the screen
@@ -410,7 +400,7 @@ public class Renderer {
 				PointLight pl = (PointLight)l;
 				if(l.getType() == LightType.Point || l.getType() == LightType.Spot) {
 					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
-					glut.glutSolidSphere(1.5d, 5, 5);
+					glut.glutSolidSphere(0.5d, 5, 5);
 				}
 				// need quaternion slerp to align a spotlight cone to the 
 				// spotlight direction

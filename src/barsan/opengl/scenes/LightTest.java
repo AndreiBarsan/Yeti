@@ -110,11 +110,12 @@ public class LightTest extends Scene {
 				new Transform().updateTranslate(35.0f, 25.0f, -10.0f).updateScale(6.0f)));
 			
 		
-		test_sl = new SpotLight(new Vector3(0.0f, 8.50f, 1.5f), 
-				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
+		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
+				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 				0.75f, 0.8f, 2.0f);
 		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
-		test_sl.setQuadraticAttenuation(0.003f);
+		//test_sl.setQuadraticAttenuation(0.001f);
+		test_sl.setLinearAttenuation(0.05f);
 		
 		test_pl = new PointLight(new Vector3(lightX, 1.50f, lightZ));
 		
@@ -192,7 +193,7 @@ public class LightTest extends Scene {
 		//test_sl.getDirection().y = -20.0f;
 		//test_sl.getDirection().normalize();
 		
-		test_sl.getPosition().setX((float)Math.cos(a) * 20f);
+		test_sl.getPosition().setX((float)Math.cos(a / 2) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
@@ -207,7 +208,8 @@ public class LightTest extends Scene {
 		//plane.getTransform().refresh();
 		
 		/*
-		((PerspectiveCamera)camera).setFOV(80.0f);
+		((PerspectiveCamera)camera).setFOV(90.0f);
+		
 		camera.setPosition(test_sl.getPosition());
 		camera.setDirection(test_sl.getDirection());
 		//*/

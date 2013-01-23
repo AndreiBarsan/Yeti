@@ -19,7 +19,7 @@ public abstract class Camera {
 	protected int height;
 	private int viewportX;
 	private int viewportY;
-	protected Matrix4 projection = new Matrix4();
+	
 	protected Quaternion currentRotation = new Quaternion();
 	
 	// Dirty flags
@@ -34,9 +34,8 @@ public abstract class Camera {
 	protected float frustumNear;
 	protected float frustumFar;
 	
-	// Holds the view matrix of the camera, auto-updates when requested
-	// TODO: update only on demand!
-	Matrix4 vm = new Matrix4();
+	protected Matrix4 projection = new Matrix4();
+	private Matrix4 vm = new Matrix4();
 	
 	public Camera(Vector3 position, Vector3 direction, int width, int height) {
 		this(position, direction, new Vector3(0.0f, 1.0f, 0.0f), width, height);
@@ -115,22 +114,26 @@ public abstract class Camera {
 	}
 
 	public Matrix4 getView() {
-		if(viewDirty) {
-			refreshView();
-			viewDirty = false;
-		}
+		// This 'dirty' flag idea won't work. Why? Well, when someone uses
+		// setDirection(newVal) it's all a-ok. But when you use getDirection().setX(-13),
+		// there's no way to tell that happened and to set the right flags.
+		refreshView();
 		return vm.cpy();
 	}
 
 	public Matrix4 getProjection() {
-		if(projectionDirty) {
-			refreshProjection();
-			projectionDirty = false;
-		}
+		// Do it anyway
+		refreshProjection();
 		return projection;
 	}
 
 	protected abstract void refreshProjection();
+	
+	public void update() {
+		refreshProjection();
+		refreshView();
+		assert false : "not yet";
+	}
 
 	private void refreshView() {
 		vm.setLookAt(eyePosition, new Vector3(eyePosition).add(direction), up);
@@ -181,7 +184,7 @@ public abstract class Camera {
 	}
 
 	public void setPosition(Vector3 eyePosition) {
-		this.eyePosition = eyePosition;
+		this.eyePosition.set(eyePosition);
 		viewDirty = true;
 	}
 
@@ -198,7 +201,7 @@ public abstract class Camera {
 	}
 
 	public void setDirection(Vector3 direction) {
-		this.direction = direction;
+		this.direction.set(direction);
 		viewDirty = true;
 	}
 

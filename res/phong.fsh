@@ -1,7 +1,7 @@
 #version 400 core
 
 const float bias = 0.0025f;
-const vec2 poissonDisk[16] = vec2[]( 
+const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
    vec2( 0.94558609, -0.76890725 ), 
    vec2( -0.094184101, -0.92938870 ), 
@@ -106,7 +106,8 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	return intensity;
 }
 
-float rand(in vec4 seed4) {
+float rand(in vec3 seed3, in int index) {
+	vec4 seed4 = vec4(seed3, index);
 	float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
     return fract(sin(dot_product) * 43758.5453);
 }
@@ -145,15 +146,15 @@ void main() {
 	
 	float visibility = 1.0f;
 	if(useShadows) {
-		// This should technically only be needed when dealing with point lights
+		// This line should technically only be needed when dealing with point lights
 		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 		vec2 sc  = sc4.xy;		
 		
 		float t_bias = bias;
 		if(shadowQuality > 1) {
 			// this dot prod. can be cached
-			t_bias *= tan(acos(dot(nNormal, nLightDir)));	
-			t_bias  = clamp(t_bias, 0.00f, 0.01f);
+			//t_bias *= tan(acos(dot(nNormal, nLightDir)));	
+			//t_bias  = clamp(t_bias, 0.00f, 0.01f);
 		}
 		
 		if( vertPos_dmc.w <= 0 ) {
@@ -161,22 +162,26 @@ void main() {
 		} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
 			visibility = 1.0f;
 		} else {
-			if(shadowQuality > 2) {
-// not being worked on!
-				for (int i=0; i < 4; i++) {
-					int index = i; //= int(16.0 * rand(vec4(gl_FragCoord.xyy, i))) % 16;
- 					if ( texture( shadowMap, sc + poissonDisk[index] / 1800.0f).z + t_bias < sc4.z) {
+			if(shadowQuality <= 2) {
+				if(textureProj(shadowMap, vertPos_dmc.xyw ).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
+					visibility = 0.33f;
+				}
+			}
+			else if(shadowQuality == 3) {
+				for (int i = 0; i < 4; i++) {
+					vec2 coord = sc + pD[i] / 2700.f;
+					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     					visibility -= 0.2;
   					}
 				}
-			} else {
-				if(textureProj(shadowMap, vertPos_dmc.xyw ).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
-					visibility = 0.33;
+			} else if(shadowQuality >= 4) {
+				for (int i = 0; i < 4; i++) {
+					int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
+					vec2 coord = sc + pD[index] / 2700.f;
+					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
+    					visibility -= 0.2;
+  					}
 				}
-
-				//if ( texture( shadowMap, sc ).x + t_bias < sc4.z) {
-    				
-  				//}
   			}
 		}
 	}
