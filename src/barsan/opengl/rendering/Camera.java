@@ -22,6 +22,18 @@ public abstract class Camera {
 	protected Matrix4 projection = new Matrix4();
 	protected Quaternion currentRotation = new Quaternion();
 	
+	// Dirty flags
+	protected boolean projectionDirty;
+	protected boolean viewDirty;
+	
+	static Vector3 aux_v3 = new Vector3();
+	float yawAccum = 0.0f;
+	float pitchAccum = 0.0f;
+	float speed = 0.9f;
+	float rotSpeed = 6.0f;
+	protected float frustumNear;
+	protected float frustumFar;
+	
 	// Holds the view matrix of the camera, auto-updates when requested
 	// TODO: update only on demand!
 	Matrix4 vm = new Matrix4();
@@ -41,73 +53,89 @@ public abstract class Camera {
 		frustumFar = DEFAULT_FAR;
 		
 		currentRotation = new Quaternion(direction, 0);
+		
+		projectionDirty = true;
+		viewDirty = true;
 	}
 
 	public void forward() {
-		Vector3 d = new Vector3(direction).mul(-speed);
+		Vector3 d = new Vector3(direction).mul(speed);
 		eyePosition.add(d);
+		viewDirty = true;
 	}
 
 	public void backward() {
-		Vector3 d = new Vector3(direction).mul(speed);
+		Vector3 d = new Vector3(direction).mul(-speed);
 		eyePosition.add(d);
+		viewDirty = true;
 	}
 
 	public void strafeLeft() {
 		Vector3 d = new Vector3(up).cross(new Vector3(direction)).normalize().mul(speed);
 		eyePosition.add(d);
+		viewDirty = true;
 	}
 
 	public void strafeRight() {
 		Vector3 d = new Vector3(direction).cross(new Vector3(up)).normalize().mul(speed);
 		eyePosition.add(d);
+		viewDirty = true;
 	}
 
 	public void strafeDown() {
 		eyePosition.add(new Vector3(up).mul(-speed));
+		viewDirty = true;
 	}
 
 	public void strafeUp() {
 		eyePosition.add(new Vector3(up).mul(speed));
+		viewDirty = true;
 	}
 
 	public void turnLeft() {
 		direction.mul(aux_matrix.setRotate(-rotSpeed, up.x, up.y, up.z));
-		
+		viewDirty = true;
 	}
 
 	public void turnRight() {
 		direction.mul(aux_matrix.setRotate(rotSpeed, up.x, up.y, up.z));
+		viewDirty = true;
 	}
 
 	public void turnUp() {
 		Vector3 right = new Vector3(direction).cross(up).normalize();
 		direction.mul(aux_matrix.setRotate(rotSpeed, right.x, right.y, right.z));
+		viewDirty = true;
 	}
 
 	public void turnDown() {
 		Vector3 left = new Vector3(up).cross(direction).normalize();
 		direction.mul(aux_matrix.setRotate(rotSpeed, left.x, left.y, left.z));
+		viewDirty = true;
 	}
 
 	public Matrix4 getView() {
-		return vm.setLookAt(eyePosition, new Vector3(eyePosition).add(direction), up);
-	}
-
-	public void reshape(int x, int y, int width, int height) {
-		//this.width = width;
-		//this.height = height;
-		this.viewportX = x;
-		this.viewportY = y;
-		refreshProjection();
+		if(viewDirty) {
+			refreshView();
+			viewDirty = false;
+		}
+		return vm.cpy();
 	}
 
 	public Matrix4 getProjection() {
+		if(projectionDirty) {
+			refreshProjection();
+			projectionDirty = false;
+		}
 		return projection;
 	}
 
-	public abstract void refreshProjection();
+	protected abstract void refreshProjection();
 
+	private void refreshView() {
+		vm.setLookAt(eyePosition, new Vector3(eyePosition).add(direction), up);
+	}
+	
 	public int getWidth() {
 		return width;
 	}
@@ -115,21 +143,10 @@ public abstract class Camera {
 	public int getHeight() {
 		return height;
 	}
-
-	static Quaternion yq = new Quaternion();
-	static Vector3 aux_v3 = new Vector3();
-	float yawAccum = 0.0f;
-	float pitchAccum = 0.0f;
-	float speed = 0.9f;
-	float rotSpeed = 6.0f;
-	protected float frustumNear;
-	protected float frustumFar;
-
-	public Camera() {
-		super();
-	}
-
-	public void move3D(int dx, int dy) {		
+	
+	public void move3D(int dx, int dy) {	
+		if(dx == 0 && dy == 0) return;
+		
 		yawAccum -= dx;
 		pitchAccum -= dy;
 		
@@ -144,6 +161,7 @@ public abstract class Camera {
 		
 		direction.set(0.0f, 0.0f, 1.0f);
 		currentRotation.transform(direction);
+		viewDirty = true;
 	}
 
 	public int getViewportX() {
@@ -163,7 +181,8 @@ public abstract class Camera {
 	}
 
 	public void setPosition(Vector3 eyePosition) {
-		this.eyePosition = eyePosition;		
+		this.eyePosition = eyePosition;
+		viewDirty = true;
 	}
 
 	public Vector3 getPosition() {
@@ -180,6 +199,7 @@ public abstract class Camera {
 
 	public void setDirection(Vector3 direction) {
 		this.direction = direction;
+		viewDirty = true;
 	}
 
 	public float getFrustumNear() {
@@ -188,7 +208,7 @@ public abstract class Camera {
 
 	public void setFrustumNear(float frustumNear) {
 		this.frustumNear = frustumNear;
-		refreshProjection();
+		projectionDirty = true;
 	}
 
 	public float getFrustumFar() {
@@ -197,7 +217,7 @@ public abstract class Camera {
 
 	public void setFrustumFar(float frustumFar) {
 		this.frustumFar = frustumFar;
-		refreshProjection();
+		projectionDirty = true;
 	}
 
 	public void unproject(Vector3 vWinSpace) {
@@ -216,9 +236,17 @@ public abstract class Camera {
 	
 	public void lookAt(Vector3 eye, Vector3 target, Vector3 up) {
 		eyePosition.set(eye);
-		direction.set(eye).sub(target).normalize();
+		direction.set(target).sub(eye).normalize();
 		up.set(up);
-		refreshProjection();
+		
+		projectionDirty = true;
+		viewDirty = true;
 	}
 
+	@Override
+	public String toString() {
+		return String.format("P: %s, D: %s, U: %s, x:%d y:%d, w:%d, h:%d, near:%.4f, far:%.4f",
+				eyePosition, direction, up, viewportX, viewportY,
+				width, height, frustumNear, frustumFar);
+	}
 }

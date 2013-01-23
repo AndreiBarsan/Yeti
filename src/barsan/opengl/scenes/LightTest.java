@@ -12,12 +12,14 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
+import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.PerspectiveCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -117,8 +119,8 @@ public class LightTest extends Scene {
 		test_pl = new PointLight(new Vector3(lightX, 1.50f, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
-		lights.add(test_dl);
-		//lights.add(test_sl);
+		//lights.add(test_dl);
+		lights.add(test_sl);
 		
 		gui = new DebugGUI(drawable.getAnimator(), camera);
 		gui.setPosition(new Vector3(220, 10, 0));
@@ -190,6 +192,8 @@ public class LightTest extends Scene {
 		test_sl.getDirection().y = -20.0f;
 		test_sl.getDirection().normalize();
 		
+		test_sl.getPosition().setX((float)Math.cos(a));
+		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		
@@ -201,6 +205,12 @@ public class LightTest extends Scene {
 		
 		//plane.getTransform().getTranslate().y = -1.0f + (float)Math.sin(a) * 2.5f;
 		//plane.getTransform().refresh();
+		
+		/*
+		((PerspectiveCamera)camera).setFOV(80.0f);
+		camera.setPosition(test_sl.getPosition());
+		camera.setDirection(test_sl.getDirection());
+		//*/
 		super.display(drawable);
 	}
 }

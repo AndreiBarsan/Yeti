@@ -142,8 +142,8 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 		
 		int xcenter = e.getComponent().getWidth() / 2;
 		int ycenter = e.getComponent().getHeight() / 2;
-		int dx =   xcenter - e.getX() - xo;
-		int dy = -(ycenter - e.getY() - yo); 
+		int dx =  xcenter - e.getX() - xo;
+		int dy =  ycenter - e.getY() - yo; 
 		
 		//System.out.printf("%d %d\n", dx, dy);
 		

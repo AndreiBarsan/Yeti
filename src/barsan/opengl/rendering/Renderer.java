@@ -64,6 +64,8 @@ public class Renderer {
 		state = new RendererState(gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
+		System.out.println("DERP: " + state.maxAnisotropySamples);
+		
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
@@ -78,7 +80,7 @@ public class Renderer {
 		
 		int fboWidth = Yeti.get().settings.width;
 		int fboHeight = Yeti.get().settings.height;
-		
+		//*
 		fbo_tex = new FBObject();
 		fbo_tex.reset(gl, fboWidth, fboHeight, 0);
 		fbo_tex.bind(gl);
@@ -107,6 +109,7 @@ public class Renderer {
         }
         
 		gl.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0 + 0, texType, regTexHandle, 0);
+		//*/
 		
         //fbo_tex.attachRenderbuffer(gl, Attachment.Type.DEPTH, 32);
 		/* 
@@ -127,6 +130,7 @@ public class Renderer {
 		 *  
 		 *   Dang.
 		 */
+		
 		if(MSAAEnabled) {
 			RenderAttachment depth = new RenderAttachment(Type.DEPTH, GL.GL_DEPTH_COMPONENT32, MSAASamples, fboWidth, fboHeight, 0);
 			depth.initialize(gl);
@@ -182,7 +186,7 @@ public class Renderer {
 		
 		// Get the original viewport size; We cannot rely on Yeti's dimensions
 		// since the GLJPanel is doing witchcraft which results in a viewport
-		// with a greate height than it's supposed to
+		// with a greater height than it's supposed to
 		int oldDim[] = new int[4];
 		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
 		
@@ -193,8 +197,6 @@ public class Renderer {
 			// Placeholder test
 			canCast = true;
 		}
-		
-		state.setFog(scene.fog);
 		
 		if(scene.shadowsEnabled && canCast) {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
@@ -229,9 +231,9 @@ public class Renderer {
 						camDir,
 						shadowMapW, 
 						shadowMapH); 	//..?
-				pc.setFOV(45.0f);
+				pc.setFOV(80.0f);
 				pc.setFrustumNear(0.5f);
-				pc.setFrustumFar(8.0f);
+				pc.setFrustumFar(80.0f);
 				
 				//pc.lookAt(slight.getPosition().copy(), 
 					//	new Vector3(slight.getPosition()).add(camDir),
@@ -266,13 +268,13 @@ public class Renderer {
 		renderDebug(Yeti.get().gl.getGL2(), scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
-		// Render to the screen
+		//Render to the screen
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
 		// Begin post-processing
 		Shader pps;
 		
-		//*
+		
 		if(MSAAEnabled) {
 			pps = ResourceLoader.shader("postProcessMSAA");
 			gl.glUseProgram(pps.handle);
@@ -281,8 +283,7 @@ public class Renderer {
 		} else {
 			pps = ResourceLoader.shader("postProcess");
 			gl.glUseProgram(pps.handle);
-		}//*/
-				
+		}				
 		int pindex = pps.getAttribLocation(Shader.A_POSITION);
 		screenQuad.getVertices().use(pindex);
 
@@ -328,6 +329,11 @@ public class Renderer {
 	
 	public void dispose(GL3 gl) {
 		fbo_tex.destroy(gl);
+		fbo_shadows.destroy(gl);
+		gl.glDeleteTextures(2, new int[] {
+				regTexHandle,
+				state.shadowTexture
+		}, 0);
 	}
 	
 	private void renderOccluders(GL3 gl, final Scene scene) {
@@ -361,7 +367,8 @@ public class Renderer {
              .-j/'.;  ;""""  / .'\"-.                                     
 		 */
 		// At first I was clearing the default fbo, then binding the auxiliary
-		// one, forcing the depth and color bits to never actually get cleared!
+		// one, forcing the depth and color bits that I drew the 3D geometry on
+		// to never actually get cleared!
 		// Nice one. 26.12.2012
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
@@ -382,7 +389,6 @@ public class Renderer {
 	}
 	
 	private void prepareBillboards(final Scene scene) {
-		// Sort and render the non-additionally-blended billboards
 		Collections.sort(scene.billbords, new Comparator<Billboard>() {
 			@Override
 			public int compare(Billboard o1, Billboard o2) {
@@ -404,7 +410,7 @@ public class Renderer {
 				PointLight pl = (PointLight)l;
 				if(l.getType() == LightType.Point) {
 					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
-					glut.glutSolidSphere(0.5d, 64, 64);
+					glut.glutSolidSphere(1.5d, 5, 5);
 				}
 				// need quaternion slerp to align a spotlight cone to the 
 				// spotlight direction

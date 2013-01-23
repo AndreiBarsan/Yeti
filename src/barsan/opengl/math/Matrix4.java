@@ -1,5 +1,7 @@
 package barsan.opengl.math;
 
+import java.util.Arrays;
+
 
 
 /**
@@ -10,6 +12,7 @@ package barsan.opengl.math;
 public class Matrix4 {
 	
 	float data[] = new float[16];
+	public static final float EPSILON = 1e-6f;
 	
 	// Used in many computations
 	private static float tmp[] = new float[16];
@@ -474,7 +477,7 @@ public class Matrix4 {
 	public Matrix4 setLookAt(Vector3 eye, Vector3 center, Vector3 up) {
 				
 		// We're just computing the new axes based on our camera position
-		forward.set(center).sub(eye).normalize();
+		forward.set(eye).sub(center).normalize();
 		side.set(forward).cross(up).normalize();
 		newUp.set(side).cross(forward);
 		
@@ -526,6 +529,20 @@ public class Matrix4 {
 				data[M10], data[M11], data[M12], data[M13],
 				data[M20], data[M21], data[M22], data[M23],
 				data[M30], data[M31], data[M32], data[M33]);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(this == obj) return true;
+		if(! (obj instanceof Matrix4) ) return false;
+		
+		Matrix4 that = (Matrix4)obj;
+		for(int i = 0; i < data.length; i++) {
+			if(Math.abs(data[i] - that.data[i]) > EPSILON) 
+				return false;
+		}
+		
+		return true;
 	}
 	
 	// TODO: static utilities for generation perspective, orthographic (PROJECTION) or

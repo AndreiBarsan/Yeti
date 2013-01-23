@@ -86,7 +86,9 @@ public class Scene implements GLEventListener {
 		renderer.render(this);
 		
 		if(gui != null) {
+			Yeti.get().gl.glDisable(GL2.GL_DEPTH_TEST);
 			gui.render();
+			Yeti.get().gl.glEnable(GL2.GL_DEPTH_TEST);
 		}
 		
 		lastTime = System.currentTimeMillis();
@@ -94,7 +96,8 @@ public class Scene implements GLEventListener {
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		camera.reshape(x, y, width, height);
+		// This shouldn't be the default behavior! (save for a few small toy apps)
+		//camera.reshape(x, y, width, height);
 	}
 
 	public Camera getCamera() {
@@ -106,7 +109,7 @@ public class Scene implements GLEventListener {
 	}
 
 	public void registerInputSources(Yeti yeti) {
-		/// Handle camera input
+		// Handle camera input
 		cameraInput = new CameraInput(camera);
 		yeti.addKeyListener(cameraInput);
 		yeti.addMouseListener(cameraInput);
@@ -159,7 +162,7 @@ public class Scene implements GLEventListener {
 	protected void exit() {
 		// Temporary cleanup behavior - at the moment, scenes are independent of each other
 		ResourceLoader.cleanUp();
-		
+		renderer.dispose(Yeti.get().gl);
 		unregisterInputSources(engine);
 		engine.transitionFinished();
 		

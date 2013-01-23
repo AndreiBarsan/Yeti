@@ -23,6 +23,7 @@ public class PerspectiveCamera extends Camera {
 	
 	public void setFOV(float FOV) {
 		this.FOV = FOV;
+		projectionDirty = true;
 	}
 	
 	public float getFOV(float FOV) {
@@ -30,10 +31,10 @@ public class PerspectiveCamera extends Camera {
 	}
 	
 	@Override
-	public void refreshProjection() {
-		assert(height != 0);
-		assert(FOV > 5);
-		assert(frustumNear < frustumFar);
+	protected void refreshProjection() {
+		assert height != 0;
+		assert FOV > 5;
+		assert frustumNear < frustumFar;
 		
 		float aspect = (float)width / height;
 		

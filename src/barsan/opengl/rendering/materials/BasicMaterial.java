@@ -45,7 +45,7 @@ public class BasicMaterial extends Material {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
 		
 		addComponent(new WorldTransformNormals());
-		addComponent(new FogComponent());
+		//addComponent(new FogComponent());
 		addComponent(new LightComponent());
 	}
 	

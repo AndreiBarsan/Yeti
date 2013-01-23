@@ -96,7 +96,7 @@ public class ToonMaterial extends BasicMaterial {
 		
 		// Apparently smooth lines are *really* expensive as they are almost
 		// always done through software fallback, since only a handful of
-		// CAD-specific cards actually natively support them. Fuck this.
+		// CAD-specific cards actually natively support them. :(
 		//gl.glEnable(GL2.GL_LINE_SMOOTH);
 		//gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL2.GL_NICEST);
 		fm.render(rs, model);

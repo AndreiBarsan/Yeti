@@ -48,12 +48,13 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
- * TODO: fix scene switch glitches
  * TODO: figure out what to with textures - if I'm going to move them to the
  * respective component altogether, how will we interact with the VBO with the
  * texture coords? Maybe some sort of VBO channel interface that belongs to a
  * component? Texture -> UV, WorldTransform -> Geometry, WTNormals -> Geometry + normals
  * Bump component (example) -> Tangents
+ * 
+ * TODO: use input polling for the camera (needed later for the char controls)
  * 
  * TODO: fix dark stripes in shadow mapping
  * TODO: make spotlight shadow mapping work (most likely tied to the above bug!)
@@ -295,13 +296,34 @@ public class Yeti implements GLEventListener {
 	
 	public static void screwed(String message) {
 		System.err.printf("[FATAL] %s\n", message);
+		if(get().debug) {
+			System.err.printf("Impending blackbox:\n");
+			
+			Thread t = Thread.currentThread();
+			System.err.printf("Fatal error occurred on thread: %s\n", t);
+			System.err.printf("Stacktrace: \n");
+			StackTraceElement sad[] = new Throwable().getStackTrace();
+			boolean deep = false;
+			for(StackTraceElement el : sad) {
+				if(el.getClassName().startsWith("java")) {
+					deep = true;
+					break;
+				}
+				System.err.printf("\t- %s\n", el);
+			}
+			
+			if(deep) {
+				System.err.println("...and continuing in the guts of JOGL and AWT.");
+			}
+			
+			System.err.printf("Thank you, come again!");
+		}
 		System.exit(-1);
 	}
 	
 	public static void screwed(String message, Throwable cause) {
 		cause.printStackTrace();
-		System.err.printf("[FATAL] %s\n", message);
-		System.exit(-1);
+		screwed(message);
 	}
 	
 	public static void quit() {
@@ -378,6 +400,7 @@ public class Yeti implements GLEventListener {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		if(pendingInit) {
+			System.out.println("Pending init - so doing init! (display)");
 			currentScene.init(drawable);
 			currentScene.registerInputSources(this);
 			pendingInit = false;
@@ -390,6 +413,7 @@ public class Yeti implements GLEventListener {
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
 		if(pendingInit) {
+			System.out.println("Pending init - so doing init! (reshape)");
 			currentScene.init(drawable);
 			currentScene.registerInputSources(this);
 			pendingInit = false;
@@ -410,7 +434,7 @@ public class Yeti implements GLEventListener {
 	
 	private GLCanvas createCanvas() {
 		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL2GL3);
+		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		GLCanvas canvas = new GLCanvas(capabilities);
 		
@@ -420,7 +444,7 @@ public class Yeti implements GLEventListener {
 	// TODO: refactor this and fix
 	private GLJPanel createCanvasPanel() {
 		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL2GL3);
+		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		GLJPanel gljp = new GLJPanel(capabilities);		
 		return gljp;
