@@ -231,7 +231,7 @@ public class Renderer {
 						camDir,
 						shadowMapW, 
 						shadowMapH); 	//..?
-				pc.setFOV(80.0f);
+				pc.setFOV(90.0f);
 				pc.setFrustumNear(0.5f);
 				pc.setFrustumFar(80.0f);
 				
@@ -408,7 +408,7 @@ public class Renderer {
 		for(Light l : scene.lights) {
 			if(l.getType() != LightType.Directional) {
 				PointLight pl = (PointLight)l;
-				if(l.getType() == LightType.Point) {
+				if(l.getType() == LightType.Point || l.getType() == LightType.Spot) {
 					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
 					glut.glutSolidSphere(1.5d, 5, 5);
 				}

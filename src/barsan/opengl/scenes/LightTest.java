@@ -94,7 +94,7 @@ public class LightTest extends Scene {
 		int monkeys = 4;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
-				Transform pm = new Transform().setTranslate(i * step, 2f, j * step);
+				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
 				//float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
 				//pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
@@ -110,8 +110,8 @@ public class LightTest extends Scene {
 				new Transform().updateTranslate(35.0f, 25.0f, -10.0f).updateScale(6.0f)));
 			
 		
-		test_sl = new SpotLight(new Vector3(0.0f, 4.50f, 0.0f), 
-				new Vector3(-1.0f, -2.0f, 0.0f).normalize(),
+		test_sl = new SpotLight(new Vector3(0.0f, 8.50f, 1.5f), 
+				new Vector3(-1.0f, -1.0f, 0.0f).normalize(),
 				0.75f, 0.8f, 2.0f);
 		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
 		test_sl.setQuadraticAttenuation(0.003f);
@@ -187,12 +187,12 @@ public class LightTest extends Scene {
 		a += getDelta();
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
-		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
-		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
-		test_sl.getDirection().y = -20.0f;
-		test_sl.getDirection().normalize();
+		//test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
+		//test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
+		//test_sl.getDirection().y = -20.0f;
+		//test_sl.getDirection().normalize();
 		
-		test_sl.getPosition().setX((float)Math.cos(a));
+		test_sl.getPosition().setX((float)Math.cos(a) * 20f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);

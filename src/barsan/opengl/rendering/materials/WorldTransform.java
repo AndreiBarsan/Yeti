@@ -23,7 +23,7 @@ public class WorldTransform implements MaterialComponent {
 		projection.set(rs.getCamera().getProjection());
 		viewModel.set(view).mul(modelMatrix);
 		
-		// WARNING: A * B * C != A * (B * C) with matrices
+		// WARNING: A * B * C != A * (B * C) with matrices. Duh. Algebra 101.
 		// The following line does not equal projection * viewModel
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
