@@ -1,6 +1,5 @@
 package barsan.opengl.rendering;
 
-import java.security.interfaces.RSAKey;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -10,6 +9,7 @@ import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
@@ -42,12 +42,21 @@ public class Renderer {
 	int texType = -1;
 	int regTexHandle = -1;
 	
-	int shadowMapW = 4096;
-	int shadowMapH = 4096;
+	int shadowMapW = 4096; //1024;
+	int shadowMapH = 4096; //1024;
 	
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
 	private Model screenQuad;
+	
+	private static final Vector3[] directions = new Vector3[] {
+		/* x+ */	new Vector3( 1.0f,  0.0f,  0.0f),
+		/* x- */	new Vector3(-1.0f,  0.0f,  0.0f),
+		/* y+ */	new Vector3( 0.0f,  1.0f,  0.0f),
+		/* y- */	new Vector3( 0.0f, -1.0f,  0.0f),
+		/* z+ */	new Vector3( 0.0f,  0.0f,  1.0f),
+		/* z- */	new Vector3( 0.0f,  0.0f, -1.0f)
+	};
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
 			{
@@ -189,7 +198,7 @@ public class Renderer {
 		// with a greater height than it's supposed to
 		int oldDim[] = new int[4];
 		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
-		
+		Light light = state.getLights().get(0);
 		prepareBillboards(scene);
 		
 		boolean canCast = false;
@@ -204,23 +213,26 @@ public class Renderer {
 			//gl.glCullFace(GL2.GL_FRONT);
 			state.forceMaterial(new DepthWriterDirectional());
 			
-			Light light = state.getLights().get(0);
 			Camera aux = state.getCamera();
 			
 			if(light.getType() == LightType.Directional) {
-				DirectionalLight dlight = (DirectionalLight)light;
 				
-				// TODO: alternative - this is quite dirty	
+				// Directional light shadow casting
+				
+				DirectionalLight dlight = (DirectionalLight)light;
 				OrthographicCamera oc = new OrthographicCamera(100, 100);
 				oc.setFrustumFar(180);
 				oc.setFrustumNear(-80);
 				
 				Vector3 ld = dlight.getDirection();
 				oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
-				state.setCamera(oc);
-				state.depthProjection = oc.getProjection().cpy();
-				state.depthView = oc.getView().cpy();
+				
+				renderShadowMap(gl, scene, oc);
+				
 			} else if(light.getType() == LightType.Spot) {
+				
+				// Spot light shadow casting
+				
 				SpotLight slight = (SpotLight)light;
 				Vector3 camDir = slight.getDirection().copy();
 				
@@ -229,23 +241,43 @@ public class Renderer {
 						camDir,
 						shadowMapW, 
 						shadowMapH);
-				pc.setFOV(120.0f);
+				// Theta is the cos of the outer angle of the cone
+				// Note that to get the FOV, we need to double that
+				float th = slight.getTheta();
+				float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
+				pc.setFOV(angle);
 				pc.setFrustumNear(0.5f);
 				pc.setFrustumFar(240.0f);
 				
-				state.setCamera(pc);
-				state.depthProjection = pc.getProjection().cpy();
-				state.depthView = pc.getView().cpy();
+				renderShadowMap(gl, scene, pc);
+				
 			} else {
+				
+				// Point light shadow casting
+				
 				assert false : "Point lights not yet supported!";
-			}
 			
-			gl.glViewport(0, 0, shadowMapW, shadowMapH);
-			renderOccluders(gl, scene);
+				PointLight pl = (PointLight)light;
+				
+				// Render to a cubemap
+				for(int side = 0; side < 6; side++) {
+					PerspectiveCamera pc = new PerspectiveCamera(
+							pl.getPosition().copy(),
+							directions[side],
+							shadowMapW, 
+							shadowMapH);
+					pc.setFOV(90.0f);		// Exactly 90 deg wide for each face
+					pc.setFrustumNear(0.5f);
+					pc.setFrustumFar(240.0f);
+					
+					state.setCamera(pc);
+					state.depthProjection = pc.getProjection().cpy();
+					state.depthView = pc.getView().cpy();
+				}
+			}
 			
 			// Restore old state
 			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
-			//gl.glCullFace(GL2.GL_BACK);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		}
@@ -255,7 +287,7 @@ public class Renderer {
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		//renderDebug(Yeti.get().gl.getGL2(), scene);		
+		renderDebug(Yeti.get().gl.getGL2(), scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		//Render to the screen
@@ -263,8 +295,6 @@ public class Renderer {
 		
 		// Begin post-processing
 		Shader pps;
-		
-		
 		if(MSAAEnabled) {
 			pps = ResourceLoader.shader("postProcessMSAA");
 			gl.glUseProgram(pps.handle);
@@ -300,6 +330,11 @@ public class Renderer {
 			Shader dr = ResourceLoader.shader("depthRender");
 			gl.glUseProgram(dr.handle);
 			dr.setU1i("colorMap", 0);
+			float depthRenFactor = 1.0f;
+			if(light.getType() == LightType.Spot) {
+				depthRenFactor = 15.0f;
+			}
+			dr.setU1f("factor", depthRenFactor);
 			
 			gl.glActiveTexture(GLHelp.textureSlot[0]);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
@@ -388,6 +423,15 @@ public class Renderer {
 				return d2.compareTo(d1);
 			}
 		});
+	}
+	
+	private void renderShadowMap(GL3 gl, Scene scene, Camera camera) {
+		state.setCamera(camera);
+		state.depthProjection = camera.getProjection().cpy();
+		state.depthView = camera.getView().cpy();
+		
+		gl.glViewport(0, 0, shadowMapW, shadowMapH);
+		renderOccluders(gl, scene);
 	}
 	
 	private void renderDebug(GL2 gl, Scene scene) {

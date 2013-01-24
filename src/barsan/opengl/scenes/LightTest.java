@@ -112,7 +112,7 @@ public class LightTest extends Scene {
 		
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
-				0.75f, 0.8f, 2.0f);
+				0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
 		//test_sl.setQuadraticAttenuation(0.001f);
 		test_sl.setLinearAttenuation(0.05f);

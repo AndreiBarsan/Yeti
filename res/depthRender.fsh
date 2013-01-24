@@ -1,6 +1,7 @@
 #version 400 core
 
-const float factor = 12.0f;
+// Useful to improve depth buffer visualzation
+uniform float factor;
 
 uniform sampler2D colorMap;
 

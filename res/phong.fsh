@@ -1,6 +1,7 @@
 #version 400 core
 
-const float bias = 0.0025f;
+const float bias = 0.005f;
+const float pFac = 2500.0f;
 const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
    vec2( 0.94558609, -0.76890725 ), 
@@ -169,7 +170,7 @@ void main() {
 			}
 			else if(shadowQuality == 3) {
 				for (int i = 0; i < 4; i++) {
-					vec2 coord = sc + pD[i] / 2700.f;
+					vec2 coord = sc + pD[i] / pFac;
 					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     					visibility -= 0.2;
   					}
@@ -177,7 +178,7 @@ void main() {
 			} else if(shadowQuality >= 4) {
 				for (int i = 0; i < 4; i++) {
 					int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
-					vec2 coord = sc + pD[index] / 2700.f;
+					vec2 coord = sc + pD[index] / pFac;
 					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     					visibility -= 0.2;
   					}
