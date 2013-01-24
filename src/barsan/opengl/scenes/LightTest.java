@@ -28,6 +28,7 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
+import barsan.opengl.rendering.materials.GammaCorrection;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.rendering.materials.TextureComponent;
@@ -45,6 +46,7 @@ public class LightTest extends Scene {
 	LightType currentlyActive = LightType.Point;
 	
 	BumpComponent bc;
+	GammaCorrection gammaCorrection;
 	
 	float lightX = 0.0f;
 	float lightZ = 0.0f;
@@ -78,6 +80,7 @@ public class LightTest extends Scene {
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
 		
+		gammaCorrection = new GammaCorrection();
 		
 		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
@@ -134,6 +137,13 @@ public class LightTest extends Scene {
 						floorMat.removeComponent(bc);
 					} else {
 						floorMat.addComponent(bc);
+					}
+				}
+				else if(e.getKeyCode() == KeyEvent.VK_G) {
+					if(floorMat.containsComponent(gammaCorrection)) {
+						floorMat.removeComponent(gammaCorrection);
+					} else {
+						floorMat.addComponent(gammaCorrection);
 					}
 				}
 			}

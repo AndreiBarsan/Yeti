@@ -19,7 +19,7 @@ public class CubeTexture {
 			"xpos", "xneg", "ypos", "yneg", "zpos", "zneg"
 	};
 	
-	public int[] cubeSlots = new int[] {
+	public static int[] cubeSlots = new int[] {
 		GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
 		GL2.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
 		GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,

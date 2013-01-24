@@ -7,6 +7,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3;
+import javax.media.opengl.GLProfile;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -29,6 +30,8 @@ import com.jogamp.opengl.FBObject.Attachment.Type;
 import com.jogamp.opengl.FBObject.RenderAttachment;
 import com.jogamp.opengl.FBObject.TextureAttachment;
 import com.jogamp.opengl.util.gl2.GLUT;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureData;
 
 public class Renderer {
 
@@ -44,6 +47,13 @@ public class Renderer {
 	
 	int shadowMapW = 4096; //1024;
 	int shadowMapH = 4096; //1024;
+	
+	int cubeMapSide = 1024;
+	
+	// TODO: refactor this into self-contained helper
+	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
+	private Texture cubeTexture;	
+
 	
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
@@ -148,7 +158,6 @@ public class Renderer {
 			fbo_tex.attachRenderbuffer(gl, Attachment.Type.DEPTH, 32);
 		}
 		
-		
 		fbo_tex.unbind(gl);
 		
 		screenQuad = Model.buildQuad(2.0f, 2.0f, false);
@@ -178,11 +187,42 @@ public class Renderer {
 		 //gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_COMPARE_MODE, GL2.GL_COMPARE_R_TO_TEXTURE);	
 		 
 		 gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
-		 
 		 gl.glDrawBuffer(GL2.GL_NONE);
-		 GLHelp.fboErr(gl);		
-		 
 		 fbo_shadows.unbind(gl);
+		 
+		 // Build the point light cubemap FBO
+		 gl.glGenFramebuffers(1, name, 0);
+		 fbo_pointShadows = name[0];
+		 
+		 cubeTexture = new Texture(GL.GL_TEXTURE_CUBE_MAP);
+		 cubeTexture.bind(gl);
+		 cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		 cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+		 cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+		 cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
+		 
+		 for(int face = 0; face < 6; face++) {
+			 /* How do you generate empty textures in JOGL? You need to feed
+			  * them TextureData, which need a Buffer. Allocating an empty buffer
+			  * for this seems silly, when I don't *want* any data in my texture.
+			  * 
+			  * Moreover, the way FBOS do texture binding is with texture 
+			  * attachments, which are tightly coupled to FBOS - this is done
+			  * because you can't actually use the Texture object with fbos
+			  * unless you're willing to hack the system a little.
+			  */
+			 gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
+					 cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
+					 GL.GL_FLOAT, null);
+			 
+		 }
+		 
+		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
+		 // Don't bind any texture here
+		 gl.glDrawBuffer(GL2.GL_NONE);
+		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+		 
+		 GLHelp.fboErr(gl);		
 	}
 	
 	public RendererState getState() {
@@ -208,8 +248,6 @@ public class Renderer {
 		}
 		
 		if(scene.shadowsEnabled && canCast) {
-			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
-			gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 			//gl.glCullFace(GL2.GL_FRONT);
 			state.forceMaterial(new DepthWriterDirectional());
 			
@@ -219,6 +257,9 @@ public class Renderer {
 				
 				// Directional light shadow casting
 				
+				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
+				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+				
 				DirectionalLight dlight = (DirectionalLight)light;
 				OrthographicCamera oc = new OrthographicCamera(100, 100);
 				oc.setFrustumFar(180);
@@ -226,12 +267,15 @@ public class Renderer {
 				
 				Vector3 ld = dlight.getDirection();
 				oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
-				
+				gl.glViewport(0, 0, shadowMapW, shadowMapH);
 				renderShadowMap(gl, scene, oc);
 				
 			} else if(light.getType() == LightType.Spot) {
 				
 				// Spot light shadow casting
+				
+				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
+				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 				
 				SpotLight slight = (SpotLight)light;
 				Vector3 camDir = slight.getDirection().copy();
@@ -249,6 +293,7 @@ public class Renderer {
 				pc.setFrustumNear(0.5f);
 				pc.setFrustumFar(240.0f);
 				
+				gl.glViewport(0, 0, shadowMapW, shadowMapH);
 				renderShadowMap(gl, scene, pc);
 				
 			} else {
@@ -259,7 +304,10 @@ public class Renderer {
 			
 				PointLight pl = (PointLight)light;
 				
+				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
 				// Render to a cubemap
+				// FIXME: in OpenGL 3.0+ you can render everything (all six faces)
+				// in one pass using a geometry shader
 				for(int side = 0; side < 6; side++) {
 					PerspectiveCamera pc = new PerspectiveCamera(
 							pl.getPosition().copy(),
@@ -273,6 +321,11 @@ public class Renderer {
 					state.setCamera(pc);
 					state.depthProjection = pc.getProjection().cpy();
 					state.depthView = pc.getView().cpy();
+					gl.glViewport(0, 0, cubeMapSide, cubeMapSide);
+					gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT,
+							CubeTexture.cubeSlots[side], cubeTexture.getTextureObject(gl), 0);
+					gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+					renderShadowMap(gl, scene, pc);
 				}
 			}
 			
@@ -337,7 +390,11 @@ public class Renderer {
 			dr.setU1f("factor", depthRenFactor);
 			
 			gl.glActiveTexture(GLHelp.textureSlot[0]);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+			if(light.getType() == LightType.Point) {
+				cubeTexture.bind(gl);
+			} else {
+				gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+			}
 			
 			int sqi = dr.getAttribLocation(Shader.A_POSITION);
 			gl.glViewport(10, 10, 200, 200);
@@ -353,11 +410,16 @@ public class Renderer {
 	}
 	
 	public void dispose(GL3 gl) {
+		cubeTexture.destroy(gl);
 		fbo_tex.destroy(gl);
 		fbo_shadows.destroy(gl);
 		gl.glDeleteTextures(2, new int[] {
 				regTexHandle,
 				state.shadowTexture
+		}, 0);
+		
+		gl.glDeleteBuffers(1, new int[] {
+			fbo_pointShadows
 		}, 0);
 	}
 	
@@ -429,8 +491,6 @@ public class Renderer {
 		state.setCamera(camera);
 		state.depthProjection = camera.getProjection().cpy();
 		state.depthView = camera.getView().cpy();
-		
-		gl.glViewport(0, 0, shadowMapW, shadowMapH);
 		renderOccluders(gl, scene);
 	}
 	

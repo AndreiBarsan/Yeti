@@ -54,6 +54,10 @@ uniform bool 	useShadows;
 uniform int		shadowQuality;
 uniform sampler2D shadowMap;
 
+// Gamma correction
+uniform bool 	useGammaCorrection;
+uniform float 	invGamma;
+
 // Fog
 uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
@@ -207,6 +211,10 @@ void main() {
 	// Add the fog to the mix
 	if(fogEnabled) {
 		vFragColor = mix(vFragColor, fogColor, fogFactor);
+	}
+	
+	if(useGammaCorrection) {
+		vFragColor = pow(vFragColor, vec4(invGamma) );
 	}
 	
 	//vFragColor -= vFragColor;
