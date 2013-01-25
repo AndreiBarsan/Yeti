@@ -215,7 +215,7 @@ public class Yeti implements GLEventListener {
 		frame.setVisible(true);
 		
 		
-		animator.setUpdateFPSFrames(10, null);
+		animator.setUpdateFPSFrames(1, null);
 		animator.start();
 		
 		glpanel.addMouseListener(new MouseAdapter() {
@@ -246,7 +246,6 @@ public class Yeti implements GLEventListener {
 	}
 	
 	public void startRenderLoop(Frame frame, Container hostContainer) {
-		
 		// Create and setup the canvas
 		GLCanvas canvas = createCanvas();
 		canvas.addGLEventListener(this);
@@ -263,7 +262,7 @@ public class Yeti implements GLEventListener {
 				}).start();
 			}
 		});
-		
+				
 		this.frame = frame;
 		
 		hostContainer.add(canvas);
@@ -300,28 +299,20 @@ public class Yeti implements GLEventListener {
 	}
 	
 	public static void screwed(String message) {
+		System.err.flush();
+		System.out.flush();
 		System.err.printf("[FATAL] %s\n", message);
-		if(get().debug) {
-			System.err.printf("Impending blackbox:\n");
-			
-			Thread t = Thread.currentThread();
-			System.err.printf("Fatal error occurred on thread: %s\n", t);
-			System.err.printf("Stacktrace: \n");
+		if(Yeti.get().debug) {
+			System.err.printf("Thread: %s\n", Thread.currentThread());
 			StackTraceElement sad[] = new Throwable().getStackTrace();
-			boolean deep = false;
-			for(StackTraceElement el : sad) {
+			final int maxStack = 5;
+			for(int i = 1; i < Math.min(maxStack, sad.length); i++) {
+				StackTraceElement el = sad[i];
 				if(el.getClassName().startsWith("java")) {
-					deep = true;
 					break;
 				}
 				System.err.printf("\t- %s\n", el);
 			}
-			
-			if(deep) {
-				System.err.println("...and continuing in the guts of JOGL and AWT.");
-			}
-			
-			System.err.printf("Thank you, come again!");
 		}
 		System.exit(-1);
 	}

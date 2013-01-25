@@ -80,8 +80,6 @@ smooth in mat3 	mNTB;			// Used in normal mapping
 
 out vec4 vFragColor;
 
-
-
 float rand(in vec3 seed3, in int index) {
 	vec4 seed4 = vec4(seed3, index);
 	float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
@@ -98,6 +96,7 @@ float att(float d) {
 	
 	return min(1.0f, 1.0f / den);
 }
+
 
 float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {	
 	float intensity = max(0.0f, dot(nNormal, nLightDir));
@@ -121,9 +120,24 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	return intensity;
 }
 
+float computeVisibilityCube(in float NL, in vec3 nLightDir) {
+	float t_bias = bias;
+	if(shadowQuality > 1) {
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, bias);
+	}
+	
+	float visibility = 1.0f;
+	if(texture(cubeShadowMap, nLightDir).z < length(vVaryingLightDir) + 0.005f ) {
+		visibility = 0.2f;
+	}
+	
+	return visibility;
+}
+
 float computeVisibility(in float NL) {
 	float visibility = 1.0f;
-	// This line should technically only be needed when dealing with point lights
+	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
 	
@@ -133,6 +147,8 @@ float computeVisibility(in float NL) {
 		t_bias  = clamp(t_bias, 0.00f, bias);
 	}
 	
+	// we don't even *need* to project the vertex on a certain texture when
+	// doing omnidirectional shadowmapping
 	if( vertPos_dmc.w <= 0 ) {
 		visibility = 1.0f;
 	} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
@@ -189,7 +205,11 @@ void main() {
 	
 	float visibility = 1.0f;
 	if(useShadows) {
-		visibility = computeVisibility(NL);
+		if(samplingCube) {
+			visibility = computeVisibilityCube(NL, nLightDir);
+		} else {
+			visibility = computeVisibility(NL);
+		}
 	}
 	
 	// TODO: employ #ifdefs and perform shader generation instead
@@ -237,5 +257,5 @@ void main() {
 	//float diff = texture2D( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4();
 	//vFragColor += vec4(visibility);
-	vFragColor.a = 1.0f;
+	//vFragColor.a = 1.0f;
 }

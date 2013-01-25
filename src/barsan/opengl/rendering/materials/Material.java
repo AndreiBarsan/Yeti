@@ -12,6 +12,7 @@ import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -222,5 +223,9 @@ public abstract class Material {
 
 	public boolean containsComponent(MaterialComponent component) {
 		return components.contains(component);
+	}
+	
+	public Shader getShader() {
+		return shader;
 	}
 }

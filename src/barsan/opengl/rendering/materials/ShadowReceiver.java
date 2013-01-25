@@ -8,6 +8,7 @@ import barsan.opengl.rendering.RendererState;
 import barsan.opengl.util.GLHelp;
 
 /**
+ * 
  * Shadow quality:
  * 	- 1: basic mapping and bias
  *  - 2: bias now depends on the fragments' normals
@@ -29,22 +30,21 @@ public class ShadowReceiver implements MaterialComponent {
 		Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
 		
 		m.shader.setUMatrix4("mvpMatrixShadows", biasMVP);
-		m.shader.setU1i("useShadows", true);
-		m.shader.setU1i("shadowQuality", 3);
+		
+		// These settings are not material- or material-instance specific, but, 
+		// rather, renderer (state) specific.
+		rs.shadowMapBindings(m);
 	}
 
 	@Override
 	public int setupTexture(Material m, RendererState rs, int slot) {
-		m.shader.setU1i("shadowMap", slot);
-		rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
-		rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);
-		
-		return 1;
+		return rs.shadowMapTextureBindings(m, slot);
 	}
 
 	@Override
 	public void cleanUp(Material m, RendererState rs) {
 		m.shader.setU1i("useShadows", false);
+		m.shader.setU1i("samplingCube", false);
 		m.shader.setU1i("shadowQuality", 0);
 	}
 

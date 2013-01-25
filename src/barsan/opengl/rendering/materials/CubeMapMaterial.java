@@ -4,6 +4,7 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.GLHelp;
 
 public class CubeMapMaterial extends Material {
 
@@ -26,6 +27,8 @@ public class CubeMapMaterial extends Material {
 		rendererState.gl.glUseProgram(shader.getHandle());
 		shader.setUMatrix4("mvpMatrix", mvp);
 		shader.setU1i("cubeMap", 0);
+		
+		rendererState.gl.glActiveTexture(GLHelp.textureSlot[0]);
 		
 		// It contains the texture wrapped by the CubeTexture
 		texture.bind(rendererState.gl);

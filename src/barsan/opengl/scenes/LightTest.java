@@ -99,7 +99,7 @@ public class LightTest extends Scene {
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 			
 		float step = 6.0f;
-		int monkeys = 4;
+		int monkeys = 1;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
@@ -129,7 +129,8 @@ public class LightTest extends Scene {
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		//lights.add(test_dl);
-		lights.add(test_sl);
+		//lights.add(test_sl);
+		lights.add(test_pl);
 		
 		gui = new DebugGUI(drawable.getAnimator(), camera);
 		gui.setPosition(new Vector3(220, 10, 0));
@@ -158,10 +159,10 @@ public class LightTest extends Scene {
 			}
 		});
 		
-		linearAtt = 1.0f;
+		linearAtt = 0.05f;
 		Yeti.get().addMouseWheelListener(new MouseWheelListener() {
 			
-			float dist = 1.0f;
+			float dist = 500.0f;
 			
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {

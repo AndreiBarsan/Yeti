@@ -302,7 +302,7 @@ public class Renderer {
 							directions[side],
 							shadowMapW, 
 							shadowMapH);
-					pc.setFOV(90.0f);		// Exactly 90 deg wide for each face
+					pc.setFOV(90.0f);
 					pc.setFrustumNear(0.1f);
 					pc.setFrustumFar(240.0f);
 					pc.setUp(new Vector3(0.0f, -1.0f, 0.0f)); // render on the cube right-side-up
@@ -321,6 +321,13 @@ public class Renderer {
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		}
+		/*
+		 * Point lights: temporarilty edited phong to only work with point lights.
+		 * The shadow map is rendering right but when rendering the ground plane of the
+		 * light test scene, a GL_INVALID_OPERATION 0x502 is raised. :(
+		 * 
+		 *  STATUS: :(
+		 */
 		
 		state.forceMaterial(null);
 		
