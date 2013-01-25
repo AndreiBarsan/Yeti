@@ -113,6 +113,14 @@ public abstract class Camera {
 		viewDirty = true;
 	}
 
+	public Vector3 getUp() {
+		return up;
+	}
+
+	public void setUp(Vector3 up) {
+		this.up = up;
+	}
+
 	public Matrix4 getView() {
 		// This 'dirty' flag idea won't work. Why? Well, when someone uses
 		// setDirection(newVal) it's all a-ok. But when you use getDirection().setX(-13),

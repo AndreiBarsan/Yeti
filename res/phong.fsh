@@ -50,9 +50,13 @@ uniform bool useBump;
 uniform sampler2D normalMap;
 
 // Shadow mapping
-uniform bool 	useShadows;
-uniform int		shadowQuality;
-uniform sampler2D shadowMap;
+uniform bool 		useShadows;
+uniform int 		shadowQuality;
+uniform sampler2D 	shadowMap;			// Spot & Directional lights
+uniform samplerCube cubeShadowMap;		// Point lights
+
+uniform bool 		samplingCube;		// Are we sampling the cube? Or are we
+										// sampling the 2D map?
 
 // Gamma correction
 uniform bool 	useGammaCorrection;
@@ -71,12 +75,18 @@ smooth in vec4 	vertPos_wc;
 smooth in vec4 	vertPos_ec;
 smooth in vec4 	lightPos_ec;
 smooth in vec3 	spotDirection_ec;
-
 smooth in vec4 	vertPos_dmc;	// Used in shadow mapping
-
-smooth in mat3 	mNTB;
+smooth in mat3 	mNTB;			// Used in normal mapping
 
 out vec4 vFragColor;
+
+
+
+float rand(in vec3 seed3, in int index) {
+	vec4 seed4 = vec4(seed3, index);
+	float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
+    return fract(sin(dot_product) * 43758.5453);
+}
 
 // Cubic attenuation function
 float att(float d) {
@@ -91,12 +101,12 @@ float att(float d) {
 
 float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {	
 	float intensity = max(0.0f, dot(nNormal, nLightDir));
-	float cos_outer_cone = lightTheta;
-	float cos_inner_cone = lightPhi;
-	float cos_inner_minus_outer = cos_inner_cone - cos_outer_cone;
 
 	// If we are a point light
 	if(lightTheta > 0.0f) {
+		float cos_outer_cone = lightTheta;
+		float cos_inner_cone = lightPhi;
+		float cos_inner_minus_outer = cos_inner_cone - cos_outer_cone;
 		float cos_cur = dot(normalize(spotDirection_ec), -nLightDir);
 		// d3d style smooth edge
 		float spotEffect = clamp((cos_cur - cos_outer_cone) / 
@@ -111,10 +121,47 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	return intensity;
 }
 
-float rand(in vec3 seed3, in int index) {
-	vec4 seed4 = vec4(seed3, index);
-	float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
-    return fract(sin(dot_product) * 43758.5453);
+float computeVisibility(in float NL) {
+	float visibility = 1.0f;
+	// This line should technically only be needed when dealing with point lights
+	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
+	vec2 sc  = sc4.xy;		
+	
+	float t_bias = bias;
+	if(shadowQuality > 1) {
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, bias);
+	}
+	
+	if( vertPos_dmc.w <= 0 ) {
+		visibility = 1.0f;
+	} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
+		visibility = 1.0f;
+	} else {
+		if(shadowQuality <= 2) {
+			if(texture(shadowMap, sc).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
+				visibility = 0.2f;
+			}
+		}
+		else if(shadowQuality == 3) {
+			for (int i = 0; i < 4; i++) {
+				vec2 coord = sc + pD[i] / pFac;
+				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
+    				visibility -= 0.2;
+  				}
+			}
+		} else if(shadowQuality >= 4) {
+			for (int i = 0; i < 4; i++) {
+				int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
+				vec2 coord = sc + pD[index] / pFac;
+				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
+    				visibility -= 0.2;
+  				}
+			}
+  		}
+	}
+
+	return visibility;
 }
 
 /**
@@ -138,6 +185,12 @@ void main() {
 
 	vec3 nNormal = normalize(vVaryingNormal);
 	vec3 nLightDir = normalize(vVaryingLightDir);
+	float NL = dot(nNormal, nLightDir);
+	
+	float visibility = 1.0f;
+	if(useShadows) {
+		visibility = computeVisibility(NL);
+	}
 	
 	// TODO: employ #ifdefs and perform shader generation instead
 	vec3 mapNormal;
@@ -147,51 +200,9 @@ void main() {
 		nNormal = vBump;
 	}
 	
-	float intensity = computeIntensity(nNormal, nLightDir);
+	float intensity = computeIntensity(nNormal, nLightDir);	// nNormal updated by the normal mapping!
+	intensity *= visibility;
 	
-	float visibility = 1.0f;
-	if(useShadows) {
-		// This line should technically only be needed when dealing with point lights
-		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
-		vec2 sc  = sc4.xy;		
-		
-		float t_bias = bias;
-		if(shadowQuality > 1) {
-			// this dot prod. can be cached
-			//t_bias *= tan(acos(dot(nNormal, nLightDir)));	
-			//t_bias  = clamp(t_bias, 0.00f, 0.01f);
-		}
-		
-		if( vertPos_dmc.w <= 0 ) {
-			visibility = 1.0f;
-		} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
-			visibility = 1.0f;
-		} else {
-			if(shadowQuality <= 2) {
-				if(textureProj(shadowMap, vertPos_dmc.xyw ).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
-					visibility = 0.33f;
-				}
-			}
-			else if(shadowQuality == 3) {
-				for (int i = 0; i < 4; i++) {
-					vec2 coord = sc + pD[i] / pFac;
-					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    					visibility -= 0.2;
-  					}
-				}
-			} else if(shadowQuality >= 4) {
-				for (int i = 0; i < 4; i++) {
-					int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
-					vec2 coord = sc + pD[index] / pFac;
-					if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    					visibility -= 0.2;
-  					}
-				}
-  			}
-		}
-	}
-
-	intensity *= visibility;	
 	cf = matAmbient.rgb * globalAmbient.rgb + intensity * lightDiffuse.rgb * matDiffuse.rgb;	
 	af = matAmbient.a * globalAmbient.a + lightDiffuse.a * matDiffuse.a;
 	

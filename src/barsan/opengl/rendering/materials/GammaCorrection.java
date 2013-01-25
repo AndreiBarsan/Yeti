@@ -15,8 +15,7 @@ public class GammaCorrection implements MaterialComponent {
 	}
 	
 	public GammaCorrection(float gamma) {
-		this.gamma = gamma;
-		this.invGamma = 1.0f / gamma;
+		setGamma(gamma);
 	}
 	
 	@Override
@@ -37,5 +36,14 @@ public class GammaCorrection implements MaterialComponent {
 
 	@Override
 	public void dispose() { }
+	
 
+	public float getGamma() {
+		return gamma;
+	}
+
+	public void setGamma(float gamma) {
+		this.gamma = gamma;
+		this.invGamma = 1.0f / gamma;
+	}
 }

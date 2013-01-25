@@ -29,11 +29,8 @@ public class CubeMapMaterial extends Material {
 		
 		// It contains the texture wrapped by the CubeTexture
 		texture.bind(rendererState.gl);
-	}
-	
-	@Override
-	public void cleanUp(RendererState rendererState) {
-		// this will be refactored away soon
+		
+		super.setup(rendererState, transform);
 	}
 	
 	@Override

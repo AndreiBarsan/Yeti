@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GL3;
 
+import com.jogamp.opengl.util.texture.Texture;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.lights.AmbientLight;
@@ -34,6 +36,7 @@ public class RendererState {
 	public Matrix4 depthView;
 	public Matrix4 depthProjection;
 	public int shadowTexture;
+	/* pp */ Texture cubeTexture;
 	
 	public RendererState(GL3 gl) {
 		this.gl = gl;

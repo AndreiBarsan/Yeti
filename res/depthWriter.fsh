@@ -2,4 +2,5 @@
 
 layout(location = 0) out float fragmentDepth;
 
-void main(void) { }
+void main(void) {
+ }

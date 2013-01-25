@@ -74,7 +74,9 @@ import com.jogamp.opengl.util.Animator;
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
- * TODO: editable camera viewing angle (derp ---> quake pro)
+ * TODO: global rendering settings should be part of every material (think
+ * gamma correction and tone mapping); should gamma correction be part of a
+ * post-processing system?
  * TODO: editor GUI						~
  * TODO: smooth camera movement 		~
  * TODO: depth of field

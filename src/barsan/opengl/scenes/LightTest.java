@@ -12,7 +12,6 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
@@ -20,6 +19,7 @@ import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PerspectiveCamera;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -48,6 +48,9 @@ public class LightTest extends Scene {
 	BumpComponent bc;
 	GammaCorrection gammaCorrection;
 	
+	Material monkeyMat;
+	Material skyMat;
+	
 	float lightX = 0.0f;
 	float lightZ = 0.0f;
 	
@@ -72,8 +75,8 @@ public class LightTest extends Scene {
 		shadowsEnabled = true;
 		
 		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
-		Material monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
-		monkeyMat.setAmbient(new Color(0.11f, 0.11f, 0.11f));
+		monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
 		monkeyMat.addComponent(new ShadowReceiver());
 		//camera.setFrustumFar(180.0f);
 		fog = new Fog(Color.TRANSPARENTBLACK);
@@ -85,12 +88,14 @@ public class LightTest extends Scene {
 		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
-		floorMat.setAmbient(new Color(0.1f, 0.1f, 0.1f));
+		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
 		floorMat.setShininess(256);
 		floorMat.addComponent(new ShadowReceiver());
 		floorMat.addComponent(new TextureComponent());
 		
-		modelInstances.add(new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera()));
+		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera());
+		skyMat = sb.getMaterial();
+		modelInstances.add(sb);
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 			
 		float step = 6.0f;
@@ -116,11 +121,11 @@ public class LightTest extends Scene {
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 				0.85f, 0.9f, 1.0f);
-		test_sl.setDiffuse(new Color(0.95f, 0.95f, 0.95f));
+		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		//test_sl.setQuadraticAttenuation(0.001f);
 		test_sl.setLinearAttenuation(0.05f);
 		
-		test_pl = new PointLight(new Vector3(lightX, 1.50f, lightZ));
+		test_pl = new PointLight(new Vector3(lightX, 2.50f, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		//lights.add(test_dl);
@@ -142,8 +147,12 @@ public class LightTest extends Scene {
 				else if(e.getKeyCode() == KeyEvent.VK_G) {
 					if(floorMat.containsComponent(gammaCorrection)) {
 						floorMat.removeComponent(gammaCorrection);
+						monkeyMat.removeComponent(gammaCorrection);
+						skyMat.removeComponent(gammaCorrection);
 					} else {
 						floorMat.addComponent(gammaCorrection);
+						monkeyMat.addComponent(gammaCorrection);
+						skyMat.addComponent(gammaCorrection);
 					}
 				}
 			}
@@ -209,20 +218,14 @@ public class LightTest extends Scene {
 		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		
 		//tv.set(1.0f, 1.0f, 4.0f);
-		tv.set(1.0f, 1.0f, (float)Math.sin(a / 2.5f) * 3.0f);
+		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
 		test_dl.getDirection().set(tv).normalize();
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		
-		//plane.getTransform().getTranslate().y = -1.0f + (float)Math.sin(a) * 2.5f;
-		//plane.getTransform().refresh();
-		
-		/*
-		((PerspectiveCamera)camera).setFOV(90.0f);
-		
-		camera.setPosition(test_sl.getPosition());
-		camera.setDirection(test_sl.getDirection());
-		//*/
+		//camera.setDirection(Renderer.directions[1]);
+		//camera.setPosition(test_pl.getPosition());
+		//((PerspectiveCamera)camera).setFOV(90.0f);
 		super.display(drawable);
 	}
 }
