@@ -24,7 +24,7 @@ import com.jogamp.opengl.util.texture.Texture;
 public class RendererState {
 	
 	public final GL3 gl;
-	private ArrayList<Light> pointLights;
+	private ArrayList<Light> lights;
 	private Renderer renderer;
 
 	private AmbientLight ambientLight;
@@ -54,7 +54,7 @@ public class RendererState {
 	 * occluded, but that's a long way down the road.
 	 */
 	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
-		if(pointLights.get(0).getType() != LightType.Point) {
+		if(lights.get(0).getType() != LightType.Point) {
 			// We don't need this matrix if we're working with point lights and cube maps.
 			Matrix4 projection = depthProjection;
 			Matrix4 view = depthView;
@@ -77,7 +77,7 @@ public class RendererState {
 	/** @see #shadowMapBindings(Material m)  */
 	public int shadowMapTextureBindings(Material m, int slot) {
 		
-		if(pointLights.get(0).getType() == LightType.Point) {
+		if(lights.get(0).getType() == LightType.Point) {
 			m.getShader().setU1i("samplingCube", true);
 			
 			gl.glActiveTexture(GLHelp.textureSlot[slot]);
@@ -116,7 +116,7 @@ public class RendererState {
 	}
 
 	public void setLights(ArrayList<Light> pointLights) {
-		this.pointLights = pointLights;
+		this.lights = pointLights;
 	}
 	
 	public void setAmbientLight(AmbientLight ambientLight) {
@@ -132,7 +132,7 @@ public class RendererState {
 	}
 	
 	public ArrayList<Light> getLights() {
-		return pointLights;
+		return lights;
 	}
 
 	public AmbientLight getAmbientLight() {
