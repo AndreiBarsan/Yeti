@@ -34,12 +34,16 @@ import com.jogamp.opengl.util.texture.Texture;
 
 public class Renderer {
 
+	public static boolean renderDebug = true;
+	
 	private RendererState state;
 	private FBObject fbo_tex;
 	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
-	public static boolean renderDebug = true;
+	private int shadowQuality = 2;
+	private float omniShadowNear = 0.1f;
+	private float omniShadowFar = 100.0f;
 	
 	TextureAttachment tta;
 	
@@ -49,7 +53,7 @@ public class Renderer {
 	int shadowMapW = 4096;
 	int shadowMapH = 4096;
 	
-	int cubeMapSide = 1024;
+	int cubeMapSide = 2048;
 	
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
@@ -69,7 +73,7 @@ public class Renderer {
 	// shadows!
 	
 	public Renderer(GL3 gl) {	
-		state = new RendererState(gl);
+		state = new RendererState(this, gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
 		System.out.println("DERP: " + state.maxAnisotropySamples);
@@ -293,7 +297,7 @@ public class Renderer {
 
 				PointLight pl = (PointLight)light;
 				
-				state.forceMaterial(new DepthWriterPoint(pl.getPosition()));
+				state.forceMaterial(new DepthWriterPoint(pl.getPosition(), omniShadowNear, omniShadowFar));
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
 				
 				// Render to a cubemap
@@ -501,4 +505,28 @@ public class Renderer {
 		gl.glPopMatrix();
 
 	}
+
+	public int getShadowQuality() {
+		return shadowQuality;
+	}
+
+	public void setShadowQuality(int shadowQuality) {
+		this.shadowQuality = shadowQuality;
+	}
+	public float getOmniShadowNear() {
+		return omniShadowNear;
+	}
+
+	public void setOmniShadowNear(float omniShadowNear) {
+		this.omniShadowNear = omniShadowNear;
+	}
+
+	public float getOmniShadowFar() {
+		return omniShadowFar;
+	}
+
+	public void setOmniShadowFar(float omniShadowFar) {
+		this.omniShadowFar = omniShadowFar;
+	}
+
 }

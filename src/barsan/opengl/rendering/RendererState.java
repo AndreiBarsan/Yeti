@@ -24,7 +24,8 @@ public class RendererState {
 	
 	public final GL3 gl;
 	private ArrayList<Light> pointLights;
-	
+	private Renderer renderer;
+
 	private AmbientLight ambientLight;
 	private Fog fog; 
 	
@@ -41,17 +42,9 @@ public class RendererState {
 	public int shadowTexture;
 	/* pp */ Texture cubeTexture;
 	
-	public RendererState(GL3 gl) {
+	public RendererState(Renderer renderer, GL3 gl) {
+		this.renderer = renderer;
 		this.gl = gl;
-	}
-
-	public RendererState(GL3 gl, ArrayList<Light> pointLights,
-			AmbientLight ambientLight, Camera camera, int anisotropySamples) {
-		this.gl = gl;
-		this.pointLights = pointLights;
-		this.ambientLight = ambientLight;
-		this.camera = camera;
-		this.anisotropySamples = anisotropySamples;
 	}
 	
 	/**
@@ -74,9 +67,13 @@ public class RendererState {
 			Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
 			
 			m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
+			
+		} else {
+			m.getShader().setU1f("far", renderer.getOmniShadowFar());
 		}
+		
 		m.getShader().setU1i("useShadows", true);
-		m.getShader().setU1i("shadowQuality", 2);
+		m.getShader().setU1i("shadowQuality", renderer.getShadowQuality());
 	}
 	
 	/** @see #shadowMapBindings(Material m)  */

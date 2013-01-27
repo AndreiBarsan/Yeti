@@ -18,8 +18,6 @@ import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
-import barsan.opengl.rendering.PerspectiveCamera;
-import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -53,7 +51,7 @@ public class LightTest extends Scene {
 	
 	float lightX = 0.0f;
 	float lightZ = 0.0f;
-	
+	float pointLightY = 4.0f;
 	float linearAtt = 0.0f;
 	
 	@Override
@@ -83,7 +81,7 @@ public class LightTest extends Scene {
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
 		
-		gammaCorrection = new GammaCorrection();
+		gammaCorrection = new GammaCorrection(1.2f);
 		
 		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
 		floorMat.setTexture(ResourceLoader.texture("floor"));
@@ -122,10 +120,8 @@ public class LightTest extends Scene {
 				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 				0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
-		//test_sl.setQuadraticAttenuation(0.001f);
-		test_sl.setLinearAttenuation(0.05f);
 		
-		test_pl = new PointLight(new Vector3(lightX, 8.50f, lightZ));
+		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		//lights.add(test_dl);
@@ -136,6 +132,7 @@ public class LightTest extends Scene {
 		gui.setPosition(new Vector3(220, 10, 0));
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
+			
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_SPACE) {
@@ -159,20 +156,25 @@ public class LightTest extends Scene {
 			}
 		});
 		
-		linearAtt = 0.05f;
+		linearAtt = 1f;
 		Yeti.get().addMouseWheelListener(new MouseWheelListener() {
 			
-			float dist = 500.0f;
+			float dist = 50.0f;
 			
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
-				dist -= e.getWheelRotation();
-				if(dist < 1.0f) dist = 1.0f;
-				if(dist > 100.0f) {
-					dist = 100.0f;
-					linearAtt = 0.0f;	// No more attenuation
+				if((e.getModifiers() & MouseWheelEvent.CTRL_MASK) != 0) {
+					dist -= e.getWheelRotation();
+					if(dist < 1.0f) dist = 1.0f;
+					if(dist > 50.0f) {
+						dist = 50.0f;
+						linearAtt = 0.0f;	// No more attenuation
+					} else {
+						linearAtt = 1.0f / dist;
+					}
 				} else {
-					linearAtt = 1.0f / dist;
+					pointLightY -= (e.getWheelRotation() / 12.0f);
+					test_pl.getPosition().setY(pointLightY);
 				}
 			}
 		});
@@ -216,17 +218,13 @@ public class LightTest extends Scene {
 		test_sl.getPosition().setX((float)Math.cos(a / 2) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
-		test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
+		//test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
+		test_pl.setAttenuation(0.0f, 0.0f, 0.005f, 0.0f);
 		
-		//tv.set(1.0f, 1.0f, 4.0f);
 		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
 		test_dl.getDirection().set(tv).normalize();
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
-		
-		//camera.setDirection(Renderer.directions[3]);
-		//camera.setPosition(test_pl.getPosition());
-		//((PerspectiveCamera)camera).setFOV(90.0f);
 		super.display(drawable);
 	}
 }

@@ -2,8 +2,7 @@
 
 const float bias = 0.005f;
 const float pFac = 2500.0f;
-const float far = 100.0f;
-const float near = 0.1f;
+
 const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
    vec2( 0.94558609, -0.76890725 ), 
@@ -56,7 +55,7 @@ uniform bool 		useShadows;
 uniform int 		shadowQuality;
 uniform sampler2D 	shadowMap;			// Spot & Directional lights
 uniform samplerCube cubeShadowMap;		// Point lights
-
+uniform float 		far;
 uniform bool 		samplingCube;		// Are we sampling the cube? Or are we
 										// sampling the 2D map?
 
@@ -124,7 +123,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	return intensity;
 }
 
-float computeVisibilityCube() {
+float computeVisibilityCube(in float NL) {
 	float visibility = 1.0f;
 	// calculate vector from surface point to light position
 	// (both positions are given in world space - since that's how we thought up
@@ -139,7 +138,14 @@ float computeVisibilityCube() {
 	float d_l_current_fragment = length(cm_lookup_vec);
 	
 	d_l_closest_occluder *= far;
-	if( d_l_closest_occluder  + 0.15 < d_l_current_fragment ) {
+	
+	float t_bias = bias;
+	if(shadowQuality > 1) {
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, bias);
+	}
+
+	if( d_l_closest_occluder  + t_bias < d_l_current_fragment ) {
 				visibility = 0.3f;
 		}
 	
@@ -218,7 +224,7 @@ void main() {
 	
 	if(useShadows) {
 		if(samplingCube) {
-			visibility = computeVisibilityCube();
+			visibility = computeVisibilityCube(NL);
  			
 		} else {
 			visibility = computeVisibility(NL);

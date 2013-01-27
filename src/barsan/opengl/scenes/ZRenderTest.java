@@ -49,7 +49,7 @@ public class ZRenderTest extends Scene {
 			Yeti.screwed("No resource no load.");
 		}
 		
-		rs = new RendererState(Yeti.get().gl);
+		rs = new RendererState(renderer, Yeti.get().gl);
 		
 		lights.add(new DirectionalLight(new Vector3(-1.0f, 1.0f, 0.0f).normalize()));
 		
@@ -130,7 +130,6 @@ public class ZRenderTest extends Scene {
 		
 		GL2 gl = Yeti.get().gl;
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		
 		
 		rs.setCamera(camera);
 		rs.setAmbientLight(new AmbientLight(Color.TRANSPARENTBLACK));
