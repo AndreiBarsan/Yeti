@@ -12,6 +12,7 @@ import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -54,8 +55,7 @@ public class RendererState {
 	 */
 	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
 		if(pointLights.get(0).getType() != LightType.Point) {
-			// We don't need this matrix if we're working with point lights
-			// and cube maps.
+			// We don't need this matrix if we're working with point lights and cube maps.
 			Matrix4 projection = depthProjection;
 			Matrix4 view = depthView;
 			
@@ -76,24 +76,35 @@ public class RendererState {
 	
 	/** @see #shadowMapBindings(Material m)  */
 	public int shadowMapTextureBindings(Material m, int slot) {
-		gl.glActiveTexture(GLHelp.textureSlot[slot]);
 		
 		if(pointLights.get(0).getType() == LightType.Point) {
 			m.getShader().setU1i("samplingCube", true);
+			
+			gl.glActiveTexture(GLHelp.textureSlot[slot]);
 			m.getShader().setU1i("cubeShadowMap", slot);
 			cubeTexture.bind(gl);
+			
+			gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
+			m.getShader().setU1i("shadowMap", slot + 1);
+			ResourceLoader.texture("floor").bind(gl);			// dummy
 		} else {
 			m.getShader().setU1i("samplingCube", false);
-			m.getShader().setU1i("shadowMap", slot);
+			
+			gl.glActiveTexture(GLHelp.textureSlot[slot]);
+			m.getShader().setU1i("cubeShadowMap", slot);
+			cubeTexture.bind(gl);
+			
+			gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
+			m.getShader().setU1i("shadowMap", slot + 1);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
 		}		
 		
-		return 1;
+		return 2;
 	}
 	
 	public void setAnisotropySamples(int value) {
 		if(value > maxAnisotropySamples) {
-			Yeti.warn("Given %d anisotropic samples, only supporting %d - clamping!", value, maxAnisotropySamples);
+			Yeti.warn("Requested %d anisotropic samples, only supporting %d - clamping!", value, maxAnisotropySamples);
 			anisotropySamples = maxAnisotropySamples;
 		} else {
 			anisotropySamples = value;

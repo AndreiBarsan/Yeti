@@ -76,8 +76,6 @@ public class Renderer {
 		state = new RendererState(this, gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		
-		System.out.println("DERP: " + state.maxAnisotropySamples);
-		
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
@@ -425,13 +423,13 @@ public class Renderer {
 			if(! modelInstance.castsShadows()) continue;
 			
 			modelInstance.render(state, matrixstack);
-			assert matrixstack.getSize() == 1;
+			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 		
 		// Render the billboards separately (always forward)
 		for(Billboard b : scene.billbords) {
 			b.render(state, matrixstack);
-			assert matrixstack.getSize() == 1;
+			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 	}
 	
@@ -460,13 +458,13 @@ public class Renderer {
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
 			modelInstance.render(state, matrixstack);
-			assert matrixstack.getSize() == 1;
+			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 		
 		// Render the billboards separately (always forward)
 		for(Billboard b : scene.billbords) {
 			b.render(state, matrixstack);
-			assert matrixstack.getSize() == 1;
+			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 	}
 	

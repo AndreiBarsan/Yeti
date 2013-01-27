@@ -19,6 +19,7 @@ uniform float 	minFogDistance;
 uniform float 	maxFogDistance;
 
 uniform bool 	useShadows;
+uniform bool 	samplingCube;
 uniform mat4 	mvpMatrixShadows;
 
 layout(location = 0) in vec4 vVertex;
@@ -67,20 +68,26 @@ void main() {
 	if(useBump) {
 		vec3 vNormal = normalize(vNormal);
 		vec3 vTang = normalize(vec3(-vNormal.z, 0, vNormal.x));
-		if( vNormal.z == vNormal.x) vTang = vec3 (1.0, 0.0, 0.0);
+		if( vNormal.z == vNormal.x) { 
+			vTang = vec3 (1.0, 0.0, 0.0);
+		}
 		vec3 vBinorm = normalize(cross(vTang, vNormal));
-		mNTB[0]=vTang; mNTB[1]=vBinorm; mNTB[2]=vNormal;
+		mNTB[0] = vTang;
+		mNTB[1] = vBinorm;
+		mNTB[2] = vNormal;
 		mNTB = normalMatrix * mNTB;
 	}
 	
 	if(useShadows) {
 		// Convert the vertex to shadowmap coordinates
 		vertPos_dmc = mvpMatrixShadows * vVertex;
+	
+		if(samplingCube) {
+			lightPos_wc = vLightPosition.xyz;
+			vertPos_wc = mMatrix * vVertex;
+		}	
 	}
 	
-	// TEMP used in point light shadow mapping
-	lightPos_wc = vLightPosition.xyz;
-	vertPos_wc = mMatrix * vVertex;	
 	
 	lightPos_ec = vec4(tLightPos, 1.0f);
 	vertPos_ec = vec4(vPosition3, 1.0f);

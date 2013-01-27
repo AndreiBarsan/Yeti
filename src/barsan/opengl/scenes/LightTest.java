@@ -75,7 +75,7 @@ public class LightTest extends Scene {
 		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
 		monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
-		//monkeyMat.addComponent(new ShadowReceiver());
+		monkeyMat.addComponent(new ShadowReceiver());
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
@@ -87,8 +87,9 @@ public class LightTest extends Scene {
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
 		floorMat.setShininess(256);
-		floorMat.addComponent(new ShadowReceiver());
 		floorMat.addComponent(new TextureComponent());
+		floorMat.addComponent(new ShadowReceiver());
+		
 		
 		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();

@@ -71,6 +71,9 @@ public abstract class Material {
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		enableShader(rendererState);
 		int textureIndex = 1;
+		
+		/* sampler index offsets can break a lot of stuff; need more research */
+		if(texture == null) textureIndex++;	
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState, modelMatrix);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);

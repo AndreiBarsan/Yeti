@@ -56,6 +56,11 @@ import com.jogamp.opengl.util.Animator;
  * component? Texture -> UV, WorldTransform -> Geometry, WTNormals -> Geometry + normals
  * Bump component (example) -> Tangents
  * 
+ * TODO: continuation of the above - right now some unbound texture slots cause
+ * crashes - for instance the shadow maps - if you render something with the 
+ * shadow map bound to pos 2, then render something else with the shadow map
+ * bound to pos 3, it crashes
+ * 
  * FIXME: view matrix straight down? BUG. FIX IT!
  * 
  * TODO: optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
@@ -389,6 +394,7 @@ public class Yeti implements GLEventListener {
 		// Soon-to-be global controller of GL settings
 		addKeyListener(new GlobalConsoleInput());
 
+		/*
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 			@Override
 			public void uncaughtException(Thread t, Throwable e) {
@@ -397,6 +403,7 @@ public class Yeti implements GLEventListener {
 				}
 			}
 		});
+		*/
 		
 		try {
 			loadScene((Scene)availableScenes[lastLoadedScene].newInstance());

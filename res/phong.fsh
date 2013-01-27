@@ -1,3 +1,4 @@
+#define SAMPLINGCUBE
 #version 400 core
 
 const float bias = 0.005f;
@@ -53,11 +54,14 @@ uniform sampler2D normalMap;
 // Shadow mapping
 uniform bool 		useShadows;
 uniform int 		shadowQuality;
-uniform sampler2D 	shadowMap;			// Spot & Directional lights
-uniform samplerCube cubeShadowMap;		// Point lights
+uniform bool 		samplingCube;
+//#ifdef SAMPLINGCUBE
+	uniform samplerCube cubeShadowMap;		// Point lights
+//#else 
+	uniform sampler2D 	shadowMap;			// Spot & Directional lights
+//#endif 
+
 uniform float 		far;
-uniform bool 		samplingCube;		// Are we sampling the cube? Or are we
-										// sampling the 2D map?
 
 // Gamma correction
 uniform bool 	useGammaCorrection;
@@ -146,8 +150,8 @@ float computeVisibilityCube(in float NL) {
 	}
 
 	if( d_l_closest_occluder  + t_bias < d_l_current_fragment ) {
-				visibility = 0.3f;
-		}
+		visibility = 0.3f;
+	}
 	
 	return visibility;
 }
@@ -223,11 +227,14 @@ void main() {
 	float visibility = 1.0f;
 	
 	if(useShadows) {
-		if(samplingCube) {
-			visibility = computeVisibilityCube(NL); 			
-		} else {
+//#ifdef SAMPLINGCUBE
+	if(samplingCube) {
+			visibility = computeVisibilityCube(NL);
+	} else { 			
+//#else 
 			visibility = computeVisibility(NL);
-		}
+	}
+//#endif
 	}
 	
 	// TODO: employ #ifdefs and perform shader generation instead
