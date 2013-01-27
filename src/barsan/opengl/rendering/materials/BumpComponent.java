@@ -23,8 +23,8 @@ public class BumpComponent implements MaterialComponent {
 	
 	@Override
 	public int setupTexture(Material m, RendererState rs, int slot) {
-		m.shader.setU1i("normalMap", slot);	
 		rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
+		m.shader.setU1i("normalMap", slot);	
 		normalMap.bind(rs.gl);
 		normalMap.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 		

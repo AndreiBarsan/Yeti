@@ -19,12 +19,14 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
@@ -59,6 +61,7 @@ import com.jogamp.opengl.util.Animator;
  * TODO: optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
  * TODO: check exactly when we need to enable the shader; the current setup 
  * might actually be broken and only working through dumb luck
+ * TODO: use shadow samplers for the shadow computations, they're faster
  * TODO: use input polling for the camera (needed later for the char controls)
  * 
  * TODO: more math; were the previous bugs really only caused by poorly configured
@@ -66,7 +69,7 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TODO: if so, start working on binding volumes to start doing lighting the right
  * way!
- * 
+ * TODO: standardized texture units - only bind things like the shadow map ONCE
  * TODO: camera update() method (automatically called by the scene - keep everything
  * in sync, prevent recalculations of the view matrix etc.)
  * TODO: perpixel fog & fix fog computation
@@ -311,11 +314,8 @@ public class Yeti implements GLEventListener {
 			System.err.printf("Thread: %s\n", Thread.currentThread());
 			StackTraceElement sad[] = new Throwable().getStackTrace();
 			final int maxStack = 5;
-			for(int i = 1; i < Math.min(maxStack, sad.length); i++) {
+			for(int i = 1; i < Math.min(maxStack + 1, sad.length); i++) {
 				StackTraceElement el = sad[i];
-				if(el.getClassName().startsWith("java")) {
-					break;
-				}
 				System.err.printf("\t- %s\n", el);
 			}
 		}
@@ -389,6 +389,15 @@ public class Yeti implements GLEventListener {
 		// Soon-to-be global controller of GL settings
 		addKeyListener(new GlobalConsoleInput());
 
+		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+			@Override
+			public void uncaughtException(Thread t, Throwable e) {
+				if(e instanceof GLException) {
+					Yeti.screwed("GLException: \n" + e.getMessage(), e);
+				}
+			}
+		});
+		
 		try {
 			loadScene((Scene)availableScenes[lastLoadedScene].newInstance());
 		} catch (InstantiationException | IllegalAccessException e) {

@@ -224,8 +224,7 @@ void main() {
 	
 	if(useShadows) {
 		if(samplingCube) {
-			visibility = computeVisibilityCube(NL);
- 			
+			visibility = computeVisibilityCube(NL); 			
 		} else {
 			visibility = computeVisibility(NL);
 		}

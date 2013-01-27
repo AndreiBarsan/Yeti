@@ -59,8 +59,6 @@ public class DepthWriterPoint extends Material {
 			})
 		};
 		
-		
-		
 		static Matrix4		am 				= new Matrix4();
 		static Matrix4		am2				= new Matrix4();
 		static Matrix4[]	pViewMatrices 	= new Matrix4[6];
@@ -102,13 +100,10 @@ public class DepthWriterPoint extends Material {
 		}
 
 		@Override
-		public void cleanUp(Material m, RendererState rs) {
-			
-		}
+		public void cleanUp(Material m, RendererState rs) {	}
 
 		@Override
 		public void dispose() { }
-		
 	}
 	
 	public DepthWriterPoint(Vector3 lightPosition, float near, float far) {

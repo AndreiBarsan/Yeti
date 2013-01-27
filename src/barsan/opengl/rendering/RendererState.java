@@ -51,8 +51,6 @@ public class RendererState {
 	 * Binds the proper shadow map to the active material. This might be made
 	 * obsolete by the implementation of multiple light casters that can be
 	 * occluded, but that's a long way down the road.
-	 *  
-	 * @param m
 	 */
 	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
 		if(pointLights.get(0).getType() != LightType.Point) {
@@ -78,11 +76,11 @@ public class RendererState {
 	
 	/** @see #shadowMapBindings(Material m)  */
 	public int shadowMapTextureBindings(Material m, int slot) {
-		gl.glActiveTexture(GLHelp.textureSlot[5]);
+		gl.glActiveTexture(GLHelp.textureSlot[slot]);
 		
 		if(pointLights.get(0).getType() == LightType.Point) {
 			m.getShader().setU1i("samplingCube", true);
-			m.getShader().setU1i("cubeShadowMap", 5);
+			m.getShader().setU1i("cubeShadowMap", slot);
 			cubeTexture.bind(gl);
 		} else {
 			m.getShader().setU1i("samplingCube", false);

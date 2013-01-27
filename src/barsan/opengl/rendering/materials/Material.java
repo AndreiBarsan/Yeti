@@ -70,7 +70,7 @@ public abstract class Material {
 	 */
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		enableShader(rendererState);
-		int textureIndex = 0;
+		int textureIndex = 1;
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState, modelMatrix);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);

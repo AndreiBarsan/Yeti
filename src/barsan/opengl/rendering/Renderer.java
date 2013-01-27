@@ -318,7 +318,10 @@ public class Renderer {
 		 * The shadow map is rendering right but when rendering the ground plane of the
 		 * light test scene, a GL_INVALID_OPERATION 0x502 is raised. :(
 		 * 
-		 *  STATUS: :(
+		 *  STATUS: slot computations aren't being done right, so a 2D sampler
+		 *  is being bound to a samplerCube slot.
+		 *  
+		 *  UPDATE: the shadow cube works, unless it's bound to texture unit 1. wat.
 		 */
 		
 		state.forceMaterial(null);

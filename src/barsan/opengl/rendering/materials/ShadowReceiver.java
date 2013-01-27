@@ -1,7 +1,6 @@
 package barsan.opengl.rendering.materials;
 
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.RendererState;
 
 /**
@@ -10,9 +9,9 @@ import barsan.opengl.rendering.RendererState;
  * 	- 1: basic mapping and bias
  *  - 2: bias now depends on the fragments' normals
  *  - 3: multiple poisson sampling
- *  - 4: randomized poisson sampling 
+ *  - 4: randomized poisson sampling
+ *   
  * @author Andrei Bârsan
- *
  */
 public class ShadowReceiver implements MaterialComponent {
 	
