@@ -495,12 +495,27 @@ public class Renderer {
 		for(Light l : scene.lights) {
 			if(l.getType() != LightType.Directional) {
 				PointLight pl = (PointLight)l;
-				if(l.getType() == LightType.Point || l.getType() == LightType.Spot) {
+				gl.glPushMatrix();
+				if(l.getType() == LightType.Point) {
 					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
 					glut.glutSolidSphere(0.5d, 5, 5);
+					
+				} else if(l.getType() == LightType.Spot) {
+					SpotLight sl = (SpotLight)pl;
+					
+					gl.glTranslatef(pl.getPosition().x, pl.getPosition().y, pl.getPosition().z);
+					
+					// TODO: utility from this witchcraft (glut has z+ as the up-axis of the cones derp)
+					Vector3 d = sl.getDirection().copy();
+					Vector3 up = new Vector3(0.0f, 0.0f, 1.0f);
+					Vector3 axis = new Vector3(up).cross(d).normalize();
+					
+					float a = MathUtil.RAD_TO_DEG * (float)Math.acos(d.dot(up));
+					gl.glRotatef(a, axis.x, axis.y, axis.z);
+					
+					glut.glutWireCone(0.33f, 1.0f, 15, 3);
 				}
-				// need quaternion slerp to align a spotlight cone to the 
-				// spotlight direction
+				gl.glPopMatrix();
 			} 
 		}
 		gl.glPopMatrix();

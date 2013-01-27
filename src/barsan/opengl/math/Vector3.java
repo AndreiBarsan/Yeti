@@ -67,6 +67,10 @@ public class Vector3 {
 		return this;
 	}
 	
+	public float dot(Vector3 other) {
+		return x * other.x + y * other.y + z * other.z;
+	}
+	
 	public Vector3 setX(float x) {
 		this.x = x;
 		return this;
