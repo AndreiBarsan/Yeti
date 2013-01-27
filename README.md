@@ -24,11 +24,25 @@ You can get the latest JOGL here: http://jogamp.org/deployment/jogamp-current/ar
 
 The required JARs are: gluegen-rt.jar and jogl-all.jar.
 
+Features
+--------
+Among the most important features implemented so far are:
+ - basic obj loading
+ - phong lighting model (with directional, point and spot lights)
+ - normal mapping
+ - skyboxes and environment mapping
+ - shadow mapping (for all light types - omnidirectional shadowmaps generated
+ in a single pass using a geometry shader)
+ - simple billboarding
+ - scene management
+ - multipass rendering with post-processing support (right now used for FBO-based
+ multisampling)
+
 Miscellaneous things & philosophy
 ---------------------------------
 First and foremost, this is a learning experience. I am learning OpenGL as I'm
-writing this, so don't expect the engine to be in any way clean, optimized or
-well-done in any way. Some things worth noting are the major roadblocks I've hit
+writing this, so don't expect the engine to be in any way clean or optimized.
+Some things worth noting are the major roadblocks I've hit (and overcome!)
 while developing this project - for most of them, I've left some sort of "monument"
 in the source code, describing the nature of the problem and how I've fixed it. I
 find that by actually writing this down and then seeing it over and over again helps
