@@ -130,6 +130,10 @@ public class LightTest extends Scene {
 		
 		gui = new DebugGUI(drawable.getAnimator(), camera);
 		gui.setPosition(new Vector3(220, 10, 0));
+		((DebugGUI)gui).info = "Press [RMB] to cycle through light types\n" +
+				"Use the [scrollwheel] to adjust the point light's Y.\n" +
+				"[Space] toggles normal mapping\n" +
+				"[G] toggles a reduced gamma-correction effect";
 		
 		Yeti.get().addKeyListener(new KeyAdapter() {
 			

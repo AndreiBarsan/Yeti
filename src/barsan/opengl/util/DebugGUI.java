@@ -1,5 +1,8 @@
 package barsan.opengl.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.media.opengl.GLAnimatorControl;
 
 import barsan.opengl.Yeti;
@@ -10,12 +13,13 @@ public class DebugGUI extends GUI {
 
 	GLAnimatorControl animator;
 	Camera camera;
+	public String info = "";
 	
 	public DebugGUI(GLAnimatorControl glAnimatorControl, Camera camera) {
 		this.animator = glAnimatorControl;
 		this.camera = camera;
 	}
-
+	
 	@Override
 	public void render() {
 		float fps = animator.getLastFPS();
@@ -24,8 +28,8 @@ public class DebugGUI extends GUI {
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{
 			Vector3 cp = camera.getPosition();
-			String hud = String.format("FPS: %.2f\nCamera: X:%.2f Y:%.2f Z:%.2f", fps,
-					cp.x, cp.y, cp.z);
+			String hud = String.format("FPS: %.2f\nCamera: X:%.2f Y:%.2f Z:%.2f\n%s", fps,
+					cp.x, cp.y, cp.z, info);
 			
 			TextHelper.drawTextMultiLine((int)position.x, (int)position.y, hud);
 		}
