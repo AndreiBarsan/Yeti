@@ -12,7 +12,6 @@ import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
 import barsan.opengl.util.Color;
-import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -20,7 +19,7 @@ import com.jogamp.opengl.util.texture.Texture;
  * This should wrap around a shader. Given a certain ModelInstance and RenderState,
  * it should know how to set up all the shader's uniforms and attributes.
  * 
- * @author SiegeDog
+ * @author Andrei Barsan
  *
  */
 public abstract class Material {
@@ -70,6 +69,7 @@ public abstract class Material {
 	 * @param modelMatrix	Model transform of the current model instance.
 	 */
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
+		enableShader(rendererState);
 		int textureIndex = 0;
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState, modelMatrix);

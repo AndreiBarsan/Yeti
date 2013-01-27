@@ -1,26 +1,9 @@
 package barsan.opengl.rendering.materials;
 
-import java.util.Collections;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-
-
-import barsan.opengl.math.MathUtil;
-import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.RendererState;
-import barsan.opengl.rendering.lights.AmbientLight;
-import barsan.opengl.rendering.lights.DirectionalLight;
-import barsan.opengl.rendering.lights.Light;
-import barsan.opengl.rendering.lights.Light.LightType;
-import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
-import barsan.opengl.util.GLHelp;
 
 /**
  * @author Andrei Barsan

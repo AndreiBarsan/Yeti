@@ -51,10 +51,10 @@ public class ModelInstance implements Renderable {
 		Material activeMaterial;
 		if(rendererState.hasForcedMaterial()) {
 			activeMaterial = rendererState.getForcedMaterial();
-		} else if (material != null) {
-			activeMaterial = material;
-		} else {
+		} else if (material == null) {
 			activeMaterial = rendererState.getDefaultMaterial();
+		} else {
+			activeMaterial = material;
 		}
 		
 		activeMaterial.setup(rendererState, transformStack.result());

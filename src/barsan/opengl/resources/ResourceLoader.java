@@ -25,6 +25,7 @@ public class ResourceLoader {
 	
 	static final String EXT_VERTEX 		= ".vsh";
 	static final String EXT_FRAGMENT 	= ".fsh";
+	static final String EXT_GEOMETRY 	= ".gsh";
 	
 	static boolean initialized = false;
 	
@@ -48,7 +49,12 @@ public class ResourceLoader {
 	
 	public static void loadShader(String name, String fileName)
 			throws FileNotFoundException {
-		loadShader(name, new File(fileName + EXT_VERTEX), new File(fileName + EXT_FRAGMENT));
+		
+		File vFile = new File(fileName + EXT_VERTEX);
+		File gFile = new File(fileName + EXT_GEOMETRY);
+		File fFile = new File(fileName + EXT_FRAGMENT);
+		
+		loadShader(name, vFile, fFile, gFile.exists() ? gFile : null);
 	}
 	
 	public static void loadCubeTexture(String name, String ext) {
@@ -62,7 +68,7 @@ public class ResourceLoader {
 						glp,
 						new File(fname),
 						true, null);
-				tex.getTexture().updateImage(Yeti.get().gl, data, tex.cubeSlots[i]);
+				tex.getTexture().updateImage(Yeti.get().gl, data, CubeTexture.cubeSlots[i]);
 			}
 		} catch (GLException | IOException e) {
 			Yeti.screwed("Error loading textures", e);
@@ -70,8 +76,9 @@ public class ResourceLoader {
 		
 		cubeTextures.put(name, tex);
 	}
+
 	
-	public static void loadShader(String name, File vertexFile, File fragmentFile)
+	public static void loadShader(String name, File vertexFile, File fragmentFile, File geometryFile)
 			throws FileNotFoundException {
 		
 		if(shaders.containsKey(name)) {
@@ -80,10 +87,21 @@ public class ResourceLoader {
 		
 		Scanner vinput = new Scanner(vertexFile);
 		Scanner finput = new Scanner(fragmentFile);
-		shaders.put(name, new Shader(Yeti.get().gl, name,
-			vinput.useDelimiter("\\Z").next(),
-			finput.useDelimiter("\\Z").next()
-		));
+
+		if(geometryFile != null) {
+			Scanner ginput = new Scanner(geometryFile);
+			shaders.put(name, new Shader(Yeti.get().gl, name,
+					vinput.useDelimiter("\\Z").next(),
+					finput.useDelimiter("\\Z").next(),
+					ginput.useDelimiter("\\Z").next()
+				));
+			ginput.close();			
+		} else {
+			shaders.put(name, new Shader(Yeti.get().gl, name,
+				vinput.useDelimiter("\\Z").next(),
+				finput.useDelimiter("\\Z").next()
+			));
+		}
 		vinput.close();
 		finput.close();
 	}
@@ -115,9 +133,11 @@ public class ResourceLoader {
 			}
 		};
 		File[] shaderFiles = folder.listFiles(filter);
-		for(File f : shaderFiles) {
-			String name = f.getName().substring(0, f.getName().lastIndexOf('.'));
-			loadShader(name, f, new File(folderName + "/" + name + EXT_FRAGMENT));
+		for(File vf : shaderFiles) {
+			String name = vf.getName().substring(0, vf.getName().lastIndexOf('.'));
+			File ff = new File(folderName + "/" + name + EXT_FRAGMENT);
+			File gf = new File(folderName + "/" + name + EXT_GEOMETRY);
+			loadShader(name, vf, ff, gf.exists() ? gf : null);
 		}
 	}
 	

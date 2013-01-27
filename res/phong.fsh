@@ -2,6 +2,8 @@
 
 const float bias = 0.005f;
 const float pFac = 2500.0f;
+const float far = 100.0f;
+const float near = 0.1f;
 const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
    vec2( 0.94558609, -0.76890725 ), 
@@ -74,6 +76,8 @@ smooth in float fogFactor;
 smooth in vec4 	vertPos_wc;
 smooth in vec4 	vertPos_ec;
 smooth in vec4 	lightPos_ec;
+smooth in vec4 	lightPos_wc;
+
 smooth in vec3 	spotDirection_ec;
 smooth in vec4 	vertPos_dmc;	// Used in shadow mapping
 smooth in mat3 	mNTB;			// Used in normal mapping
@@ -112,7 +116,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	      						cos_inner_minus_outer, 0.0, 1.0);
 		spotEffect = pow(spotEffect, lightExponent);
 		intensity *= spotEffect;
-	}	
+	}
 	
 	float attenuation = att( length(lightPos_ec - vertPos_ec) );
 	intensity *= attenuation;
@@ -120,17 +124,24 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 	return intensity;
 }
 
-float computeVisibilityCube(in float NL, in vec3 nLightDir) {
-	float t_bias = bias;
-	if(shadowQuality > 1) {
-		t_bias *= tan(acos(NL));	
-		t_bias  = clamp(t_bias, 0.00f, bias);
-	}
-	
+float computeVisibilityCube() {
 	float visibility = 1.0f;
-	if(texture(cubeShadowMap, nLightDir).z < length(vVaryingLightDir) + 0.005f ) {
-		visibility = 0.2f;
-	}
+	// calculate vector from surface point to light position
+	// (both positions are given in world space - since that's how we thought up
+	// the cube map)
+	// We cannot pre-pack the view matrix in that calculation since we're just 
+	// too awesome for that: since we're using a geometry shader to dispatch
+	// to 6 'views' at once, there's no single 'eye space' to tell the second
+	// pass about, there's six of them!
+	// Vielen Dank, TU Wien!
+	vec3 cm_lookup_vec = vertPos_wc.xyz - lightPos_wc.xyz;
+	float d_l_closest_occluder = texture(cubeShadowMap, cm_lookup_vec ).z;
+	float d_l_current_fragment = length(cm_lookup_vec);
+	
+	d_l_closest_occluder *= far;
+	if( d_l_closest_occluder  + 0.15 < d_l_current_fragment ) {
+				visibility = 0.3f;
+		}
 	
 	return visibility;
 }
@@ -204,9 +215,11 @@ void main() {
 	float NL = dot(nNormal, nLightDir);
 	
 	float visibility = 1.0f;
+	
 	if(useShadows) {
 		if(samplingCube) {
-			visibility = computeVisibilityCube(NL, nLightDir);
+			visibility = computeVisibilityCube();
+ 			
 		} else {
 			visibility = computeVisibility(NL);
 		}
@@ -253,9 +266,11 @@ void main() {
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
 	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
 	//vFragColor += vec4(vertPos_dmc.z) * 0.5;
-	//vFragColor += vec4((vertPos_dmc.z) /  vertPos_dmc.w);
+	//vFragColor += vec4(d_l_current_fragment  / (far - near)); // works
+	//vFragColor += vec4(d_l_closest_occluder);
+	 
 	//float diff = texture2D( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
-	//vFragColor += vec4();
+	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(visibility);
-	//vFragColor.a = 1.0f;
+	vFragColor.a = 1.0f;
 }

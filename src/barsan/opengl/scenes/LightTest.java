@@ -99,7 +99,7 @@ public class LightTest extends Scene {
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));
 			
 		float step = 6.0f;
-		int monkeys = 1;
+		int monkeys = 4;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
@@ -125,7 +125,7 @@ public class LightTest extends Scene {
 		//test_sl.setQuadraticAttenuation(0.001f);
 		test_sl.setLinearAttenuation(0.05f);
 		
-		test_pl = new PointLight(new Vector3(lightX, 2.50f, lightZ));
+		test_pl = new PointLight(new Vector3(lightX, 8.50f, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		//lights.add(test_dl);
@@ -224,7 +224,7 @@ public class LightTest extends Scene {
 		
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		
-		//camera.setDirection(Renderer.directions[1]);
+		//camera.setDirection(Renderer.directions[3]);
 		//camera.setPosition(test_pl.getPosition());
 		//((PerspectiveCamera)camera).setFOV(90.0f);
 		super.display(drawable);

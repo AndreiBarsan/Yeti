@@ -54,10 +54,15 @@ import com.jogamp.opengl.util.Animator;
  * component? Texture -> UV, WorldTransform -> Geometry, WTNormals -> Geometry + normals
  * Bump component (example) -> Tangents
  * 
+ * FIXME: view matrix straight down? BUG. FIX IT!
+ * 
+ * TODO: optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
+ * TODO: check exactly when we need to enable the shader; the current setup 
+ * might actually be broken and only working through dumb luck
  * TODO: use input polling for the camera (needed later for the char controls)
  * 
  * TODO: more math; were the previous bugs really only caused by poorly configured
- * shadowmap generation projection matrices?
+ * shadowmap generation projection matrices? (the black stripe ones for instance)
  * 
  * TODO: if so, start working on binding volumes to start doing lighting the right
  * way!
@@ -215,7 +220,7 @@ public class Yeti implements GLEventListener {
 		frame.setVisible(true);
 		
 		
-		animator.setUpdateFPSFrames(1, null);
+		animator.setUpdateFPSFrames(30, null);
 		animator.start();
 		
 		glpanel.addMouseListener(new MouseAdapter() {

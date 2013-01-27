@@ -27,6 +27,7 @@ public class WorldTransform implements MaterialComponent {
 		// The following line does not equal projection * viewModel
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
+		m.shader.setUMatrix4("mMatrix", modelMatrix);
 		m.shader.setUMatrix4("mvpMatrix", MVP);
 		m.shader.setUMatrix4("mvMatrix", viewModel);
 		m.shader.setUMatrix4("vMatrix", view);

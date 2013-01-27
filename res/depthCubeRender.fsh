@@ -12,7 +12,9 @@ layout(location = 0) out vec4 color;
 
 void main(){
 	// color = texture(colorMap, vec3(1.0f, UV.y, UV.x));
-	  color = texture(colorMap, vec3(-1.0f, UV.y, -UV.x));
+	  //color = texture(colorMap, vec3(-1.0f, UV.y, -UV.x));
+	//	color = texture(colorMap, vec3(UV.x, UV.y, -1.0f));
 	//color = texture(colorMap, vec3(UV.x, UV.y, 1.0f));
+	color = texture(colorMap, vec3(UV.x, -1.0f, UV.y));
 	color = 1.0f - (1.0f - color) * factor;
 }

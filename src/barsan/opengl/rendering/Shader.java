@@ -29,11 +29,13 @@ import java.util.HashMap;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
+import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.util.GLHelp;
 
 /**
  * Shader wrapper class that facilitates material interactions with the underlying
@@ -70,7 +72,14 @@ public class Shader {
 	private HashMap<String, Integer> uLocCache = new HashMap<>(); 
 	
 	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc) {
-		this(gl, name, vertexSrc, fragmentSrc, new String[] {
+		this(gl, name, vertexSrc, fragmentSrc, null, new String[] {
+			A_POSITION,
+			A_NORMAL
+		});
+	}
+	
+	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc) {
+		this(gl, name, vertexSrc, fragmentSrc, geometrySrc, new String[] {
 			A_POSITION,
 			A_NORMAL
 		});
@@ -80,10 +89,12 @@ public class Shader {
 		return handle;
 	}
 	
-	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc, String[] args) {
+	public Shader(GL2GL3 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc, String[] args) {
 		
 		int vertex = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
 		int fragment = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
+		int geometry = 0;
+		boolean hasGeometry = (geometrySrc != null);
 		
 		gl.glShaderSource(vertex, 1, new String[] { vertexSrc }, (int[])null, 0);
 		gl.glCompileShader(vertex);
@@ -92,6 +103,18 @@ public class Shader {
 		if(result[0] == GL.GL_FALSE) {
 			shaderError("Vertex shader [" + name + "] failed to compile: ", vertex);
 		}
+		
+		if(hasGeometry) {
+			geometry = gl.glCreateShader(GL3.GL_GEOMETRY_SHADER);
+			gl.glShaderSource(geometry, 1, new String[] { geometrySrc }, (int[])null, 0);
+			gl.glCompileShader(geometry);
+			
+			gl.glGetShaderiv(geometry, GL2.GL_COMPILE_STATUS, result, 0);
+			if(result[0] == GL.GL_FALSE) {
+				shaderError("Geometry shader [" + name + "] failed to compile: ", geometry);
+			}
+		}
+		
 		
 		// The null int[] is required -> otherwise the source code somehow
 		// gets corrupted and causes strange errors.
@@ -106,6 +129,9 @@ public class Shader {
 		int shaderProgram = gl.glCreateProgram();
 		gl.glAttachShader(shaderProgram, vertex);
 		gl.glAttachShader(shaderProgram, fragment);
+		if(hasGeometry) {
+			gl.glAttachShader(shaderProgram, geometry);
+		}
 		
 		// Bind the attributes
 		/*
@@ -170,6 +196,30 @@ public class Shader {
 		if(pos == -1) return false;
 		
 		gl.glUniformMatrix4fv(pos, 1, false, matrix.getData(), 0);
+		return true;
+	}
+	
+	public boolean setUMatrix4a(String uniformName, Matrix4[] matrix) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos;
+		if(uLocCache.containsKey(uniformName)) {
+			pos = uLocCache.get(uniformName); 
+		} else {
+			pos = gl.glGetUniformLocation(handle, uniformName);
+			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
+			if(pos != -1) {
+				uLocCache.put(uniformName, pos);
+			}
+		}
+		if(pos == -1) return false;
+		
+		float[] buffer = new float[matrix.length * 16];
+		for(int i = 0; i < matrix.length; i++) {
+			System.arraycopy(matrix[i].getData(), 0, buffer, 16 * i, 16);
+		}
+		
+		gl.glUniformMatrix4fv(pos, matrix.length, false, buffer, 0);
+		
 		return true;
 	}
 	

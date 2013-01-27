@@ -17,8 +17,8 @@ import barsan.opengl.util.GLHelp;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * 	The current state of the renderer
- *	Contains a list of lights, a gl context, a readonly camera state
+ * 	The current state of the renderer, i.e. elements that change throughout 
+ * the rendering process. Pending refactoring.
  */
 public class RendererState {
 	
@@ -44,33 +44,6 @@ public class RendererState {
 	public RendererState(GL3 gl) {
 		this.gl = gl;
 	}
-	
-	/**
-	 * Binds the proper shadow map to the active material. This might be made
-	 * obsolete by the implementation of multiple light casters that can be
-	 * occluded, but that's a long way down the road.
-	 *  
-	 * @param m
-	 */
-	public void shadowMapBindings(Material m) {
-		m.getShader().setU1i("useShadows", true);
-		m.getShader().setU1i("shadowQuality", 2);
-	}
-	
-	public int shadowMapTextureBindings(Material m, int slot) {
-		gl.glActiveTexture(GLHelp.textureSlot[5]);
-		
-		if(pointLights.get(0).getType() == LightType.Point) {
-			m.getShader().setU1i("cubeShadowMap", 5);
-			cubeTexture.bind(gl);
-		} else {
-			m.getShader().setU1i("shadowMap", slot);
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
-		}		
-		
-		return 1;
-	}
-	
 
 	public RendererState(GL3 gl, ArrayList<Light> pointLights,
 			AmbientLight ambientLight, Camera camera, int anisotropySamples) {
@@ -79,6 +52,61 @@ public class RendererState {
 		this.ambientLight = ambientLight;
 		this.camera = camera;
 		this.anisotropySamples = anisotropySamples;
+	}
+	
+	/**
+	 * Binds the proper shadow map to the active material. This might be made
+	 * obsolete by the implementation of multiple light casters that can be
+	 * occluded, but that's a long way down the road.
+	 *  
+	 * @param m
+	 */
+	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
+		if(pointLights.get(0).getType() != LightType.Point) {
+			// We don't need this matrix if we're working with point lights
+			// and cube maps.
+			Matrix4 projection = depthProjection;
+			Matrix4 view = depthView;
+			
+			Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
+			
+			// Really important! Converts the z-values from [-1, 1] to [0, 1]
+			Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
+			
+			m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
+		}
+		m.getShader().setU1i("useShadows", true);
+		m.getShader().setU1i("shadowQuality", 2);
+	}
+	
+	/** @see #shadowMapBindings(Material m)  */
+	public int shadowMapTextureBindings(Material m, int slot) {
+		gl.glActiveTexture(GLHelp.textureSlot[5]);
+		
+		if(pointLights.get(0).getType() == LightType.Point) {
+			m.getShader().setU1i("samplingCube", true);
+			m.getShader().setU1i("cubeShadowMap", 5);
+			cubeTexture.bind(gl);
+		} else {
+			m.getShader().setU1i("samplingCube", false);
+			m.getShader().setU1i("shadowMap", slot);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
+		}		
+		
+		return 1;
+	}
+	
+	public void setAnisotropySamples(int value) {
+		if(value > maxAnisotropySamples) {
+			Yeti.warn("Given %d anisotropic samples, only supporting %d - clamping!", value, maxAnisotropySamples);
+			anisotropySamples = maxAnisotropySamples;
+		} else {
+			anisotropySamples = value;
+		}
+	}
+	
+	public int getAnisotropySamples() {
+		return anisotropySamples;
 	}
 
 	public void setLights(ArrayList<Light> pointLights) {
@@ -121,10 +149,6 @@ public class RendererState {
 		return fog;
 	}
 	
-	public int getAnisotropySamples() {
-		return anisotropySamples;
-	}
-	
 	public void forceMaterial(Material material) {
 		forcedMaterial = material;
 	}
@@ -141,12 +165,4 @@ public class RendererState {
 		return cubeTexture;
 	}
 	
-	public void setAnisotropySamples(int value) {
-		if(value > maxAnisotropySamples) {
-			Yeti.warn("Given %d anisotropic samples, only supporting %d - clamping!", value, maxAnisotropySamples);
-			anisotropySamples = maxAnisotropySamples;
-		} else {
-			anisotropySamples = value;
-		}
-	}
 }

@@ -19,6 +19,7 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
+import barsan.opengl.rendering.materials.DepthWriterPoint;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
@@ -38,6 +39,8 @@ public class Renderer {
 	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
+	public static boolean renderDebug = true;
+	
 	TextureAttachment tta;
 	
 	int texType = -1;
@@ -53,15 +56,6 @@ public class Renderer {
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
 	private Model screenQuad;
-	
-	public static final Vector3[] directions = new Vector3[] {
-		/* x+ */	new Vector3( 1.0f,  0.0f,  0.0f),
-		/* x- */	new Vector3(-1.0f,  0.0f,  0.0f),
-		/* y+ */	new Vector3( 0.0f,  1.0f,  0.0f),
-		/* y- */	new Vector3( 0.0f, -1.0f,  0.0f),
-		/* z+ */	new Vector3( 0.0f,  0.0f,  1.0f),
-		/* z- */	new Vector3( 0.0f,  0.0f, -1.0f)
-	};
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
 			{
@@ -213,8 +207,15 @@ public class Renderer {
 		 }
 		 
 		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
+		 // We obviously don't want to use glFramebufferTexture2D over here
+		 gl.glFramebufferTexture(GL2.GL_FRAMEBUFFER,
+					GL2.GL_DEPTH_ATTACHMENT, 
+					state.cubeTexture.getTextureObject(gl),
+					0);
+			
 		 // Don't bind any texture here
-		 gl.glDrawBuffer(GL2.GL_NONE);
+		 gl.glDrawBuffer(GL2.GL_NONE); 
+		 gl.glReadBuffer(GL2.GL_NONE);
 		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		 
 		 GLHelp.fboErr(gl);		
@@ -238,7 +239,6 @@ public class Renderer {
 		
 		if(scene.shadowsEnabled) {
 			//gl.glCullFace(GL2.GL_FRONT);
-			state.forceMaterial(new DepthWriterDirectional());
 			
 			Camera aux = state.getCamera();
 			
@@ -246,6 +246,7 @@ public class Renderer {
 				
 				// Directional light shadow casting
 				
+				state.forceMaterial(new DepthWriterDirectional());
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 				
@@ -263,6 +264,7 @@ public class Renderer {
 				
 				// Spot light shadow casting
 				
+				state.forceMaterial(new DepthWriterDirectional());
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 				
@@ -279,7 +281,7 @@ public class Renderer {
 				float th = slight.getTheta();
 				float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
 				pc.setFOV(angle);
-				pc.setFrustumNear(0.5f);
+				pc.setFrustumNear(1f);
 				pc.setFrustumFar(240.0f);
 				
 				gl.glViewport(0, 0, shadowMapW, shadowMapH);
@@ -291,29 +293,15 @@ public class Renderer {
 
 				PointLight pl = (PointLight)light;
 				
+				state.forceMaterial(new DepthWriterPoint(pl.getPosition()));
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
+				
 				// Render to a cubemap
-				// FIXME: in OpenGL 3.0+ you can render everything (all six faces)
-				// in one pass using a geometry shader
-				// SEE: http://www.cg.tuwien.ac.at/courses/Realtime/repetitorium/2011/OmnidirShadows.pdf
-				for(int side = 0; side < 6; side++) {
-					PerspectiveCamera pc = new PerspectiveCamera(
-							pl.getPosition().copy(),
-							directions[side],
-							shadowMapW, 
-							shadowMapH);
-					pc.setFOV(90.0f);
-					pc.setFrustumNear(0.1f);
-					pc.setFrustumFar(240.0f);
-					pc.setUp(new Vector3(0.0f, -1.0f, 0.0f)); // render on the cube right-side-up
-					
-					state.setCamera(pc);
-					gl.glViewport(0, 0, cubeMapSide, cubeMapSide);
-					gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT,
-							CubeTexture.cubeSlots[side], state.cubeTexture.getTextureObject(gl), 0);
-					gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
-					renderShadowMap(gl, scene, pc);
-				}
+				gl.glViewport(0, 0, cubeMapSide, cubeMapSide);
+				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+				
+				// TODO: clean up this code
+				renderOccluders(gl, scene);
 			}
 			
 			// Restore old state
@@ -334,7 +322,7 @@ public class Renderer {
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		//renderDebug(Yeti.get().gl.getGL2(), scene);		
+		if(renderDebug) renderDebug(Yeti.get().gl.getGL2(), scene);		
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		
 		//Render to the screen

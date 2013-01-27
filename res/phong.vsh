@@ -2,6 +2,7 @@
 
 uniform mat4 mvpMatrix;
 uniform mat4 mvMatrix;
+uniform mat4 mMatrix;
 uniform mat4 vMatrix;
 
 uniform mat3 vMatrix3x3;
@@ -32,6 +33,8 @@ smooth out float 	fogFactor;
 smooth out vec4 	vertPos_ec;
 smooth out vec4 	vertPos_wc;
 smooth out vec4 	lightPos_ec;
+smooth out vec3 	lightPos_wc;
+
 smooth out vec3 	spotDirection_ec;
 
 smooth out mat3 	mNTB;
@@ -74,6 +77,10 @@ void main() {
 		// Convert the vertex to shadowmap coordinates
 		vertPos_dmc = mvpMatrixShadows * vVertex;
 	}
+	
+	// TEMP used in point light shadow mapping
+	lightPos_wc = vLightPosition.xyz;
+	vertPos_wc = mMatrix * vVertex;	
 	
 	lightPos_ec = vec4(tLightPos, 1.0f);
 	vertPos_ec = vec4(vPosition3, 1.0f);
