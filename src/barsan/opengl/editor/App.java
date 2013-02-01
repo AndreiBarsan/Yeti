@@ -7,9 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.beans.PropertyChangeListener;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -26,7 +29,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.Scene;
 import barsan.opengl.util.GLHelp;
+import barsan.opengl.util.TextUtil;
 
 public class App {
 
@@ -35,6 +40,7 @@ public class App {
 	
 	private JSlider anisotropicSlider;
 	private JLabel anisotropicLabel;
+	JToolBar toolBar;
 	
 	/**
 	 * Launch the application.
@@ -80,7 +86,7 @@ public class App {
 		
 		frmYeti.getContentPane().setLayout(new BoxLayout(frmYeti.getContentPane(), BoxLayout.Y_AXIS));
 		
-		JToolBar toolBar = new JToolBar();
+		toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		toolBar.setAlignmentX(Component.LEFT_ALIGNMENT);
 		frmYeti.getContentPane().add(toolBar);
@@ -118,7 +124,9 @@ public class App {
 		engine.hackStartLoop(this, frmYeti, frmYeti.getContentPane());		
 	}
 	
-	public void generateGLKnobs(GL gl) {
+	public void generateGLKnobs(final Yeti yeti) {
+		GL gl = yeti.gl;
+		
 		anisotropicSlider.setMaximum( (int) GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT));
 		anisotropicSlider.addChangeListener(new ChangeListener() {
 			@Override
@@ -128,6 +136,27 @@ public class App {
 				anisotropicLabel.setText("Anisotropic filtering: " + source.getValue());
 			}
 		});
-		anisotropicSlider.setValue(Yeti.get().settings.anisotropySamples);		
+		anisotropicSlider.setValue(Yeti.get().settings.anisotropySamples);	
+		
+		JMenu menu = new JMenu("Scene");
+		for(int i = 0; i < Yeti.getAvailableScenes().length; i++) {
+			final Class<?> s = Yeti.getAvailableScenes()[i];
+			JMenuItem item = new JMenuItem(new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						yeti.loadScene((Scene)s.newInstance());
+					} catch (InstantiationException e1) {
+						e1.printStackTrace();
+					} catch (IllegalAccessException e1) {
+						e1.printStackTrace();
+					}
+				}
+			});
+			item.setText(TextUtil.splitCamelCase(s.getSimpleName()));
+			menu.add(item);
+		}
+		
+		frmYeti.getJMenuBar().add(menu);
 	}
 }

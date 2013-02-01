@@ -510,7 +510,7 @@ public class Renderer {
 					Vector3 up = new Vector3(0.0f, 0.0f, 1.0f);
 					Vector3 axis = new Vector3(up).cross(d).normalize();
 					
-					float a = MathUtil.RAD_TO_DEG * (float)Math.acos(d.dot(up));
+					float a = 180.0f + MathUtil.RAD_TO_DEG * (float)Math.acos(d.dot(up));
 					gl.glRotatef(a, axis.x, axis.y, axis.z);
 					
 					glut.glutWireCone(0.33f, 1.0f, 15, 3);

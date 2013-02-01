@@ -149,6 +149,10 @@ public class Yeti implements GLEventListener {
 		}
 	}
 	
+	public static Class<?>[] getAvailableScenes() {
+		return availableScenes;
+	}
+	
 	private Yeti() {
 		animator = new Animator();
 	}
@@ -378,7 +382,7 @@ public class Yeti implements GLEventListener {
 		if(hostApp != null) {
 			// TODO: list of callbaks (also maybe make host apps implement
 			// some hook functionality)
-			hostApp.generateGLKnobs(gl);
+			hostApp.generateGLKnobs(this);
 		}
 		
 		// Runing in debug mode
