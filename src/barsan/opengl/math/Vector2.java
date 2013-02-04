@@ -2,12 +2,24 @@ package barsan.opengl.math;
 
 public class Vector2 {
 
-	/* pp */ float x, y;
+	public float x, y;
 
 	public Vector2(float x, float y) {
-		super();
+		set(x, y);
+	}
+	
+	public Vector2(Vector2 other) {
+		set(other);
+	}
+	
+	public Vector2 set(Vector2 other) {
+		return set(other.x, other.y);
+	}
+	
+	public Vector2 set(float x, float y) {
 		this.x = x;
 		this.y = y;
+		return this;
 	}
 
 	public float len() {
@@ -18,21 +30,36 @@ public class Vector2 {
 		return x * x + y * y;
 	}
 	
-	public float getX() {
-		return x;
-	}
-
-	public void setX(float x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
+	public Vector2 add(Vector2 other) {
+		x += other.x;
+		y += other.y;
+		return this;
 	}
 	
+	public Vector2 normalize() {
+		float l = len();
+		x /= l;
+		y /= l;
+		return this;
+	}
+	
+	public Vector2 applyFriction(float amount) {
+		float l = len();
+		if(l > 0.0f) {
+			x /= l;
+			y /= l;
+			
+			float reducedLength = Math.max(0.0f, l - amount);
+			x *= reducedLength;
+			y *= reducedLength;
+		}
+		return this;
+	}
+	
+	public float angle() {
+		float a = (float)Math.atan2(y, x) * MathUtil.RAD_TO_DEG;
+		if(a < 360.0f) a += 360.0f;
+		return a;
+	}
 	
 }
