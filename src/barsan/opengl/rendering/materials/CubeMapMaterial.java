@@ -26,12 +26,15 @@ public class CubeMapMaterial extends Material {
 		
 		rendererState.gl.glUseProgram(shader.getHandle());
 		shader.setUMatrix4("mvpMatrix", mvp);
+		shader.setU1i("samplingCube", true);
 		shader.setU1i("cubeMap", 0);
-		
 		rendererState.gl.glActiveTexture(GLHelp.textureSlot[0]);
-		
 		// It contains the texture wrapped by the CubeTexture
 		texture.bind(rendererState.gl);
+		
+		shader.setU1i("derpMap", 1);
+		rendererState.gl.glActiveTexture(GLHelp.textureSlot[1]);
+		//ResourceLoader.texture("stone").bind(rendererState.gl);
 		
 		super.setup(rendererState, transform);
 	}

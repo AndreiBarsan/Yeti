@@ -3,11 +3,8 @@ package barsan.opengl.math;
 public class Rectangle {
 	private static final float EPSILON = 0.0001f;
 	
-	private float x, y;
-	private float width, height;
-	public float getX() {
-		return x;
-	}
+	public float x, y;
+	public float width, height;
 	
 	public Rectangle(float x, float y, float width, float height) {
 		set(x, y, width, height);
@@ -43,28 +40,6 @@ public class Rectangle {
 		return ! ( x > other.x + other.width || x + width < other.x || y > other.y + other.height || y + height < other.y);
 //		return( (x > other.x && x < other.x + other.width || x < other.x && x + width > other.x )
 //			&& (y > other.y && y < other.y + other.height || y < other.y && y + height > other.y) );
-	}
-	
-	public void setX(float x) {
-		this.x = x;
-	}
-	public float getY() {
-		return y;
-	}
-	public void setY(float y) {
-		this.y = y;
-	}
-	public float getWidth() {
-		return width;
-	}
-	public void setWidth(float width) {
-		this.width = width;
-	}
-	public float getHeight() {
-		return height;
-	}
-	public void setHeight(float height) {
-		this.height = height;
 	}
 	
 	public Rectangle copy() {

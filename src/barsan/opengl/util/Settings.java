@@ -24,10 +24,10 @@ public class Settings implements Serializable {
 	public transient int height;
 	public transient boolean playing = false;
 	
-	private final static transient String SETTINGS_FILE = "settings.dat";
+	public final static transient String SETTINGS_FILE = "settings.dat";
 	
 	// Actual settings and stats
-	public int lastSceneIndex = 4; 
+	public int lastSceneIndex = 0; 
 	public int anisotropySamples = 1;
 	
 	// Allows any sort of custom entries to be saved and read

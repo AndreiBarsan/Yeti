@@ -3,7 +3,6 @@ package barsan.opengl.rendering;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
@@ -12,7 +11,6 @@ import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
-import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GUI;
@@ -108,6 +106,10 @@ public class Scene implements GLEventListener {
 		return ((float)(System.currentTimeMillis() - lastTime)) / 1000.0f;
 	}
 
+	public void addModelInstance(ModelInstance modelInstance) {
+		modelInstances.add(modelInstance);
+	}
+	
 	public void registerInputSources(Yeti yeti) {
 		// Handle camera input
 		cameraInput = new CameraInput(camera);

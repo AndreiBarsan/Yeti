@@ -25,6 +25,7 @@ package barsan.opengl.rendering;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -35,6 +36,8 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.materials.BumpComponent;
+import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.util.GLHelp;
 
 /**
@@ -51,6 +54,14 @@ public class Shader {
 	public static final String A_POSITION = "vVertex";
 	public static final String A_NORMAL = "vNormal";
 	public static final String A_TEXCOORD = "vTexCoord";
+	
+	public static final Map<Class<?>, String> componentFlags = new HashMap<>();
+	static {
+		// if the component isn't in here, then technically it has its own
+		// dedicated shader program
+		componentFlags.put(BumpComponent.class, "BUMPMAPPING");
+		componentFlags.put(ShadowReceiver.class, "SHADOWMAPPING");
+	}
 	
 	// Utility buffers
 	static final IntBuffer i_buff = IntBuffer.allocate(8);

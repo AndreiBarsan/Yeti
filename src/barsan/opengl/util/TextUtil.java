@@ -10,7 +10,6 @@ public class TextUtil {
 		StringBuilder sb = new StringBuilder();
 		for(String s : parts) {
 			sb.append(s).append(" ");
-			System.out.println(s);
 		}
 		return sb.substring(1, sb.length() - 1);
 	}

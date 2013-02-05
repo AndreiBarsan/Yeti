@@ -19,26 +19,26 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
+import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 
 import barsan.opengl.editor.App;
+import barsan.opengl.flat.GameScene;
 import barsan.opengl.input.GlobalConsoleInput;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.LightTest;
-import barsan.opengl.scenes.ModelGraphScene;
 import barsan.opengl.scenes.ProceduralScene;
-import barsan.opengl.scenes.TextScene;
-import barsan.opengl.scenes.ZRenderTest;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -81,7 +81,7 @@ import com.jogamp.opengl.util.Animator;
  * TODO: optional utility to draw:
  * 			- pie chart render data
  * 			- axes
- * 			- MOST IMPORTANTLY: draw spotlight dirs; NORMALS!
+ * 			- NORMALS!
  * TODO: when creating post-process effects, compile basic vertex shader, get 
  * all other fragment shaders, and link all fragments to the same vertex shader,
  * saving (n-1) useless recompilations of the postprocess vertex shaders
@@ -137,11 +137,12 @@ public class Yeti implements GLEventListener {
 	 */
 	static Class<?>[] availableScenes = new Class[] {
 			DemoScene.class,
-			TextScene.class,
+			//TextScene.class,
 			ProceduralScene.class,
-			ModelGraphScene.class,
+			//ModelGraphScene.class,
 			LightTest.class,
-			ZRenderTest.class
+			//ZRenderTest.class
+			GameScene.class
 	};
 	static {
 		for(Class<?> c : availableScenes) {
@@ -402,10 +403,12 @@ public class Yeti implements GLEventListener {
 			public void uncaughtException(Thread t, Throwable e) {
 				if(e instanceof GLException) {
 					Yeti.screwed("GLException: \n" + e.getMessage(), e);
+				} else {
+					Yeti.screwed("Yeti general error: \n" + e);
 				}
 			}
 		});
-		*/
+		//*/
 		
 		try {
 			loadScene((Scene)availableScenes[lastLoadedScene].newInstance());

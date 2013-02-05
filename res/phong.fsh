@@ -206,17 +206,13 @@ float computeVisibility(in float NL) {
  */
 void main() {		
 	vec3 ct, cf;
-	vec4 texel;
+	vec4 texel = vec4(1.0f);
 	float at, af;
-
-	bool test = false;
 
 	if(useTexture) {
 		texel = texture(colorMap, vVaryingTexCoords); 
-	} else {
-		texel = vec4(1.0f);
-	}
-
+	} 
+	
 	ct = texel.rgb;
 	at = texel.a;
 
@@ -227,18 +223,13 @@ void main() {
 	float visibility = 1.0f;
 	
 	if(useShadows) {
-//#ifdef SAMPLINGCUBE
-	if(samplingCube) {
+		if(samplingCube) {
 			visibility = computeVisibilityCube(NL);
-	} else { 			
-//#else 
+		} else { 			
 			visibility = computeVisibility(NL);
-	}
-//#endif
+		}
 	}
 	
-	// TODO: employ #ifdefs and perform shader generation instead
-	vec3 mapNormal;
 	if(useBump) {
 		vec3 vBump = 2.0f * texture2D(normalMap, vVaryingTexCoords).rgb - 1.0f;
 		vBump = normalize(mNTB * vBump);
@@ -274,6 +265,7 @@ void main() {
 	}
 	
 	//vFragColor -= vFragColor;
+	
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
 	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
@@ -285,4 +277,4 @@ void main() {
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(visibility);
 	vFragColor.a = 1.0f;
-}
+} 	

@@ -186,6 +186,10 @@ public abstract class Material {
 		return writesDepthBuffer;
 	}
 	
+	public void setIgnoresLights(boolean val) {
+		ignoreLights = val;
+	}
+	
 	public boolean ignoresLights() {
 		return ignoreLights;
 	}

@@ -76,7 +76,6 @@ public class RendererState {
 	
 	/** @see #shadowMapBindings(Material m)  */
 	public int shadowMapTextureBindings(Material m, int slot) {
-		
 		if(lights.get(0).getType() == LightType.Point) {
 			m.getShader().setU1i("samplingCube", true);
 			
@@ -86,13 +85,13 @@ public class RendererState {
 			
 			gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
 			m.getShader().setU1i("shadowMap", slot + 1);
-			ResourceLoader.texture("floor").bind(gl);			// dummy
+			//ResourceLoader.texture("floor").bind(gl);			// dummy
 		} else {
 			m.getShader().setU1i("samplingCube", false);
 			
 			gl.glActiveTexture(GLHelp.textureSlot[slot]);
 			m.getShader().setU1i("cubeShadowMap", slot);
-			cubeTexture.bind(gl);
+			//ResourceLoader.cubeTexture("test").bind(gl);		// dummy
 			
 			gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
 			m.getShader().setU1i("shadowMap", slot + 1);

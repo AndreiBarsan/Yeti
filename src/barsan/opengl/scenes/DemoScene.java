@@ -19,12 +19,14 @@ import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.rendering.materials.ToonMaterial;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PerspectiveCamera;
+import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.resources.HeightmapBuilder;
@@ -49,7 +51,7 @@ public class DemoScene extends Scene {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
-		
+			
 		try {
 			//ResourceLoader.loadObj("asteroid10k", "res/models/asteroid10k.obj");
 			//ResourceLoader.loadObj("asteroid1k", "res/models/asteroid1k.obj");
@@ -98,21 +100,26 @@ public class DemoScene extends Scene {
 				));
 		//*/
 		//*
-		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
-				new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
-				new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
+		//modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
+		//		new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
+		//		new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
 		//*/
 		
+		shadowsEnabled = false;
+		
 		Material bumpMat = new BasicMaterial();
-		bumpMat.setTexture(ResourceLoader.texture("stone"));
-		bumpMat.addComponent(new TextureComponent());
+		bumpMat.setIgnoresLights(true);
+		//bumpMat.setTexture(ResourceLoader.texture("stone"));
+		//bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
+		bumpMat.addComponent(new ShadowReceiver());
 		
 		ModelInstance daddy;
 		tct = new Transform().updateTranslate(0.0f, 50.0f, 3.0f).updateScale(1.0f);
 		modelInstances.add(daddy = new ModelInstance(ResourceLoader.model("texcube"), 
 				bumpMat, tct));
 		
+		/*
 		daddy.addChild(new ModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(10.0f, 0.5f, 0.0f)));
 		
@@ -122,7 +129,7 @@ public class DemoScene extends Scene {
 		
 		m1.addChild(m2 = new ModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(-2.0f, 0.5f, 0.0f).updateScale(0.33f)));
-		
+		*/
 		
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		//camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
@@ -162,14 +169,9 @@ public class DemoScene extends Scene {
 		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);
 		
-		m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
+		//m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
 		float orbit = 2.0f;
-		m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
-		
-		drawable.getGL().glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		
-		GLUT glut = new GLUT();
-		glut.glutSolidOctahedron();
+		//m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
 		
 		// Calls the renderer
 		super.display(drawable);
