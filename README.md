@@ -17,8 +17,8 @@ Eclipse in, and as you can see, it requires, by default, two libraries. The
 easiest way to get it to run is to download jogl and unzip it in a lib/ folder
 that's a sibling of the res/ and src/ ones.
 
-Of course, Eclipse isn't *required* to build the engine. You can javac' it, no 
-problem, you can use a different folder for the libs and so on.
+Of course, Eclipse isn't *required* to build the engine. You can `javac` it, no 
+problem, you can use a different folder for the libs, and so on.
 
 You can get the latest JOGL here: http://jogamp.org/deployment/jogamp-current/archive/jogamp-all-platforms.7z
 
@@ -27,13 +27,13 @@ The required JARs are: gluegen-rt.jar and jogl-all.jar.
 Features
 --------
 Among the most important features implemented so far are:
- - basic obj loading
+ - basic Wavefront *.obj loading
  - phong lighting model (with directional, point and spot lights)
  - normal mapping
  - skyboxes and environment mapping
  - shadow mapping (for all light types - omnidirectional shadowmaps generated
  in a single pass using a geometry shader)
- - simple billboarding
+ - simple and axis-aligned billboarding
  - scene management
  - multipass rendering with post-processing support (right now used for FBO-based
  multisampling)
