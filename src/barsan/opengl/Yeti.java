@@ -45,63 +45,6 @@ import com.jogamp.opengl.util.Animator;
 
 /**
  * @author Andrei Barsan
- * 
- * TO-DO LIST OF THINGS TO DO
- * =============================================================================
- * FIXME: only bump but no texture -> tries to render bumpmap without having
- * texture coords!!!
- * 
- * TODO: figure out what to with textures - if I'm going to move them to the
- * respective component altogether, how will we interact with the VBO with the
- * texture coords? Maybe some sort of VBO channel interface that belongs to a
- * component? Texture -> UV, WorldTransform -> Geometry, WTNormals -> Geometry + normals
- * Bump component (example) -> Tangents
- * 
- * TODO: continuation of the above - right now some unbound texture slots cause
- * crashes - for instance the shadow maps - if you render something with the 
- * shadow map bound to pos 2, then render something else with the shadow map
- * bound to pos 3, it crashes
- * 
- * FIXME: view matrix straight down? BUG. FIX IT!
- * 
- * TODO: optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
- * TODO: check exactly when we need to enable the shader; the current setup 
- * might actually be broken and only working through dumb luck
- * TODO: use shadow samplers for the shadow computations, they're faster
- * TODO: use input polling for the camera (needed later for the char controls)
- * 
- * TODO: more math; were the previous bugs really only caused by poorly configured
- * shadowmap generation projection matrices? (the black stripe ones for instance)
- * 
- * TODO: if so, start working on binding volumes to start doing lighting the right
- * way!
- * TODO: standardized texture units - only bind things like the shadow map ONCE
- * TODO: camera update() method (automatically called by the scene - keep everything
- * in sync, prevent recalculations of the view matrix etc.)
- * TODO: perpixel fog & fix fog computation
- * TODO: actually find and write down the matrix multiplication BUG !!!
- * TODO: light lists
- * TODO: optional utility to draw:
- * 			- pie chart render data
- * 			- axes
- * 			- NORMALS!
- * TODO: when creating post-process effects, compile basic vertex shader, get 
- * all other fragment shaders, and link all fragments to the same vertex shader,
- * saving (n-1) useless recompilations of the postprocess vertex shaders
- * TODO: global rendering settings should be part of every material (think
- * gamma correction and tone mapping); should gamma correction be part of a
- * post-processing system?
- * TODO: editor GUI						~
- * TODO: smooth camera movement 		~
- * TODO: depth of field
- * TODO: uniform blocks for shaders (with possibility of loading multiple items
- * in a single action from the App)
- * TODO: global cel-shading effect (with no double drawing, just take depth-buffer
- * 			slap an uncanny edge detection, render found edges black on color-buffer)
- * TODO: list of all lights and entities
- * TODO: edit lights and entities (entity transforms)
- * TODO: load .obj dialog with "recents" list
- * TODO: log object
  * =============================================================================
  */
 public class Yeti implements GLEventListener {

@@ -141,7 +141,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 
 #ifdef SHADOWMAPPING
 	#ifdef SAMPLINGCUBE
-	float computeVisibilityCube(in float NL) {
+	float computeVisibility(in float NL) {
 		float visibility = 1.0f;
 		// calculate vector from surface point to light position
 		// (both positions are given in world space - since that's how we thought up
@@ -168,7 +168,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 		}
 		return visibility;
 	}
-	#else
+	#else 
 float computeVisibility(in float NL) {
 	float visibility = 1.0f;
 	// This line should technically only be needed when dealing with spot lights
@@ -238,21 +238,17 @@ void main() {
 	vec3 nNormal = normalize(vVaryingNormal);
 	vec3 nLightDir = normalize(vVaryingLightDir);
 	float NL = dot(nNormal, nLightDir);
-		
+	
+	float visibility = 1.0f;	
 #ifdef SHADOWMAPPING
-	float visibility = 1.0f;
-	#ifdef SAMPLINGCUBE
-		visibility = computeVisibilityCube(NL); 			
-	#else 
-		visibility = computeVisibility(NL);
-	#endif 
+	visibility = computeVisibility(NL); 
 #endif 
 	
 #ifdef BUMPMAPPING
 	vec3 vBump = 2.0f * texture2D(normalMap, vVaryingTexCoords).rgb - 1.0f;
 	vBump = normalize(mNTB * vBump);
 	nNormal = vBump;
-#endif
+#endif 
 	
 	float intensity = computeIntensity(nNormal, nLightDir);	// nNormal updated by the normal mapping!
 	intensity *= visibility;
