@@ -20,7 +20,7 @@ public class TextureComponent implements MaterialComponent {
 		m.texture.bind(rs.gl);
 		m.texture.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 		
-		return 4;
+		return 1;
 	}
 
 	@Override

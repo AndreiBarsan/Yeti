@@ -1,4 +1,4 @@
-#define SAMPLINGCUBE
+//#define SAMPLINGCUBE
 #version 400 core
 
 const float bias = 0.005f;
@@ -55,11 +55,8 @@ uniform sampler2D normalMap;
 uniform bool 		useShadows;
 uniform int 		shadowQuality;
 uniform bool 		samplingCube;
-//#ifdef SAMPLINGCUBE
-	uniform samplerCube cubeShadowMap;		// Point lights
-//#else 
-	uniform sampler2D 	shadowMap;			// Spot & Directional lights
-//#endif 
+uniform samplerCube cubeShadowMap;		// Point lights
+uniform sampler2D 	shadowMap;			// Spot & Directional lights
 
 uniform float 		far;
 
@@ -265,7 +262,7 @@ void main() {
 	}
 	
 	//vFragColor -= vFragColor;
-	
+	//vFragColor += texture(cubeShadowMap, vec3(1.0f, 2.3f, 1.0f));
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
 	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	

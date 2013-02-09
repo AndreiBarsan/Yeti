@@ -57,8 +57,7 @@ public class Shader {
 	
 	public static final Map<Class<?>, String> componentFlags = new HashMap<>();
 	static {
-		// if the component isn't in here, then technically it has its own
-		// dedicated shader program
+		// Not yet implemented
 		componentFlags.put(BumpComponent.class, "BUMPMAPPING");
 		componentFlags.put(ShadowReceiver.class, "SHADOWMAPPING");
 	}

@@ -1,8 +1,5 @@
 package barsan.opengl.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.media.opengl.GLAnimatorControl;
 
 import barsan.opengl.Yeti;

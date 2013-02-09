@@ -28,7 +28,6 @@ import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.GammaCorrection;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -73,22 +72,20 @@ public class LightTest extends Scene {
 		shadowsEnabled = true;
 		
 		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
-		monkeyMat = new BasicMaterial(new Color(0.0f, 0.00f, 1.0f));
+		monkeyMat = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
-		monkeyMat.addComponent(new ShadowReceiver());
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
 		//fogEnabled = true;
 		
 		gammaCorrection = new GammaCorrection(1.2f);
 		
-		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));
+		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));	
 		floorMat.setTexture(ResourceLoader.texture("floor"));
+		floorMat.addComponent(new TextureComponent());
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
 		floorMat.setShininess(256);
-		floorMat.addComponent(new TextureComponent());
-		floorMat.addComponent(new ShadowReceiver());
 		
 		
 		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera());
@@ -101,12 +98,10 @@ public class LightTest extends Scene {
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
-				//float a = (float) (Math.PI - Math.atan2(lightZ - j * step, lightX - i * step));
-				//pm.setRotation(0.0f, 1.0f, 0.0f, MathUtil.RAD_TO_DEG * a);
 				pm.refresh();
 				modelInstances.add(new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
 			}
-		}
+		}//*/
 		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
 		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), monkeyMat,
@@ -124,8 +119,6 @@ public class LightTest extends Scene {
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
-		//lights.add(test_dl);
-		//lights.add(test_sl);
 		lights.add(test_pl);
 		
 		gui = new DebugGUI(drawable.getAnimator(), camera);
@@ -212,22 +205,21 @@ public class LightTest extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		a += getDelta();
-		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		
-		//test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
-		//test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
-		//test_sl.getDirection().y = -20.0f;
-		//test_sl.getDirection().normalize();
+		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
+		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
+		test_sl.getDirection().y = -20.0f;
+		test_sl.getDirection().normalize();
 		
 		test_sl.getPosition().setX((float)Math.cos(a / 2) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
-		//test_pl.setAttenuation(0.0f, linearAtt, 0.0f, 0.0f);
 		test_pl.setAttenuation(0.0f, 0.0f, 0.005f, 0.0f);
 		
 		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
 		test_dl.getDirection().set(tv).normalize();
-		
+
+		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		super.display(drawable);
 	}

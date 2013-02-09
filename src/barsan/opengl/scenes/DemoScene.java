@@ -74,9 +74,9 @@ public class DemoScene extends Scene {
 			e.printStackTrace();
 		}
 		
-		blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
-		blueShit.setShininess(16);
-		redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
+		//blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
+		//blueShit.setShininess(16);
+		//redShit = new ToonMaterial(new Color(1.0f, 0.25f, 0.33f));
 		
 		// FIXME: this isn't right; the skybox should be drawn last in
 		// order for as few fragments as possible to be processed, not first
@@ -108,11 +108,9 @@ public class DemoScene extends Scene {
 		shadowsEnabled = false;
 		
 		Material bumpMat = new BasicMaterial();
-		bumpMat.setIgnoresLights(false);
 		bumpMat.setTexture(ResourceLoader.texture("stone"));
 		bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
-		bumpMat.addComponent(new ShadowReceiver());
 		
 		ModelInstance daddy;
 		tct = new Transform().updateTranslate(0.0f, 50.0f, 3.0f).updateScale(1.0f);

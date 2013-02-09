@@ -51,8 +51,8 @@ public abstract class Material {
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);
 		this.normalIndex = shader.getAttribLocation(Shader.A_NORMAL);
 		this.texcoordIndex = shader.getAttribLocation(Shader.A_TEXCOORD);
-		this.tangentIndex = shader.getAttribLocation("vTangent");
-		this.bitangentIndex = shader.getAttribLocation("vBitangent");
+	//	this.tangentIndex = shader.getAttribLocation("vTangent");
+	//	this.bitangentIndex = shader.getAttribLocation("vBitangent");
 		
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -71,11 +71,20 @@ public abstract class Material {
 	 */
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		enableShader(rendererState);
-		int textureIndex = 0;
+		/*
+		 * All unbound textures now default to this. As long as no CUBE MAPS
+		 * are left unbound all should be ok. Bug status: will not fix as it is.
+		 * It will automagically be resolved by dynamic shader generation.
+		 */
+		int textureIndex = 1;
 		
 		for (MaterialComponent c : components) {
+			//System.out.println("Setting up " + c + "...");
 			c.setup(this, rendererState, modelMatrix);
+			//System.out.println("Binding at TI=" + textureIndex);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);
+			//System.out.println("TI now equals: " + textureIndex);
+			//System.out.println();
 		}
 	}
 	

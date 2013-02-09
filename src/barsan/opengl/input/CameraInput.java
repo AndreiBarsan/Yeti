@@ -150,7 +150,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 		dx = MathUtil.clamp(dx, -20, 20);
 		dy = MathUtil.clamp(dy, -20, 20);
 		
-		camera.move3D(dx, dy);
+		camera.move3D(dx, dy);	
 		robot.mouseMove(xcenter, ycenter);
 	}
 
