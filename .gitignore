@@ -15,7 +15,7 @@ lib/
 unused_res/
 *.dat
 *.psd
-glsl_optimizer/
+glsl-optimizer/
 
 #################
 ## Eclipse

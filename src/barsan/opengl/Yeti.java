@@ -48,6 +48,9 @@ import com.jogamp.opengl.util.Animator;
  * 
  * TO-DO LIST OF THINGS TO DO
  * =============================================================================
+ * FIXME: only bump but no texture -> tries to render bumpmap without having
+ * texture coords!!!
+ * 
  * TODO: figure out what to with textures - if I'm going to move them to the
  * respective component altogether, how will we interact with the VBO with the
  * texture coords? Maybe some sort of VBO channel interface that belongs to a

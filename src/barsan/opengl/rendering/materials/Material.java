@@ -61,7 +61,8 @@ public abstract class Material {
 
 	/**
 	 * Called by the renderer before the modelinstance to which this material is
-	 * assigned to gets rendered. Sets up the required shader state. 
+	 * assigned to gets rendered. Enables the shader and sets up its required
+	 * state. 
 	 * 
 	 * Note: this doesn't actually render anything yet!
 	 * 
@@ -72,8 +73,6 @@ public abstract class Material {
 		enableShader(rendererState);
 		int textureIndex = 0;
 		
-		/* sampler index offsets can break a lot of stuff; need more research */
-		if(texture == null) textureIndex++;	
 		for (MaterialComponent c : components) {
 			c.setup(this, rendererState, modelMatrix);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);

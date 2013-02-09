@@ -108,9 +108,9 @@ public class DemoScene extends Scene {
 		shadowsEnabled = false;
 		
 		Material bumpMat = new BasicMaterial();
-		bumpMat.setIgnoresLights(true);
-		//bumpMat.setTexture(ResourceLoader.texture("stone"));
-		//bumpMat.addComponent(new TextureComponent());
+		bumpMat.setIgnoresLights(false);
+		bumpMat.setTexture(ResourceLoader.texture("stone"));
+		bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
 		bumpMat.addComponent(new ShadowReceiver());
 		

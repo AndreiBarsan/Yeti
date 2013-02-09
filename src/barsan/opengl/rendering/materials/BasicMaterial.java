@@ -6,6 +6,20 @@ import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
 /**
+ * 
+ * The basic material used in the engine. Built in are Phong ASD lighting, simple
+ * texture support and shadow receiving.
+ * 
+ * Whether something casts a shadow is controlled in the model instance object,
+ * not here, due to the way the shadow mapping implementation works.
+ * 
+ * Other available modules that can be attached are:
+ *  - bumpmapping
+ *  - fog
+ *  - multitexturing (soon available as component)
+ *  - emmisive maps	 (coming version 2.0)
+ *  - specular maps  (coming version 2.0)
+ * 
  * @author Andrei Barsan
  */
 public class BasicMaterial extends Material {	
@@ -28,8 +42,8 @@ public class BasicMaterial extends Material {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
 		
 		addComponent(new WorldTransformNormals());
-		//addComponent(new FogComponent());
 		addComponent(new LightComponent());
+		addComponent(new ShadowReceiver());
 	}
 	
 	@Override
@@ -37,7 +51,6 @@ public class BasicMaterial extends Material {
 		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
 		// set a shader... :|
 		enableShader(rendererState);
-		
 		
 		shader.setUVector4f("matAmbient", ambient.getData());
 		shader.setUVector4f("matDiffuse", diffuse.getData());
