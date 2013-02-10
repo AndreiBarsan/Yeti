@@ -1,5 +1,6 @@
 package barsan.opengl.flat;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 
@@ -9,6 +10,9 @@ public class Physics2D {
 	Vector2 acceleration;
 	Entity2D owner;
 	float friction;
+	Physics2D lastContact;
+	
+	boolean onGround = false;
 	
 	/** Do I collide with other stuff? */
 	boolean solid;
@@ -55,26 +59,68 @@ public class Physics2D {
 		bounds.y = y;
 	}
 	
+	private boolean checkOnGround() {
+		World2D w = owner.world;
+		lastContact = w.pollPosition(new Vector2(bounds.x + 
+				bounds.width / 2, bounds.y - 0.05f));
+		if(lastContact == this) {
+			Yeti.screwed("You shouldn't touch yourself!");
+		}
+		return null != lastContact;
+	}
+	
+	void jump() {
+		if(onGround) {
+			velocity.y = 40.0f;
+		}
+	}
+	
 	void update(float delta) {
 		World2D w = owner.world;
 		Vector2 deltaMove = new Vector2(velocity);
-		if(hasWeight) {
-			Vector2 gravity = new Vector2(0, -w.getGravity());
-			deltaMove.add(gravity);
-		}
 		deltaMove.add(acceleration);
 		deltaMove.applyFriction(friction);
 		
-		if(solid) {
-			// Better - TODO: poll line segment (position, position + bounds]
-			Entity2D obstacle = w.pollPosition(new Vector2(bounds.x, bounds.y).add(deltaMove));
-			if(obstacle == null) {
-				bounds.x += deltaMove.x;
-				bounds.y += deltaMove.y;
-			} else {
-				w.moveToContact(this, obstacle.physics);
+		if(hasWeight) {
+			if(solid) {
+				boolean wasOnGround = onGround;
+				boolean nowOnGround = checkOnGround();
+				
+				if(nowOnGround) {
+					if( ! wasOnGround) {
+						// We just landed
+						if(velocity.y <= 0.0f) {
+							System.out.println("LANDED");
+							w.moveToContact(this, lastContact);
+							velocity.y = 0.0f;
+						} else {
+							System.out.println("Don't mind me, jumping through platform!");
+							nowOnGround = false;
+						}
+					}					
+				} else {
+					velocity.y -= w.getGravity();
+					if(velocity.y < -25.0f) {
+						velocity.y = -25.0f;
+					}
+				}
+				
+				onGround = nowOnGround;
+			}
+			else {
+				
 			}
 		}
+		
+		if(solid) {
+			// Now to perform sideways checks - am I hitting a wall left, right
+			// or on top?
+			// TODO
+		}
+		
+		// Apply movement
+		bounds.x += delta * deltaMove.x;
+		bounds.y += delta * deltaMove.y;
 		
 	}
 }

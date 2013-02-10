@@ -40,6 +40,12 @@ public class Vector2 {
 		return this;
 	}
 	
+	public Vector2 mul(float scalar) {
+		x *= scalar;
+		y *= scalar;
+		return this;
+	}
+	
 	public Vector2 normalize() {
 		float l = len();
 		x /= l;

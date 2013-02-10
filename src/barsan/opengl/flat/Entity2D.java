@@ -1,5 +1,6 @@
 package barsan.opengl.flat;
 
+import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model;
@@ -13,6 +14,11 @@ public class Entity2D {
 	
 	public Entity2D(Vector2 position, Model model) {
 		physics = new Physics2D(this, position);
+		graphics = new ModelInstance(model);
+	}
+	
+	public Entity2D(Rectangle bounds, boolean solid, boolean hasWeight, Model model) {
+		physics = new Physics2D(this, bounds, solid, hasWeight);
 		graphics = new ModelInstance(model);
 	}
 	

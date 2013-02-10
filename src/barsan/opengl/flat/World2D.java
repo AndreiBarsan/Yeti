@@ -33,7 +33,28 @@ public class World2D {
 		scene.addModelInstance(entity.graphics);
 	}
 	
-	public Entity2D pollPosition(Vector2 position) {
+	/// Returns true if the two entities intersect
+	public boolean intersect(Physics2D e1, Physics2D e2) {
+		Rectangle r1 = e1.bounds;
+		Rectangle r2 = e2.bounds;
+		
+		return r1.intersects(r2);
+	}
+	
+	/// Tries to see if e collides with anything; if it does, return that entity
+	public Physics2D collideWithLevel(Physics2D e) {
+		Rectangle r = e.bounds;
+		for(Entity2D target : entities) {
+			if(!target.physics.solid) continue;
+			
+			if(target.physics.bounds.intersects(r))
+				return target.physics;
+		}
+		
+		return null;			
+	}
+	
+	public Physics2D pollPosition(Vector2 position) {
 		// TODO: when using quadtrees, just see where position should be in the
 		// tree and only check that branch
 		for(Entity2D target : entities) {
@@ -41,7 +62,7 @@ public class World2D {
 						
 			Rectangle nr = target.physics.getBounds();
 			if(nr.contains(position)) {
-				return target;
+				return target.physics;
 			}
 		}
 		

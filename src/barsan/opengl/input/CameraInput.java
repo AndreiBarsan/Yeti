@@ -68,7 +68,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 				break;
 		
 			case KeyEvent.VK_LEFT:
-				camera.turnLeft();
+				//camera.turnLeft();
 				break;
 				
 			case KeyEvent.VK_A:
@@ -80,7 +80,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 				break;
 			
 			case KeyEvent.VK_RIGHT:
-				camera.turnRight();
+				//camera.turnRight();
 				break;
 				
 			case KeyEvent.VK_D:
@@ -92,7 +92,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 				break;
 				
 			case KeyEvent.VK_UP:
-				camera.turnUp();
+				//camera.turnUp();
 				break;
 				
 			case KeyEvent.VK_W:
@@ -104,7 +104,7 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 				break;
 				
 			case KeyEvent.VK_DOWN:
-				camera.turnDown();
+				//camera.turnDown();
 				break;
 				
 			case KeyEvent.VK_S:		

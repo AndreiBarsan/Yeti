@@ -1,15 +1,16 @@
 package barsan.opengl.flat;
 
+import java.awt.RenderingHints.Key;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.math.Transform;
+import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -18,6 +19,37 @@ import barsan.opengl.resources.ResourceLoader;
 public class GameScene extends Scene {
 
 	World2D world;
+	Player player;
+	
+	class InputPoller extends KeyAdapter {
+		// Quick hacky class to test physics
+		public float move;
+		
+		public boolean jmp;
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+				move = -1.0f;
+			} else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				move = 1.0f;
+			} else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+				jmp = true;
+			}
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+				move = 0.0f;
+			} else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				move = 0.0f;
+			} else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+				jmp = false;
+			}
+		}
+	}
+	
+	InputPoller poller = new InputPoller();
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -35,12 +67,13 @@ public class GameScene extends Scene {
 		
 		// Let's set up the level
 		world = new World2D(this);
-		world.addEntity(new Player(new Vector2(30.0f, 0.0f)));
+		world.addEntity(player = new Player(new Vector2(0.0f, 0.0f)));
+		player.graphics.getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
 		
-		addModelInstance(new ModelInstance(
-				Model.buildPlane(300.0f, 10.0f, 30, 1),
-				new Transform().updateTranslate(0.0f, 0.0f, -5.0f)
-				));
+		Yeti.get().addKeyListener(poller);
+		
+		world.addEntity(new Block(new Rectangle(-5, -10, 40, 1)));
+		world.addEntity(new Block(new Rectangle(25, -20, 20, 4)));
 		
 		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
 	}
@@ -49,5 +82,10 @@ public class GameScene extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		world.update(getDelta());
 		super.display(drawable);
+		
+		player.physics.velocity.x = 8.0f * poller.move;
+		if(poller.jmp) {
+			player.jump();
+		}
 	}
 }
