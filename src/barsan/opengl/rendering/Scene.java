@@ -75,6 +75,7 @@ public class Scene implements GLEventListener {
 		rs.setAmbientLight(globalAmbientLight);
 		rs.setCamera(camera);
 		rs.setLights(lights);
+		rs.setScene(this);
 		if(fogEnabled) {
 			rs.setFog(fog);
 		} else {

@@ -11,17 +11,18 @@ public class Entity2D {
 	Physics2D physics;
 	World2D world;
 	
-	public Entity2D(World2D world, Vector2 position, Model model) {
-		this.world = world;
+	public Entity2D(Vector2 position, Model model) {
 		physics = new Physics2D(this, position);
 		graphics = new ModelInstance(model);
-		// Make sure to register ourselves so we get rendered!
-		world.getScene().addModelInstance(graphics);
+	}
+	
+	public void init(World2D world) {
+		this.world = world;
 	}
 	
 	public void update(float delta) {
 		physics.update(delta);
-		graphics.getTransform().setTranslate(
+		graphics.getTransform().updateTranslate(
 				new Vector3(physics.bounds.x, physics.bounds.y, 0.0f));
 	}
 }

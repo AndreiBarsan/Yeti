@@ -13,7 +13,7 @@ public class Physics2D {
 	/** Do I collide with other stuff? */
 	boolean solid;
 	
-	/** Do I get affected by gravity? */
+	/** Am I affected by gravity? */
 	boolean hasWeight;
 	
 	/**
@@ -30,6 +30,8 @@ public class Physics2D {
 		this.bounds = bounds;
 		this.solid = solid;
 		this.hasWeight = hasWeight;
+		this.velocity = new Vector2();
+		this.acceleration = new Vector2();
 	}
 	
 	public boolean collidesWith(Physics2D other) {

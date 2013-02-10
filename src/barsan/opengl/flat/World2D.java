@@ -1,6 +1,6 @@
 package barsan.opengl.flat;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import barsan.opengl.Yeti;
@@ -12,7 +12,7 @@ public class World2D {
 
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
-	private List<Entity2D> entities = new LinkedList<>();
+	private List<Entity2D> entities = new ArrayList<>();
 	private float gravity = 1.0f;
 	
 	
@@ -25,6 +25,12 @@ public class World2D {
 		for(Entity2D e : entities) {
 			e.update(delta);
 		}
+	}
+	
+	public void addEntity(Entity2D entity) {
+		entities.add(entity);
+		entity.init(this);
+		scene.addModelInstance(entity.graphics);
 	}
 	
 	public Entity2D pollPosition(Vector2 position) {

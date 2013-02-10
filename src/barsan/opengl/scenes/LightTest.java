@@ -88,7 +88,7 @@ public class LightTest extends Scene {
 		floorMat.setShininess(256);
 		
 		
-		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("test"), getCamera());
+		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();
 		modelInstances.add(sb);
 		modelInstances.add(plane = new ModelInstance(quad, floorMat));

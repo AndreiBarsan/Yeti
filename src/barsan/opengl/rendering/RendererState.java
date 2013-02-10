@@ -43,6 +43,8 @@ public class RendererState {
 	public int shadowTexture;
 	/* pp */ Texture cubeTexture;
 	
+	private Scene scene;
+	
 	public RendererState(Renderer renderer, GL3 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
@@ -54,28 +56,33 @@ public class RendererState {
 	 * occluded, but that's a long way down the road.
 	 */
 	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
-		if(lights.get(0).getType() != LightType.Point) {
-			// We don't need this matrix if we're working with point lights and cube maps.
-			Matrix4 projection = depthProjection;
-			Matrix4 view = depthView;
+		if(scene.shadowsEnabled) {
+			if(lights.get(0).getType() != LightType.Point) {
+				// We don't need this matrix if we're working with point lights and cube maps.
+				Matrix4 projection = depthProjection;
+				Matrix4 view = depthView;
+				
+				Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
+				
+				// Really important! Converts the z-values from [-1, 1] to [0, 1]
+				Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
+				
+				m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
+				
+			} else {
+				m.getShader().setU1f("far", renderer.getOmniShadowFar());
+			}
 			
-			Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
-			
-			// Really important! Converts the z-values from [-1, 1] to [0, 1]
-			Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
-			
-			m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
-			
-		} else {
-			m.getShader().setU1f("far", renderer.getOmniShadowFar());
+			m.getShader().setU1i("useShadows", true);
+			m.getShader().setU1i("shadowQuality", renderer.getShadowQuality());
 		}
-		
-		m.getShader().setU1i("useShadows", true);
-		m.getShader().setU1i("shadowQuality", renderer.getShadowQuality());
 	}
 	
 	/** @see #shadowMapBindings(Material m)  */
 	public int shadowMapTextureBindings(Material m, int slot) {
+		// This binds the maps anyway, even if the scene doesn't have shadows
+		// enabled, in order to prevent errors caused by unassigned samplers of
+		// different types.
 		if(lights.get(0).getType() == LightType.Point) {
 			m.getShader().setU1i("samplingCube", true);
 		}
@@ -90,7 +97,6 @@ public class RendererState {
 		gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
 		m.getShader().setU1i("shadowMap", slot + 1);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
-		
 		return 2;
 	}
 	
@@ -162,5 +168,12 @@ public class RendererState {
 	public Texture getShadowMapCube() {
 		return cubeTexture;
 	}
-	
+
+	public Scene getScene() {
+		return scene;
+	}
+
+	public void setScene(Scene scene) {
+		this.scene = scene;
+	}
 }

@@ -344,8 +344,8 @@ public class Model {
 		
 		int tw = (sdivw % 2 == 0) ? sdivw / 2 - 1 : sdivw / 2;
 		int th = (sdivh % 2 == 0) ? sdivh / 2 - 1 : sdivh / 2;
-		for(int x = -sdivw / 2; x < tw; x++) {
-			for(int y = -sdivh / 2; y < th; y++) {
+		for(int x = -sdivw / 2; x <= tw; x++) {
+			for(int y = -sdivh / 2; y <= th; y++) {
 				Face f = new Face();
 				f.points = new Vector3[] {
 					new Vector3(x * uw, 0, y * uh),

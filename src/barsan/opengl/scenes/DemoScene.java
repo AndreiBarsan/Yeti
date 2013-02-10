@@ -3,37 +3,25 @@ package barsan.opengl.scenes;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
-import java.util.Collections;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.Threading;
-
-import com.jogamp.opengl.util.gl2.GLUT;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.PerspectiveCamera;
+import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
-import barsan.opengl.rendering.materials.CubicEnvMappingMaterial;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.rendering.materials.TextureComponent;
-import barsan.opengl.rendering.materials.ToonMaterial;
-import barsan.opengl.rendering.Fog;
-import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.ModelInstance;
-import barsan.opengl.rendering.PerspectiveCamera;
-import barsan.opengl.rendering.RendererState;
-import barsan.opengl.rendering.Scene;
-import barsan.opengl.rendering.SkyBox;
-import barsan.opengl.resources.HeightmapBuilder;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.DebugGUI;
-import barsan.opengl.util.TextHelper;
 
 public class DemoScene extends Scene {
 	
@@ -81,7 +69,7 @@ public class DemoScene extends Scene {
 		// FIXME: this isn't right; the skybox should be drawn last in
 		// order for as few fragments as possible to be processed, not first
 		// so that we overwrite most of it!
-		SkyBox sb = new SkyBox(Yeti.get().gl.getGL2(), ResourceLoader.cubeTexture("skybox01"), camera);
+		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera);
 		modelInstances.add(sb);
 		
 		/*

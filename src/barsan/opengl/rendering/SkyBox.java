@@ -1,7 +1,6 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL2;
-
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.materials.CubeMapMaterial;
@@ -12,8 +11,8 @@ public class SkyBox extends ModelInstance {
 
 	private Camera camera;
 
-	public SkyBox(GL2 gl, CubeTexture cubeTexture, Camera toFollow) {
-		super(new Cube(gl, 20.0f, true), new CubeMapMaterial());
+	public SkyBox(CubeTexture cubeTexture, Camera toFollow) {
+		super(new Cube(Yeti.get().gl, 20.0f, true), new CubeMapMaterial());
 
 		Texture t = cubeTexture.getTexture();
 		CubeMapMaterial cmm = (CubeMapMaterial) getMaterial();

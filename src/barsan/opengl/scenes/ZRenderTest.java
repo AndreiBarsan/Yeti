@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 
@@ -26,7 +25,6 @@ import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.FBObject;
-import com.jogamp.opengl.FBObject.Attachment;
 
 public class ZRenderTest extends Scene {
 
@@ -52,8 +50,6 @@ public class ZRenderTest extends Scene {
 		rs = new RendererState(renderer, Yeti.get().gl);
 		
 		lights.add(new DirectionalLight(new Vector3(-1.0f, 1.0f, 0.0f).normalize()));
-		
-		
 		GL3 gl = Yeti.get().gl;
 		
 		modelInstances.add(mi = new ModelInstance(ResourceLoader.model("monkey")));

@@ -4,6 +4,10 @@ public class Vector2 {
 
 	public float x, y;
 
+	public Vector2() {
+		set(0.0f, 0.0f);
+	}
+	
 	public Vector2(float x, float y) {
 		set(x, y);
 	}
