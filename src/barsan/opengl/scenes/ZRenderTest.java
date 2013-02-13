@@ -12,7 +12,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.Model.Face;
-import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.Shader;
@@ -28,7 +28,7 @@ import com.jogamp.opengl.FBObject;
 
 public class ZRenderTest extends Scene {
 
-	ModelInstance mi;
+	StaticModelInstance mi;
 	private Model screenQuad;
 	int regTexHandle = -1;
 	int texType = -1;
@@ -52,7 +52,7 @@ public class ZRenderTest extends Scene {
 		lights.add(new DirectionalLight(new Vector3(-1.0f, 1.0f, 0.0f).normalize()));
 		GL3 gl = Yeti.get().gl;
 		
-		modelInstances.add(mi = new ModelInstance(ResourceLoader.model("monkey")));
+		modelInstances.add(mi = new StaticModelInstance(ResourceLoader.model("monkey")));
 		mi.setMaterial(new BasicMaterial(Color.RED));
 		
 		int fboWidth = Yeti.get().settings.width;

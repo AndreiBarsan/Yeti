@@ -12,7 +12,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cylinder;
-import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -22,7 +22,7 @@ import barsan.opengl.util.TextHelper;
 
 public class ProceduralScene extends Scene {
 
-	ModelInstance cylinder;
+	StaticModelInstance cylinder;
 	PointLight mainLight;
 	int precision = 6;
 	boolean dirty = false;
@@ -38,7 +38,7 @@ public class ProceduralScene extends Scene {
 		
 		GL2 gl = Yeti.get().gl.getGL2();
 		
-		cylinder = new ModelInstance(new Cylinder(gl, precision, diameter, height));
+		cylinder = new StaticModelInstance(new Cylinder(gl, precision, diameter, height));
 		modelInstances.add(cylinder);
 		
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));

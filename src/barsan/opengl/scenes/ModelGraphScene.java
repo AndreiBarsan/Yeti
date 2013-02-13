@@ -10,7 +10,7 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cube;
-import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.PointLight;
@@ -22,7 +22,7 @@ import barsan.opengl.util.Color;
 public class ModelGraphScene extends Scene {
 	
 	long start = System.currentTimeMillis();
-	ModelInstance s1, s2, s3;
+	StaticModelInstance s1, s2, s3;
 
 	PointLight light = new PointLight(new Vector3(0, 10, 0));
 	AmbientLight ambientLight = new AmbientLight(Color.WHITE);
@@ -43,19 +43,19 @@ public class ModelGraphScene extends Scene {
 			e.printStackTrace();
 		}
 		
-		s1 = new ModelInstance(
+		s1 = new StaticModelInstance(
 				new Cube(gl, 1.0f),
 				red
 				);
 		modelInstances.add(s1);
 		
-		s2 =  new ModelInstance(
+		s2 =  new StaticModelInstance(
 				ResourceLoader.model("bunny"),
 				blue
 				);
 		s1.addChild(s2);
 		
-		s3 = new ModelInstance(
+		s3 = new StaticModelInstance(
 				new Cube(gl, 2.0f),
 			yellow,
 			new Transform().updateTranslate(0.0f, 3.0f, 0.0f)

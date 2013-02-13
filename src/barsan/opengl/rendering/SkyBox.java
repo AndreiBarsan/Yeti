@@ -7,7 +7,7 @@ import barsan.opengl.rendering.materials.CubeMapMaterial;
 
 import com.jogamp.opengl.util.texture.Texture;
 
-public class SkyBox extends ModelInstance {
+public class SkyBox extends StaticModelInstance {
 
 	private Camera camera;
 

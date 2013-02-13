@@ -11,6 +11,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.PerspectiveCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
@@ -100,9 +101,9 @@ public class DemoScene extends Scene {
 		bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
 		
-		ModelInstance daddy;
+		StaticModelInstance daddy;
 		tct = new Transform().updateTranslate(0.0f, 50.0f, 3.0f).updateScale(1.0f);
-		modelInstances.add(daddy = new ModelInstance(ResourceLoader.model("texcube"), 
+		modelInstances.add(daddy = new StaticModelInstance(ResourceLoader.model("texcube"), 
 				bumpMat, tct));
 		
 		/*

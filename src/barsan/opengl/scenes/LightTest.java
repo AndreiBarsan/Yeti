@@ -17,7 +17,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -35,7 +35,7 @@ import barsan.opengl.util.DebugGUI;
 
 public class LightTest extends Scene {
 
-	ModelInstance plane, chosenOne;
+	StaticModelInstance plane, chosenOne;
 	PointLight test_pl;
 	SpotLight test_sl;
 	DirectionalLight test_dl;
@@ -91,7 +91,7 @@ public class LightTest extends Scene {
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();
 		modelInstances.add(sb);
-		modelInstances.add(plane = new ModelInstance(quad, floorMat));
+		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
 		float step = 6.0f;
 		int monkeys = 4;
@@ -99,15 +99,15 @@ public class LightTest extends Scene {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
 				pm.refresh();
-				modelInstances.add(new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
+				modelInstances.add(new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
 			}
 		}//*/
-		modelInstances.add(chosenOne = new ModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
+		modelInstances.add(chosenOne = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
-		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), monkeyMat,
 			new Transform().updateTranslate(28.0f, 30.0f, -4.0f).updateScale(4.0f)));
 		
-		modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), monkeyMat,
 				new Transform().updateTranslate(35.0f, 25.0f, -10.0f).updateScale(6.0f)));
 			
 		

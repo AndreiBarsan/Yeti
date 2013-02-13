@@ -19,7 +19,7 @@ import com.jogamp.opengl.util.texture.Texture;
  * @author Andrei Bârsan
  *
  */
-public class Billboard extends ModelInstance {
+public class Billboard extends StaticModelInstance {
 	
 	public enum AxisClamp {
 		None,

@@ -1,7 +1,10 @@
 package barsan.opengl.rendering;
 
-public class AnimatedModel {
+import java.util.ArrayList;
+import java.util.List;
 
+public class AnimatedModel {
+	
 	class Frame {
 		// interpolations would also go here in the future
 		
@@ -11,12 +14,14 @@ public class AnimatedModel {
 		// The actual keyframe
 		public final Model model;
 		
-		// The smaller this is, the more weight the next frame has
-		public float durationLeft;
-		
 		public Frame(Model model, float duration) {
 			this.model = model;
 			this.duration = duration;
 		}
 	}
+	
+	String name;
+	private List<Frame> frames = new ArrayList<>();
+	
+	
 }
