@@ -9,22 +9,22 @@ import barsan.opengl.rendering.materials.Material;
 
 public class StaticModelInstance extends ModelInstance {
 
-	/* pp */ Model model;
+	/* pp */ StaticModel model;
 	/* pp */ Material material;
 	
-	public StaticModelInstance(Model model) {
+	public StaticModelInstance(StaticModel model) {
 		this(model, new BasicMaterial(), new Transform());
 	}
 	
-	public StaticModelInstance(Model model, Material material) {
+	public StaticModelInstance(StaticModel model, Material material) {
 		this(model, material, new Transform());
 	}
 	
-	public StaticModelInstance(Model model, Transform transform) {
+	public StaticModelInstance(StaticModel model, Transform transform) {
 		this(model, new BasicMaterial(), transform);
 	}
 	
-	public StaticModelInstance(Model model, Material material, Transform localTransform) {
+	public StaticModelInstance(StaticModel model, Material material, Transform localTransform) {
 		this.model = model;
 		this.material = material;
 		this.localTransform = localTransform;
@@ -86,11 +86,11 @@ public class StaticModelInstance extends ModelInstance {
 		this.material = material;
 	}
 
-	public Model getModel() {
+	public StaticModel getModel() {
 		return model;
 	}
 
-	public void setModel(Model model) {
+	public void setModel(StaticModel model) {
 		this.model = model;
 	}
 }

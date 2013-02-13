@@ -13,7 +13,7 @@ import javax.media.opengl.GLProfile;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.CubeTexture;
-import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Shader;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -32,7 +32,7 @@ public class ResourceLoader {
 	static boolean initialized = false;
 	
 	static HashMap<String, Shader> shaders = new HashMap<>();
-	static HashMap<String, Model> models = new HashMap<>();
+	static HashMap<String, StaticModel> models = new HashMap<>();
 	static HashMap<String, CubeTexture> cubeTextures = new HashMap<>();
 	
 	// TODO: refactor this away
@@ -227,7 +227,7 @@ public class ResourceLoader {
 		return shaders.get(name);
 	}
 
-	public static Model model(String name) {
+	public static StaticModel model(String name) {
 		return models.get(name);
 	}
 	
@@ -243,7 +243,7 @@ public class ResourceLoader {
 		}
 		shaders.clear();
 		
-		for(Model m : models.values()) {
+		for(StaticModel m : models.values()) {
 			m.dispose();		
 		}
 		models.clear();

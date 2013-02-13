@@ -9,7 +9,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.StaticModel;
 
 public class ModelLoader {
 	
@@ -50,8 +50,8 @@ public class ModelLoader {
 	 * @param input Input source.
 	 * @return		The newly loaded model, fresh from the oven!
 	 */
-	public static Model fromObj(GL gl, Scanner input) {
-		Model model = new Model(gl, "");
+	public static StaticModel fromObj(GL gl, Scanner input) {
+		StaticModel model = new StaticModel(gl, "");
 		
 		// Counters
 		int vc = 0, tc = 0, nc = 0, fc = 0;
@@ -209,7 +209,7 @@ public class ModelLoader {
 					texs = new int[3],
 					norms = new int[3];
 	static Vector3 aux_vector1 = new Vector3(), aux_vector2 = new Vector3();
-	private static Face readFace(Model model, String s) {
+	private static Face readFace(StaticModel model, String s) {
 		int subCount = 0;
 		Group master = model.master;
 		Face face = new Face();
@@ -302,9 +302,9 @@ public class ModelLoader {
 		return face;
 	}
 	
-	public static Model buildPlane(float width, float height, int sdivw, int sdivh) {
+	public static StaticModel buildPlane(float width, float height, int sdivw, int sdivh) {
 		GL2 gl = Yeti.get().gl.getGL2();
-		Model result = new Model(gl, "plane");
+		StaticModel result = new StaticModel(gl, "plane");
 		
 		float uw = width / sdivw;
 		float uh = height / sdivh;
@@ -342,7 +342,7 @@ public class ModelLoader {
 		return result;
 	}
 	
-	public static Model buildQuad(float width, float height) {
+	public static StaticModel buildQuad(float width, float height) {
 		return buildQuad(width, height, true);
 	}
 	
@@ -351,9 +351,9 @@ public class ModelLoader {
 	 * 
 	 * @param xz whether to build the quad in the xz plane. xy otherwise.
 	 */
-	public static Model buildQuad(float width, float height, boolean xz) {
+	public static StaticModel buildQuad(float width, float height, boolean xz) {
 		GL2 gl = Yeti.get().gl.getGL2();
-		Model result = new Model(gl, "quad");
+		StaticModel result = new StaticModel(gl, "quad");
 		result.setPointsPerFace(4);
 		
 		float hw = width / 2.0f;

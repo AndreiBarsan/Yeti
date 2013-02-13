@@ -8,7 +8,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
 import barsan.opengl.util.Color;
@@ -103,7 +103,7 @@ public abstract class Material {
 		}
 	}
 	
-	public void render(RendererState rendererState, Model model) {
+	public void render(RendererState rendererState, StaticModel model) {
 		GL gl = rendererState.gl;
 		enableShader(rendererState);
 		
@@ -121,13 +121,13 @@ public abstract class Material {
 		rendererState.gl.glUseProgram(shader.getHandle());
 	}
 	
-	public void bindTextureCoodrinates(Model model) {
+	public void bindTextureCoodrinates(StaticModel model) {
 		if(texture != null) {
 			model.getTexcoords().use(texcoordIndex);
 		}
 	}
 
-	public void unsetBuffers(Model model) {
+	public void unsetBuffers(StaticModel model) {
 		model.getVertices().cleanUp(positionIndex);
 		if(!ignoreLights) {
 			model.getNormals().cleanUp(normalIndex);

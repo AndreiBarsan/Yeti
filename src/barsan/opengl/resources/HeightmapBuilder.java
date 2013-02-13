@@ -7,7 +7,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.resources.ModelLoader.Face;
 
 import com.jogamp.common.nio.Buffers;
@@ -23,7 +23,7 @@ public class HeightmapBuilder {
 	static float defaultMinHeight = -10.0f;
 	static float defaultMaxHeight =  25.0f;
 	
-	public static Model modelFromMap(GL2 gl, Texture map, TextureData data) {
+	public static StaticModel modelFromMap(GL2 gl, Texture map, TextureData data) {
 		return modelFromMap(gl, map, data, defaultGridSizeX, defaultGridSizeY, defaultMinHeight, defaultMaxHeight);
 	}
 	
@@ -43,11 +43,11 @@ public class HeightmapBuilder {
 		return result.set(Cz - Az, 0.6f * scale, Dz - Bz).normalize();
 	}
 	
-	public static Model modelFromMap(GL2 gl, Texture map, TextureData data, 
+	public static StaticModel modelFromMap(GL2 gl, Texture map, TextureData data, 
 			float gridSizeX, float gridSizeY,
 			float minHeight, float maxHeight) {
 		// process pixelz and generate geometry
-		Model result = new Model(gl, "heightmap");
+		StaticModel result = new StaticModel(gl, "heightmap");
 		result.setPointsPerFace(3); // Using triangles
 		
 		map.bind(gl);

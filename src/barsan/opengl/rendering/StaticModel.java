@@ -13,7 +13,7 @@ import barsan.opengl.resources.ModelLoader.Group;
 /**
  * @author Andrei Barsan
  */
-public class Model {
+public class StaticModel {
 	
 	public static final int COORDS_PER_POINT = 3;
 	public static final int T_COORDS_PER_POINT = 2;
@@ -35,7 +35,7 @@ public class Model {
 	/** Actual number of vertices per triangle. */
 	private int pointsPerFace;
 	
-	public Model(GL gl, String name) {
+	public StaticModel(GL gl, String name) {
 		this.gl = gl;
 		this.name = name;
 		this.pointsPerFace = 3; // default

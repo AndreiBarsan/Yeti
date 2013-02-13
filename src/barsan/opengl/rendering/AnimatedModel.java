@@ -12,9 +12,9 @@ public class AnimatedModel {
 		public final float duration;
 		
 		// The actual keyframe
-		public final Model model;
+		public final StaticModel model;
 		
-		public Frame(Model model, float duration) {
+		public Frame(StaticModel model, float duration) {
 			this.model = model;
 			this.duration = duration;
 		}

@@ -60,7 +60,7 @@ public class Renderer {
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
-	private Model screenQuad;
+	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
 			{

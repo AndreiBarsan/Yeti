@@ -9,7 +9,7 @@ public class AnimatedMaterial extends Material {
 		super(ResourceLoader.shader("animatedPhong"));
 	}
 
-	public void render(RendererState rendererState, Model model) {
+	public void render(RendererState rendererState, StaticModel model) {
 		super.render(rendererState, model);
 	}
 	

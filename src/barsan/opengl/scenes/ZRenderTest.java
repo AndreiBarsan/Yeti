@@ -10,7 +10,7 @@ import javax.media.opengl.GLAutoDrawable;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.Shader;
@@ -29,7 +29,7 @@ import com.jogamp.opengl.FBObject;
 public class ZRenderTest extends Scene {
 
 	StaticModelInstance mi;
-	private Model screenQuad;
+	private StaticModel screenQuad;
 	int regTexHandle = -1;
 	int texType = -1;
 	private FBObject fbo_tex;
@@ -68,7 +68,7 @@ public class ZRenderTest extends Scene {
 		
 		final int[] name = new int[] { -1 };
 		
-		screenQuad = new Model(gl, "derp");
+		screenQuad = new StaticModel(gl, "derp");
 		Face mainFace = new Face();
 		mainFace.points = new Vector3[] {
 				new Vector3(-1.0f, -1.0f, 0.0f),

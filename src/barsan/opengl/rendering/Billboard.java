@@ -88,7 +88,7 @@ public class Billboard extends StaticModelInstance {
 	
 	// TODO: use point sprites!
 	public Billboard(GL2 gl, Texture texture, Transform transform) {
-		super(new Model(gl, "billboard_tex{" + texture + "}"), new BillboardMaterial(AxisClamp.None), transform);
+		super(new StaticModel(gl, "billboard_tex{" + texture + "}"), new BillboardMaterial(AxisClamp.None), transform);
 		
 		getMaterial().setTexture(texture);
 		

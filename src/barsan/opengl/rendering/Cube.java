@@ -5,7 +5,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ModelLoader.Face;
 
-public class Cube extends Model {
+public class Cube extends StaticModel {
 	
 	public Cube(GL2 gl, float f) {
 		this(gl, f, false);
