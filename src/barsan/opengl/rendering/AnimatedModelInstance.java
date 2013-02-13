@@ -24,8 +24,11 @@ public class AnimatedModelInstance extends ModelInstance {
 		}
 		
 		activeMaterial.setup(rendererState, transformStack.result());
-	
+		
+		for(Renderable mi : children) {
+			mi.render(rendererState, transformStack);
+		}
+		
+		transformStack.pop();
 	}
-
-	
 }

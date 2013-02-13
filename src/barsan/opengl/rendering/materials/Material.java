@@ -113,8 +113,8 @@ public abstract class Material {
 		} else {
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 		}
-		gl.glDrawArrays(model.getFaceMode(), 0, model.getVertices().getSize());
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		
+		model.render();
 	}
 
 	protected void enableShader(RendererState rendererState) {

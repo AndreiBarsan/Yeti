@@ -3,6 +3,7 @@ package barsan.opengl.rendering;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Vector3;
+import barsan.opengl.resources.ModelLoader.Face;
 
 public class Cube extends Model {
 	

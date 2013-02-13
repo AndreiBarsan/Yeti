@@ -63,7 +63,7 @@ public class StaticModelInstance extends ModelInstance {
 		// holds the information that influence the corresponding object
 		activeMaterial.render(rendererState, model);
 		
-		// Ya need to disable glDisableVertexAttribArray cuz otherwise the
+		// Ya need to call glDisableVertexAttribArray cuz otherwise the
 		// fixed pipeline rendering gets messed up, yo!
 		// Mild bug ~1.5h 28.11.2012
 	

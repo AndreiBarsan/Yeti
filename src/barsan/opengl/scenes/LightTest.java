@@ -17,9 +17,9 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
@@ -29,6 +29,7 @@ import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.GammaCorrection;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.TextureComponent;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.DebugGUI;
@@ -71,7 +72,7 @@ public class LightTest extends Scene {
 		
 		shadowsEnabled = true;
 		
-		Model quad = Model.buildPlane(500.0f, 500.0f, 50, 50);
+		Model quad = ModelLoader.buildPlane(500.0f, 500.0f, 50, 50);
 		monkeyMat = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
 		fog = new Fog(Color.TRANSPARENTBLACK);

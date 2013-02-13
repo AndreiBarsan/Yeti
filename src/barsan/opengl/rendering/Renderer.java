@@ -20,6 +20,7 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
 import barsan.opengl.rendering.materials.DepthWriterPoint;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
@@ -151,7 +152,7 @@ public class Renderer {
 		
 		fbo_tex.unbind(gl);
 		
-		screenQuad = Model.buildQuad(2.0f, 2.0f, false);
+		screenQuad = ModelLoader.buildQuad(2.0f, 2.0f, false);
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();
@@ -495,17 +496,18 @@ public class Renderer {
 		
 		gl.glPushMatrix();
 		gl.glBegin(GL2.GL_LINES);
+			float len = 250.0f;
 			gl.glColor3f(1.0f, 0.0f, 0.0f);
-			gl.glVertex3f(-20.0f, 0.0f, 0.0f);
-			gl.glVertex3f(20.0f, 0.0f, 0.0f);
+			gl.glVertex3f(-len, 0.0f, 0.0f);
+			gl.glVertex3f(len, 0.0f, 0.0f);
 			
 			gl.glColor3f(0.0f, 1.0f, 0.0f);
-			gl.glVertex3f(0.0f, -20.0f, 0.0f);
-			gl.glVertex3f(0.0f,  20.0f, 0.0f);
+			gl.glVertex3f(0.0f, -len, 0.0f);
+			gl.glVertex3f(0.0f,  len, 0.0f);
 			
 			gl.glColor3f(0.0f, 0.0f, 1.0f);
-			gl.glVertex3f(0.0f, 0.0f, -20.0f);
-			gl.glVertex3f(0.0f, 0.0f,  20.0f);
+			gl.glVertex3f(0.0f, 0.0f, -len);
+			gl.glVertex3f(0.0f, 0.0f, len);
 		gl.glEnd();
 		gl.glPopMatrix();
 		

@@ -8,7 +8,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.Model.Face;
+import barsan.opengl.resources.ModelLoader.Face;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.FBObject;

@@ -9,8 +9,8 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model.Face;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.resources.ModelLoader.Face;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;

@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
@@ -55,7 +54,7 @@ public class ResourceLoader {
 
 	public static void loadObj(String name, String fileName) throws IOException {
 		Scanner s = new Scanner(new File(fileName));
-		models.put(name, Model.fromObj(Yeti.get().gl, s));
+		models.put(name, ModelLoader.fromObj(Yeti.get().gl, s));
 	}
 	
 	public static void loadShader(String name, String fileName)
