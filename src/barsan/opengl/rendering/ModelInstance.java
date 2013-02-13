@@ -14,10 +14,6 @@ public abstract class ModelInstance implements Renderable {
 	protected ModelInstance parent = null;
 	protected ArrayList<ModelInstance> children;
 
-	public ModelInstance() {
-		super();
-	}
-
 	@Override
 	public abstract void render(RendererState rendererState, Matrix4Stack transformStack);
 

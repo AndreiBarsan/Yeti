@@ -9,8 +9,9 @@ import barsan.opengl.rendering.materials.Material;
 
 public class StaticModelInstance extends ModelInstance {
 
-	protected Model model;
-	Material material;
+	/* pp */ Model model;
+	/* pp */ Material material;
+	
 	public StaticModelInstance(Model model) {
 		this(model, new BasicMaterial(), new Transform());
 	}
@@ -39,8 +40,6 @@ public class StaticModelInstance extends ModelInstance {
 		Material activeMaterial;
 		if(rendererState.hasForcedMaterial()) {
 			activeMaterial = rendererState.getForcedMaterial();
-		} else if (material == null) {
-			activeMaterial = rendererState.getDefaultMaterial();
 		} else {
 			activeMaterial = material;
 		}

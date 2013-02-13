@@ -30,8 +30,8 @@ public class RendererState {
 	private AmbientLight ambientLight;
 	private Fog fog; 
 	
-	private Material defaultMaterial = new BasicMaterial();
 	private Material forcedMaterial = null;
+	private AnimatedMaterial forcedAnimatedMaterial = null;
 	
 	private Camera camera;
 
@@ -121,10 +121,6 @@ public class RendererState {
 		this.ambientLight = ambientLight;
 	}
 
-	public void setDefaultMaterial(Material defaultMaterial) {
-		this.defaultMaterial = defaultMaterial;
-	}
-
 	public void setCamera(Camera camera) {
 		this.camera = camera;
 	}
@@ -135,10 +131,6 @@ public class RendererState {
 
 	public AmbientLight getAmbientLight() {
 		return ambientLight;
-	}
-
-	public Material getDefaultMaterial() {
-		return defaultMaterial;
 	}
 	
 	public Camera getCamera() {
@@ -159,6 +151,18 @@ public class RendererState {
 	
 	public boolean hasForcedMaterial() {
 		return forcedMaterial != null;
+	}
+	
+	public AnimatedMaterial getForcedAnimatedMaterial() {
+		return forcedAnimatedMaterial;
+	}
+	
+	public void forceAnimatedMaterial(AnimatedMaterial material) {
+		forcedAnimatedMaterial = material;
+	}
+	
+	public boolean hasForcedAnimatedMaterial() {
+		return forcedAnimatedMaterial != null;
 	}
 	
 	public Material getForcedMaterial() {
