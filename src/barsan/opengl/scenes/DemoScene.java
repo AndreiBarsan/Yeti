@@ -42,19 +42,19 @@ public class DemoScene extends Scene {
 		super.init(drawable);
 			
 		try {
-			//ResourceLoader.loadObj("asteroid10k", "res/models/asteroid10k.obj");
-			//ResourceLoader.loadObj("asteroid1k", "res/models/asteroid1k.obj");
-			ResourceLoader.loadObj("sphere", "res/models/prettysphere.obj");
-			//ResourceLoader.loadObj("bunny", "res/models/bunny.obj");
-			ResourceLoader.loadObj("texcube", "res/models/texcube.obj");
+			//ResourceLoader.loadObj("asteroid10k", "asteroid10k.obj");
+			//ResourceLoader.loadObj("asteroid1k", "asteroid1k.obj");
+			ResourceLoader.loadObj("sphere", "prettysphere.obj");
+			//ResourceLoader.loadObj("bunny", "bunny.obj");
+			ResourceLoader.loadObj("texcube", "texcube.obj");
 			
 			/*
-			ResourceLoader.loadTexture("heightmap01", "res/tex/height.png");
-			ResourceLoader.loadTexture("grass", "res/tex/grass01.jpg");
+			ResourceLoader.loadTexture("heightmap01", "height.png");
+			ResourceLoader.loadTexture("grass", "grass01.jpg");
 			*/
-			ResourceLoader.loadTexture("stone", "res/tex/stone03.jpg");
-			ResourceLoader.loadTexture("stone.bump", "res/tex/stone03.bump.jpg");
-			//ResourceLoader.loadTexture("billboard", "res/tex/tree_billboard.png");
+			ResourceLoader.loadTexture("stone", "stone03.jpg");
+			ResourceLoader.loadTexture("stone.bump", "stone03.bump.jpg");
+			//ResourceLoader.loadTexture("billboard", "tree_billboard.png");
 			
 			ResourceLoader.loadCubeTexture("skybox01", "jpg");
 			

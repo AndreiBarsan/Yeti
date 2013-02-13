@@ -32,11 +32,11 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.awt.GLJPanel;
 
 import barsan.opengl.editor.App;
-import barsan.opengl.flat.GameScene;
 import barsan.opengl.input.GlobalConsoleInput;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
+import barsan.opengl.scenes.GameScene;
 import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.Settings;

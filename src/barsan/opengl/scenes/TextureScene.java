@@ -32,12 +32,6 @@ public class TextureScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 
-		try {
-			ResourceLoader.loadShader("basicTex", "res/basicTex");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
 		shader = ResourceLoader.shader("basicTex");
 		
 		geometry = new VBO(GL2.GL_ARRAY_BUFFER, 3);
@@ -62,9 +56,7 @@ public class TextureScene extends Scene {
 		tindex = shader.getAttribLocation("vTexCoords");
 		
 		try {
-			// TODO: switch to manual texture loading here; performance reasons explained:
-			// http://stackoverflow.com/questions/1927419/loading-pngs-into-opengl-performance-issues-java-jogl-much-slower-than-c-sha
-			File in = new File("res/tex/rustedmetal.jpg");
+			File in = new File("rustedmetal.jpg");
 			texture = TextureIO.newTexture(in, true);
 			
 		} catch (IOException e) {

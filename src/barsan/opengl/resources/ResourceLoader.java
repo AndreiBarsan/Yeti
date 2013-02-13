@@ -12,6 +12,7 @@ import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.AnimatedModel;
 import barsan.opengl.rendering.CubeTexture;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
@@ -21,20 +22,25 @@ import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 
+//TODO: switch to manual texture loading here; performance reasons explained:
+//http://stackoverflow.com/questions/1927419/loading-pngs-into-opengl-performance-issues-java-jogl-much-slower-than-c-sha
 public class ResourceLoader {
 	
-	static final String EXT_VERTEX 		= ".vsh";
-	static final String EXT_FRAGMENT 	= ".fsh";
-	static final String EXT_GEOMETRY 	= ".gsh";
+	public static final String EXT_VERTEX 		= ".vsh";
+	public static final String EXT_FRAGMENT 	= ".fsh";
+	public static final String EXT_GEOMETRY 	= ".gsh";
 	
-	static final String RESBASE = "res/";
-	static final String SHADERBASE = "";
+	public static final String RESBASE = "res/";
+	public static final String SHADERBASE = "";
+	public static final String MODELBASE = "models/";
+	public static final String TEXTUREBASE = "tex/";
 	
 	static boolean initialized = false;
 	
 	static HashMap<String, Shader> shaders = new HashMap<>();
 	static HashMap<String, StaticModel> models = new HashMap<>();
 	static HashMap<String, CubeTexture> cubeTextures = new HashMap<>();
+	static HashMap<String, AnimatedModel> animatedModels = new HashMap<>();
 	
 	// TODO: refactor this away
 	static HashMap<String, Texture> textures = new HashMap<>();
@@ -54,18 +60,8 @@ public class ResourceLoader {
 	}
 
 	public static void loadObj(String name, String fileName) throws IOException {
-		Scanner s = new Scanner(new File(fileName));
+		Scanner s = new Scanner(new File(RESBASE + MODELBASE + fileName));
 		models.put(name, ModelLoader.fromObj(Yeti.get().gl, s));
-	}
-	
-	public static void loadShader(String name, String fileName)
-			throws FileNotFoundException {
-		
-		File vFile = new File(fileName + EXT_VERTEX);
-		File gFile = new File(fileName + EXT_GEOMETRY);
-		File fFile = new File(fileName + EXT_FRAGMENT);
-		
-		loadShader(name, vFile, fFile, gFile.exists() ? gFile : null);
 	}
 	
 	public static void loadCubeTexture(String name, String ext) {
@@ -74,7 +70,7 @@ public class ResourceLoader {
 		
 		try {
 			for(int i = 0; i < 6; i++) {
-				String fname = "res/tex/" + name + "_" + tex.names[i] + "." + ext;
+				String fname = RESBASE + TEXTUREBASE + name + "_" + tex.names[i] + "." + ext;
 				TextureData data = TextureIO.newTextureData(
 						glp,
 						new File(fname),
@@ -87,8 +83,8 @@ public class ResourceLoader {
 		
 		cubeTextures.put(name, tex);
 	}
-	
-	// clean version
+
+	// TODO: separately cache fragment, vertex and geometry shaders for cross-linking
 	public static void loadShader(String name) throws FileNotFoundException {
 		if(shaders.containsKey(name)) {
 			Yeti.warn("Warning, overwriting shader named: " + name);
@@ -139,55 +135,6 @@ public class ResourceLoader {
 			if(finput != null) finput.close();
 		}
 	}
-	
-	// TODO: separately cache fragment, vertex and geometry shaders for cross-linking
-	// TODO: only work with files in *this* method (keep all IO in the same place
-	// whenever possible!)
-	public static void loadShader(String name, File vertexFile, File fragmentFile, File geometryFile)
-			throws FileNotFoundException {
-		
-		assert false : "No longer used.";
-		
-		if(shaders.containsKey(name)) {
-			Yeti.warn("Warning, overwriting shader named: " + name);
-		}
-		
-		File vSource = vertexFile;
-		File fSource = fragmentFile;
-		File gSource = geometryFile;
-		
-		// Apply custom link rules for the vertex shader
-		if(linkRules.containsKey(vertexFile.getName())) {
-			String other = linkRules.get(vertexFile.getName());
-			String ext = other.substring(other.lastIndexOf('.'), other.length());
-			
-			if(ext.equals(EXT_FRAGMENT)) {
-				fSource = new File(other);
-			} else if(ext.equals(EXT_GEOMETRY)) {
-				gSource = new File(other);
-			}
-		}
-		
-		Scanner vinput = new Scanner(vSource);
-		Scanner finput = new Scanner(fSource);
-		
-		if(geometryFile != null) {
-			Scanner ginput = new Scanner(gSource);
-			shaders.put(name, new Shader(Yeti.get().gl, name,
-					vinput.useDelimiter("\\Z").next(),
-					finput.useDelimiter("\\Z").next(),
-					ginput.useDelimiter("\\Z").next()
-				));
-			ginput.close();			
-		} else {
-			shaders.put(name, new Shader(Yeti.get().gl, name,
-				vinput.useDelimiter("\\Z").next(),
-				finput.useDelimiter("\\Z").next()
-			));
-		}
-		vinput.close();
-		finput.close();
-	}
 
 	public static void loadTexture(String name, String fileName) throws GLException, IOException {
 		//Texture tex = TextureIO.newTexture(new File(fileName), false);
@@ -198,7 +145,8 @@ public class ResourceLoader {
 				null);
 		textureData.put(name, tdata);
 		
-		// BLOCKS
+		// Blocking call; could be improved; but that's something we'll do
+		// in the Future<T> :D
 		Texture tex = TextureIO.newTexture(tdata);
 		//tex.setTexParameteri(gl, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		textures.put(name, tex);

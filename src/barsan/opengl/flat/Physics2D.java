@@ -5,11 +5,12 @@ import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 
 public class Physics2D {
-	Rectangle bounds;
-	Vector2 velocity;
-	Vector2 acceleration;
-	Entity2D owner;
-	float friction;
+	public Rectangle bounds;
+	public Vector2 velocity;
+	public Vector2 acceleration;
+	public Entity2D owner;
+	public float friction;
+	
 	Physics2D lastContact;
 	
 	boolean onGround = false;

@@ -59,11 +59,11 @@ public class LightTest extends Scene {
 		super.init(drawable);
 		
 		try {
-			ResourceLoader.loadObj("monkey", "res/models/monkey.obj");
-			ResourceLoader.loadObj("sphere", "res/models/sphere.obj");
+			ResourceLoader.loadObj("monkey", "monkey.obj");
+			ResourceLoader.loadObj("sphere", "sphere.obj");
 			
-			ResourceLoader.loadTexture("floor", "res/tex/floor.jpg");
-			ResourceLoader.loadTexture("floor.bump", "res/tex/floor.bump.jpg");
+			ResourceLoader.loadTexture("floor", "floor.jpg");
+			ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 			
 			ResourceLoader.loadCubeTexture("test", "png");
 		} catch(IOException e) {

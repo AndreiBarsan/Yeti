@@ -42,7 +42,7 @@ public class ZRenderTest extends Scene {
 		super.init(drawable);
 		
 		try {
-			ResourceLoader.loadObj("monkey", "res/models/monkey.obj");
+			ResourceLoader.loadObj("monkey", "monkey.obj");
 		} catch(IOException e) {
 			Yeti.screwed("No resource no load.");
 		}

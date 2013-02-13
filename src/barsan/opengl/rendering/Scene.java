@@ -48,7 +48,7 @@ public class Scene implements GLEventListener {
 		camera = new PerspectiveCamera(Yeti.get().settings.width, Yeti.get().settings.height);
 		
 		try {
-			ResourceLoader.loadAllShaders("res");
+			ResourceLoader.loadAllShaders(ResourceLoader.RESBASE);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

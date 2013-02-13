@@ -1,4 +1,4 @@
-package barsan.opengl.flat;
+package barsan.opengl.scenes;
 
 import java.awt.RenderingHints.Key;
 import java.awt.event.KeyAdapter;
@@ -8,6 +8,9 @@ import java.io.IOException;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.flat.Block;
+import barsan.opengl.flat.Player;
+import barsan.opengl.flat.World2D;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
@@ -61,7 +64,7 @@ public class GameScene extends Scene {
 
 		try {
 			ResourceLoader.loadCubeTexture("skybox01", "jpg");
-			ResourceLoader.loadObj("planetHead", "res/models/planetHead.obj");
+			ResourceLoader.loadObj("planetHead", "planetHead.obj");
 		} catch(IOException e) {
 			Yeti.screwed("Resource loading failed", e);
 		}
@@ -72,7 +75,7 @@ public class GameScene extends Scene {
 		// Let's set up the level
 		world = new World2D(this);
 		world.addEntity(player = new Player(new Vector2(0.0f, 0.0f)));
-		player.graphics.getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
+		player.getGraphics().getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
 		
 		Yeti.get().addKeyListener(poller);
 		
@@ -87,7 +90,7 @@ public class GameScene extends Scene {
 		world.update(getDelta());
 		super.display(drawable);
 		
-		player.physics.velocity.x = 12.0f * poller.move;
+		player.getPhysics2d().velocity.x = 12.0f * poller.move;
 		if(poller.jmp) {
 			player.jump();
 		}

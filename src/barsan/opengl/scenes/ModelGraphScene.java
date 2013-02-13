@@ -38,7 +38,7 @@ public class ModelGraphScene extends Scene {
 		GL2 gl = Yeti.get().gl.getGL2();
 		
 		try {
-			ResourceLoader.loadObj("bunny", "res/models/bunny.obj");
+			ResourceLoader.loadObj("bunny", "bunny.obj");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -36,4 +36,12 @@ public class Entity2D {
 						physics.bounds.y + graphicsOffset.y,
 						graphicsOffset.z));
 	}
+	
+	public ModelInstance getGraphics() {
+		return graphics;
+	}
+	
+	public Physics2D getPhysics2d() {
+		return physics;
+	}
 }
