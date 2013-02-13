@@ -1,8 +1,12 @@
 package barsan.opengl.rendering;
 
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.materials.LightComponent;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.ShadowReceiver;
+import barsan.opengl.rendering.materials.WorldTransformNormals;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.Color;
 
 public class AnimatedMaterial extends Material {
 	
@@ -21,19 +25,33 @@ public class AnimatedMaterial extends Material {
 	
 	public AnimatedMaterial() {
 		super(ResourceLoader.shader("animatedPhong"));
+		
+		positionStartIndex = shader.getAttribLocation(A_POSITION_START);
+		positionEndIndex = shader.getAttribLocation(A_POSITION_END);
+		normalStartIndex = shader.getAttribLocation(A_NORMAL_START);
+		normalEndIndex = shader.getAttribLocation(A_NORMAL_END);
+		
+		// Updated name
+		texcoordIndex = shader.getAttribLocation(A_TEXCOORD);
+		
+		addComponent(new WorldTransformNormals());
+		addComponent(new LightComponent());
+		addComponent(new ShadowReceiver());
+		
+		setAmbient(Color.WHITE.copy());
+		setSpecular(Color.WHITE.copy());
+		setDiffuse(Color.WHITE.copy());
 	}
 	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		super.setup(rendererState, modelMatrix);
-	}
-
-	/*
-	public void render(RendererState rendererState, AnimatedModel model, 
-			int f1, int f2, float tweenIndex) {
 		
-	}*/
-	
+		shader.setUVector4f("matAmbient", ambient.getData());
+		shader.setUVector4f("matDiffuse", diffuse.getData());
+		shader.setUVector4f("matSpecular", specular.getData());
+		shader.setU1i("shininess", shininess);
+	}
 	
 	@Override
 	public void render(RendererState rendererState, Model model) {

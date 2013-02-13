@@ -48,15 +48,11 @@ public class BasicMaterial extends Material {
 	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
-		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
-		// set a shader... :|
-		enableShader(rendererState);
+		super.setup(rendererState, modelMatrix);
 		
 		shader.setUVector4f("matAmbient", ambient.getData());
 		shader.setUVector4f("matDiffuse", diffuse.getData());
 		shader.setUVector4f("matSpecular", specular.getData());
 		shader.setU1i("shininess", shininess);
-		
-		super.setup(rendererState, modelMatrix);
 	}
 }

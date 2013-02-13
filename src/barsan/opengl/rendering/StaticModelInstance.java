@@ -30,7 +30,6 @@ public class StaticModelInstance extends ModelInstance {
 		this.localTransform = localTransform;
 
 		castsShadows = true;
-		children = new ArrayList<>();
 	}
 	
 	@Override

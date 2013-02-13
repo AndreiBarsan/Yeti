@@ -1,7 +1,6 @@
 package barsan.opengl.scenes;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.media.opengl.GL2;

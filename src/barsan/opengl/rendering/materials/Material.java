@@ -25,7 +25,7 @@ import com.jogamp.opengl.util.texture.Texture;
  */
 public abstract class Material {
 	
-	private int positionIndex, normalIndex, texcoordIndex, tangentIndex, bitangentIndex;
+	protected int positionIndex, normalIndex, texcoordIndex, tangentIndex, bitangentIndex;
 	protected Shader shader;
 	protected Color ambient, diffuse, specular;
 	
@@ -71,9 +71,12 @@ public abstract class Material {
 	 * @param modelMatrix	Model transform of the current model instance.
 	 */
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
+		// Silly bug: 2 hours wasted 22.11.2012 because I forgot to actually
+		// set a shader... :|
 		enableShader(rendererState);
+		
 		/*
-		 * All unbound textures now default to this. As long as no CUBE MAPS
+		 * All unbound textures now default to this (index 0). As long as no CUBE MAPS
 		 * are left unbound all should be ok. Bug status: will not fix as it is.
 		 * It will automagically be resolved by dynamic shader generation.
 		 */

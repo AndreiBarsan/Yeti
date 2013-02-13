@@ -21,6 +21,9 @@ public class Physics2D {
 	/** Am I affected by gravity? */
 	boolean hasWeight;
 	
+	float maxXSpeed = 20.0f;
+	float maxYSpeed = 40.0f;
+	
 	/**
 	 * Creates a weightless, non-solid entity. Useful for f
 	 * @param world
@@ -37,6 +40,7 @@ public class Physics2D {
 		this.hasWeight = hasWeight;
 		this.velocity = new Vector2();
 		this.acceleration = new Vector2();
+		this.friction = 0.0f;
 	}
 	
 	public boolean collidesWith(Physics2D other) {
@@ -70,17 +74,26 @@ public class Physics2D {
 		return null != lastContact;
 	}
 	
-	void jump() {
+	void jump(float force) {
 		if(onGround) {
-			velocity.y = 35.0f;
+			velocity.y += force;
 		}
 	}
 	
 	void update(float delta) {
 		World2D w = owner.world;
+		velocity.add(acceleration);
 		Vector2 deltaMove = new Vector2(velocity);
-		deltaMove.add(acceleration);
-		deltaMove.applyFriction(friction);
+		
+		if( friction > 0.0f && (onGround || !hasWeight)) {
+			velocity.applyFriction(friction);
+		}
+		
+		if(velocity.x < -maxXSpeed) {
+			velocity.x = -maxXSpeed;
+		} else if(velocity.x > maxXSpeed) {
+			velocity.x = maxXSpeed;
+		}
 		
 		if(hasWeight) {
 			if(solid) {
@@ -104,8 +117,8 @@ public class Physics2D {
 						System.out.println("Just jumped!");
 					}
 					velocity.y -= w.getGravity();
-					if(velocity.y < -25.0f) {
-						velocity.y = -25.0f;
+					if(velocity.y < -maxYSpeed) {
+						velocity.y = -maxYSpeed;
 					}
 				}
 				

@@ -3,6 +3,10 @@ package barsan.opengl.flat;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.AnimatedMaterial;
+import barsan.opengl.rendering.AnimatedModel;
+import barsan.opengl.rendering.AnimatedModelInstance;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.StaticModelInstance;
@@ -15,14 +19,17 @@ public class Entity2D {
 	
 	protected Vector3 graphicsOffset = new Vector3();
 	
-	public Entity2D(Vector2 position, StaticModel model) {
-		physics = new Physics2D(this, position);
-		graphics = new StaticModelInstance(model);
+	public Entity2D(Vector2 position, Model model) {
+		this(new Rectangle(position.x, position.y, 1, 1), false, false, model);
 	}
 	
-	public Entity2D(Rectangle bounds, boolean solid, boolean hasWeight, StaticModel model) {
+	public Entity2D(Rectangle bounds, boolean solid, boolean hasWeight, Model model) {
 		physics = new Physics2D(this, bounds, solid, hasWeight);
-		graphics = new StaticModelInstance(model);
+		if(model instanceof StaticModel) {
+			graphics = new StaticModelInstance((StaticModel)model);
+		} else {
+			graphics = new AnimatedModelInstance((AnimatedModel)model, new AnimatedMaterial());
+		}
 	}
 	
 	public void init(World2D world) {

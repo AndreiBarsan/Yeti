@@ -4,19 +4,24 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.AnimatedModel;
+import barsan.opengl.rendering.AnimatedModel.Frame;
 import barsan.opengl.rendering.CubeTexture;
 import barsan.opengl.rendering.Model;
-import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.StaticModel;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -59,9 +64,41 @@ public class ResourceLoader {
 		initialized = true;
 	}
 
-	public static void loadObj(String name, String fileName) throws IOException {
-		Scanner s = new Scanner(new File(RESBASE + MODELBASE + fileName));
-		models.put(name, ModelLoader.fromObj(Yeti.get().gl, s));
+	public static void loadObj(String name, String fileName) {
+		try(Scanner s = new Scanner(new File(RESBASE + MODELBASE + fileName))) {
+			models.put(name, ModelLoader.fromObj(Yeti.get().gl, s));
+		} catch (FileNotFoundException e) {
+			Yeti.screwed("Failed to load static Wavefront model.", e);
+		}
+	}
+	
+	public static void loadKeyFrameAnimatedObj(String name, String folderName) {
+		try {
+			File folder = new File(RESBASE + MODELBASE + folderName);
+			if(!folder.isDirectory()) throw new IOException("Must specify a directory");
+			
+			GL2 gl = Yeti.get().gl;
+			ArrayList<Frame> frames = new ArrayList<>();
+			
+			File[] files = folder.listFiles();
+			Arrays.sort(files, new Comparator<File>() {
+				public int compare(File o1, File o2) {
+					String o1n = o1.getName();
+					String o2n = o2.getName();
+					Integer i1 = Integer.valueOf(o1n.substring(o1n.indexOf('_') + 1, o1n.indexOf('.')));
+					Integer i2 = Integer.valueOf(o2n.substring(o1n.indexOf('_') + 1, o2n.indexOf('.')));
+					return i1.compareTo(i2);
+				}
+			});
+			
+			for(File entry : files) {
+				frames.add(new Frame(ModelLoader.fromObj(gl, new Scanner(entry)), 0.1f));
+			}
+			
+			animatedModels.put(name, new AnimatedModel(name, frames));
+		} catch (IOException e) {
+			Yeti.screwed("Failed to load animated Wavefront model.", e);
+		}
 	}
 	
 	public static void loadCubeTexture(String name, String ext) {
@@ -97,11 +134,9 @@ public class ResourceLoader {
 		
 		// Only branch based on differend vertex shaders (since that's what we
 		// also base our read all function on).
-		System.out.println(baseVName);
 		if(linkRules.containsKey(baseVName)) {
 			String other = linkRules.get(baseVName);
 			String ext = other.substring(other.lastIndexOf('.'), other.length());
-			System.out.println(ext);
 			if(ext.equals(EXT_FRAGMENT)) {
 				baseFName = other;
 			} else if(ext.equals(EXT_GEOMETRY)) {
@@ -140,7 +175,7 @@ public class ResourceLoader {
 		//Texture tex = TextureIO.newTexture(new File(fileName), false);
 		TextureData tdata = TextureIO.newTextureData(
 				Yeti.get().gl.getGLProfile(),
-				new File(fileName),
+				new File(RESBASE + TEXTUREBASE + fileName),
 				true, 
 				null);
 		textureData.put(name, tdata);
@@ -148,7 +183,6 @@ public class ResourceLoader {
 		// Blocking call; could be improved; but that's something we'll do
 		// in the Future<T> :D
 		Texture tex = TextureIO.newTexture(tdata);
-		//tex.setTexParameteri(gl, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_LINEAR);
 		textures.put(name, tex);
 	}
 	
@@ -166,8 +200,6 @@ public class ResourceLoader {
 		File[] shaderFiles = folder.listFiles(filter);
 		for(File vf : shaderFiles) {
 			String name = vf.getName().substring(0, vf.getName().lastIndexOf('.'));
-			//File ff = new File(folderName + "/" + name + EXT_FRAGMENT);
-			//File gf = new File(folderName + "/" + name + EXT_GEOMETRY);
 			loadShader(name);
 		}
 	}
@@ -178,6 +210,10 @@ public class ResourceLoader {
 
 	public static StaticModel model(String name) {
 		return models.get(name);
+	}
+	
+	public static AnimatedModel animatedModel(String name) {
+		return animatedModels.get(name);
 	}
 	
 	public static CubeTexture cubeTexture(String name) {
@@ -196,6 +232,11 @@ public class ResourceLoader {
 			m.dispose();		
 		}
 		models.clear();
+		
+		for(AnimatedModel am : animatedModels.values()) {
+			am.dispose();
+		}
+		animatedModels.clear();
 		
 		for(CubeTexture ct : cubeTextures.values()) {
 			ct.dispose(gl);

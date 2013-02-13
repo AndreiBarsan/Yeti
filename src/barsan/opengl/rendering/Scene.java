@@ -111,6 +111,10 @@ public class Scene implements GLEventListener {
 		modelInstances.add(modelInstance);
 	}
 	
+	public void removeModelInstance(ModelInstance modelInstance) {
+		modelInstances.remove(modelInstance);
+	}
+	
 	public void registerInputSources(Yeti yeti) {
 		// Handle camera input
 		cameraInput = new CameraInput(camera);

@@ -262,6 +262,7 @@ void main() {
 	}
 	
 	//vFragColor -= vFragColor;
+	//vFragColor += vec4(visibility);
 	//vFragColor += texture(cubeShadowMap, vec3(1.0f, 2.3f, 1.0f));
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);

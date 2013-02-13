@@ -13,7 +13,7 @@ public class World2D {
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
 	private List<Entity2D> entities = new ArrayList<>();
-	private float gravity = 1.50f;
+	private float gravity = 2.75f;
 	
 	
 	public World2D(Scene scene) {

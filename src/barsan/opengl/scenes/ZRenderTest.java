@@ -1,7 +1,5 @@
 package barsan.opengl.scenes;
 
-import java.io.IOException;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
@@ -10,10 +8,10 @@ import javax.media.opengl.GLAutoDrawable;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -41,11 +39,7 @@ public class ZRenderTest extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		try {
-			ResourceLoader.loadObj("monkey", "monkey.obj");
-		} catch(IOException e) {
-			Yeti.screwed("No resource no load.");
-		}
+		ResourceLoader.loadObj("monkey", "monkey.obj");
 		
 		rs = new RendererState(renderer, Yeti.get().gl);
 		

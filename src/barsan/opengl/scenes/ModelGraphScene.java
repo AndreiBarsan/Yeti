@@ -1,17 +1,14 @@
 package barsan.opengl.scenes;
 
-import java.io.IOException;
-
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cube;
-import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -37,11 +34,7 @@ public class ModelGraphScene extends Scene {
 		
 		GL2 gl = Yeti.get().gl.getGL2();
 		
-		try {
-			ResourceLoader.loadObj("bunny", "bunny.obj");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		ResourceLoader.loadObj("bunny", "bunny.obj");
 		
 		s1 = new StaticModelInstance(
 				new Cube(gl, 1.0f),

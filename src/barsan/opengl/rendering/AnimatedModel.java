@@ -2,9 +2,14 @@ package barsan.opengl.rendering;
 
 import java.util.List;
 
+import javax.media.opengl.GL2;
+
+import barsan.opengl.Yeti;
+import barsan.opengl.resources.ModelLoader.Face;
+
 public class AnimatedModel extends Model {
 	
-	class Frame {
+	public static class Frame {
 		// interpolations would also go here in the future
 		
 		// How long does this frame influence the animation
@@ -23,7 +28,10 @@ public class AnimatedModel extends Model {
 	private final List<Frame> frames;
 		
 	public AnimatedModel(String name, List<Frame> frames) {
+		assert frames.size() > 0 : "Cannot have an animation with no frames!";
 		this.frames = frames;
+		
+		setPointsPerFace(frames.get(0).model.getPointsPerFace());
 	}
 	
 	public void dispose() {
@@ -50,12 +58,19 @@ public class AnimatedModel extends Model {
 
 	@Override
 	public void cleanUp(int... indices) {
-		// TODO: maybe just do cleanUp in super?
+		// TODO: unify
+		GL2 gl = Yeti.get().gl;
+		for(int el : indices) {
+			if(el >= 0) {
+				//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+				gl.glDisableVertexAttribArray(el);
+			}
+		}
 	}
 
 	/**
 	 * Just return the texture coordinates of the first frame. After the system 
-	 * is working, this will be made so there will only be one set of texture
+	 * is working, this will b)e made so there will only be one set of texture
 	 * coords per animation, not per frame.
 	 */
 	@Override

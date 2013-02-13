@@ -3,20 +3,16 @@ package barsan.opengl.scenes;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.IOException;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cylinder;
-import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.materials.BasicMaterial;
-import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.TextHelper;
 

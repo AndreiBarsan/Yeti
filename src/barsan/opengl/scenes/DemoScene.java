@@ -11,10 +11,10 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.ModelInstance;
-import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.PerspectiveCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
@@ -106,20 +106,18 @@ public class DemoScene extends Scene {
 		modelInstances.add(daddy = new StaticModelInstance(ResourceLoader.model("texcube"), 
 				bumpMat, tct));
 		
-		/*
-		daddy.addChild(new ModelInstance(ResourceLoader.model("sphere"),
+
+		daddy.addChild(new StaticModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(10.0f, 0.5f, 0.0f)));
 		
 		ModelInstance m1;
-		daddy.addChild(m1 = new ModelInstance(ResourceLoader.model("sphere"),
+		daddy.addChild(m1 = new StaticModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(-10.0f, 0.5f, 0.0f)));
 		
-		m1.addChild(m2 = new ModelInstance(ResourceLoader.model("sphere"),
+		m1.addChild(m2 = new StaticModelInstance(ResourceLoader.model("sphere"),
 				bumpMat, new Transform().updateTranslate(-2.0f, 0.5f, 0.0f).updateScale(0.33f)));
-		*/
 		
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
-		//camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		((PerspectiveCamera)camera).setFOV(90.0f);
 		
 		lights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
@@ -129,7 +127,6 @@ public class DemoScene extends Scene {
 		fog = new Fog(new Color(0.0f, 0.0f, 0.0f, 0.0f));
 		fog.fadeCamera(camera);
 		fogEnabled = true;
-		//Yeti.get().gl.glClearColor(0.1f, 0.33f, 0.2f, 1.0f);
 		
 		gui = new DebugGUI(drawable.getAnimator(), getCamera());
 		
@@ -156,9 +153,9 @@ public class DemoScene extends Scene {
 		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);
 		
-		//m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
+		m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
 		float orbit = 2.0f;
-		//m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
+		m2.getTransform().updateTranslate((float)Math.cos(a / 3) * orbit, 0.0f, (float)Math.sin(a / 3) * orbit);
 		
 		// Calls the renderer
 		super.display(drawable);

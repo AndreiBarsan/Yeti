@@ -12,7 +12,7 @@ public abstract class ModelInstance implements Renderable {
 	protected Transform localTransform;
 	protected boolean castsShadows;
 	protected ModelInstance parent = null;
-	protected ArrayList<ModelInstance> children;
+	protected ArrayList<ModelInstance> children = new ArrayList<>();
 
 	@Override
 	public abstract void render(RendererState rendererState, Matrix4Stack transformStack);

@@ -62,12 +62,10 @@ public class GameScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 
-		try {
-			ResourceLoader.loadCubeTexture("skybox01", "jpg");
-			ResourceLoader.loadObj("planetHead", "planetHead.obj");
-		} catch(IOException e) {
-			Yeti.screwed("Resource loading failed", e);
-		}
+		ResourceLoader.loadCubeTexture("skybox01", "jpg");
+		ResourceLoader.loadObj("planetHead", "planetHead.obj");
+		//ResourceLoader.loadObj("planetHead", "planetHead/exp_18.obj");
+		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		shadowsEnabled = true;
@@ -90,7 +88,12 @@ public class GameScene extends Scene {
 		world.update(getDelta());
 		super.display(drawable);
 		
-		player.getPhysics2d().velocity.x = 12.0f * poller.move;
+		player.getPhysics2d().acceleration.x = 6.0f * poller.move;
+		if(poller.move != 0) {
+			player.wantsToWalk = true;
+		} else {
+			player.wantsToWalk = false;
+		}
 		if(poller.jmp) {
 			player.jump();
 		}

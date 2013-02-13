@@ -24,13 +24,13 @@ uniform mat4 	mvpMatrixShadows;
 
 // 0 ... 1, where 0 is the start position and 1 the end position
 uniform float animationIndex;  
-in layout(location = 0) vec4 inPositionStart;
-in layout(location = 1) vec3 inNormalStart;
+in vec4 inPositionStart;
+in vec3 inNormalStart;
 
-in layout(location = 2) vec4 inPositionEnd;
-in layout(location = 3) vec3 inNormalEnd;
+in vec4 inPositionEnd;
+in vec3 inNormalEnd;
 
-in layout(location = 4) vec2 inTexCoords;
+in vec2 inTexCoords;
 
 
 smooth out vec3 	normal_ec;
@@ -73,7 +73,6 @@ void main(void) {
 		// Point light
 		lightDir = tLightPos - vPosition3;
 	}
-	
 	
 	if(useTexture) {
 		texCoords = inTexCoords;

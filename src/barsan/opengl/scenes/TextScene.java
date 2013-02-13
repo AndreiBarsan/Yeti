@@ -3,7 +3,6 @@ package barsan.opengl.scenes;
 import java.awt.Font;
 
 import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
