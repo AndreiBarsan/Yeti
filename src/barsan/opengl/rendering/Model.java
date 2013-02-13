@@ -11,9 +11,6 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
 
-// TODO: IMPORTANT! Interactively add to VBO for faster building!!!
-// TODO: fail on freeform geomerty
-// TODO: future - load & render freeform stuff
 /**
  * @author Andrei Barsan
  */

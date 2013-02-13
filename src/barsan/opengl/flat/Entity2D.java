@@ -12,6 +12,8 @@ public class Entity2D {
 	Physics2D physics;
 	World2D world;
 	
+	protected Vector3 graphicsOffset = new Vector3();
+	
 	public Entity2D(Vector2 position, Model model) {
 		physics = new Physics2D(this, position);
 		graphics = new ModelInstance(model);
@@ -29,6 +31,8 @@ public class Entity2D {
 	public void update(float delta) {
 		physics.update(delta);
 		graphics.getTransform().updateTranslate(
-				new Vector3(physics.bounds.x, physics.bounds.y, 0.0f));
+				new Vector3(physics.bounds.x + graphicsOffset.x,
+						physics.bounds.y + graphicsOffset.y,
+						graphicsOffset.z));
 	}
 }

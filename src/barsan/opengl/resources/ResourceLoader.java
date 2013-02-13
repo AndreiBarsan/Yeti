@@ -27,6 +27,9 @@ public class ResourceLoader {
 	static final String EXT_FRAGMENT 	= ".fsh";
 	static final String EXT_GEOMETRY 	= ".gsh";
 	
+	static final String RESBASE = "res/";
+	static final String SHADERBASE = "";
+	
 	static boolean initialized = false;
 	
 	static HashMap<String, Shader> shaders = new HashMap<>();
@@ -36,6 +39,14 @@ public class ResourceLoader {
 	// TODO: refactor this away
 	static HashMap<String, Texture> textures = new HashMap<>();
 	static HashMap<String, TextureData> textureData = new HashMap<>();
+	
+	static HashMap<String, String> linkRules = new HashMap<>();
+	static {
+		// Custom linking rules (e.g. in the case of the animated phong, there
+		// are only a few differences in the vertex shader but both *share* the
+		// same fragment shader.
+		linkRules.put("animatedPhong.vsh", "phong.fsh");
+	}
 	
 	public static void init() {
 		Yeti.debug("Resource loader initialized.");
@@ -76,20 +87,92 @@ public class ResourceLoader {
 		
 		cubeTextures.put(name, tex);
 	}
-
 	
+	// clean version
+	public static void loadShader(String name) throws FileNotFoundException {
+		if(shaders.containsKey(name)) {
+			Yeti.warn("Warning, overwriting shader named: " + name);
+		}
+		
+		String baseFolder = RESBASE + SHADERBASE;
+		String baseVName = name + EXT_VERTEX;
+		String baseGName = name + EXT_GEOMETRY;
+		String baseFName = name + EXT_FRAGMENT;
+		
+		// Only branch based on differend vertex shaders (since that's what we
+		// also base our read all function on).
+		System.out.println(baseVName);
+		if(linkRules.containsKey(baseVName)) {
+			String other = linkRules.get(baseVName);
+			String ext = other.substring(other.lastIndexOf('.'), other.length());
+			System.out.println(ext);
+			if(ext.equals(EXT_FRAGMENT)) {
+				baseFName = other;
+			} else if(ext.equals(EXT_GEOMETRY)) {
+				baseGName = other;
+			}
+		}
+		
+		File vFile = new File(baseFolder + baseVName);
+		File gFile = new File(baseFolder + baseGName);
+		File fFile = new File(baseFolder + baseFName);
+		
+		if(!vFile.exists() || !fFile.exists()) {
+			Yeti.screwed("Incomplete shader [" + name + "]. It needs both a vertex" +
+					"and a fragment shader. Did you forget a custom linking rule?");
+		}
+		
+		Scanner vinput = null, finput = null, ginput = null;
+		try{
+			vinput = new Scanner(vFile);
+			finput = new Scanner(fFile);
+			if(gFile.exists()) ginput = new Scanner(gFile);
+			
+			shaders.put(name, new Shader(Yeti.get().gl, name,
+					vinput.useDelimiter("\\Z").next(),
+					finput.useDelimiter("\\Z").next(),
+					ginput != null ? ginput.useDelimiter("\\Z").next() : null
+				));
+		} finally {
+			if(vinput != null) vinput.close();
+			if(ginput != null) ginput.close();
+			if(finput != null) finput.close();
+		}
+	}
+	
+	// TODO: separately cache fragment, vertex and geometry shaders for cross-linking
+	// TODO: only work with files in *this* method (keep all IO in the same place
+	// whenever possible!)
 	public static void loadShader(String name, File vertexFile, File fragmentFile, File geometryFile)
 			throws FileNotFoundException {
+		
+		assert false : "No longer used.";
 		
 		if(shaders.containsKey(name)) {
 			Yeti.warn("Warning, overwriting shader named: " + name);
 		}
 		
-		Scanner vinput = new Scanner(vertexFile);
-		Scanner finput = new Scanner(fragmentFile);
-
+		File vSource = vertexFile;
+		File fSource = fragmentFile;
+		File gSource = geometryFile;
+		
+		// Apply custom link rules for the vertex shader
+		if(linkRules.containsKey(vertexFile.getName())) {
+			String other = linkRules.get(vertexFile.getName());
+			String ext = other.substring(other.lastIndexOf('.'), other.length());
+			
+			if(ext.equals(EXT_FRAGMENT)) {
+				fSource = new File(other);
+			} else if(ext.equals(EXT_GEOMETRY)) {
+				gSource = new File(other);
+			}
+		}
+		
+		Scanner vinput = new Scanner(vSource);
+		Scanner finput = new Scanner(fSource);
+		
 		if(geometryFile != null) {
-			Scanner ginput = new Scanner(geometryFile);
+			Scanner ginput = new Scanner(gSource);
 			shaders.put(name, new Shader(Yeti.get().gl, name,
 					vinput.useDelimiter("\\Z").next(),
 					finput.useDelimiter("\\Z").next(),
@@ -135,9 +218,9 @@ public class ResourceLoader {
 		File[] shaderFiles = folder.listFiles(filter);
 		for(File vf : shaderFiles) {
 			String name = vf.getName().substring(0, vf.getName().lastIndexOf('.'));
-			File ff = new File(folderName + "/" + name + EXT_FRAGMENT);
-			File gf = new File(folderName + "/" + name + EXT_GEOMETRY);
-			loadShader(name, vf, ff, gf.exists() ? gf : null);
+			//File ff = new File(folderName + "/" + name + EXT_FRAGMENT);
+			//File gf = new File(folderName + "/" + name + EXT_GEOMETRY);
+			loadShader(name);
 		}
 	}
 	

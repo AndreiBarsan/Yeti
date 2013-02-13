@@ -19,7 +19,7 @@ public class Block extends Entity2D {
 		graphics.getTransform().updateScale(physics.bounds.width, physics.bounds.height, 4.0f);
 		graphics.getTransform().updateTranslate(new Vector3(
 				physics.bounds.x + physics.bounds.width / 2,
-				physics.bounds.y + physics.bounds.height, 0.0f));
+				physics.bounds.y + physics.bounds.height / 2, 0.0f));
 	}
 
 }

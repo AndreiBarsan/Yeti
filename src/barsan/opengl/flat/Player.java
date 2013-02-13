@@ -7,7 +7,9 @@ import barsan.opengl.resources.ResourceLoader;
 public class Player extends Entity2D {
 
 	public Player(Vector2 position) {
-		super(new Rectangle(position.x, position.y, 1, 2), true, true, ResourceLoader.model("planetHead"));
+		super(new Rectangle(position.x, position.y, 0.9f, 1.5f), true, true, ResourceLoader.model("planetHead"));
+		
+		graphicsOffset.y = -0.50f;
 	}
 	
 	@Override

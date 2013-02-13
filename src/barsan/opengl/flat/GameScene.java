@@ -40,9 +40,13 @@ public class GameScene extends Scene {
 		@Override
 		public void keyReleased(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_LEFT) {
-				move = 0.0f;
+				if(move == -1.0f) {
+					move = 0.0f;
+				}
 			} else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				move = 0.0f;
+				if(move == 1.0f) {
+					move = 0.0f;
+				}
 			} else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 				jmp = false;
 			}
@@ -83,7 +87,7 @@ public class GameScene extends Scene {
 		world.update(getDelta());
 		super.display(drawable);
 		
-		player.physics.velocity.x = 8.0f * poller.move;
+		player.physics.velocity.x = 12.0f * poller.move;
 		if(poller.jmp) {
 			player.jump();
 		}

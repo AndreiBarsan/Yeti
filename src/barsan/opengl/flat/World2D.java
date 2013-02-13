@@ -13,7 +13,7 @@ public class World2D {
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
 	private List<Entity2D> entities = new ArrayList<>();
-	private float gravity = 1.0f;
+	private float gravity = 1.50f;
 	
 	
 	public World2D(Scene scene) {
@@ -24,6 +24,9 @@ public class World2D {
 	public void update(float delta) {
 		for(Entity2D e : entities) {
 			e.update(delta);
+			// Maybe e could return a boolean showing whether it changed its 
+			// position? Could save a lot of unnecessary updates of the qt.
+			// quadTree.rePosition(e);
 		}
 	}
 	

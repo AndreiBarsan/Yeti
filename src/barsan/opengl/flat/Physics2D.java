@@ -71,7 +71,7 @@ public class Physics2D {
 	
 	void jump() {
 		if(onGround) {
-			velocity.y = 40.0f;
+			velocity.y = 35.0f;
 		}
 	}
 	
@@ -94,11 +94,14 @@ public class Physics2D {
 							w.moveToContact(this, lastContact);
 							velocity.y = 0.0f;
 						} else {
-							System.out.println("Don't mind me, jumping through platform!");
+							//System.out.println("Don't mind me, jumping through platform!");
 							nowOnGround = false;
 						}
 					}					
 				} else {
+					if(wasOnGround) {
+						System.out.println("Just jumped!");
+					}
 					velocity.y -= w.getGravity();
 					if(velocity.y < -25.0f) {
 						velocity.y = -25.0f;

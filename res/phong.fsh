@@ -68,9 +68,9 @@ uniform float 	invGamma;
 uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
 
-smooth in vec3 	vVaryingNormal;
-smooth in vec3 	vVaryingLightDir;
-smooth in vec2 	vVaryingTexCoords;
+smooth in vec3 	normal_ec;
+smooth in vec3 	lightDir;
+smooth in vec2 	texCoords;
 smooth in float fogFactor;
 
 smooth in vec4 	vertPos_wc;
@@ -207,14 +207,14 @@ void main() {
 	float at, af;
 
 	if(useTexture) {
-		texel = texture(colorMap, vVaryingTexCoords); 
+		texel = texture(colorMap, texCoords); 
 	} 
 	
 	ct = texel.rgb;
 	at = texel.a;
 
-	vec3 nNormal = normalize(vVaryingNormal);
-	vec3 nLightDir = normalize(vVaryingLightDir);
+	vec3 nNormal = normalize(normal_ec);
+	vec3 nLightDir = normalize(lightDir);
 	float NL = dot(nNormal, nLightDir);
 	
 	float visibility = 1.0f;
@@ -228,7 +228,7 @@ void main() {
 	}
 	
 	if(useBump) {
-		vec3 vBump = 2.0f * texture2D(normalMap, vVaryingTexCoords).rgb - 1.0f;
+		vec3 vBump = 2.0f * texture2D(normalMap, texCoords).rgb - 1.0f;
 		vBump = normalize(mNTB * vBump);
 		nNormal = vBump;
 	}

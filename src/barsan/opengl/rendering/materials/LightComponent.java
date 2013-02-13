@@ -22,12 +22,12 @@ public class LightComponent implements MaterialComponent {
 		if(light.getType() == LightType.Point || light.getType() == LightType.Spot) {
 			Vector3 lp = ((PointLight)light).getPosition();
 			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 1.0f };
-			m.shader.setUVector4f("vLightPosition", buff4f);
+			m.shader.setUVector4f("lightPosition", buff4f);
 		} else {
 			// Directional light
 			Vector3 lp = ((DirectionalLight)light).getDirection();
 			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 0.0f };
-			m.shader.setUVector4f("vLightPosition", buff4f);
+			m.shader.setUVector4f("lightPosition", buff4f);
 		}
 		
 		m.shader.setUVector4f("globalAmbient", ambientLight.getColor().getData());
