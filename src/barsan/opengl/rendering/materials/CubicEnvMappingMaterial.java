@@ -4,12 +4,10 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
-import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.math.Quaternion;
 import barsan.opengl.rendering.Camera;
 import barsan.opengl.rendering.CubeTexture;
-import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
@@ -62,7 +60,7 @@ public class CubicEnvMappingMaterial extends Material {
 	public void cleanUp(RendererState rendererState) { }
 	
 	@Override
-	public void bindTextureCoodrinates(StaticModel model) {
+	public void bindTextureCoodrinates(Model model) {
 		// nop!
 	}
 }

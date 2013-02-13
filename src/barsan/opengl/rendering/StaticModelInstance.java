@@ -86,7 +86,7 @@ public class StaticModelInstance extends ModelInstance {
 		this.material = material;
 	}
 
-	public StaticModel getModel() {
+	public Model getModel() {
 		return model;
 	}
 

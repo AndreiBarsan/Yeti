@@ -8,9 +8,10 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.util.Color;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -103,7 +104,7 @@ public abstract class Material {
 		}
 	}
 	
-	public void render(RendererState rendererState, StaticModel model) {
+	public void render(RendererState rendererState, Model model) {
 		GL gl = rendererState.gl;
 		enableShader(rendererState);
 		
@@ -114,20 +115,22 @@ public abstract class Material {
 			gl.glDisable(GL2.GL_DEPTH_TEST);
 		}
 		
-		model.render();
+		model.render(model.getArrayLength());
 	}
 
 	protected void enableShader(RendererState rendererState) {
 		rendererState.gl.glUseProgram(shader.getHandle());
 	}
 	
-	public void bindTextureCoodrinates(StaticModel model) {
+	public void bindTextureCoodrinates(Model model) {
 		if(texture != null) {
-			model.getTexcoords().use(texcoordIndex);
+			model.getTexCoords().use(texcoordIndex);
 		}
 	}
 
-	public void unsetBuffers(StaticModel model) {
+	public void unsetBuffers(Model model) {
+		model.cleanUp(positionIndex, normalIndex, texcoordIndex);
+		/*
 		model.getVertices().cleanUp(positionIndex);
 		if(!ignoreLights) {
 			model.getNormals().cleanUp(normalIndex);
@@ -135,7 +138,7 @@ public abstract class Material {
 		if(texture != null) {
 			// FIXME: sort of a hack
 			model.getTexcoords().cleanUp(texcoordIndex);
-		}
+		}*/
 	}
 	
 	public int getPositionIndex() {

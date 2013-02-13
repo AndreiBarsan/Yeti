@@ -13,6 +13,7 @@ import javax.media.opengl.GLProfile;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.CubeTexture;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Shader;
 
@@ -243,7 +244,7 @@ public class ResourceLoader {
 		}
 		shaders.clear();
 		
-		for(StaticModel m : models.values()) {
+		for(Model m : models.values()) {
 			m.dispose();		
 		}
 		models.clear();

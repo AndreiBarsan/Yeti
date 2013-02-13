@@ -13,7 +13,7 @@ import barsan.opengl.resources.ModelLoader.Group;
 /**
  * @author Andrei Barsan
  */
-public class StaticModel {
+public class StaticModel extends Model {
 	
 	public static final int COORDS_PER_POINT = 3;
 	public static final int T_COORDS_PER_POINT = 2;
@@ -27,13 +27,7 @@ public class StaticModel {
 	public Group master = new Group();
 	
 	private String name;
-	protected final GL gl;
-	
-	/** Whether GL_TRIANGLES or GL_QUADS is being used. */
-	private int faceMode;
-
-	/** Actual number of vertices per triangle. */
-	private int pointsPerFace;
+	protected final GL gl;	// TODO: maybe refactor this out
 	
 	public StaticModel(GL gl, String name) {
 		this.gl = gl;
@@ -97,9 +91,14 @@ public class StaticModel {
 		master.faces.add(face);
 	}
 	
-	public void render() {
-		gl.glDrawArrays(faceMode, 0, vertices.getSize());
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+	@Override
+	public int getArrayLength() {
+		return vertices.getSize();		
+	}
+	
+	@Override
+	public VBO getTexCoords() {
+		return texcoords;
 	}
 	
 	public void dispose() {
@@ -129,31 +128,17 @@ public class StaticModel {
 		return texcoords;
 	}
 
-	public int getFaceMode() {
-		return faceMode;
-	}
-		
-	public void setFaceMode(int faceMode) {
-		this.faceMode = faceMode;
-	}
-
 	public Map<String, Group> getGroups() {
 		return groups;
 	}
 	
-	/** @note Also updates faceMode */
-	public void setPointsPerFace(int pointsPerFace) {
-		this.pointsPerFace = pointsPerFace;
-		if(pointsPerFace == 3) {
-			faceMode = GL2.GL_TRIANGLES;
-		} else if(pointsPerFace == 4) {
-			faceMode = GL2.GL_QUADS;
-		} else {
-			Yeti.screwed("Disallowed.");
+	public void cleanUp(int... indices) {
+		GL2 gl = Yeti.get().gl;
+		for(int el : indices) {
+			if(el >= 0) {
+				//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+				gl.glDisableVertexAttribArray(el);
+			}
 		}
-	}
-	
-	public int getPointsPerFace() {
-		return pointsPerFace;
 	}
 }

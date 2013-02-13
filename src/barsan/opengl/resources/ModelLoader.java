@@ -9,6 +9,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
 
 public class ModelLoader {
@@ -342,7 +343,7 @@ public class ModelLoader {
 		return result;
 	}
 	
-	public static StaticModel buildQuad(float width, float height) {
+	public static Model buildQuad(float width, float height) {
 		return buildQuad(width, height, true);
 	}
 	

@@ -1,9 +1,8 @@
 package barsan.opengl.rendering;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class AnimatedModel {
+public class AnimatedModel extends Model {
 	
 	class Frame {
 		// interpolations would also go here in the future
@@ -20,8 +19,48 @@ public class AnimatedModel {
 		}
 	}
 	
-	String name;
-	private List<Frame> frames = new ArrayList<>();
+	private String name;
+	private final List<Frame> frames;
+		
+	public AnimatedModel(String name, List<Frame> frames) {
+		this.frames = frames;
+	}
 	
-	
+	public void dispose() {
+		// TODO?
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public List<Frame> getFrames() {
+		return frames;
+	}
+
+	@Override
+	public int getArrayLength() {
+		assert frames.size() > 0 : "Cannot have an animation with no frames!";
+		return frames.get(0).model.getArrayLength();
+	}
+
+	@Override
+	public void cleanUp(int... indices) {
+		// TODO: maybe just do cleanUp in super?
+	}
+
+	/**
+	 * Just return the texture coordinates of the first frame. After the system 
+	 * is working, this will be made so there will only be one set of texture
+	 * coords per animation, not per frame.
+	 */
+	@Override
+	public VBO getTexCoords() {
+		assert frames.size() > 0 : "Cannot have an animation with no frames!";
+		return frames.get(0).model.getTexCoords();
+	}
 }

@@ -1,7 +1,7 @@
 package barsan.opengl.rendering.materials;
 
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
@@ -40,12 +40,7 @@ public class CubeMapMaterial extends Material {
 	}
 	
 	@Override
-	public void bindTextureCoodrinates(StaticModel model) {
+	public void bindTextureCoodrinates(Model model) {
 		// nop!
-	}
-	
-	@Override
-	public void unsetBuffers(StaticModel model) {
-		model.getVertices().cleanUp(getPositionIndex());
 	}
 }

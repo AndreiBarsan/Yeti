@@ -8,7 +8,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -87,7 +87,7 @@ public class ToonMaterial extends BasicMaterial {
 		
 	}
 	
-	void doFlatAndLines(RendererState rs, StaticModel model) {
+	void doFlatAndLines(RendererState rs, Model model) {
 		GL2 gl = Yeti.get().gl.getGL2();
 		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_LINE);
 		gl.glLineWidth(2.5f);
@@ -108,7 +108,7 @@ public class ToonMaterial extends BasicMaterial {
 	}
 	
 	@Override
-	public void render(RendererState rendererState, StaticModel model) {
+	public void render(RendererState rendererState, Model model) {
 		
 		super.render(rendererState, model);
 		switch (et) {
