@@ -64,7 +64,7 @@ public class App {
 	public App() {
 		initialize();
 	}
-
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */

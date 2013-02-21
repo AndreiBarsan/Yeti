@@ -1,12 +1,15 @@
 package barsan.opengl.input;
 
 import java.awt.AWTException;
+import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
+import javax.swing.SwingUtilities;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -132,26 +135,24 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 		lastDragY = e.getY();
 	}
 
+	private static Point auxPoint = new Point();
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if(!mouseControlled) return;
 		
-		// TODO: get rid of magic numbers
-		int xo = 3 + camera.getViewportX() + Yeti.get().canvasX();
-		int yo = 48 + camera.getViewportY() + Yeti.get().canvasY();
-		
 		int xcenter = e.getComponent().getWidth() / 2;
 		int ycenter = e.getComponent().getHeight() / 2;
-		int dx =  xcenter - e.getX() - xo;
-		int dy =  ycenter - e.getY() - yo; 
-		
-		//System.out.printf("%d %d\n", dx, dy);
+		auxPoint.setLocation(xcenter, ycenter);
+		SwingUtilities.convertPointToScreen(auxPoint, e.getComponent());
+		int dx =  xcenter - e.getX();
+		int dy =  ycenter - e.getY(); 
 		
 		dx = MathUtil.clamp(dx, -20, 20);
 		dy = MathUtil.clamp(dy, -20, 20);
 		
-		camera.move3D(dx, dy);	
-		robot.mouseMove(xcenter, ycenter);
+		camera.move3D(dx, dy);
+		
+		robot.mouseMove(auxPoint.x, auxPoint.y);
 	}
 
 	@Override
@@ -172,10 +173,12 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 	public void setMouseControlled(boolean mouseControlled) {
 		this.mouseControlled = mouseControlled;
 		if(mouseControlled) {
-			if(robot == null) try {
-				robot = new Robot();
-			} catch (AWTException e) {
-				e.printStackTrace();
+			if(robot == null) { 
+					try {
+					robot = new Robot();
+				} catch (AWTException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

@@ -91,7 +91,10 @@ public class ResourceLoader {
 				}
 			});
 			
-			for(File entry : files) {
+			for(int i = 0; i < files.length; i++) {
+				// TODO: maybe only load every X frame (not every single one is needed
+				// for a good animation; not a priority in our small game nevertheless)
+				File entry = files[i];
 				frames.add(new Frame(ModelLoader.fromObj(gl, new Scanner(entry)), 0.1f));
 			}
 			

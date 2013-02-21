@@ -486,6 +486,15 @@ public class Yeti implements GLEventListener {
 		return canvasHost.getY() + frame.getY();
 	}
 	
+	public int getCanvasWidth() {
+		return canvasHost.getWidth();
+	}
+	
+	public int getCanvasHeight() {
+		return canvasHost.getHeight();
+		
+	}
+	
 	boolean fullscreen = false;
 	public void toggleFullscreen() {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
