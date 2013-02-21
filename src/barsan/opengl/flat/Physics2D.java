@@ -1,7 +1,10 @@
 package barsan.opengl.flat;
 
+import javax.naming.OperationNotSupportedException;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
+import barsan.opengl.math.Segment2D;
 import barsan.opengl.math.Vector2;
 
 public class Physics2D {
@@ -68,11 +71,20 @@ public class Physics2D {
 		World2D w = owner.world;
 		lastContact = w.pollPosition(new Vector2(bounds.x + 
 				bounds.width / 2, bounds.y - 0.00005f));
-		System.out.println(lastContact);
+		
 		if(lastContact == this) {
 			Yeti.screwed("You shouldn't touch yourself!");
 		}
+		
 		return null != lastContact;
+	}
+	
+	private boolean hsCheckOnGround(Vector2 current, Vector2 old) {
+		World2D w = owner.world;
+
+		// TODO: implement
+		
+		return null != (lastContact = w.pollSegment(new Segment2D(current, old), this));
 	}
 	
 	void jump(float force) {
@@ -88,7 +100,7 @@ public class Physics2D {
 		deltaMove.mul(delta);
 		
 		if( friction > 0.0f && (onGround || !hasWeight)) {
-			velocity.applyFriction(friction);
+			//velocity.applyFriction(friction);
 		}
 		
 		if(velocity.x < -maxXSpeed) {
@@ -118,7 +130,7 @@ public class Physics2D {
 					if(wasOnGround) {
 						System.out.println("Just jumped!");
 					}
-					velocity.y -= w.getGravity();
+					velocity.y -= w.getGravity() * delta;
 					if(velocity.y < -maxYSpeed) {
 						velocity.y = -maxYSpeed;
 					}

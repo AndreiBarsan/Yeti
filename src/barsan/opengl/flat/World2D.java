@@ -5,6 +5,7 @@ import java.util.List;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
+import barsan.opengl.math.Segment2D;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.Scene;
 
@@ -13,7 +14,7 @@ public class World2D {
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
 	private List<Entity2D> entities = new ArrayList<>();
-	private float gravity = 2.75f;
+	private float gravity = 82.5f;
 	
 	
 	public World2D(Scene scene) {
@@ -69,6 +70,10 @@ public class World2D {
 			}
 		}
 		
+		return null;
+	}
+	
+	public Physics2D pollSegment(Segment2D segment, Physics2D toExclude) {
 		return null;
 	}
 	
