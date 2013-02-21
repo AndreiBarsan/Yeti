@@ -67,7 +67,8 @@ public class Physics2D {
 	private boolean checkOnGround() {
 		World2D w = owner.world;
 		lastContact = w.pollPosition(new Vector2(bounds.x + 
-				bounds.width / 2, bounds.y - 0.05f));
+				bounds.width / 2, bounds.y - 0.00005f));
+		System.out.println(lastContact);
 		if(lastContact == this) {
 			Yeti.screwed("You shouldn't touch yourself!");
 		}
@@ -82,8 +83,9 @@ public class Physics2D {
 	
 	void update(float delta) {
 		World2D w = owner.world;
-		velocity.add(acceleration);
+		velocity.add(new Vector2(acceleration).mul(delta));
 		Vector2 deltaMove = new Vector2(velocity);
+		deltaMove.mul(delta);
 		
 		if( friction > 0.0f && (onGround || !hasWeight)) {
 			velocity.applyFriction(friction);
@@ -136,8 +138,8 @@ public class Physics2D {
 		}
 		
 		// Apply movement
-		bounds.x += delta * deltaMove.x;
-		bounds.y += delta * deltaMove.y;
+		bounds.x += deltaMove.x;
+		bounds.y += deltaMove.y;
 		
 	}
 }

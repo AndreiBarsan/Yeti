@@ -19,20 +19,17 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.lang.Thread.UncaughtExceptionHandler;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLException;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-import javax.media.opengl.awt.GLJPanel;
 
 import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsoleInput;
+import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
@@ -83,11 +80,8 @@ public class Yeti implements GLEventListener {
 	 */
 	static Class<?>[] availableScenes = new Class[] {
 			DemoScene.class,
-			//TextScene.class,
 			ProceduralScene.class,
-			//ModelGraphScene.class,
 			LightTest.class,
-			//ZRenderTest.class
 			GameScene.class
 	};
 	static {
@@ -123,7 +117,7 @@ public class Yeti implements GLEventListener {
 		// Transparent 16 x 16 pixel cursor image.
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 
-		// Create a new blank cursor.
+		// Create a new blank cursor used for hiding the mouse
 		blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
 		    cursorImg, new Point(0, 0), "blank cursor");
 
@@ -145,7 +139,8 @@ public class Yeti implements GLEventListener {
 		}
 	}
 	
-	public void hackStartLoop(App app, Frame frame, Container hostContainer) {
+	public void startApplicationLoop(App app, Frame frame, Container hostContainer,
+			CanvasFactory canvasFactory) {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				new Thread(new Runnable() {
@@ -158,24 +153,28 @@ public class Yeti implements GLEventListener {
 		});
 				
 		this.frame = frame;
-		this.hostApp = app;
 		
-		final GLJPanel glpanel = createCanvasPanel();
-		//glpanel.setContextCreationFlags(GL2.GL_MULTISAMPLE);
-		glpanel.addGLEventListener(this);
-		glpanel.setSize(settings.width, settings.height);
-		animator.add(glpanel);
-		canvasHost = glpanel;
+		if(app != null) {
+			this.hostApp = app;
+		}
+		
+		GLProfile.initSingleton();
+		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
+		GLCapabilities capabilities = new GLCapabilities(glp);
+		
+		final Component glpanel = canvasFactory.createCanvas(capabilities);
+		assert glpanel instanceof GLAutoDrawable : "A panel must be able to interact with OpenGL (implement GLAutoDrawable).";
+		final GLAutoDrawable gld = (GLAutoDrawable) glpanel;
+		
+		gld.addGLEventListener(this);
+		
+		animator.add(gld);
 		hostContainer.add(glpanel);
 		
-		hostContainer.setVisible(true);
-		glpanel.setVisible(true);		
-		
-		hostContainer.setPreferredSize(new Dimension(
-				settings.width, settings.height + frame.getPreferredSize().height));
+		canvasHost = glpanel;		
+		canvasHost.setPreferredSize(new Dimension(settings.width, settings.height));
 		frame.pack();
 		frame.setVisible(true);
-		
 		
 		animator.setUpdateFPSFrames(30, null);
 		animator.start();
@@ -205,34 +204,6 @@ public class Yeti implements GLEventListener {
 		settings.playing = false;
 		canvasHost.setCursor(Cursor.getDefaultCursor());
 		currentScene.pause();		
-	}
-	
-	public void startRenderLoop(Frame frame, Container hostContainer) {
-		// Create and setup the canvas
-		GLCanvas canvas = createCanvas();
-		canvas.addGLEventListener(this);
-		animator.add(canvas);
-		this.canvasHost = canvas;
-		
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				new Thread(new Runnable() {
-					public void run() {
-						animator.stop();
-						System.exit(0);
-					}
-				}).start();
-			}
-		});
-				
-		this.frame = frame;
-		
-		hostContainer.add(canvas);
-		
-		// ...and away we go!
-		frame.setVisible(true);
-		animator.setUpdateFPSFrames(10, null);
-		animator.start();
 	}
 	
 	private static Yeti instance;
@@ -368,7 +339,7 @@ public class Yeti implements GLEventListener {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		if(pendingInit) {
-			System.out.println("Pending init - so doing init! (display)");
+			Yeti.debug("Pending init - so doing init! (display)");
 			currentScene.init(drawable);
 			currentScene.registerInputSources(this);
 			pendingInit = false;
@@ -381,7 +352,7 @@ public class Yeti implements GLEventListener {
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
 		if(pendingInit) {
-			System.out.println("Pending init - so doing init! (reshape)");
+			Yeti.debug("Pending init - so doing init! (reshape)");
 			currentScene.init(drawable);
 			currentScene.registerInputSources(this);
 			pendingInit = false;
@@ -400,61 +371,43 @@ public class Yeti implements GLEventListener {
 		ResourceLoader.cleanUp();
 	}
 	
-	private GLCanvas createCanvas() {
-		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
-		GLCapabilities capabilities = new GLCapabilities(glp);
-		GLCanvas canvas = new GLCanvas(capabilities);
-		
-		return canvas;
-	}
-	
-	// TODO: refactor this and fix
-	private GLJPanel createCanvasPanel() {
-		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
-		GLCapabilities capabilities = new GLCapabilities(glp);
-		GLJPanel gljp = new GLJPanel(capabilities);		
-		return gljp;
-	}
-	
 	public void addKeyListener(KeyListener keyListener) {
-		frame.addKeyListener(keyListener);
+		//frame.addKeyListener(keyListener);
 		canvasHost.addKeyListener(keyListener);		
 	}
 	
 	public void removeKeyListener(KeyListener keyListener) {
-		frame.removeKeyListener(keyListener);
+		//frame.removeKeyListener(keyListener);
 		canvasHost.removeKeyListener(keyListener);
 	}
 	
 	public void addMouseListener(MouseListener mouseListener) {
-		frame.addMouseListener(mouseListener);
+		//frame.addMouseListener(mouseListener);
 		canvasHost.addMouseListener(mouseListener);
 	}
 	
 	public void removeMouseListener(MouseListener mouseListener) {
-		frame.removeMouseListener(mouseListener);
+		//frame.removeMouseListener(mouseListener);
 		canvasHost.removeMouseListener(mouseListener);		
 	}
 	
 	public void addMouseMotionListener(MouseMotionListener mouseListener) {
-		frame.addMouseMotionListener(mouseListener);
+		//frame.addMouseMotionListener(mouseListener);
 		canvasHost.addMouseMotionListener(mouseListener);		
 	}
 	
 	public void removeMouseMotionListener(MouseMotionListener mouseListener) {
-		frame.removeMouseMotionListener(mouseListener);
+		//frame.removeMouseMotionListener(mouseListener);
 		canvasHost.removeMouseMotionListener(mouseListener);		
 	}
 	
 	public void addMouseWheelListener(MouseWheelListener mouseListener) {
-		frame.addMouseWheelListener(mouseListener);
+		//frame.addMouseWheelListener(mouseListener);
 		canvasHost.addMouseWheelListener(mouseListener);		
 	}
 	
 	public void removeMouseWheelListener(MouseWheelListener mouseListener) {
-		frame.removeMouseWheelListener(mouseListener);
+		//frame.removeMouseWheelListener(mouseListener);
 		canvasHost.removeMouseWheelListener(mouseListener);		
 	}
 	
@@ -501,19 +454,4 @@ public class Yeti implements GLEventListener {
 		GraphicsDevice gd = ge.getDefaultScreenDevice();
 		gd.setFullScreenWindow(frame);
 	}
-	
-	/**
-	 * Entry point for the basic application. At the moment, broken.
-	 * @param args Unused.
-	 */
-	/*
-	public static void main(String[] args) {
-		
-		Yeti yeti = Yeti.get();
-		
-		Frame frame = new Frame("Sup");
-		frame.setSize(yeti.settings.width, yeti.settings.height);
-		
-		yeti.startRenderLoop(frame, frame, true);
-	}//*/
 }

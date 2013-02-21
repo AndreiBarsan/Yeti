@@ -6,21 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.beans.PropertyChangeListener;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
@@ -29,6 +24,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.platform.SwingFactory;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.TextUtil;
@@ -121,7 +117,7 @@ public class App {
 		});
 		mnFile.add(mntmQuit);
 		
-		engine.hackStartLoop(this, frmYeti, frmYeti.getContentPane());		
+		engine.startApplicationLoop(this, frmYeti, frmYeti.getContentPane(), new SwingFactory());		
 	}
 	
 	public void generateGLKnobs(final Yeti yeti) {
@@ -141,6 +137,7 @@ public class App {
 		JMenu menu = new JMenu("Scene");
 		for(int i = 0; i < Yeti.getAvailableScenes().length; i++) {
 			final Class<?> s = Yeti.getAvailableScenes()[i];
+			@SuppressWarnings("serial")
 			JMenuItem item = new JMenuItem(new AbstractAction() {
 				@Override
 				public void actionPerformed(ActionEvent e) {

@@ -59,7 +59,7 @@ public class Renderer {
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
-	private int MSAASamples = 4;
+	private int MSAASamples = 32;
 	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
@@ -241,8 +241,7 @@ public class Renderer {
 		prepareBillboards(scene);
 		
 		if(scene.shadowsEnabled) {
-			//gl.glCullFace(GL2.GL_FRONT);
-			
+			gl.glCullFace(GL2.GL_FRONT);
 			Camera aux = state.getCamera();
 			
 			if(light.getType() == LightType.Directional) {
@@ -308,6 +307,7 @@ public class Renderer {
 			}
 			
 			// Restore old state
+			gl.glCullFace(GL2.GL_BACK);
 			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 			state.setCamera(aux);
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);

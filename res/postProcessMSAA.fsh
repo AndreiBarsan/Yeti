@@ -4,6 +4,7 @@ uniform sampler2DMS colorMap;
 
 // Number of MSAA samples
 uniform int sampleCount;
+uniform float kernel[];
 
 smooth in 	vec2 vVaryingTexCoords;
 
