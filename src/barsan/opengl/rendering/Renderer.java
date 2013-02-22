@@ -42,7 +42,7 @@ public class Renderer {
 	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
-	private int shadowQuality = 1;
+	private int shadowQuality = 3;
 	private float omniShadowNear = 0.1f;
 	private float omniShadowFar = 100.0f;
 	
@@ -54,7 +54,7 @@ public class Renderer {
 	int shadowMapW = 4096;
 	int shadowMapH = 4096;
 	
-	int cubeMapSide = 2048;
+	int cubeMapSide = 512;
 	
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
@@ -418,7 +418,7 @@ public class Renderer {
 	}
 	
 	private void renderOccluders(GL3 gl, final Scene scene) {
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
 			if(! modelInstance.castsShadows()) continue;

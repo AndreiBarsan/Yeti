@@ -48,13 +48,25 @@ public class Rectangle {
 		outY = Math.min(y, other.y);
 		
 		float outW, outH;
-		if(other.x < x + width && (other.x + other.width > x + width)) {
+		if(other.x < x + width && other.x + other.width < x + width) {
+			// Other is really narrow
+			outW = other.width;
+		} else if(other.x < x && other.x + other.width > x + width) {
+			// Other is reeeaaally wide
+			outW = width;
+		} else if(other.x > x && other.x + other.width < x + width) {
 			outW = x + width - other.x;
 		} else {
 			outW = other.x + other.width - x;
 		}
 		
-		if(other.y < y + height && other.y + other.height > y + height) {
+		if(other.y < y + height && other.y + other.height < y + height) {
+			// Other is really short
+			outH = other.height;
+		} else if(other.y < y && other.y + other.height > y + height) {
+			// Other is reeeaaally tall
+			outH = height;
+		} else if(other.y > y && other.y + other.height < y + height) {
 			outH = y + height - other.y;
 		} else {
 			outH = other.y + other.height - y;
@@ -75,6 +87,11 @@ public class Rectangle {
 				&& 	Math.abs(y - other.y) < EPSILON
 				&& 	Math.abs(height - other.height) < EPSILON
 				&& 	Math.abs(width - other.width) < EPSILON;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("[x=%d, y=%d, w=%d, h=%d]", x, y, width, height);
 	}
 	
 }

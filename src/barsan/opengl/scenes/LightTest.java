@@ -95,7 +95,7 @@ public class LightTest extends Scene {
 		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
 		float step = 6.0f;
-		int monkeys = 4;
+		int monkeys = 5;
 		for(int i = -monkeys; i < monkeys; i++) {
 			for(int j = -monkeys; j < monkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);

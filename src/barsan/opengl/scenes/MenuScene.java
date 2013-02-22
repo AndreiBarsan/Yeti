@@ -12,6 +12,20 @@ public class MenuScene extends Scene {
 
 	protected CameraInput cameraInput;
 
+	public interface MenuAction {
+		public void performAction();
+	}
+	
+	public static class MenuEntry {
+		private String text;
+		private MenuAction action;
+		private boolean selected;
+		
+		public void activate() {
+			action.performAction();
+		}
+	}
+	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);

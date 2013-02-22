@@ -86,14 +86,6 @@ public class Physics2D {
 		return null != lastContact;
 	}
 	
-	private boolean hsCheckOnGround(Vector2 current, Vector2 old) {
-		World2D w = owner.world;
-
-		// TODO: implement
-		
-		return null != (lastContact = w.pollSegment(new Segment2D(current, old), this));
-	}
-	
 	void update(float delta) {
 		World2D w = owner.world;
 		velocity.add(new Vector2(acceleration).mul(delta));
@@ -159,7 +151,7 @@ public class Physics2D {
 		Vector2 deltaMove = new Vector2(velocity);
 		deltaMove.mul(delta);
 		
-		if(solid) {
+		if(solid && hasWeight) {
 			w.potentialStep(bounds, deltaMove);
 		}
 		

@@ -10,6 +10,8 @@ import barsan.opengl.math.Rectangle;
 
 public class RectangleTest {
 
+	final static float EPSILON = 0.0001f; 
+	
 	@Test
 	public void testContainsFloatFloat() {
 		Rectangle toTest = new Rectangle(-4, -4, 8, 8);
@@ -40,7 +42,34 @@ public class RectangleTest {
 
 	@Test
 	public void testIntersect() {
-		//fail("Not yet implemented");
+		Rectangle faller = new Rectangle(0.77f, 0.68f, 2.0f, 4.0f);
+		Rectangle ground = new Rectangle(0.0f, 0.0f, 20.0f, 1.0f);
+		
+		Rectangle intersection = faller.intersect(ground);
+		
+		assertEquals("The whole width of the faller must be in the intersection.",
+				faller.width, intersection.width, EPSILON);
+		
+		intersection = ground.intersect(faller);
+		
+		assertEquals("The whole width of the faller must be in the intersection.",
+				faller.width, intersection.width, EPSILON);
+		
+		Rectangle sideMoved = new Rectangle(0.29f, -3.0f, 2.0f, 4.0f);
+		Rectangle wall = new Rectangle(2.0f, -9.0f, 2.0f, 16.0f);
+		
+		intersection = sideMoved.intersect(wall);
+		assertEquals("", 
+				sideMoved.height, intersection.height, EPSILON);
+		
+		intersection = wall.intersect(sideMoved);
+		assertEquals("", 
+				sideMoved.height, intersection.height, EPSILON);
+		
+		Rectangle positiveWall = new Rectangle(2.0f, 0.0f, 2.0f, 16.0f);
+		intersection = sideMoved.intersect(positiveWall);
+		assertEquals(0.29f, intersection.width, EPSILON);
+		assertEquals(sideMoved.height + sideMoved.y, intersection.height, EPSILON);
 	}
 
 }

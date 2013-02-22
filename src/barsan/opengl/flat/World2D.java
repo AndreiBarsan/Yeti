@@ -77,20 +77,52 @@ public class World2D {
 		return null;
 	}
 	
-	public void potentialStep(Rectangle object, Vector2 speed) {
+	/**
+	 * Alters the state of subject by applying speed. If anything is in the way
+	 * the game tries to move subject as closes as possible to said target.
+	 * 
+	 * TODO: actually raise an event
+	 */
+	public void potentialStep(Rectangle subject, Vector2 speed) {
 		float constraintX = 0.0f;
 		float constraintY = 0.0f;
 		
+		Rectangle movedRectangle = new Rectangle(subject);
+		movedRectangle.x += speed.x;
+		movedRectangle.y += speed.y;
+		
 		for(Entity2D e : entities) {
-			if(!(e.physics.solid)) continue;
+			// If the object keeps testing for a collision with itself, it will 
+			// always overlap and move on the X axis with -intersection.width speed.
+			if(!(e.physics.solid) || e.physics.bounds == subject) continue;
 			
 			Rectangle targetR = e.physics.getBounds();
-			if(!targetR.overlaps(object)) continue;
+			if(!targetR.overlaps(movedRectangle)) continue;
 			
-			Rectangle intersection = targetR.intersect(object);
+			// Not perfect, but should work for a very simple platformer
+			Rectangle intersection = targetR.intersect(movedRectangle);
+			if(targetR.x < movedRectangle.x) {
+				assert constraintX >= 0 : "Stuck X (squeezed from two sides)";
+				constraintX = intersection.width;
+			} else {
+				assert constraintX <= 0 : "Stuck X (squeezed from two sides)";
+				constraintX = -intersection.width;
+			}
 			
+			if(targetR.y < movedRectangle.y) {
+				assert constraintY >= 0 : "Stuck Y (squeezed from two sides)";
+				constraintY = intersection.height;
+			} else {
+				assert constraintY <= 0 : "Stuck Y (squeezed from two sides)";
+				constraintY = -intersection.height;
+			}
 		}
-	}
+		
+		float moveAngle = speed.angle();
+		
+		subject.x = movedRectangle.x + (float)Math.cos(moveAngle) * constraintX;
+		subject.y = movedRectangle.y + (float)Math.sin(moveAngle) * constraintY;
+		}
 	
 	// Moves the mover as close as possible to obstacle, without causing
 	// a collision
