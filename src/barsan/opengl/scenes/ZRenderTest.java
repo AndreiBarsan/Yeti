@@ -6,6 +6,7 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.RendererState;
@@ -34,6 +35,7 @@ public class ZRenderTest extends Scene {
 	private FBObject fbo_shadows;
 	
 	RendererState rs;
+	protected CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {

@@ -8,6 +8,8 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cylinder;
 import barsan.opengl.rendering.Scene;
@@ -27,6 +29,7 @@ public class ProceduralScene extends Scene {
 	final int MAX_PRECISION = 100;
 	final int MIN_PRECISION = 3;
 	long start = System.currentTimeMillis();
+	protected CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -42,7 +45,7 @@ public class ProceduralScene extends Scene {
 		lights.add(mainLight = new PointLight(new Vector3(0f, 20f, 10f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		
 		Yeti.debug("J & K to increase/decrease cylinder precision.");
-		Yeti.get().addKeyListener(new KeyListener() {
+		Yeti.get().addInputProvider(new InputAdapter() {
 			public void keyTyped(KeyEvent e) { }
 			public void keyPressed(KeyEvent e) { }
 			

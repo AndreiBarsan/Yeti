@@ -5,7 +5,7 @@ import java.awt.event.KeyListener;
 
 import barsan.opengl.Yeti;
 
-public class GlobalConsoleInput implements KeyListener {
+public class GlobalConsoleInput implements KeyListener, InputProvider {
 
 	Yeti y;
 	

@@ -6,20 +6,28 @@ import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
+import com.jogamp.opengl.util.texture.Texture;
+
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
+import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.PerspectiveCamera;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.MultiTextureMaterial;
 import barsan.opengl.rendering.materials.TextureComponent;
+import barsan.opengl.resources.HeightmapBuilder;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.DebugGUI;
@@ -36,26 +44,20 @@ public class DemoScene extends Scene {
 	Transform tct;
 	
 	ModelInstance m2;
+	CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 			
 		try {
-			//ResourceLoader.loadObj("asteroid10k", "asteroid10k.obj");
-			//ResourceLoader.loadObj("asteroid1k", "asteroid1k.obj");
 			ResourceLoader.loadObj("sphere", "prettysphere.obj");
-			//ResourceLoader.loadObj("bunny", "bunny.obj");
 			ResourceLoader.loadObj("texcube", "texcube.obj");
 			
-			/*
 			ResourceLoader.loadTexture("heightmap01", "height.png");
 			ResourceLoader.loadTexture("grass", "grass01.jpg");
-			*/
 			ResourceLoader.loadTexture("stone", "stone03.jpg");
 			ResourceLoader.loadTexture("stone.bump", "stone03.bump.jpg");
-			//ResourceLoader.loadTexture("billboard", "tree_billboard.png");
-			
 			ResourceLoader.loadCubeTexture("skybox01", "jpg");
 			
 		} catch (IOException e) {
@@ -73,26 +75,26 @@ public class DemoScene extends Scene {
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera);
 		modelInstances.add(sb);
 		
-		/*
-		Model groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl.getGL2(),
+		//*
+		StaticModel groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl.getGL2(),
 				ResourceLoader.texture("heightmap01"),
 				ResourceLoader.textureData("heightmap01"),
 				4.0f, 4.0f,
 				-15.0f, 120.0f);
 		
 		
-		modelInstances.add(new ModelInstance(
+		BasicMaterial groundMat = new BasicMaterial();
+		groundMat.setShininess(0);
+		groundMat.setTexture(ResourceLoader.texture("grass"));
+		groundMat.addComponent(new TextureComponent());
+		modelInstances.add(new StaticModelInstance(
 				groundMesh,
-				new MultiTextureMaterial(ResourceLoader.texture("stone"),
-						ResourceLoader.texture("grass"), -10, 25)
-				//new ToonMaterial(ResourceLoader.texture("grass"))
+				groundMat
+				//new MultiTextureMaterial(ResourceLoader.texture("stone"),
+					//	ResourceLoader.texture("grass"), -10, 25)
 				));
-		//*/
-		//*
-		//modelInstances.add(new ModelInstance(ResourceLoader.model("sphere"),
-		//		new CubicEnvMappingMaterial(ResourceLoader.cubeTexture("skybox01"), ResourceLoader.texture("grass")),
-		//		new Transform().updateTranslate(0.0f, 50.0f, -30.0f).updateScale(4.0f)));
-		//*/
+
+		Yeti.get().addInputProvider(cameraInput = new CameraInput(camera));
 		
 		shadowsEnabled = false;
 		
@@ -131,11 +133,7 @@ public class DemoScene extends Scene {
 		gui = new DebugGUI(drawable.getAnimator(), getCamera());
 		
 		Yeti.debug("\n\tRendering controls: \n\tF - toggle Fog\n\tM - toggle sMoothing");
-		Yeti.get().addKeyListener(new KeyListener() {
-			
-			public void keyPressed(KeyEvent e) { }
-			public void keyTyped(KeyEvent e) { }
-			
+		Yeti.get().addInputProvider(new InputAdapter() {
 			public void keyReleased(KeyEvent e) {
 				switch(e.getKeyCode()) {
 				case KeyEvent.VK_F:
@@ -159,5 +157,15 @@ public class DemoScene extends Scene {
 		
 		// Calls the renderer
 		super.display(drawable);
+	}
+	
+	@Override
+	public void play() {
+		cameraInput.setMouseControlled(true);
+	}
+	
+	@Override
+	public void pause() {
+		cameraInput.setMouseControlled(false);
 	}
 }

@@ -2,20 +2,21 @@ package barsan.opengl.rendering;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.InputProvider;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GUI;
 
-public class Scene implements GLEventListener {
+public class Scene {
 
 	protected ArrayList<ModelInstance> modelInstances = new ArrayList<>();
 	
@@ -24,7 +25,6 @@ public class Scene implements GLEventListener {
 	
 	protected Renderer renderer;
 	protected Camera camera;
-	protected CameraInput cameraInput; 
 	protected boolean exiting = false;
 	
 	/** Timing ****************************************************************/
@@ -41,8 +41,9 @@ public class Scene implements GLEventListener {
 	protected GUI gui;
 	
 	public boolean shadowsEnabled = false;
+	List<InputProvider> inputProviders = new ArrayList<>();
 
-	@Override
+	
 	public void init(GLAutoDrawable drawable) {
 		// Setup basic elements
 		camera = new PerspectiveCamera(Yeti.get().settings.width, Yeti.get().settings.height);
@@ -59,10 +60,6 @@ public class Scene implements GLEventListener {
 		lastTime = System.currentTimeMillis();
 	}
 
-	@Override
-	public void dispose(GLAutoDrawable drawable) {	}
-
-	@Override
 	public void display(GLAutoDrawable drawable) {
 
 		if(exiting) {
@@ -93,12 +90,11 @@ public class Scene implements GLEventListener {
 		lastTime = System.currentTimeMillis();
 	}
 
-	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		// This shouldn't be the default behavior! (save for a few small toy apps)
 		//camera.reshape(x, y, width, height);
 	}
-
+	
 	public Camera getCamera() {
 		return camera;
 	}
@@ -115,18 +111,16 @@ public class Scene implements GLEventListener {
 		modelInstances.remove(modelInstance);
 	}
 	
-	public void registerInputSources(Yeti yeti) {
-		// Handle camera input
-		cameraInput = new CameraInput(camera);
-		yeti.addKeyListener(cameraInput);
-		yeti.addMouseListener(cameraInput);
-		yeti.addMouseMotionListener(cameraInput);
+	public void addInput(InputProvider inputProvider) {
+		inputProviders.add(inputProvider);
+		Yeti.get().addInputProvider(inputProvider);
 	}
 	
-	public void unregisterInputSources(Yeti yeti) {
-		yeti.removeKeyListener(cameraInput);
-		yeti.removeMouseListener(cameraInput);
-		yeti.removeMouseMotionListener(cameraInput);
+	private void unregisterInputSources() {
+		Yeti y = Yeti.get();
+		for(InputProvider ip : inputProviders) {
+			y.removeInputProvider(ip);
+		}
 	}
 	
 	public void setRenderer(Renderer renderer) {
@@ -140,17 +134,13 @@ public class Scene implements GLEventListener {
 	/**
 	 * Called when the scene simulation is to become interactive.
 	 */
-	public void play() {
-		cameraInput.setMouseControlled(true);
-	}
+	public void play() { }
 	
 	/**
 	 * Called when the scene simulation should halt its interactivity and,
 	 * among other things, release the cursor (if captured).
 	 */
-	public void pause() {
-		cameraInput.setMouseControlled(false);
-	}
+	public void pause() { }
 	
 	/**
 	 * Tells the OpenGL engine to shutdown before its next render cycle.
@@ -170,10 +160,13 @@ public class Scene implements GLEventListener {
 		// Temporary cleanup behavior - at the moment, scenes are independent of each other
 		ResourceLoader.cleanUp();
 		renderer.dispose(Yeti.get().gl);
-		unregisterInputSources(engine);
 		engine.transitionFinished();
-		
+		unregisterInputSources();
 		exiting = false;
+	}
+	
+	public List<Light> getLights() {
+		return lights;
 	}
 
 }

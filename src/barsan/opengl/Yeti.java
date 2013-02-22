@@ -29,12 +29,14 @@ import javax.media.opengl.GLProfile;
 
 import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsoleInput;
+import barsan.opengl.input.InputProvider;
 import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.GameScene;
 import barsan.opengl.scenes.LightTest;
+import barsan.opengl.scenes.MenuScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.Settings;
 
@@ -70,7 +72,6 @@ public class Yeti implements GLEventListener {
 	// Keeps everything in sync.
 	private final Animator animator;
 	
-	//private CameraInput cameraInput;
 	volatile boolean pendingInit = false;	// TODO: better interaction with input thread
 	private Scene pendingScene;	// Used in transitions
 	
@@ -82,7 +83,8 @@ public class Yeti implements GLEventListener {
 			DemoScene.class,
 			ProceduralScene.class,
 			LightTest.class,
-			GameScene.class
+			GameScene.class,
+			MenuScene.class
 	};
 	static {
 		for(Class<?> c : availableScenes) {
@@ -260,7 +262,7 @@ public class Yeti implements GLEventListener {
 		System.exit(0);		
 	}
 	
-	private class QuickSceneSwitcher implements KeyListener {
+	private class QuickSceneSwitcher implements KeyListener, InputProvider {
 		public void keyTyped(KeyEvent e) { }
 		public void keyPressed(KeyEvent e) { }
 		
@@ -309,10 +311,10 @@ public class Yeti implements GLEventListener {
 		final int lastLoadedScene = settings.lastSceneIndex;
 		ResourceLoader.init();	
 		
-		addKeyListener(this.new QuickSceneSwitcher());
+		addInputProvider(this.new QuickSceneSwitcher());
 
 		// Soon-to-be global controller of GL settings
-		addKeyListener(new GlobalConsoleInput());
+		addInputProvider(new GlobalConsoleInput());
 
 		/*
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -341,7 +343,6 @@ public class Yeti implements GLEventListener {
 		if(pendingInit) {
 			Yeti.debug("Pending init - so doing init! (display)");
 			currentScene.init(drawable);
-			currentScene.registerInputSources(this);
 			pendingInit = false;
 		}
 		currentScene.display(drawable);
@@ -354,7 +355,6 @@ public class Yeti implements GLEventListener {
 		if(pendingInit) {
 			Yeti.debug("Pending init - so doing init! (reshape)");
 			currentScene.init(drawable);
-			currentScene.registerInputSources(this);
 			pendingInit = false;
 		}
 		// TODO: if hosted in an application - make sure the sizes stay right
@@ -367,48 +367,51 @@ public class Yeti implements GLEventListener {
 	
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
-		currentScene.dispose(drawable);
 		ResourceLoader.cleanUp();
 	}
 	
-	public void addKeyListener(KeyListener keyListener) {
-		//frame.addKeyListener(keyListener);
-		canvasHost.addKeyListener(keyListener);		
+	public void addInputProvider(InputProvider inputProvider) {
+		if(inputProvider instanceof KeyListener) {
+			frame.addKeyListener((KeyListener)inputProvider);
+			canvasHost.addKeyListener((KeyListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof MouseListener) {
+			frame.addMouseListener((MouseListener)inputProvider);
+			canvasHost.addMouseListener((MouseListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof MouseMotionListener) {
+			frame.addMouseMotionListener((MouseMotionListener)inputProvider);
+			canvasHost.addMouseMotionListener((MouseMotionListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof MouseWheelListener) {
+			frame.addMouseWheelListener((MouseWheelListener)inputProvider);
+			canvasHost.addMouseWheelListener((MouseWheelListener)inputProvider);
+		}
 	}
 	
-	public void removeKeyListener(KeyListener keyListener) {
-		//frame.removeKeyListener(keyListener);
-		canvasHost.removeKeyListener(keyListener);
-	}
-	
-	public void addMouseListener(MouseListener mouseListener) {
-		//frame.addMouseListener(mouseListener);
-		canvasHost.addMouseListener(mouseListener);
-	}
-	
-	public void removeMouseListener(MouseListener mouseListener) {
-		//frame.removeMouseListener(mouseListener);
-		canvasHost.removeMouseListener(mouseListener);		
-	}
-	
-	public void addMouseMotionListener(MouseMotionListener mouseListener) {
-		//frame.addMouseMotionListener(mouseListener);
-		canvasHost.addMouseMotionListener(mouseListener);		
-	}
-	
-	public void removeMouseMotionListener(MouseMotionListener mouseListener) {
-		//frame.removeMouseMotionListener(mouseListener);
-		canvasHost.removeMouseMotionListener(mouseListener);		
-	}
-	
-	public void addMouseWheelListener(MouseWheelListener mouseListener) {
-		//frame.addMouseWheelListener(mouseListener);
-		canvasHost.addMouseWheelListener(mouseListener);		
-	}
-	
-	public void removeMouseWheelListener(MouseWheelListener mouseListener) {
-		//frame.removeMouseWheelListener(mouseListener);
-		canvasHost.removeMouseWheelListener(mouseListener);		
+	public void removeInputProvider(InputProvider inputProvider) {
+		if(inputProvider instanceof KeyListener) {
+			frame.removeKeyListener((KeyListener)inputProvider);
+			canvasHost.removeKeyListener((KeyListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof MouseListener) {
+			frame.removeMouseListener((MouseListener)inputProvider);
+			canvasHost.removeMouseListener((MouseListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof KeyListener) {
+			frame.removeMouseMotionListener((MouseMotionListener)inputProvider);
+			canvasHost.removeMouseMotionListener((MouseMotionListener)inputProvider);
+		}
+		
+		if(inputProvider instanceof MouseWheelListener) {
+			frame.addMouseWheelListener((MouseWheelListener)inputProvider);
+			canvasHost.addMouseWheelListener((MouseWheelListener)inputProvider);
+		}
 	}
 	
 	public Component getHostComponent() {

@@ -8,6 +8,7 @@ import javax.media.opengl.GL3;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.Shader;
@@ -26,6 +27,7 @@ public class TextureScene extends Scene {
 	
 	// JOGL helper
 	Texture texture;
+	protected CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {

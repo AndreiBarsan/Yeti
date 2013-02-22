@@ -37,10 +37,10 @@ public class MultiTextureMaterial extends BasicMaterial {
 		
 		shader.setU1f("minHeight", minHeight);
 		shader.setU1f("maxHeight", maxHeight);
-		shader.setU1i("colorMapB", 1);
+		shader.setU1i("colorMapB", 3);
 		
 		// TODO: register this as an extra component
-		gl.glActiveTexture(GL.GL_TEXTURE1);
+		gl.glActiveTexture(GL.GL_TEXTURE3);
 		upperTexture.bind(rendererState.gl);
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 	}

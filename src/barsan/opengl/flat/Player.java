@@ -17,7 +17,7 @@ public class Player extends Entity2D {
 		
 		graphicsOffset.y = -0.50f;
 		
-		physics.friction = 3.0f;
+		physics.friction = 10.0f;
 	}
 	
 	int i = 0;
@@ -40,7 +40,7 @@ public class Player extends Entity2D {
 	}
 	
 	public void jump() {
-		physics.jump(19.0f);
+		physics.jump(20.0f);
 	}
 
 }

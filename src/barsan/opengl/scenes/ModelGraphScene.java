@@ -4,6 +4,7 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Cube;
@@ -23,6 +24,7 @@ public class ModelGraphScene extends Scene {
 
 	PointLight light = new PointLight(new Vector3(0, 10, 0));
 	AmbientLight ambientLight = new AmbientLight(Color.WHITE);
+	protected CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {

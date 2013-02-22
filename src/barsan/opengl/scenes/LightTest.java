@@ -11,6 +11,8 @@ import java.io.IOException;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
@@ -53,6 +55,10 @@ public class LightTest extends Scene {
 	float lightZ = 0.0f;
 	float pointLightY = 4.0f;
 	float linearAtt = 0.0f;
+
+	Vector3 tv = new Vector3();
+	float a = 0.0f;
+	protected CameraInput cameraInput;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -77,7 +83,8 @@ public class LightTest extends Scene {
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
-		//fogEnabled = true;
+		
+		addInput(cameraInput = new CameraInput(camera));
 		
 		gammaCorrection = new GammaCorrection(1.2f);
 		
@@ -129,7 +136,7 @@ public class LightTest extends Scene {
 				"[Space] toggles normal mapping\n" +
 				"[G] toggles a reduced gamma-correction effect";
 		
-		Yeti.get().addKeyListener(new KeyAdapter() {
+		Yeti.get().addInputProvider(new InputAdapter() {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -155,7 +162,7 @@ public class LightTest extends Scene {
 		});
 		
 		linearAtt = 1f;
-		Yeti.get().addMouseWheelListener(new MouseWheelListener() {
+		Yeti.get().addInputProvider(new InputAdapter() {
 			
 			float dist = 50.0f;
 			
@@ -177,7 +184,7 @@ public class LightTest extends Scene {
 			}
 		});
 		
-		Yeti.get().addMouseListener(new MouseAdapter() {
+		Yeti.get().addInputProvider(new InputAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if(e.getButton() != MouseEvent.BUTTON3) return;	// right-click only!
@@ -201,8 +208,6 @@ public class LightTest extends Scene {
 		});
 	}
 	
-	Vector3 tv = new Vector3();
-	float a = 0.0f;
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		a += getDelta();
@@ -223,5 +228,15 @@ public class LightTest extends Scene {
 		float lx = -25 + (float)Math.cos(a) * 25.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		super.display(drawable);
+	}
+	
+	@Override
+	public void play() {
+		cameraInput.setMouseControlled(true);
+	}
+	
+	@Override
+	public void pause() {
+		cameraInput.setMouseControlled(false);
 	}
 }

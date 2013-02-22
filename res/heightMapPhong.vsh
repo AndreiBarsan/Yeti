@@ -17,9 +17,9 @@ uniform float 	maxHeight;
 
 smooth out float	vVaryingHeightBlend;
 
-in vec4 vVertex;
-in vec3 vNormal;
-in vec2 vTexCoord;
+layout(location = 0) in vec4 vVertex;
+layout(location = 1) in vec3 vNormal;
+layout(location = 2) in vec2 vTexCoord;
 
 //smooth out vec3 	cameraSpaceVertex;
 smooth out vec3 	vVaryingNormal;

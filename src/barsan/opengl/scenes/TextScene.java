@@ -8,10 +8,13 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.glu.GLU;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.input.CameraInput;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.util.TextHelper;
 
 public class TextScene extends Scene{
+
+	protected CameraInput cameraInput;
 
 	@Override
 	public void init(GLAutoDrawable drawable) {

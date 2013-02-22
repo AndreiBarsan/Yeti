@@ -15,7 +15,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.rendering.Camera;
 
-public class CameraInput implements KeyListener, MouseListener, MouseMotionListener {
+public class CameraInput implements InputProvider, KeyListener, MouseListener, MouseMotionListener {
 	
 	private Camera camera;
 	
@@ -42,10 +42,6 @@ public class CameraInput implements KeyListener, MouseListener, MouseMotionListe
 				Yeti.screwed("Could not create mouse controller.", e);
 			}
 		}
-	}
-	
-	public CameraInput() {
-		showHelp();
 	}
 	
 	public void setCamera(Camera camera) {

@@ -100,7 +100,7 @@ public class Physics2D {
 		deltaMove.mul(delta);
 		
 		if( friction > 0.0f && (onGround || !hasWeight)) {
-			//velocity.applyFriction(friction);
+			velocity.applyFriction(friction);
 		}
 		
 		if(velocity.x < -maxXSpeed) {

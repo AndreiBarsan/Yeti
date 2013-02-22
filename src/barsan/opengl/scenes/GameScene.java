@@ -1,9 +1,6 @@
 package barsan.opengl.scenes;
 
-import java.awt.RenderingHints.Key;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -11,6 +8,8 @@ import barsan.opengl.Yeti;
 import barsan.opengl.flat.Block;
 import barsan.opengl.flat.Player;
 import barsan.opengl.flat.World2D;
+import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
@@ -23,8 +22,12 @@ public class GameScene extends Scene {
 
 	World2D world;
 	Player player;
+
+	InputPoller poller = new InputPoller();
+	protected CameraInput cameraInput;
 	
-	class InputPoller extends KeyAdapter {
+	
+	class InputPoller extends InputAdapter {
 		// Quick hacky class to test physics
 		public float move;
 		
@@ -56,8 +59,6 @@ public class GameScene extends Scene {
 		}
 	}
 	
-	InputPoller poller = new InputPoller();
-	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
@@ -70,12 +71,14 @@ public class GameScene extends Scene {
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		shadowsEnabled = true;
 		
+		addInput(cameraInput = new CameraInput(camera));
+		
 		// Let's set up the level
 		world = new World2D(this);
 		world.addEntity(player = new Player(new Vector2(0.0f, 0.0f)));
 		player.getGraphics().getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
 		
-		Yeti.get().addKeyListener(poller);
+		Yeti.get().addInputProvider(poller);
 		
 		world.addEntity(new Block(new Rectangle(-5, -10, 40, 1)));
 		world.addEntity(new Block(new Rectangle(25, -20, 20, 4)));
@@ -88,7 +91,7 @@ public class GameScene extends Scene {
 		world.update(getDelta());
 		super.display(drawable);
 		
-		player.getPhysics2d().acceleration.x = 6.0f * poller.move;
+		player.getPhysics2d().acceleration.x = 300.0f * poller.move;
 		if(poller.move != 0) {
 			player.wantsToWalk = true;
 		} else {
@@ -97,5 +100,15 @@ public class GameScene extends Scene {
 		if(poller.jmp) {
 			player.jump();
 		}
+	}
+	
+	@Override
+	public void play() {
+		cameraInput.setMouseControlled(true);
+	}
+	
+	@Override
+	public void pause() {
+		cameraInput.setMouseControlled(false);
 	}
 }
