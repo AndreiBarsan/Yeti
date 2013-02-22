@@ -150,7 +150,7 @@ public class Scene {
 	 * @param engine	Reference to the central engine.
 	 * @param next		(NYI) The next scene to transition to.
 	 */
-	public void postExitFlag(Yeti engine, Scene next) {
+	public void beginExit(Yeti engine, Scene next) {
 		exiting = true;
 		this.engine = engine;
 	}
@@ -158,6 +158,7 @@ public class Scene {
 	
 	protected void exit() {
 		// Temporary cleanup behavior - at the moment, scenes are independent of each other
+		pause();
 		ResourceLoader.cleanUp();
 		renderer.dispose(Yeti.get().gl);
 		engine.transitionFinished();

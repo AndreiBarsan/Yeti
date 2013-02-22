@@ -66,6 +66,16 @@ public class Vector2 {
 		return this;
 	}
 	
+	public Vector2 applyFrictionX(float amount) {
+		if(x > 0) {
+			x = Math.max(0.0f, x - amount);
+		} else if(x < 0) {
+			x = Math.min(x + amount, 0.0f);
+		}
+		
+		return this;
+	}
+	
 	public float angle() {
 		float a = (float)Math.atan2(y, x) * MathUtil.RAD_TO_DEG;
 		if(a < 360.0f) a += 360.0f;

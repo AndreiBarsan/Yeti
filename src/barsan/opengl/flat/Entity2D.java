@@ -13,9 +13,9 @@ import barsan.opengl.rendering.StaticModelInstance;
 
 public class Entity2D {
 	// has graphics & position components
-	ModelInstance graphics;
-	Physics2D physics;
-	World2D world;
+	protected ModelInstance graphics;
+	protected Physics2D physics;
+	protected World2D world;
 	
 	protected Vector3 graphicsOffset = new Vector3();
 	

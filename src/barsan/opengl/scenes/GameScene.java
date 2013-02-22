@@ -13,6 +13,7 @@ import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.planetHeads.Coin;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -25,7 +26,6 @@ public class GameScene extends Scene {
 
 	InputPoller poller = new InputPoller();
 	protected CameraInput cameraInput;
-	
 	
 	class InputPoller extends InputAdapter {
 		// Quick hacky class to test physics
@@ -64,8 +64,9 @@ public class GameScene extends Scene {
 		super.init(drawable);
 
 		ResourceLoader.loadCubeTexture("skybox01", "jpg");
-		ResourceLoader.loadObj("planetHead", "planetHead.obj");
-		//ResourceLoader.loadObj("planetHead", "planetHead/exp_18.obj");
+		ResourceLoader.loadObj("coin", "coin.obj");
+		ResourceLoader.loadTexture("coin", "coinTex.png");
+		ResourceLoader.loadTexture("block01", "cubetex.png");
 		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
@@ -80,8 +81,13 @@ public class GameScene extends Scene {
 		
 		Yeti.get().addInputProvider(poller);
 		
-		world.addEntity(new Block(new Rectangle(-5, -10, 40, 1)));
-		world.addEntity(new Block(new Rectangle(25, -20, 20, 4)));
+		world.addEntity(new Block(new Rectangle(-5, -10, 40, 1), ResourceLoader.texture("block01")));
+		world.addEntity(new Block(new Rectangle(25, -20, 20, 4), ResourceLoader.texture("block01")));
+		world.addEntity(new Block(new Rectangle(45, -15, 15, 12), ResourceLoader.texture("block01")));
+		
+		for(int i = 0; i < 10; i++) {
+			world.addEntity(new Coin(new Vector2(5 * i, -3.5f)));
+		}
 		
 		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
 	}
@@ -91,15 +97,14 @@ public class GameScene extends Scene {
 		world.update(getDelta());
 		super.display(drawable);
 		
-		player.getPhysics2d().acceleration.x = 300.0f * poller.move;
+		player.getPhysics2d().acceleration.x = 400.0f * poller.move;
 		if(poller.move != 0) {
 			player.wantsToWalk = true;
 		} else {
 			player.wantsToWalk = false;
 		}
-		if(poller.jmp) {
-			player.jump();
-		}
+		
+		player.wantsToJump = poller.jmp;
 	}
 	
 	@Override

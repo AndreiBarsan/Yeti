@@ -1,11 +1,12 @@
 package barsan.opengl.rendering;
 
-import java.util.ArrayList;
-
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.TextureComponent;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 public class StaticModelInstance extends ModelInstance {
 
@@ -91,5 +92,11 @@ public class StaticModelInstance extends ModelInstance {
 
 	public void setModel(StaticModel model) {
 		this.model = model;
+	}
+	
+	@Override
+	public void setTexture(Texture texture) {
+		material.setTexture(texture);
+		material.addComponent(new TextureComponent());
 	}
 }

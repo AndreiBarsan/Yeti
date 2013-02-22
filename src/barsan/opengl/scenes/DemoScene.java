@@ -49,21 +49,14 @@ public class DemoScene extends Scene {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
-			
-		try {
-			ResourceLoader.loadObj("sphere", "prettysphere.obj");
-			ResourceLoader.loadObj("texcube", "texcube.obj");
-			
-			ResourceLoader.loadTexture("heightmap01", "height.png");
-			ResourceLoader.loadTexture("grass", "grass01.jpg");
-			ResourceLoader.loadTexture("stone", "stone03.jpg");
-			ResourceLoader.loadTexture("stone.bump", "stone03.bump.jpg");
-			ResourceLoader.loadCubeTexture("skybox01", "jpg");
-			
-		} catch (IOException e) {
-			System.out.println("Could not load the resources.");
-			e.printStackTrace();
-		}
+		
+		ResourceLoader.loadObj("sphere", "prettysphere.obj");
+		ResourceLoader.loadObj("texcube", "texcube.obj");
+		ResourceLoader.loadTexture("heightmap01", "height.png");
+		ResourceLoader.loadTexture("grass", "grass01.jpg");
+		ResourceLoader.loadTexture("stone", "stone03.jpg");
+		ResourceLoader.loadTexture("stone.bump", "stone03.bump.jpg");
+		ResourceLoader.loadCubeTexture("skybox01", "jpg");
 		
 		//blueShit = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 		//blueShit.setShininess(16);

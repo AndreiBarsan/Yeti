@@ -8,6 +8,7 @@ import barsan.opengl.math.Segment2D;
 import barsan.opengl.math.Vector2;
 
 public class Physics2D {
+	
 	public Rectangle bounds;
 	public Vector2 velocity;
 	public Vector2 acceleration;
@@ -26,6 +27,12 @@ public class Physics2D {
 	
 	float maxXSpeed = 20.0f;
 	float maxYSpeed = 40.0f;
+	
+	float jumpTimeTotal = 0.1f;
+	float jumpTimeLeft = 0.0f;
+	
+	public boolean jumpInput = false;
+	public float jumpStrength = 300.0f;
 	
 	/**
 	 * Creates a weightless, non-solid entity. Useful for f
@@ -47,7 +54,7 @@ public class Physics2D {
 	}
 	
 	public boolean collidesWith(Physics2D other) {
-		return bounds.intersects(other.bounds);
+		return bounds.overlaps(other.bounds);
 	}
 	
 	public Rectangle getBounds() {
@@ -87,20 +94,12 @@ public class Physics2D {
 		return null != (lastContact = w.pollSegment(new Segment2D(current, old), this));
 	}
 	
-	void jump(float force) {
-		if(onGround) {
-			velocity.y += force;
-		}
-	}
-	
 	void update(float delta) {
 		World2D w = owner.world;
 		velocity.add(new Vector2(acceleration).mul(delta));
-		Vector2 deltaMove = new Vector2(velocity);
-		deltaMove.mul(delta);
 		
-		if( friction > 0.0f && (onGround || !hasWeight)) {
-			velocity.applyFriction(friction);
+		if( friction > 0.0f ) {
+			velocity.applyFrictionX(friction * delta);
 		}
 		
 		if(velocity.x < -maxXSpeed) {
@@ -114,23 +113,37 @@ public class Physics2D {
 				boolean wasOnGround = onGround;
 				boolean nowOnGround = checkOnGround();
 				
+				if(jumpTimeLeft > 0.0f) {
+					if(jumpInput) {
+						jumpTimeLeft = Math.max(0.0f, jumpTimeLeft - delta);
+						velocity.y += jumpStrength * delta;
+					}
+				}
+				
 				if(nowOnGround) {
 					if( ! wasOnGround) {
+						jumpTimeLeft = jumpTimeTotal;
 						// We just landed
 						if(velocity.y <= 0.0f) {
 							System.out.println("LANDED");
 							w.moveToContact(this, lastContact);
 							velocity.y = 0.0f;
 						} else {
-							//System.out.println("Don't mind me, jumping through platform!");
+							System.out.println("Don't mind me, jumping through platform!");
 							nowOnGround = false;
 						}
 					}					
-				} else {
+				} else {					
 					if(wasOnGround) {
 						System.out.println("Just jumped!");
 					}
+					
+					if(jumpTimeLeft > 0.0f && !jumpInput) {
+						jumpTimeLeft = 0.0f;
+					}
+					
 					velocity.y -= w.getGravity() * delta;
+					
 					if(velocity.y < -maxYSpeed) {
 						velocity.y = -maxYSpeed;
 					}
@@ -143,15 +156,15 @@ public class Physics2D {
 			}
 		}
 		
+		Vector2 deltaMove = new Vector2(velocity);
+		deltaMove.mul(delta);
+		
 		if(solid) {
-			// Now to perform sideways checks - am I hitting a wall left, right
-			// or on top?
-			// TODO
+			w.potentialStep(bounds, deltaMove);
 		}
 		
 		// Apply movement
 		bounds.x += deltaMove.x;
 		bounds.y += deltaMove.y;
-		
 	}
 }

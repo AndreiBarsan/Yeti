@@ -64,17 +64,11 @@ public class LightTest extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		try {
-			ResourceLoader.loadObj("monkey", "monkey.obj");
-			ResourceLoader.loadObj("sphere", "sphere.obj");
-			
-			ResourceLoader.loadTexture("floor", "floor.jpg");
-			ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
-			
-			ResourceLoader.loadCubeTexture("test", "png");
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
+		ResourceLoader.loadObj("monkey", "monkey.obj");
+		ResourceLoader.loadObj("sphere", "sphere.obj");
+		ResourceLoader.loadTexture("floor", "floor.jpg");
+		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
+		ResourceLoader.loadCubeTexture("test", "png");
 		
 		shadowsEnabled = true;
 		
@@ -93,8 +87,7 @@ public class LightTest extends Scene {
 		floorMat.addComponent(new TextureComponent());
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
-		floorMat.setShininess(256);
-		
+		floorMat.setShininess(128);
 		
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();

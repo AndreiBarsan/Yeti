@@ -174,8 +174,8 @@ public class ResourceLoader {
 		}
 	}
 
-	public static void loadTexture(String name, String fileName) throws GLException, IOException {
-		//Texture tex = TextureIO.newTexture(new File(fileName), false);
+	public static void loadTexture(String name, String fileName) {
+		try {
 		TextureData tdata = TextureIO.newTextureData(
 				Yeti.get().gl.getGLProfile(),
 				new File(RESBASE + TEXTUREBASE + fileName),
@@ -187,6 +187,10 @@ public class ResourceLoader {
 		// in the Future<T> :D
 		Texture tex = TextureIO.newTexture(tdata);
 		textures.put(name, tex);
+		
+		} catch(Exception e) {
+			Yeti.screwed("Error loading texture!", e);
+		}
 	}
 	
 	public static void loadAllShaders(String folderName) throws IOException {

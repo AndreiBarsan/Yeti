@@ -9,6 +9,7 @@ import barsan.opengl.resources.ResourceLoader;
 public class Player extends Entity2D {
 
 	public boolean wantsToWalk = false;
+	public boolean wantsToJump = false;
 	
 	public Player(Vector2 position) {
 		super(new Rectangle(position.x, position.y, 0.9f, 1.5f), true, true,
@@ -17,7 +18,7 @@ public class Player extends Entity2D {
 		
 		graphicsOffset.y = -0.50f;
 		
-		physics.friction = 10.0f;
+		physics.friction = 200.0f;
 	}
 	
 	int i = 0;
@@ -33,14 +34,10 @@ public class Player extends Entity2D {
 			physics.velocity.y = 0.0f;
 		}
 		
+		physics.jumpInput = wantsToJump;
 		
 		((AnimatedModelInstance)graphics).playing = wantsToWalk && physics.onGround;
 		
 		super.update(delta);
 	}
-	
-	public void jump() {
-		physics.jump(20.0f);
-	}
-
 }

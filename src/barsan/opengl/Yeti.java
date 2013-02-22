@@ -134,7 +134,7 @@ public class Yeti implements GLEventListener {
 		pendingScene = newScene;
 		
 		if(currentScene != null) {	
-			currentScene.postExitFlag(this, newScene);
+			currentScene.beginExit(this, newScene);
 		} else {
 			// No scene to transition out of, so we're instantly finished
 			transitionFinished();

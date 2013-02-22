@@ -2,6 +2,7 @@ TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
  - collision checking fails at low fps (due to it being a hacky implementation)
+ - animation stretches strangely due to frame interpolation
  - view matrix straight down causes problems
  - multitexture material broken
  - actually find and write down the (rather old) matrix multiplication BUG

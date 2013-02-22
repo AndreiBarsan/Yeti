@@ -36,10 +36,31 @@ public class Rectangle {
 				&& point.y > y && point.y < y + height;
 	}
 	
-	public boolean intersects(Rectangle other) {
+	public boolean overlaps(Rectangle other) {
 		return ! ( x > other.x + other.width || x + width < other.x || y > other.y + other.height || y + height < other.y);
-//		return( (x > other.x && x < other.x + other.width || x < other.x && x + width > other.x )
-//			&& (y > other.y && y < other.y + other.height || y < other.y && y + height > other.y) );
+	}
+	
+	public Rectangle intersect(Rectangle other) {
+		assert this.overlaps(other);
+		// TODO: maybe refactor using leftmost and topmost rect. variables (as aux)
+		float outX, outY;
+		outX = Math.max(x, other.x);
+		outY = Math.min(y, other.y);
+		
+		float outW, outH;
+		if(other.x < x + width && (other.x + other.width > x + width)) {
+			outW = x + width - other.x;
+		} else {
+			outW = other.x + other.width - x;
+		}
+		
+		if(other.y < y + height && other.y + other.height > y + height) {
+			outH = y + height - other.y;
+		} else {
+			outH = other.y + other.height - y;
+		}
+		
+		return new Rectangle(outX, outY, outW, outH);
 	}
 	
 	public Rectangle copy() {

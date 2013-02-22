@@ -14,7 +14,7 @@ public class World2D {
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
 	private List<Entity2D> entities = new ArrayList<>();
-	private float gravity = 82.5f;
+	private float gravity = 70.0f;
 	
 	
 	public World2D(Scene scene) {
@@ -42,7 +42,7 @@ public class World2D {
 		Rectangle r1 = e1.bounds;
 		Rectangle r2 = e2.bounds;
 		
-		return r1.intersects(r2);
+		return r1.overlaps(r2);
 	}
 	
 	/// Tries to see if e collides with anything; if it does, return that entity
@@ -51,7 +51,7 @@ public class World2D {
 		for(Entity2D target : entities) {
 			if(!target.physics.solid) continue;
 			
-			if(target.physics.bounds.intersects(r))
+			if(target.physics.bounds.overlaps(r))
 				return target.physics;
 		}
 		
@@ -77,6 +77,21 @@ public class World2D {
 		return null;
 	}
 	
+	public void potentialStep(Rectangle object, Vector2 speed) {
+		float constraintX = 0.0f;
+		float constraintY = 0.0f;
+		
+		for(Entity2D e : entities) {
+			if(!(e.physics.solid)) continue;
+			
+			Rectangle targetR = e.physics.getBounds();
+			if(!targetR.overlaps(object)) continue;
+			
+			Rectangle intersection = targetR.intersect(object);
+			
+		}
+	}
+	
 	// Moves the mover as close as possible to obstacle, without causing
 	// a collision
 	public void moveToContact(Physics2D mover, Physics2D obstacle) {
@@ -99,7 +114,7 @@ public class World2D {
 		} else { // angle < 315
 			// BOTTOM of mover
 			// e.g. landed on something
-			mover.setPosition(mr.x, or.y + or.height);
+			mover.setPosition(mr.x, or.y + or.height + 0.0f);
 		}
 	}
 

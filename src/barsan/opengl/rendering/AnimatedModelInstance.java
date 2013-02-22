@@ -1,8 +1,10 @@
 package barsan.opengl.rendering;
 
-import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.materials.TextureComponent;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 public class AnimatedModelInstance extends ModelInstance {
 
@@ -43,7 +45,7 @@ public class AnimatedModelInstance extends ModelInstance {
 		tweenIndex += delta;
 		float step = 1 / 45.0f;
 		if(tweenIndex >= step) {
-			tweenIndex -= step;
+			while(tweenIndex > step) tweenIndex -= step;
 			
 			if( ! ( (cf <= 2 || cf >= 30 || Math.abs(cf - 16) <= 2 ) && !playing) ) {
 				cf = (cf + 1) % n;
@@ -82,5 +84,11 @@ public class AnimatedModelInstance extends ModelInstance {
 		}
 		
 		transformStack.pop();
+	}
+	
+	@Override
+	public void setTexture(Texture texture) {
+		material.setTexture(texture);
+		material.addComponent(new TextureComponent());
 	}
 }

@@ -42,7 +42,7 @@ public class Renderer {
 	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
-	private int shadowQuality = 3;
+	private int shadowQuality = 1;
 	private float omniShadowNear = 0.1f;
 	private float omniShadowFar = 100.0f;
 	
@@ -493,9 +493,7 @@ public class Renderer {
 		gl.glUseProgram(0);
 		GLUT glut = new GLUT();
 		ca.prepare(gl);
-		
-		gl.glColor3f(1.0f, 1.0f, 1.0f);
-		
+				
 		gl.glPushMatrix();
 		gl.glBegin(GL2.GL_LINES);
 			float len = 250.0f;
@@ -512,6 +510,8 @@ public class Renderer {
 			gl.glVertex3f(0.0f, 0.0f, len);
 		gl.glEnd();
 		gl.glPopMatrix();
+		
+		gl.glColor3f(1.0f, 1.0f, 1.0f);
 		
 		for(Light l : scene.lights) {
 			if(l.getType() != LightType.Directional) {
