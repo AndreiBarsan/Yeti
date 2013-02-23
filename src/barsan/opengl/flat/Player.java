@@ -38,6 +38,12 @@ public class Player extends Entity2D {
 		
 		((AnimatedModelInstance)graphics).playing = wantsToWalk && physics.onGround;
 		
+		if(wantsToWalk && physics.velocity.x < -0.05f) {
+			graphics.getTransform().updateRotation(0.0f, 1.0f, 0.0f, -90.0f);
+		} else if(wantsToWalk && physics.velocity.x > 0.05f){
+			graphics.getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
+		}
+		
 		super.update(delta);
 	}
 }

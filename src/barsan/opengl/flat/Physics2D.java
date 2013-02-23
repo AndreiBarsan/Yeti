@@ -1,10 +1,7 @@
 package barsan.opengl.flat;
 
-import javax.naming.OperationNotSupportedException;
-
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
-import barsan.opengl.math.Segment2D;
 import barsan.opengl.math.Vector2;
 
 public class Physics2D {
@@ -25,14 +22,14 @@ public class Physics2D {
 	/** Am I affected by gravity? */
 	boolean hasWeight;
 	
-	float maxXSpeed = 20.0f;
-	float maxYSpeed = 40.0f;
+	float maxXSpeed = 40.0f;
+	float maxYSpeed = 80.0f;
 	
-	float jumpTimeTotal = 0.1f;
+	float jumpTimeTotal = 0.05f;
 	float jumpTimeLeft = 0.0f;
 	
 	public boolean jumpInput = false;
-	public float jumpStrength = 350.0f;
+	public float burstJumpStrength = 1400.0f;
 	
 	/**
 	 * Creates a weightless, non-solid entity.
@@ -108,7 +105,7 @@ public class Physics2D {
 				if(jumpTimeLeft > 0.0f) {
 					if(jumpInput) {
 						jumpTimeLeft = Math.max(0.0f, jumpTimeLeft - delta);
-						velocity.y += jumpStrength * delta;
+						velocity.y += burstJumpStrength * delta;
 					}
 				}
 				
@@ -117,17 +114,16 @@ public class Physics2D {
 						jumpTimeLeft = jumpTimeTotal;
 						// We just landed
 						if(velocity.y <= 0.0f) {
-							System.out.println("LANDED");
-							w.moveToContact(this, lastContact);
+							owner.landed();
+							w.moveToContactFloor(this, lastContact);
 							velocity.y = 0.0f;
 						} else {
-							System.out.println("Don't mind me, jumping through platform!");
 							nowOnGround = false;
 						}
 					}					
 				} else {					
 					if(wasOnGround) {
-						System.out.println("Just jumped!");
+						owner.jumped();
 					}
 					
 					if(jumpTimeLeft > 0.0f && !jumpInput) {
@@ -143,29 +139,54 @@ public class Physics2D {
 				
 				onGround = nowOnGround;
 			}
-			else {
-				
-			}
 		}
 		
 		Vector2 deltaMove = new Vector2(velocity);
 		deltaMove.mul(delta);
 		
 		if(solid && hasWeight) {
+			// Sideways checks
 			Rectangle moved = new Rectangle(bounds);
 			moved.x += deltaMove.x;
-			//moved.y += deltaMove.y;
 
-			if(w.testRectangleFree(bounds, moved)) {
+			Rectangle result = w.testRectangleFree(bounds, moved);
+			if(result == null) {
 				bounds.x += deltaMove.x;
 			} else {
-				System.out.println("Moved rec occupied");
+				
+				if(deltaMove.y == 0) {
+					owner.hitWallSide();
+					if(deltaMove.x > 0.01f) {
+						if(bounds.x < result.x) {
+							bounds.x = result.x - bounds.width;
+							velocity.x = 0.0f;
+						}
+					} else if(deltaMove.x < -0.01f) {
+						if(bounds.x > result.x) {
+							bounds.x = result.x + result.width;
+							velocity.x = 0.0f;
+						}
+					}
+				} else {
+					if(deltaMove.y > 0.01f && moved.y < result.y) {
+						// Hit a ceiling
+						bounds.x += deltaMove.x;
+						jumpTimeLeft = 0.0f;
+						owner.hitCeiling();
+						velocity.y = 0.0f;		// here, some bounce could be introduced
+					} else if(deltaMove.y < -0.01f && moved.y < result.y) {
+						
+						// This is just hacky
+						if(moved.x > result.x && moved.x + moved.width < result.x + result.width) {
+							bounds.x += deltaMove.x;
+						}
+					}
+				}
+				
 			}
-			
 		} else {
 			// Apply movement
 			bounds.x += deltaMove.x;
-			
 		}
 		
 		bounds.y += deltaMove.y;

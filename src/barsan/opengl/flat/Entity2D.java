@@ -51,4 +51,9 @@ public class Entity2D {
 	public Physics2D getPhysics2d() {
 		return physics;
 	}
+	
+	/* pp */ void hitWallSide() { }
+	/* pp */ void jumped() { }
+	/* pp */ void landed() { }
+	/* pp */ void hitCeiling() { }
 }

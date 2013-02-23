@@ -12,6 +12,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
@@ -45,6 +46,10 @@ public class Renderer {
 	private int shadowQuality = 3;
 	private float omniShadowNear = 0.1f;
 	private float omniShadowFar = 100.0f;
+	
+	private Vector3 directionalShadowCenter = new Vector3();
+	private Vector2 directionalShadowSize = new Vector2(100, 100);
+	private Vector2 directionalShadowDepth = new Vector2(-80, 100);
 	
 	TextureAttachment tta;
 	
@@ -253,9 +258,13 @@ public class Renderer {
 				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 				
 				DirectionalLight dlight = (DirectionalLight)light;
-				OrthographicCamera oc = new OrthographicCamera(100, 100);
-				oc.setFrustumFar(180);
-				oc.setFrustumNear(-80);
+				OrthographicCamera oc = new OrthographicCamera(
+						(int) directionalShadowSize.x,
+						(int) directionalShadowSize.y
+						);
+				oc.setPosition(directionalShadowCenter);
+				oc.setFrustumNear(directionalShadowDepth.x);
+				oc.setFrustumFar(directionalShadowDepth.y);
 				
 				Vector3 ld = dlight.getDirection();
 				oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
@@ -567,6 +576,23 @@ public class Renderer {
 
 	public void setOmniShadowFar(float omniShadowFar) {
 		this.omniShadowFar = omniShadowFar;
+	}
+
+	public Vector2 getDirectionalShadowDepth() {
+		return directionalShadowDepth;
+	}
+
+	public void setDirectionalShadowDepth(Vector2 directionalShadowDepth) {
+		assert directionalShadowDepth.x < directionalShadowDepth.y : "x = near; y = far; x must be smaller than y";
+		this.directionalShadowDepth = directionalShadowDepth;
+	}
+
+	public Vector2 getDirectionalShadowSize() {
+		return directionalShadowSize;
+	}
+
+	public void setDirectionalShadowSize(Vector2 directionalShadowSize) {
+		this.directionalShadowSize = directionalShadowSize;
 	}
 
 }

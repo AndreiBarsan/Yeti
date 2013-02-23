@@ -97,7 +97,7 @@ public class Rectangle {
 	
 	@Override
 	public String toString() {
-		return String.format("[x=%d, y=%d, w=%d, h=%d]", x, y, width, height);
+		return String.format("[x=%f, y=%f, w=%f, h=%f]", x, y, width, height);
 	}
 	
 }

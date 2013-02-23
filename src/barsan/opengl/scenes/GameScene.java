@@ -81,9 +81,14 @@ public class GameScene extends Scene {
 		
 		Yeti.get().addInputProvider(poller);
 		
-		world.addEntity(new Block(new Rectangle(-5, -10, 40, 1), ResourceLoader.texture("block01")));
+		addBlock(-10, -20, 5, 40);
+		world.addEntity(new Block(new Rectangle(-5, -14, 40, 4), ResourceLoader.texture("block01")));
 		world.addEntity(new Block(new Rectangle(25, -20, 20, 4), ResourceLoader.texture("block01")));
 		world.addEntity(new Block(new Rectangle(45, -15, 15, 12), ResourceLoader.texture("block01")));
+		
+		for(int i = 0; i < 10; i++) {
+			addBlock(i * 10, -0.6f + i * 2.5f, 8, 2);
+		}
 		
 		for(int i = 0; i < 10; i++) {
 			world.addEntity(new Coin(new Vector2(5 * i, -3.5f)));
@@ -92,11 +97,45 @@ public class GameScene extends Scene {
 		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
 	}
 	
+	int lastSector = 0;
+	int currentSector = 0;
+	float sectorHeight = 15.0f;
+	float spc = 0.9f;
+	float currentY = 0.0f;
+	float cSpeed = 10000.0f * sectorHeight;
+	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		world.update(getDelta());
 		super.display(drawable);
 		
+		// Handles "smart" camera that doesn't spazz out and follow each jump
+		// of the player
+		Rectangle pr = player.getPhysics2d().getBounds();
+		
+		while(pr.y > currentSector * sectorHeight + sectorHeight * spc) {
+			// Passed into the upper sector
+			// [while] to support extreme cases
+			currentSector++;
+		}
+		
+		while(pr.y < currentSector * sectorHeight - sectorHeight * spc) {
+			currentSector--;
+		}
+
+		float delta = getDelta();
+		float goal = currentSector * sectorHeight + 5;
+		if(currentY < goal) {
+			currentY = Math.min(goal, currentY + cSpeed * delta);
+		} else if(currentY > goal) {
+			currentY = Math.max(goal, currentY - cSpeed * delta);
+		}
+		
+		Vector3 pp = new Vector3(pr.x + pr.width / 2, currentY, 0.0f);
+		Vector3 vs = new Vector3(pp.x, pp.y + 15.0f, -45.0f);
+		camera.lookAt(vs, pp, Vector3.UP.copy());
+		
+		// Handle controls (rudimentarily)
 		player.getPhysics2d().acceleration.x = 400.0f * poller.move;
 		if(poller.move != 0) {
 			player.wantsToWalk = true;
@@ -115,5 +154,9 @@ public class GameScene extends Scene {
 	@Override
 	public void pause() {
 		cameraInput.setMouseControlled(false);
+	}
+	
+	private void addBlock(float x, float y, float w, float h) {
+		world.addEntity(new Block(new Rectangle(x, y, w, h), ResourceLoader.texture("block01")));
 	}
 }
