@@ -109,7 +109,6 @@ public abstract class Material {
 	
 	public void render(RendererState rendererState, Model model) {
 		GL gl = rendererState.gl;
-		enableShader(rendererState);
 		
 		gl.glDepthMask(writesDepthBuffer);
 		if(checksDepthBuffer) {

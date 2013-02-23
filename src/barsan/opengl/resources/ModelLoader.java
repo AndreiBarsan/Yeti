@@ -343,7 +343,7 @@ public class ModelLoader {
 		return result;
 	}
 	
-	public static Model buildQuad(float width, float height) {
+	public static StaticModel buildQuad(float width, float height) {
 		return buildQuad(width, height, true);
 	}
 	

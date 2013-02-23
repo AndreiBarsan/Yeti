@@ -1,16 +1,13 @@
 package barsan.opengl.rendering;
 
-import java.nio.ByteBuffer;
-
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
-import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.resources.ModelLoader.Face;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -25,7 +22,7 @@ public class Billboard extends StaticModelInstance {
 		None,
 		ClampX
 	}
-	
+		
 	static class BillboardMaterial extends Material {
 	
 		static final String SHADER_NAME = "billboard";
@@ -51,6 +48,8 @@ public class Billboard extends StaticModelInstance {
 			 * 
 			 * This would be very good for smoke, for instance. Not very good
 			 * for trees, however, which need to be axis-aligned.
+			 * 
+			 * FIXME: broken
 			 */
 			switch(axisClamp) {
 				case ClampX:
@@ -66,6 +65,8 @@ public class Billboard extends StaticModelInstance {
 	
 			enableShader(rendererState);
 			shader.setUMatrix4("mvpMatrix", mvp);
+			GL2 gl = Yeti.get().gl;
+			gl.glActiveTexture(GL2.GL_TEXTURE0);	// FIXME: probably not needed
 			shader.setU1i("colorMap", 0);
 			texture.bind(rendererState.gl);
 		}
@@ -88,50 +89,19 @@ public class Billboard extends StaticModelInstance {
 	
 	// TODO: use point sprites!
 	public Billboard(GL2 gl, Texture texture, Transform transform) {
-		super(new StaticModel(gl, "billboard_tex{" + texture + "}"), new BillboardMaterial(AxisClamp.None), transform);
+		super(ModelLoader.buildQuad(texture.getAspectRatio(), 1.0f, false), new BillboardMaterial(AxisClamp.None), transform);
 		
 		getMaterial().setTexture(texture);
 		
 		b_ref = (BillboardMaterial)getMaterial();
-		
-		Face mainFace = new Face();
-		mainFace.points = new Vector3[] {
-				new Vector3( 1.0f, -1.0f, 0.0f),
-				new Vector3( 1.0f, 1.0f,  0.0f),
-				new Vector3(-1.0f, 1.0f,  0.0f),
-				new Vector3(-1.0f, -1.0f, 0.0f)
-		};
-		
-		//*
-		mainFace.texCoords = new Vector3[] {
-				new Vector3(0.0f, 0.0f, 0.0f),
-				new Vector3(0.0f, 1.0f, 0.0f),
-				new Vector3(1.0f, 1.0f, 0.0f),
-				new Vector3(1.0f, 0.0f, 0.0f)
-		};
-		//*/
-		model.master.faces.add(mainFace);
-		model.setPointsPerFace(4);
-		model.buildVBOs();
 	}
 	
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		GL2 gl = Yeti.get().gl.getGL2();
-
-		ByteBuffer out = ByteBuffer.allocate(1);
-		gl.glGetBooleani_v(GL2.GL_BLEND, 0, out);
-		
-		gl.glEnable(GL2.GL_BLEND);
-		// TODO: blending manager that has a stack of states
-		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-		
+		// Previous state changes are no longer needed; billboards are now
+		// getting rendered completely separately and the renderer handles the
+		// state changes itself.
 		super.render(rendererState, transformStack);
-		
-		if(out.get(0) != 1) {
-			// Only disable if blending had been disabled before
-			gl.glDisable(GL2.GL_BLEND);
-		}
 	}
 	
 	public AxisClamp getAxisClamp() {

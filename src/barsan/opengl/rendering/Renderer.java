@@ -418,6 +418,8 @@ public class Renderer {
 	}
 	
 	private void renderOccluders(GL3 gl, final Scene scene) {
+		gl.glDepthMask(true);
+		// Quick tip: glClear(GL_DEPTH_BUFFER_BIT) does nothing if glDepthMask is not enabled!
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
@@ -428,10 +430,11 @@ public class Renderer {
 		}
 		
 		// Render the billboards separately (always forward)
-		for(Billboard b : scene.billbords) {
+		/*
+		for(Billboard b : scene.billboards) {
 			b.render(state, matrixstack);
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
-		}
+		}*/
 	}
 	
 	private void renderScene(GL3 gl, final Scene scene) {
@@ -463,14 +466,14 @@ public class Renderer {
 		}
 		
 		// Render the billboards separately (always forward)
-		for(Billboard b : scene.billbords) {
+		for(Billboard b : scene.billboards) {
 			b.render(state, matrixstack);
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 	}
 	
 	private void prepareBillboards(final Scene scene) {
-		Collections.sort(scene.billbords, new Comparator<Billboard>() {
+		Collections.sort(scene.billboards, new Comparator<Billboard>() {
 			@Override
 			public int compare(Billboard o1, Billboard o2) {
 				Vector3 cpos = scene.getCamera().getPosition();

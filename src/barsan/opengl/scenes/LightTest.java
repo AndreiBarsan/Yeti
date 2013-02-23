@@ -118,7 +118,9 @@ public class LightTest extends Scene {
 				0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
-//		addModelInstance(new Billboard(Yeti.get().gl, ResourceLoader.texture("floor")));
+		Billboard bb;
+		addBillboard(bb = new Billboard(Yeti.get().gl, ResourceLoader.texture("floor")));
+		bb.getTransform().updateTranslate(0.0f, 5.0f, 0.0f);
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
 		
@@ -206,8 +208,9 @@ public class LightTest extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		a += getDelta();
-		
+		float delta = getDelta();
+		a += delta;
+		System.out.println(delta);
 		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
 		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
 		test_sl.getDirection().y = -20.0f;

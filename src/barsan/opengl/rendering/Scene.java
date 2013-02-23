@@ -21,7 +21,7 @@ public class Scene {
 	protected ArrayList<ModelInstance> modelInstances = new ArrayList<>();
 	
 	// Billboards get special treatment as they're transparent
-	protected ArrayList<Billboard> billbords = new ArrayList<>();
+	protected ArrayList<Billboard> billboards = new ArrayList<>();
 	
 	protected Renderer renderer;
 	protected Camera camera;
@@ -57,7 +57,7 @@ public class Scene {
 		// Prepare the renderer; use the default renderer
 		renderer = new Renderer(Yeti.get().gl.getGL3());
 		
-		lastTime = System.currentTimeMillis();
+		lastTime = System.nanoTime();
 	}
 
 	public void display(GLAutoDrawable drawable) {
@@ -87,12 +87,22 @@ public class Scene {
 			Yeti.get().gl.glEnable(GL2.GL_DEPTH_TEST);
 		}
 		
-		lastTime = System.currentTimeMillis();
+		lastTime = System.nanoTime();
 	}
 
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		// This shouldn't be the default behavior! (save for a few small toy apps)
-		//camera.reshape(x, y, width, height);
+		// TODO: this isn't enough - the renderer needs to resize its postprocess
+		// buffers as well - not a priority
+		/*
+		camera.width = width;
+		camera.height = height;
+		camera.refreshProjection();
+		*/
+	}
+	
+	public void setCamera(Camera camera) {
+		// FIXME: connected camera inputs might have a problem with this
+		this.camera = camera;
 	}
 	
 	public Camera getCamera() {
@@ -100,17 +110,22 @@ public class Scene {
 	}
 	
 	public float getDelta() {
-		return ((float)(System.currentTimeMillis() - lastTime)) / 1000.0f;
+		return (float) (((double)(System.nanoTime() - lastTime)) / 1000000000.0d);
 	}
 
 	public void addModelInstance(ModelInstance modelInstance) {
+		assert (! (modelInstance instanceof Billboard)) : "Billboards should be handled separately!"; 
 		modelInstances.add(modelInstance);
 	}
 	
 	public void removeModelInstance(ModelInstance modelInstance) {
 		modelInstances.remove(modelInstance);
 	}
-	
+
+	public void addBillboard(Billboard billboard) {
+		billboards.add(billboard);
+	}
+
 	public void addInput(InputProvider inputProvider) {
 		inputProviders.add(inputProvider);
 		Yeti.get().addInputProvider(inputProvider);

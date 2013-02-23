@@ -1,4 +1,4 @@
-#version 330
+#version 400 core
 
 uniform sampler2D colorMap;
 
@@ -8,5 +8,4 @@ out vec4 vFragColor;
 
 void main(void) {
 	vFragColor = texture(colorMap, vVaryingTexCoords);
-	
 }

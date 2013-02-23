@@ -38,19 +38,18 @@ public abstract class Camera {
 	private Matrix4 vm = new Matrix4();
 	
 	public Camera(Vector3 position, Vector3 direction, int width, int height) {
-		this(position, direction, new Vector3(0.0f, 1.0f, 0.0f), width, height);
+		this(position, direction, new Vector3(0.0f, 1.0f, 0.0f), width, height, DEFAULT_NEAR, DEFAULT_FAR);
 	}
 	
-	public Camera(Vector3 position, Vector3 direction, Vector3 up, int width, int height) {
+	public Camera(Vector3 position, Vector3 direction, Vector3 up, int width, int height,
+			float near, float far) {
 		this.direction = direction;
 		this.eyePosition = position;
 		this.width = width;
 		this.height = height;
 		this.up = up;
-		
-		frustumNear = DEFAULT_NEAR;
-		frustumFar = DEFAULT_FAR;
-		
+		this.frustumNear = near;
+		this.frustumFar = far;
 		currentRotation = new Quaternion(direction, 0);
 		
 		projectionDirty = true;

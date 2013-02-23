@@ -146,12 +146,12 @@ public class MenuScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		SceneHelper.quickSetup(this);
+		SceneHelper.quickSetup2D(this);
 		ResourceLoader.loadTexture("background", "menuBackground.png");
 		
 		Billboard bb;
-		addModelInstance(bb = new Billboard(Yeti.get().gl, ResourceLoader.texture("background")));
-		bb.getTransform().updateTranslate(0.0f, 0.0f, -1.0f);
+		addBillboard(bb = new Billboard(Yeti.get().gl, ResourceLoader.texture("background")));
+		bb.getTransform().updateTranslate(0.0f, 0.0f, 0.0f);
 		
 		menu.addEntry(menu.new MenuEntry("Begin!", new TransitionAction(new GameScene())));
 		menu.addEntry(menu.new MenuEntry("Light test", new TransitionAction(new LightTest())));
