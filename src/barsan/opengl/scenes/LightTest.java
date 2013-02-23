@@ -17,6 +17,7 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.Billboard;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Scene;
@@ -116,6 +117,8 @@ public class LightTest extends Scene {
 				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 				0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
+		
+//		addModelInstance(new Billboard(Yeti.get().gl, ResourceLoader.texture("floor")));
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
 		

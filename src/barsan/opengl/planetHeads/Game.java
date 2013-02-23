@@ -13,6 +13,6 @@ public class Game {
 		frame.setSize(yeti.settings.width, yeti.settings.height);
 		
 		yeti.startApplicationLoop(null, frame, frame, new AWTFactory());
-		yeti.settings.lastSceneIndex = 2;
+		yeti.settings.lastSceneIndex = 4;
 	}
 }

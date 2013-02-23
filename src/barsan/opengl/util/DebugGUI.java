@@ -1,5 +1,7 @@
 package barsan.opengl.util;
 
+import java.awt.Font;
+
 import javax.media.opengl.GLAnimatorControl;
 
 import barsan.opengl.Yeti;
@@ -11,6 +13,7 @@ public class DebugGUI extends GUI {
 	GLAnimatorControl animator;
 	Camera camera;
 	public String info = "";
+	private final Font debugFont = new Font(Font.MONOSPACED, 0, 16);
 	
 	public DebugGUI(GLAnimatorControl glAnimatorControl, Camera camera) {
 		this.animator = glAnimatorControl;
@@ -22,6 +25,7 @@ public class DebugGUI extends GUI {
 		float fps = animator.getLastFPS();
 		
 		Yeti.get().gl.glUseProgram(0);
+		TextHelper.setFont(debugFont);
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{
 			Vector3 cp = camera.getPosition();
