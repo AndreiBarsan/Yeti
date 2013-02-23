@@ -78,7 +78,7 @@ public class LightTest extends Scene {
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
-		
+		camera.setPosition(new Vector3(0.0f, 20.0f, 0.0f));
 		addInput(cameraInput = new CameraInput(camera));
 		
 		gammaCorrection = new GammaCorrection(1.2f);
@@ -117,10 +117,6 @@ public class LightTest extends Scene {
 				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 				0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
-		
-		Billboard bb;
-		addBillboard(bb = new Billboard(Yeti.get().gl, ResourceLoader.texture("floor")));
-		bb.getTransform().updateTranslate(0.0f, 5.0f, 0.0f);
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
 		
@@ -210,7 +206,7 @@ public class LightTest extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		float delta = getDelta();
 		a += delta;
-		System.out.println(delta);
+		
 		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
 		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
 		test_sl.getDirection().y = -20.0f;
@@ -224,7 +220,7 @@ public class LightTest extends Scene {
 		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
 		test_dl.getDirection().set(tv).normalize();
 
-		float lx = -25 + (float)Math.cos(a) * 25.0f;
+		float lx = (float)Math.cos(a) * 30.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		super.display(drawable);
 	}

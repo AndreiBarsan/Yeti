@@ -1,19 +1,17 @@
 #version 400 core
 
-uniform bool 		samplingCube;
 uniform samplerCube cubeMap;
-uniform sampler2D 	derpMap;
+uniform bool 		useGammaCorrection;
+uniform float 		invGamma;
 
-smooth in vec3 vVaryingTexCoords;
+smooth in vec3 		vVaryingTexCoords;
 
-out vec4 vFragColor;
+out vec4 			vFragColor;
 
-void main(void) {
-	
-	if(samplingCube) {
-		vFragColor = texture(cubeMap, vVaryingTexCoords);
-	}
-	else {
-		vFragColor = texture(derpMap, vVaryingTexCoords.xy);
+void main(void) {	
+	vFragColor = texture(cubeMap, vVaryingTexCoords);
+
+	if(useGammaCorrection) {
+		vFragColor = pow(vFragColor, vec4(invGamma) );
 	}
 }

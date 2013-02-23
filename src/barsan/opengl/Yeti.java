@@ -43,13 +43,14 @@ import barsan.opengl.util.Settings;
 import com.jogamp.opengl.util.Animator;
 
 /**
+ * The Yeti OpenGL game engine. Licensed under the BSD 2-clause license.
  * @author Andrei Barsan
- * =============================================================================
  */
 public class Yeti implements GLEventListener {
 	
 	// Miscellaneous settings
 	public Settings settings;
+	
 	// Logging flags
 	public boolean warnings = true;
 	public boolean debug = true;
@@ -62,7 +63,8 @@ public class Yeti implements GLEventListener {
 	// I draw on this
 	private Component canvasHost;
 	
-	// Swing application Yeti is hosted in
+	// Swing application Yeti is hosted in (can be null if Yeti is runing in a
+	// "dedicated" AWT frame.
 	private App hostApp;
 	
 	// Active OpenGL context. Use GL3.0 by default, with backwards compatibility
@@ -72,12 +74,15 @@ public class Yeti implements GLEventListener {
 	// Keeps everything in sync.
 	private final Animator animator;
 	
-	volatile boolean pendingInit = false;	// TODO: better interaction with input thread
-	private Scene pendingScene;	// Used in transitions
+	boolean pendingInit = false;	// TODO: better interaction with input thread
+	private Scene pendingScene;		// Used in transitions
+	
+	// Detects abnormal contex resets
+	boolean engineInitialized = false;
 	
 	/**
 	 * Iterating through a package to find its classes is not as trivial
-	 * as it might seem, so this will do. It's just tempament anyway.
+	 * as it might seem, so this will do. It's just tempanent anyway.
 	 */
 	static Class<?>[] availableScenes = new Class[] {
 			DemoScene.class,
@@ -111,8 +116,14 @@ public class Yeti implements GLEventListener {
 		}
 		
 		// Setup transient fields
-		settings.width = 1024;
-		settings.height = 768;
+		if(settings.width == 0) {
+			settings.width = 1024;
+		}
+		
+		if(settings.height == 0) {
+			settings.height = 768;
+		}
+		
 		settings.playing = false;
 		
 		// Create blank cursor
@@ -281,9 +292,6 @@ public class Yeti implements GLEventListener {
 			}
 		}
 	}
-	
-	// Combating JGLCanvas weirdness
-	boolean engineInitialized = false;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {

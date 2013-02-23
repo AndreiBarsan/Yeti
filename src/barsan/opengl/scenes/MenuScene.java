@@ -11,15 +11,15 @@ import java.util.List;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
-import com.jogamp.graph.curve.opengl.TextRenderer;
-
 import barsan.opengl.Yeti;
+import barsan.opengl.flat.Sprite;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.InputAdapter;
-import barsan.opengl.input.InputProvider;
-import barsan.opengl.rendering.Billboard;
-import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.StaticModelInstance;
+import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.SceneHelper;
 import barsan.opengl.util.TextHelper;
@@ -91,7 +91,7 @@ public class MenuScene extends Scene {
 				if(centered) {
 					x -= widthCache / 2;
 				}
-				TextHelper.drawText(x, y, text, selected ? Color.YELLOW : Color.WHITE);
+				TextHelper.drawText(x, y, text, selected ? Color.YELLOW : Color.WHITE, 2);
 			}
 		}
 		
@@ -148,15 +148,25 @@ public class MenuScene extends Scene {
 		
 		SceneHelper.quickSetup2D(this);
 		ResourceLoader.loadTexture("background", "menuBackground.png");
+		ResourceLoader.loadObj("sphere", "sphere.obj");
+		//*
+		addModelInstance(new StaticModelInstance(ResourceLoader.model("sphere"), 
+				new BasicMaterial(barsan.opengl.util.Color.RED),
+				new Transform().updateScale(1.0f)
+		));
+		//*/
 		
-		Billboard bb;
-		addBillboard(bb = new Billboard(Yeti.get().gl, ResourceLoader.texture("background")));
-		bb.getTransform().updateTranslate(0.0f, 0.0f, 0.0f);
+		
+		Sprite s;
+		addBillboard(s = new Sprite(Yeti.get().gl, ResourceLoader.texture("background")));
+		
 		
 		menu.addEntry(menu.new MenuEntry("Begin!", new TransitionAction(new GameScene())));
 		menu.addEntry(menu.new MenuEntry("Light test", new TransitionAction(new LightTest())));
 		menu.addEntry(menu.new MenuEntry("About", new DummyAction()));
 		menu.addEntry(menu.new MenuEntry("Exit", new ExitAction()));
+		
+		Renderer.renderDebug = false;
 		
 		addInput(new InputAdapter() {
 			@Override

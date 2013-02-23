@@ -20,7 +20,8 @@ public class Billboard extends StaticModelInstance {
 	
 	public enum AxisClamp {
 		None,
-		ClampX
+		ClampX,
+		ClampAll
 	}
 		
 	static class BillboardMaterial extends Material {
@@ -48,8 +49,6 @@ public class Billboard extends StaticModelInstance {
 			 * 
 			 * This would be very good for smoke, for instance. Not very good
 			 * for trees, however, which need to be axis-aligned.
-			 * 
-			 * FIXME: broken
 			 */
 			switch(axisClamp) {
 				case ClampX:
@@ -59,6 +58,9 @@ public class Billboard extends StaticModelInstance {
 				case None:
 					viewModel.clearRotation();
 					break;
+					
+				case ClampAll:
+					break;
 			}
 			
 			Matrix4 mvp = new Matrix4(projection).mul(viewModel);
@@ -66,7 +68,7 @@ public class Billboard extends StaticModelInstance {
 			enableShader(rendererState);
 			shader.setUMatrix4("mvpMatrix", mvp);
 			GL2 gl = Yeti.get().gl;
-			gl.glActiveTexture(GL2.GL_TEXTURE0);	// FIXME: probably not needed
+			gl.glActiveTexture(GL2.GL_TEXTURE0);
 			shader.setU1i("colorMap", 0);
 			texture.bind(rendererState.gl);
 		}
@@ -77,7 +79,7 @@ public class Billboard extends StaticModelInstance {
 		}
 	}
 	
-	private BillboardMaterial b_ref;
+	protected BillboardMaterial b_ref;
 	
 	// TODO: warning! don't forget to make sure this works with nesting as well!
 	// The user should be able to have (actual) models as kids of billboards

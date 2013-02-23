@@ -56,6 +56,7 @@ public class Scene {
 		
 		// Prepare the renderer; use the default renderer
 		renderer = new Renderer(Yeti.get().gl.getGL3());
+		Renderer.renderDebug = Yeti.get().debug;
 		
 		lastTime = System.nanoTime();
 	}

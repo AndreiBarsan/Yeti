@@ -13,7 +13,7 @@ public class DebugGUI extends GUI {
 	GLAnimatorControl animator;
 	Camera camera;
 	public String info = "";
-	private final Font debugFont = new Font(Font.MONOSPACED, 0, 16);
+	private final Font debugFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
 	
 	public DebugGUI(GLAnimatorControl glAnimatorControl, Camera camera) {
 		this.animator = glAnimatorControl;

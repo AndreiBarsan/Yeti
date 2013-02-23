@@ -12,8 +12,11 @@ public class TextHelper {
 	static TextRenderer ren = new TextRenderer(new Font("sans-serif", Font.PLAIN, 20));
 	
 	public static void drawText(int x, int y, String text, Color color) {
+		drawText(x, y, text, color, 1);
+	}
+	public static void drawText(int x, int y, String text, Color color, int outline) {
 		ren.setColor(Color.BLACK);
-		ren.draw(text, x + 1, y - 1);		
+		ren.draw(text, x + outline, y - outline);
 		ren.setColor(color);
 		ren.draw(text, x, y);
 	}
