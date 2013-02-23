@@ -37,7 +37,7 @@ public class Rectangle {
 	}
 	
 	public boolean overlaps(Rectangle other) {
-		return ! ( x > other.x + other.width || x + width < other.x || y > other.y + other.height || y + height < other.y);
+		return ! ( x >= other.x + other.width || x + width <= other.x || y >= other.y + other.height || y + height <= other.y);
 	}
 	
 	public Rectangle intersect(Rectangle other) {
@@ -54,10 +54,13 @@ public class Rectangle {
 		} else if(other.x < x && other.x + other.width > x + width) {
 			// Other is reeeaaally wide
 			outW = width;
-		} else if(other.x > x && other.x + other.width < x + width) {
+		} else if(other.x > x && other.x + other.width > x + width) {
 			outW = x + width - other.x;
-		} else {
+		} else if(other.x < x && other.x + other.width < x + width) {
 			outW = other.x + other.width - x;
+		} else {
+			outW = 0.0f;
+			assert false : "Something went wrong";
 		}
 		
 		if(other.y < y + height && other.y + other.height < y + height) {
@@ -66,10 +69,13 @@ public class Rectangle {
 		} else if(other.y < y && other.y + other.height > y + height) {
 			// Other is reeeaaally tall
 			outH = height;
-		} else if(other.y > y && other.y + other.height < y + height) {
+		} else if(other.y > y && other.y + other.height > y + height) {
 			outH = y + height - other.y;
-		} else {
+		} else if(other.y < y && other.y + other.height < y + height){
 			outH = other.y + other.height - y;
+		} else {
+			outH = 0.0f;
+			assert false : "Something went wrong";
 		}
 		
 		return new Rectangle(outX, outY, outW, outH);

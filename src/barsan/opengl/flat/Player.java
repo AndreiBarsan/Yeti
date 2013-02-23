@@ -12,7 +12,7 @@ public class Player extends Entity2D {
 	public boolean wantsToJump = false;
 	
 	public Player(Vector2 position) {
-		super(new Rectangle(position.x, position.y, 0.9f, 1.5f), true, true,
+		super(new Rectangle(position.x, position.y, 0.9f, 8f), true, true,
 				ResourceLoader.animatedModel("planetHeadAnimated"));
 				//ResourceLoader.model("planetHead"));
 		

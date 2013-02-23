@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Segment2D;
 import barsan.opengl.math.Vector2;
@@ -58,6 +59,16 @@ public class World2D {
 		return null;			
 	}
 	
+	public boolean testRectangleFree(Rectangle original, Rectangle r) {
+		for(Entity2D t : entities) {
+			if(!t.physics.solid) continue;
+			if(original.equals(t.physics.bounds)) continue;
+			
+			if(t.physics.bounds.overlaps(r)) return false;
+		}
+		return true;
+	}
+	
 	public Physics2D pollPosition(Vector2 position) {
 		// TODO: when using quadtrees, just see where position should be in the
 		// tree and only check that branch
@@ -84,6 +95,8 @@ public class World2D {
 	 * TODO: actually raise an event
 	 */
 	public void potentialStep(Rectangle subject, Vector2 speed) {
+		if(speed.len2() < 0.001f) return;
+		
 		float constraintX = 0.0f;
 		float constraintY = 0.0f;
 		
@@ -102,27 +115,28 @@ public class World2D {
 			// Not perfect, but should work for a very simple platformer
 			Rectangle intersection = targetR.intersect(movedRectangle);
 			if(targetR.x < movedRectangle.x) {
-				assert constraintX >= 0 : "Stuck X (squeezed from two sides)";
+				//assert constraintX >= 0 : "Stuck X (squeezed from two sides)";
 				constraintX = intersection.width;
 			} else {
-				assert constraintX <= 0 : "Stuck X (squeezed from two sides)";
+				//assert constraintX <= 0 : "Stuck X (squeezed from two sides)";
 				constraintX = -intersection.width;
 			}
 			
 			if(targetR.y < movedRectangle.y) {
-				assert constraintY >= 0 : "Stuck Y (squeezed from two sides)";
+				//assert constraintY >= 0 : "Stuck Y (squeezed from two sides)";
 				constraintY = intersection.height;
 			} else {
-				assert constraintY <= 0 : "Stuck Y (squeezed from two sides)";
+				//assert constraintY <= 0 : "Stuck Y (squeezed from two sides)";
 				constraintY = -intersection.height;
 			}
 		}
 		
 		float moveAngle = speed.angle();
-		
-		subject.x = movedRectangle.x + (float)Math.cos(moveAngle) * constraintX;
-		subject.y = movedRectangle.y + (float)Math.sin(moveAngle) * constraintY;
-		}
+		//  + (float)Math.cos(moveAngle * MathUtil.DEG_TO_RAD) * constraintX;
+		// + (float)Math.sin(moveAngle * MathUtil.DEG_TO_RAD) * constraintY;
+		subject.x = movedRectangle.x + constraintX;
+		subject.y = movedRectangle.y + constraintY;
+	}
 	
 	// Moves the mover as close as possible to obstacle, without causing
 	// a collision
@@ -146,7 +160,9 @@ public class World2D {
 		} else { // angle < 315
 			// BOTTOM of mover
 			// e.g. landed on something
-			mover.setPosition(mr.x, or.y + or.height + 0.0f);
+			mover.setPosition(mr.x, or.y + or.height);
+			
+			assert(!mr.overlaps(or)) : "The contact should no longer be true";
 		}
 	}
 

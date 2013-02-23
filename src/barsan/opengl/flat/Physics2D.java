@@ -32,10 +32,10 @@ public class Physics2D {
 	float jumpTimeLeft = 0.0f;
 	
 	public boolean jumpInput = false;
-	public float jumpStrength = 300.0f;
+	public float jumpStrength = 350.0f;
 	
 	/**
-	 * Creates a weightless, non-solid entity. Useful for f
+	 * Creates a weightless, non-solid entity.
 	 * @param world
 	 * @param position
 	 */
@@ -152,11 +152,22 @@ public class Physics2D {
 		deltaMove.mul(delta);
 		
 		if(solid && hasWeight) {
-			w.potentialStep(bounds, deltaMove);
+			Rectangle moved = new Rectangle(bounds);
+			moved.x += deltaMove.x;
+			//moved.y += deltaMove.y;
+
+			if(w.testRectangleFree(bounds, moved)) {
+				bounds.x += deltaMove.x;
+			} else {
+				System.out.println("Moved rec occupied");
+			}
+			
+		} else {
+			// Apply movement
+			bounds.x += deltaMove.x;
+			
 		}
 		
-		// Apply movement
-		bounds.x += deltaMove.x;
 		bounds.y += deltaMove.y;
 	}
 }
