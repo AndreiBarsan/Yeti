@@ -51,6 +51,8 @@ public class Renderer {
 	private Vector2 directionalShadowSize = new Vector2(100, 100);
 	private Vector2 directionalShadowDepth = new Vector2(-80, 100);
 	
+	private boolean sortBillboards = true;
+	
 	TextureAttachment tta;
 	
 	int texType = -1;
@@ -243,7 +245,10 @@ public class Renderer {
 		int oldDim[] = new int[4];
 		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
 		Light light = state.getLights().get(0);
-		prepareBillboards(scene);
+		
+		if(sortBillboards) {
+			sortBillboards(scene);
+		}
 		
 		if(scene.shadowsEnabled) {
 			//gl.glCullFace(GL2.GL_FRONT);
@@ -262,12 +267,13 @@ public class Renderer {
 						(int) directionalShadowSize.x,
 						(int) directionalShadowSize.y
 						);
-				oc.setPosition(directionalShadowCenter);
 				oc.setFrustumNear(directionalShadowDepth.x);
 				oc.setFrustumFar(directionalShadowDepth.y);
 				
 				Vector3 ld = dlight.getDirection();
-				oc.lookAt(ld, Vector3.ZERO, Vector3.UP);
+				oc.lookAt(directionalShadowCenter.copy().add(ld),
+						directionalShadowCenter,
+						Vector3.UP);
 				gl.glViewport(0, 0, shadowMapW, shadowMapH);
 				renderShadowMap(gl, scene, oc);
 				
@@ -481,7 +487,7 @@ public class Renderer {
 		}
 	}
 	
-	private void prepareBillboards(final Scene scene) {
+	private void sortBillboards(final Scene scene) {
 		Collections.sort(scene.billboards, new Comparator<Billboard>() {
 			@Override
 			public int compare(Billboard o1, Billboard o2) {
@@ -593,6 +599,22 @@ public class Renderer {
 
 	public void setDirectionalShadowSize(Vector2 directionalShadowSize) {
 		this.directionalShadowSize = directionalShadowSize;
+	}
+
+	public boolean isSortBillboards() {
+		return sortBillboards;
+	}
+
+	public void setSortBillboards(boolean sortBillboards) {
+		this.sortBillboards = sortBillboards;
+	}
+
+	public Vector3 getDirectionalShadowCenter() {
+		return directionalShadowCenter;
+	}
+
+	public void setDirectionalShadowCenter(Vector3 directionalShadowCenter) {
+		this.directionalShadowCenter = directionalShadowCenter;
 	}
 
 }

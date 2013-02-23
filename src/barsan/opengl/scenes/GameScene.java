@@ -142,8 +142,9 @@ public class GameScene extends Scene {
 		} else {
 			player.wantsToWalk = false;
 		}
-		
 		player.wantsToJump = poller.jmp;
+		
+		renderer.setDirectionalShadowCenter(new Vector3(pr.x, pr.y, 0.0f));
 	}
 	
 	@Override

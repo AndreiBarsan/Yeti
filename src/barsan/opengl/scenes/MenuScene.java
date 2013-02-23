@@ -15,7 +15,9 @@ import barsan.opengl.Yeti;
 import barsan.opengl.flat.Sprite;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.InputAdapter;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Transform;
+import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
@@ -141,6 +143,8 @@ public class MenuScene extends Scene {
 	}
 	
 	private Menu menu = new Menu();
+	private Sprite logo;
+	Sprite s;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -148,6 +152,7 @@ public class MenuScene extends Scene {
 		
 		SceneHelper.quickSetup2D(this);
 		ResourceLoader.loadTexture("background", "menuBackground.png");
+		ResourceLoader.loadTexture("logo", "logo.png");
 		ResourceLoader.loadObj("sphere", "sphere.obj");
 		//*
 		addModelInstance(new StaticModelInstance(ResourceLoader.model("sphere"), 
@@ -157,9 +162,9 @@ public class MenuScene extends Scene {
 		//*/
 		
 		
-		Sprite s;
-		addBillboard(s = new Sprite(Yeti.get().gl, ResourceLoader.texture("background")));
 		
+		addBillboard(s = new Sprite(Yeti.get().gl, ResourceLoader.texture("background")));
+		addBillboard(logo = new Sprite(Yeti.get().gl, ResourceLoader.texture("logo")));
 		
 		menu.addEntry(menu.new MenuEntry("Begin!", new TransitionAction(new GameScene())));
 		menu.addEntry(menu.new MenuEntry("Light test", new TransitionAction(new LightTest())));
@@ -183,6 +188,12 @@ public class MenuScene extends Scene {
 		});
 	}
 	
+	float start = 500.0f;
+	float end = 150.0f;
+	float initialDelay = 1.0f;
+	float time = 1.2f;
+	float a = 0.0f;
+	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		// Ideally, using a designated 2D text & sprite renderer would be the best idea.
@@ -190,6 +201,24 @@ public class MenuScene extends Scene {
 			exit();
 			return;
 		}
+		
+		renderer.setSortBillboards(false);
+		float delta = getDelta();
+		float logoY = start;
+		
+		if(initialDelay > 0.0f) {
+			initialDelay -= delta;
+		} else {
+			a += delta;
+			if(a <= time) {
+				logoY = MathUtil.smoothStep(start, end, a / time);
+			} else {
+				logoY = end;
+			}
+		}
+		logo.setPosition(new Vector2(0.0f, logoY));
+		
+		//s.setPosition(new Vector2(0.0f, logoY));
 		
 		GL2 gl = Yeti.get().gl;
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);

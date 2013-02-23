@@ -31,4 +31,9 @@ public class MathUtil {
 	public static int clamp(int value, int min, int max) {
 		return (value < min) ? min : (value > max) ? max : value;
 	}
+	
+	public static float smoothStep(float start, float end, float amount) {
+		float coef = 3 * amount * amount - 2 * amount * amount * amount;
+		return start + (end - start) * coef;
+	}
 }
