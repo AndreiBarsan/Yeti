@@ -1,5 +1,8 @@
 package barsan.opengl.flat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
@@ -21,6 +24,9 @@ public class Physics2D {
 	
 	/** Am I affected by gravity? */
 	boolean hasWeight;
+	
+	/** Things I'm currently intersecting */
+	/* pp */ List<Physics2D> intersected = new ArrayList<>();
 	
 	float maxXSpeed = 40.0f;
 	float maxYSpeed = 80.0f;
@@ -81,6 +87,10 @@ public class Physics2D {
 		}
 		
 		return null != lastContact;
+	}
+	
+	/* pp */ void addContact(Physics2D contact) {
+		intersected.add(contact);
 	}
 	
 	void update(float delta) {

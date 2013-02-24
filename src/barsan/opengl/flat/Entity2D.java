@@ -16,7 +16,7 @@ public class Entity2D {
 	protected ModelInstance graphics;
 	protected Physics2D physics;
 	protected World2D world;
-	
+	private boolean dead = false;
 	protected Vector3 graphicsOffset = new Vector3();
 	
 	public Entity2D(Vector2 position, Model model) {
@@ -37,11 +37,13 @@ public class Entity2D {
 	}
 	
 	public void update(float delta) {
-		physics.update(delta);
-		graphics.getTransform().updateTranslate(
-				new Vector3(physics.bounds.x + graphicsOffset.x,
-						physics.bounds.y + graphicsOffset.y,
-						graphicsOffset.z));
+		if( ! dead) {
+			physics.update(delta);
+			graphics.getTransform().updateTranslate(
+					new Vector3(physics.bounds.x + graphicsOffset.x,
+							physics.bounds.y + graphicsOffset.y,
+							graphicsOffset.z));
+		}
 	}
 	
 	public ModelInstance getGraphics() {
@@ -50,6 +52,15 @@ public class Entity2D {
 	
 	public Physics2D getPhysics2d() {
 		return physics;
+	}
+	
+	public void destroy() {
+		dead = true;
+		world.remove(this);
+	}
+	
+	public boolean isDead() {
+		return dead;
 	}
 	
 	/* pp */ void hitWallSide() { }

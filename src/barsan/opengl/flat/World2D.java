@@ -15,8 +15,9 @@ public class World2D {
 	/* The 3D host scene handling the rendering */
 	private Scene scene;
 	private List<Entity2D> entities = new ArrayList<>();
+	private List<Entity2D> toDispose = new ArrayList<>();
 	private float gravity = 200.0f;
-	
+	private boolean updating = false;
 	
 	public World2D(Scene scene) {
 		Yeti.debug("Initialized 2D world");
@@ -24,12 +25,32 @@ public class World2D {
 	}
 	
 	public void update(float delta) {
-		for(Entity2D e : entities) {
-			e.update(delta);
+		updating = true;
+		for(int i = 0; i < entities.size() - 1; i++) {
+			Rectangle eBounds = entities.get(i).getPhysics2d().getBounds();
+			entities.get(i).getPhysics2d().intersected.clear();
+			for(int j = i + 1; j < entities.size(); j++) {
+				
+				if(entities.get(j).getPhysics2d().getBounds().overlaps(eBounds)) {
+					entities.get(i).getPhysics2d().addContact(entities.get(j).getPhysics2d());
+					entities.get(j).getPhysics2d().addContact(entities.get(i).getPhysics2d());
+				}
+			}
+		}
+		
+		for(int i = 0; i < entities.size(); i++) {
+			entities.get(i).update(delta);
 			// Maybe e could return a boolean showing whether it changed its 
 			// position? Could save a lot of unnecessary updates of the qt.
 			// quadTree.rePosition(e);
 		}
+		updating = false;
+		
+		for(int i = 0; i < toDispose.size(); i++) {
+			scene.removeModelInstance(toDispose.get(i).getGraphics());
+			entities.remove(toDispose.get(i));
+		}
+		toDispose.clear();
 	}
 	
 	public void addEntity(Entity2D entity) {
@@ -102,6 +123,14 @@ public class World2D {
 		assert( ! mr.overlaps(or)) : "The contact should no longer be true";
 	}
 
+	public void remove(Entity2D e) {
+		if(updating) {
+			toDispose.add(e);
+		} else {
+			entities.remove(e);
+		}
+	}
+	
 	public float getGravity() {
 		return gravity;
 	}
