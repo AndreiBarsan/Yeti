@@ -59,15 +59,15 @@ public class Renderer {
 	int texType = -1;
 	int regTexHandle = -1;
 	
-	int shadowMapW = 4096;
-	int shadowMapH = 4096;
+	int shadowMapW = 2048;
+	int shadowMapH = 2048;
 	
-	int cubeMapSide = 512;
+	int cubeMapSide = 1024;
 	
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
-	boolean MSAAEnabled = true;
-	private int MSAASamples = 4;
+	boolean MSAAEnabled = false;
+	private int MSAASamples = 8;
 	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 

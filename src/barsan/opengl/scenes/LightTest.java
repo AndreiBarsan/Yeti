@@ -128,7 +128,8 @@ public class LightTest extends Scene {
 		((DebugGUI)gui).info = "Press [RMB] to cycle through light types\n" +
 				"Use the [scrollwheel] to adjust the point light's Y.\n" +
 				"[Space] toggles normal mapping\n" +
-				"[G] toggles a reduced gamma-correction effect";
+				"[G] toggles a reduced gamma-correction effect\n" +
+				"[Q] returns to the PlanetHeadsMenu";
 		
 		Yeti.get().addInputProvider(new InputAdapter() {
 			
@@ -151,6 +152,8 @@ public class LightTest extends Scene {
 						monkeyMat.addComponent(gammaCorrection);
 						skyMat.addComponent(gammaCorrection);
 					}
+				} else if(e.getKeyCode() == KeyEvent.VK_Q) {
+					Yeti.get().loadScene(new MenuScene());
 				}
 			}
 		});

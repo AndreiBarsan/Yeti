@@ -61,7 +61,6 @@ public class MenuScene extends Scene {
 	public static class Menu {
 		private List<MenuEntry> entries = new ArrayList<>();
 		private Font font = new Font("serif", Font.BOLD, 48);
-		private FontRenderContext context = new FontRenderContext(new AffineTransform(), true, false);
 		private int index = 0;
 		
 		public class MenuEntry {
@@ -69,7 +68,6 @@ public class MenuScene extends Scene {
 			private MenuAction action;
 			private boolean selected;
 			private boolean centered = true;
-			private float widthCache = -1.0f;
 			
 			public MenuEntry(String text, MenuAction action) {
 				this.setText(text);
@@ -86,17 +84,17 @@ public class MenuScene extends Scene {
 			
 			public void setText(String text) {
 				this.text = text;
-				widthCache = (float) font.getStringBounds(text, context).getWidth();
 			}
 			
 			public void draw(int x, int y) {
 				if(centered) {
-					x -= widthCache / 2;
+					TextHelper.drawTextCentered(x, y, text, selected ? Color.YELLOW : Color.WHITE, 2);
 				}
-				TextHelper.drawText(x, y, text, selected ? Color.YELLOW : Color.WHITE, 2);
+				else {
+					TextHelper.drawText(x, y, text, selected ? Color.YELLOW : Color.WHITE, 2);
+				}
 			}
 		}
-		
 		
 		public void addEntry(MenuEntry entry) {
 			entries.add(entry);
@@ -108,7 +106,7 @@ public class MenuScene extends Scene {
 			
 			int x = Yeti.get().settings.width / 2;
 			int y = 320;
-			int step = 42;
+			int step = 50;
 			
 			for(int i = 0; i < entries.size(); i++) {
 				entries.get(i).draw(x, y - i * step);
@@ -153,15 +151,6 @@ public class MenuScene extends Scene {
 		SceneHelper.quickSetup2D(this);
 		ResourceLoader.loadTexture("background", "menuBackground.png");
 		ResourceLoader.loadTexture("logo", "logo.png");
-		ResourceLoader.loadObj("sphere", "sphere.obj");
-		//*
-		addModelInstance(new StaticModelInstance(ResourceLoader.model("sphere"), 
-				new BasicMaterial(barsan.opengl.util.Color.RED),
-				new Transform().updateScale(1.0f)
-		));
-		//*/
-		
-		
 		
 		addBillboard(s = new Sprite(Yeti.get().gl, ResourceLoader.texture("background")));
 		addBillboard(logo = new Sprite(Yeti.get().gl, ResourceLoader.texture("logo")));
@@ -187,6 +176,8 @@ public class MenuScene extends Scene {
 			}
 		});
 	}
+	
+	Font authorFont = new Font("serif", Font.PLAIN, 20);
 	
 	float start = 500.0f;
 	float end = 150.0f;
@@ -218,8 +209,6 @@ public class MenuScene extends Scene {
 		}
 		logo.setPosition(new Vector2(0.0f, logoY));
 		
-		//s.setPosition(new Vector2(0.0f, logoY));
-		
 		GL2 gl = Yeti.get().gl;
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
@@ -228,6 +217,8 @@ public class MenuScene extends Scene {
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{
 			menu.draw();
+			TextHelper.setFont(authorFont);
+			TextHelper.drawTextCentered(Yeti.get().settings.width / 2, 15, "Andrei Bârsan, WS 2012/2013 (OpenGL mit Java)");
 		}
 		TextHelper.endRendering();
 	}

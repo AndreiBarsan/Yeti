@@ -358,8 +358,7 @@ public class Yeti implements GLEventListener {
 
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		if(pendingInit) {
 			Yeti.debug("Pending init - so doing init! (reshape)");
 			currentScene.init(drawable);
@@ -436,7 +435,7 @@ public class Yeti implements GLEventListener {
 	 * 
 	 * @return X position in pixels
 	 */
-	public int canvasX() {
+	public int getCanvasX() {
 		return canvasHost.getX() + frame.getX();
 	}
 	
@@ -446,7 +445,7 @@ public class Yeti implements GLEventListener {
 	 * 
 	 * @return Y position in pixels
 	 */
-	public int canvasY() {
+	public int getCanvasY() {
 		return canvasHost.getY() + frame.getY();
 	}
 	
