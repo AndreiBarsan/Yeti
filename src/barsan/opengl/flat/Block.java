@@ -1,11 +1,10 @@
 package barsan.opengl.flat;
 
-import com.jogamp.opengl.util.texture.Texture;
-
-import barsan.opengl.Yeti;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Cube;
+import barsan.opengl.resources.ResourceLoader;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 // Floating block you can jump on and stuff
 public class Block extends Entity2D {
@@ -15,7 +14,7 @@ public class Block extends Entity2D {
 	}
 	
 	public Block(Rectangle bounds, Texture texture) {
-		super(bounds, true, false, new Cube(Yeti.get().gl, 1.0f, false));
+		super(bounds, true, false, ResourceLoader.model("cube"));
 		
 		if(texture != null) {
 			graphics.setTexture(texture);

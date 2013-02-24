@@ -20,6 +20,7 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
+import barsan.opengl.rendering.materials.DepthWriterDirectionalAnim;
 import barsan.opengl.rendering.materials.DepthWriterPoint;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
@@ -250,6 +251,13 @@ public class Renderer {
 			sortBillboards(scene);
 		}
 		
+		float delta = scene.getDelta();
+		for(ModelInstance mi : scene.getModelInstances()) {
+			if(mi instanceof AnimatedModelInstance) {
+				((AnimatedModelInstance)mi).updateAnimation(delta);
+			}
+		}
+		
 		if(scene.shadowsEnabled) {
 			//gl.glCullFace(GL2.GL_FRONT);
 			Camera aux = state.getCamera();
@@ -259,6 +267,7 @@ public class Renderer {
 				// Directional light shadow casting
 				
 				state.forceMaterial(new DepthWriterDirectional());
+				//state.forceAnimatedMaterial(new DepthWriterDirectionalAnim());
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_shadows.getWriteFramebuffer());
 				gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 				
@@ -328,14 +337,14 @@ public class Renderer {
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		}
 		/*
-		 * Point lights: temporarilty edited phong to only work with point lights.
-		 * The shadow map is rendering right but when rendering the ground plane of the
-		 * light test scene, a GL_INVALID_OPERATION 0x502 is raised. :(
-		 * 
 		 *  STATUS: slot computations aren't being done right, so a 2D sampler
 		 *  is being bound to a samplerCube slot.
 		 *  
 		 *  UPDATE: the shadow cube works, unless it's bound to texture unit 1. wat.
+		 *  
+		 *  CURRENT STATE: everything works, but super-shaders are a no-no since
+		 *  different sampler types try to sample from samplers they're not
+		 *  supposed to;
 		 */
 		
 		state.forceMaterial(null);
@@ -343,10 +352,12 @@ public class Renderer {
 		// Render to our framebuffer
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_tex.getWriteFramebuffer());
 		renderScene(gl, scene);
-		if(renderDebug) renderDebug(Yeti.get().gl.getGL2(), scene);		
-		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
+		if(renderDebug) { 
+			renderDebug(Yeti.get().gl.getGL2(), scene);		
+		}
 		
 		//Render to the screen
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
 		// Begin post-processing
@@ -438,8 +449,7 @@ public class Renderer {
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
-			if(! modelInstance.castsShadows()) continue;
-			
+			if(! modelInstance.castsShadows()) continue;			
 			modelInstance.render(state, matrixstack);
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}

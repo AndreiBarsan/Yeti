@@ -82,4 +82,8 @@ public class Vector2 {
 		return a;
 	}
 	
+	public Vector2 copy() {
+		return new Vector2(this);
+	}
+	
 }

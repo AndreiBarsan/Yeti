@@ -24,7 +24,11 @@ public class AnimatedMaterial extends Material {
 				normalEndIndex;
 	
 	public AnimatedMaterial() {
-		super(ResourceLoader.shader("animatedPhong"));
+		this(ResourceLoader.shader("animatedPhong"));
+	}
+		
+	public AnimatedMaterial(Shader shader) {
+		super(shader);
 		
 		positionStartIndex = shader.getAttribLocation(A_POSITION_START);
 		positionEndIndex = shader.getAttribLocation(A_POSITION_END);
@@ -55,10 +59,8 @@ public class AnimatedMaterial extends Material {
 	
 	@Override
 	public void render(RendererState rendererState, Model model) {
-		// OOP hack?
-		// Yeti.screwed("Insufficient data to render animation. Use void render(RendererState, AnimatedModel, int, int, float).");
+		// All VBO lengths are equal, this should work ok.
 		super.render(rendererState, model);
-		// All VBO lengths are equal, this should work fayynn.
 	}
 
 	public int getPositionStartIndex() {

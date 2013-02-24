@@ -26,20 +26,7 @@ public class AnimatedModelInstance extends ModelInstance {
 	
 	public boolean playing;
 	
-	@Override
-	public void render(RendererState rendererState, Matrix4Stack transformStack) {
-		transformStack.push(localTransform.get());
-		
-		AnimatedMaterial activeMaterial;
-		if(rendererState.hasForcedMaterial()) {
-			activeMaterial = rendererState.getForcedAnimatedMaterial();
-		} else {
-			activeMaterial = material;
-		}
-		
-		activeMaterial.setup(rendererState, transformStack.result());
-		
-		float delta = rendererState.getScene().getDelta();
+	public void updateAnimation(float delta) {
 		int n = model.getFrames().size();
 		
 		tweenIndex += delta;
@@ -53,7 +40,23 @@ public class AnimatedModelInstance extends ModelInstance {
 				cf = 0;
 			}
 		}
+	}
+	
+	
+	@Override
+	public void render(RendererState rendererState, Matrix4Stack transformStack) {
+		transformStack.push(localTransform.get());
 		
+		AnimatedMaterial activeMaterial;
+		if(rendererState.hasForcedAnimatedMaterial()) {
+			activeMaterial = rendererState.getForcedAnimatedMaterial();
+		} else {
+			activeMaterial = material;
+		}
+		
+		activeMaterial.setup(rendererState, transformStack.result());
+		
+		int n = model.getFrames().size();
 		int f1 = cf;
 		int f2 = (cf + 1) % n;
 		

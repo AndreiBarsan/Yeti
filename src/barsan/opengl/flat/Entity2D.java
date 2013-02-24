@@ -36,6 +36,10 @@ public class Entity2D {
 		this.world = world;
 	}
 	
+	protected void reset() {
+		physics.reset();
+	}
+	
 	public void update(float delta) {
 		if( ! dead) {
 			physics.update(delta);
@@ -63,6 +67,7 @@ public class Entity2D {
 		return dead;
 	}
 	
+	/* Hooks for the physics component */
 	/* pp */ void hitWallSide() { }
 	/* pp */ void jumped() { }
 	/* pp */ void landed() { }

@@ -12,7 +12,7 @@ import com.jogamp.opengl.util.texture.Texture;
 public abstract class ModelInstance implements Renderable {
 
 	protected Transform localTransform;
-	protected boolean castsShadows;
+	protected boolean castsShadows = true;
 	protected ModelInstance parent = null;
 	protected ArrayList<ModelInstance> children = new ArrayList<>();
 

@@ -1,6 +1,7 @@
 package barsan.opengl.scenes;
 
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -65,14 +66,15 @@ public class GameScene extends Scene {
 
 		ResourceLoader.loadCubeTexture("skybox01", "jpg");
 		ResourceLoader.loadObj("coin", "coin.obj");
+		ResourceLoader.loadObj("cube", "texcube.obj");
 		ResourceLoader.loadTexture("coin", "coinTex.png");
-		ResourceLoader.loadTexture("block01", "cubetex.png");
+		ResourceLoader.loadTexture("block01", "stone03.jpg");
 		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
-		shadowsEnabled = true;
 		
-		addInput(cameraInput = new CameraInput(camera));
+		renderer.renderDebug = false;
+		shadowsEnabled = true;
 		
 		// Let's set up the level
 		world = new World2D(this);
@@ -82,16 +84,22 @@ public class GameScene extends Scene {
 		Yeti.get().addInputProvider(poller);
 		
 		addBlock(-10, -20, 5, 40);
-		world.addEntity(new Block(new Rectangle(-5, -14, 40, 4), ResourceLoader.texture("block01")));
-		world.addEntity(new Block(new Rectangle(25, -20, 20, 4), ResourceLoader.texture("block01")));
-		world.addEntity(new Block(new Rectangle(45, -15, 15, 12), ResourceLoader.texture("block01")));
 		
-		for(int i = 0; i < 10; i++) {
-			addBlock(i * 10, -0.6f + i * 2.5f, 8, 2);
+		addBlock(-5, -14, 40, 4);
+		
+		addBlock(25, -20, 20, 4);
+		addBlock(45, -15, 15, 12);
+		
+		Random rand = new Random();
+		for(int i = 0; i < 20; i++) {
+			addBlock(i * 10, -0.6f + i * 3.5f, 8, 2);
+			if(i % 5 == 0) {
+				addBlock(i * 10 - 2 + rand.nextFloat() * 4, 20f + i * 3.5f, 2 + rand.nextFloat() * 3, 4);
+			}
 		}
 		
-		for(int i = 0; i < 10; i++) {
-			world.addEntity(new Coin(new Vector2(5 * i, -3.5f)));
+		for(int i = 0; i < 8; i++) {
+			world.addEntity(new Coin(new Vector2(5 * i, -4.5f)));
 		}
 		
 		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
@@ -149,15 +157,38 @@ public class GameScene extends Scene {
 	
 	@Override
 	public void play() {
-		cameraInput.setMouseControlled(true);
 	}
 	
 	@Override
 	public void pause() {
-		cameraInput.setMouseControlled(false);
 	}
 	
 	private void addBlock(float x, float y, float w, float h) {
-		world.addEntity(new Block(new Rectangle(x, y, w, h), ResourceLoader.texture("block01")));
+		
+		float divW = 10.0f;
+		float divH = 10.0f;
+		
+		int wSteps = (int)(w / divW);
+		int hSteps = (int)(h / divH);
+		
+		float wReminder = w - wSteps * divW;
+		float hReminder = h - hSteps * divH;
+		
+		for(int i = 0; i < wSteps; i++) {
+			for(int j = 0; j < hSteps; j++) {
+				world.addEntity(new Block(new Rectangle(x + i * divW, y + j * divH, divW, divH), ResourceLoader.texture("block01")));
+			}
+			if(hReminder > 0.01f) {
+				world.addEntity(new Block(new Rectangle(x + i * divW, y + h - hReminder, divW, hReminder), ResourceLoader.texture("block01")));
+			}
+		} 
+		if(wReminder > 0.01f) {
+			for(int j = 0; j < hSteps; j++) {
+				world.addEntity(new Block(new Rectangle(x + w - wReminder, y + j * divH, wReminder, divH), ResourceLoader.texture("block01")));
+			}
+			if(hReminder > 0.01f) {
+				world.addEntity(new Block(new Rectangle(x + w - wReminder, y + h - hReminder, wReminder, hReminder), ResourceLoader.texture("block01")));
+			}
+		}
 	}
 }

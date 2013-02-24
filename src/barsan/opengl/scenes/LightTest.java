@@ -114,8 +114,8 @@ public class LightTest extends Scene {
 			
 		
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
-				new Vector3(1.0f, -1.0f, 0.0f).normalize(),
-				0.85f, 0.9f, 1.0f);
+								new Vector3(1.0f, -1.0f, 0.0f).normalize(),
+								0.85f, 0.9f, 1.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
@@ -123,7 +123,7 @@ public class LightTest extends Scene {
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		lights.add(test_pl);
 		
-		gui = new DebugGUI(drawable.getAnimator(), camera);
+		gui = new DebugGUI(this, drawable.getAnimator());
 		gui.setPosition(new Vector3(220, 10, 0));
 		((DebugGUI)gui).info = "Press [RMB] to cycle through light types\n" +
 				"Use the [scrollwheel] to adjust the point light's Y.\n" +

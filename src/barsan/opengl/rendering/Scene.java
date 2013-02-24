@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLEventListener;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.InputProvider;
@@ -108,6 +107,10 @@ public class Scene {
 	
 	public Camera getCamera() {
 		return camera;
+	}
+	
+	public List<ModelInstance> getModelInstances() {
+		return modelInstances;
 	}
 	
 	public float getDelta() {

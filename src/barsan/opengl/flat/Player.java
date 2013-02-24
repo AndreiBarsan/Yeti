@@ -12,12 +12,14 @@ public class Player extends Entity2D {
 	public boolean wantsToWalk = false;
 	public boolean wantsToJump = false;
 	
+	public int score = 0;
+	
 	public Player(Vector2 position) {
 		super(new Rectangle(position.x, position.y, 0.9f, 8f), true, true,
 				ResourceLoader.animatedModel("planetHeadAnimated"));
 				//ResourceLoader.model("planetHead"));
 		
-		graphicsOffset.y = -0.50f;
+		graphicsOffset.y = -0.75f;
 		
 		physics.friction = 200.0f;
 	}
@@ -27,17 +29,19 @@ public class Player extends Entity2D {
 		coin.destroy();
 	}
 	
+	@Override
+	protected void reset() {
+		super.reset();
+		
+	}
+	
 	int i = 0;
 	float acc = 0.0f;
 	
 	@Override
 	public void update(float delta) {
 		if(physics.bounds.y < -100.0f) {
-			physics.bounds.y = 10.0f;
-			physics.bounds.x = 0.0f;
-			
-			physics.velocity.x = 0.0f;
-			physics.velocity.y = 0.0f;
+			reset();
 		}
 		
 		physics.jumpInput = wantsToJump;

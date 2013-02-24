@@ -123,7 +123,7 @@ public class DemoScene extends Scene {
 		fog.fadeCamera(camera);
 		fogEnabled = true;
 		
-		gui = new DebugGUI(drawable.getAnimator(), getCamera());
+		gui = new DebugGUI(this, drawable.getAnimator());
 		
 		Yeti.debug("\n\tRendering controls: \n\tF - toggle Fog\n\tM - toggle sMoothing");
 		Yeti.get().addInputProvider(new InputAdapter() {

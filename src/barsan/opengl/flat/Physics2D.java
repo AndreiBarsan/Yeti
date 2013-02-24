@@ -10,7 +10,9 @@ import barsan.opengl.math.Vector2;
 public class Physics2D {
 	
 	public Rectangle bounds;
+	private Rectangle initialBounds;
 	public Vector2 velocity;
+	private Vector2 initialVelocity;
 	public Vector2 acceleration;
 	public Entity2D owner;
 	public float friction;
@@ -31,7 +33,7 @@ public class Physics2D {
 	float maxXSpeed = 40.0f;
 	float maxYSpeed = 80.0f;
 	
-	float jumpTimeTotal = 0.05f;
+	float jumpTimeTotal = 0.065f;
 	float jumpTimeLeft = 0.0f;
 	
 	public boolean jumpInput = false;
@@ -49,11 +51,18 @@ public class Physics2D {
 	public Physics2D(Entity2D owner, Rectangle bounds, boolean solid, boolean hasWeight) {
 		this.owner = owner;
 		this.bounds = bounds;
+		this.initialBounds = bounds.copy();
 		this.solid = solid;
 		this.hasWeight = hasWeight;
 		this.velocity = new Vector2();
+		this.initialVelocity = velocity.copy();
 		this.acceleration = new Vector2();
 		this.friction = 0.0f;
+	}
+	
+	public void reset() {
+		bounds.set(initialBounds);
+		velocity.set(initialVelocity);
 	}
 	
 	public boolean collidesWith(Physics2D other) {
@@ -115,7 +124,7 @@ public class Physics2D {
 				if(jumpTimeLeft > 0.0f) {
 					if(jumpInput) {
 						jumpTimeLeft = Math.max(0.0f, jumpTimeLeft - delta);
-						velocity.y += burstJumpStrength * delta;
+						velocity.y += burstJumpStrength * Math.min(delta, jumpTimeLeft);
 					}
 				}
 				

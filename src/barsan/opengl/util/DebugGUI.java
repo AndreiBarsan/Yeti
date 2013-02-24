@@ -7,17 +7,20 @@ import javax.media.opengl.GLAnimatorControl;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Camera;
+import barsan.opengl.rendering.Scene;
 
 public class DebugGUI extends GUI {
 
 	GLAnimatorControl animator;
+	Scene host;
 	Camera camera;
 	public String info = "";
 	private final Font debugFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
 	
-	public DebugGUI(GLAnimatorControl glAnimatorControl, Camera camera) {
+	public DebugGUI(Scene scene, GLAnimatorControl glAnimatorControl) {
 		this.animator = glAnimatorControl;
-		this.camera = camera;
+		this.host = scene;
+		this.camera = scene.getCamera();
 	}
 	
 	@Override
@@ -29,8 +32,8 @@ public class DebugGUI extends GUI {
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{
 			Vector3 cp = camera.getPosition();
-			String hud = String.format("FPS: %.2f\nCamera: X:%.2f Y:%.2f Z:%.2f\n%s", fps,
-					cp.x, cp.y, cp.z, info);
+			String hud = String.format("FPS: %.2f | %d entities\nCamera: X:%.2f Y:%.2f Z:%.2f\n%s", fps,
+					host.getModelInstances().size(), cp.x, cp.y, cp.z, info);
 			
 			TextHelper.drawTextMultiLine((int)position.x, (int)position.y, hud);
 		}

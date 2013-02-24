@@ -23,9 +23,9 @@ public class GLHelp {
 	public static void checkError(GL gl) {
 		int code = gl.glGetError();
 		if (code == GL.GL_NO_ERROR) {
-			System.out.println("No error!");
+			Yeti.debug("No error!");
 		} else {
-			System.err.println("Error found: #" + code);
+			Yeti.screwed("GL error found: #" + code);
 		}
 	}
 
@@ -43,6 +43,6 @@ public class GLHelp {
 
 	public static void fboErr(GL gl) {
 		int result = gl.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
-		System.out.println(FBObject.getStatusString(result));
+		Yeti.debug("FBO status check: " + FBObject.getStatusString(result));
 	}
 }
