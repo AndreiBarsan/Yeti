@@ -78,6 +78,7 @@ public class StaticModelInstance extends ModelInstance {
 	}
 
 
+	@Override
 	public Material getMaterial() {
 		return material;
 	}

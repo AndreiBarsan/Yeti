@@ -274,5 +274,5 @@ void main() {
 	//float diff = texture2D( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(visibility);
-	vFragColor.a = 1.0f;
+	//vFragColor.a = 1.0f;
 } 	

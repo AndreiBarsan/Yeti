@@ -24,7 +24,7 @@ public abstract class Model {
 	 * 
 	 * @param arrayLength 	How many things are to be drawn. Used so both static
 	 * 						and dynamic meshes can polymorphically return their
-	 * 						element count.
+	 * 						correct element count.
 	 */
 	public void render(int arrayLength) {
 		GL2 gl = Yeti.get().gl;

@@ -41,13 +41,11 @@ public class Entity2D {
 	}
 	
 	public void update(float delta) {
-		if( ! dead) {
-			physics.update(delta);
-			graphics.getTransform().updateTranslate(
-					new Vector3(physics.bounds.x + graphicsOffset.x,
-							physics.bounds.y + graphicsOffset.y,
-							graphicsOffset.z));
-		}
+		physics.update(delta);
+		graphics.getTransform().updateTranslate(
+				new Vector3(physics.bounds.x + graphicsOffset.x,
+						physics.bounds.y + graphicsOffset.y,
+						graphicsOffset.z));
 	}
 	
 	public ModelInstance getGraphics() {

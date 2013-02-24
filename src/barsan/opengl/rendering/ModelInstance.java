@@ -6,6 +6,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.materials.Material;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -56,5 +57,7 @@ public abstract class ModelInstance implements Renderable {
 	private void setParent(ModelInstance parent) {
 		this.parent = parent;
 	}
+	
+	public abstract Material getMaterial();
 
 }

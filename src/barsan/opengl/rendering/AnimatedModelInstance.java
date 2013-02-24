@@ -2,6 +2,7 @@ package barsan.opengl.rendering;
 
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.TextureComponent;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -96,6 +97,11 @@ public class AnimatedModelInstance extends ModelInstance {
 		}
 		
 		transformStack.pop();
+	}
+	
+	@Override
+	public Material getMaterial() {
+		return material;
 	}
 	
 	@Override
