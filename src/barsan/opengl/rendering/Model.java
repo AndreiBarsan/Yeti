@@ -44,7 +44,14 @@ public abstract class Model {
 	public abstract int getArrayLength();
 	
 	/** Resets the OpenGL state set by the model's usage. */
-	public abstract void cleanUp(int... indices);
+	public void cleanUp(int... indices) {
+		GL2 gl = Yeti.get().gl;
+		for(int el : indices) {
+			if(el >= 0) {
+				gl.glDisableVertexAttribArray(el);
+			}
+		}
+	}
 	
 	/** Provides a VBO of the model's texture coordinates; FIXME: more generalised approach */
 	public abstract VBO getTexCoords();

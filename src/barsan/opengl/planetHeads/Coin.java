@@ -8,6 +8,7 @@ public class Coin extends Entity2D {
 
 	final float omega = -60.0f;
 	float angle = 0.0f;
+	int value = 5;
 	
 	public Coin(Vector2 position) {
 		super(position, ResourceLoader.model("coin"));
@@ -23,4 +24,7 @@ public class Coin extends Entity2D {
 		graphics.getTransform().updateRotation(0.0f, 1.0f, 0.0f, angle);
 	}
 
+	public int getValue() {
+		return value;
+	}
 }

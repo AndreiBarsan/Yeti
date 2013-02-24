@@ -131,14 +131,4 @@ public class StaticModel extends Model {
 	public Map<String, Group> getGroups() {
 		return groups;
 	}
-	
-	public void cleanUp(int... indices) {
-		GL2 gl = Yeti.get().gl;
-		for(int el : indices) {
-			if(el >= 0) {
-				//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-				gl.glDisableVertexAttribArray(el);
-			}
-		}
-	}
 }

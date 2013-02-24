@@ -44,7 +44,29 @@ public class Renderer {
 	private FBObject fbo_shadows;
 	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
-	private int shadowQuality = 3;
+	public enum ShadowQuality {
+		Low		(1, "Plain shadow mapping"),
+		Medium	(2, "Added normal dependency"),
+		High	(3, "4 Poisson disk samples"),
+		Ultra	(4, "Randomized poisson sampling");
+		
+		private int shaderFlag;
+		private String description;
+		private ShadowQuality(int shaderFlag, String description) {
+			this.shaderFlag = shaderFlag;
+			this.description = description;
+		}
+		
+		public int getFlag() {
+			return shaderFlag;
+		}
+		
+		public String getDescription() {
+			return description;
+		}
+	}
+	private ShadowQuality shadowQuality = ShadowQuality.Medium;
+	
 	private float omniShadowNear = 0.1f;
 	private float omniShadowFar = 100.0f;
 	
@@ -66,8 +88,8 @@ public class Renderer {
 	
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
-	boolean MSAAEnabled = false;
-	private int MSAASamples = 8;
+	boolean MSAAEnabled = true;
+	private int MSAASamples = 4;
 	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
@@ -571,11 +593,11 @@ public class Renderer {
 
 	}
 
-	public int getShadowQuality() {
+	public ShadowQuality getShadowQuality() {
 		return shadowQuality;
 	}
 
-	public void setShadowQuality(int shadowQuality) {
+	public void setShadowQuality(ShadowQuality shadowQuality) {
 		this.shadowQuality = shadowQuality;
 	}
 	public float getOmniShadowNear() {

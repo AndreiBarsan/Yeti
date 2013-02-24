@@ -35,7 +35,9 @@ public class AnimatedModel extends Model {
 	}
 	
 	public void dispose() {
-		// TODO?
+		for(int i = 0; i < frames.size(); i++) {
+			frames.get(i).model.dispose();
+		}
 	}
 
 	public String getName() {
@@ -55,22 +57,10 @@ public class AnimatedModel extends Model {
 		assert frames.size() > 0 : "Cannot have an animation with no frames!";
 		return frames.get(0).model.getArrayLength();
 	}
-
-	@Override
-	public void cleanUp(int... indices) {
-		// TODO: unify
-		GL2 gl = Yeti.get().gl;
-		for(int el : indices) {
-			if(el >= 0) {
-				//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-				gl.glDisableVertexAttribArray(el);
-			}
-		}
-	}
-
+	
 	/**
 	 * Just return the texture coordinates of the first frame. After the system 
-	 * is working, this will b)e made so there will only be one set of texture
+	 * is working, this will be made so there will only be one set of texture
 	 * coords per animation, not per frame.
 	 */
 	@Override

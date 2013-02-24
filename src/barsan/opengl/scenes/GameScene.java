@@ -15,10 +15,13 @@ import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.planetHeads.Coin;
+import barsan.opengl.planetHeads.GameGUI;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.DebugGUI;
 
 public class GameScene extends Scene {
 
@@ -73,7 +76,7 @@ public class GameScene extends Scene {
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		
-		renderer.renderDebug = false;
+		Renderer.renderDebug = false;
 		shadowsEnabled = true;
 		
 		// Let's set up the level
@@ -81,20 +84,25 @@ public class GameScene extends Scene {
 		world.addEntity(player = new Player(new Vector2(0.0f, 0.0f)));
 		player.getGraphics().getTransform().updateRotation(0.0f, 1.0f, 0.0f, 90.0f);
 		
+		gui = new GameGUI(player);
+		gui.setPosition(new Vector3(220.0f, 10.0f, 0.0f));
+		
 		Yeti.get().addInputProvider(poller);
 		
+		// Left wall
 		addBlock(-10, -20, 5, 40);
-		
+		// Walkway A
 		addBlock(-5, -14, 40, 4);
-		
+		// Walkway B
 		addBlock(25, -20, 20, 4);
+		// Right square-ish wall/walkway
 		addBlock(45, -15, 15, 12);
 		
 		Random rand = new Random();
 		for(int i = 0; i < 20; i++) {
 			addBlock(i * 10, -0.6f + i * 3.5f, 8, 2);
 			if(i % 5 == 0) {
-				addBlock(i * 10 - 2 + rand.nextFloat() * 4, 20f + i * 3.5f, 2 + rand.nextFloat() * 3, 4);
+				addBlock(i * 10 - 2 + rand.nextFloat() * 4, 20f + i * 3.5f, 2 + rand.nextFloat() * 6, 4);
 			}
 		}
 		
@@ -121,18 +129,16 @@ public class GameScene extends Scene {
 		// of the player
 		Rectangle pr = player.getPhysics2d().getBounds();
 		
-		while(pr.y > currentSector * sectorHeight + sectorHeight * spc) {
+		if(pr.y > currentSector * sectorHeight + sectorHeight * spc) {
 			// Passed into the upper sector
-			// [while] to support extreme cases
 			currentSector++;
-		}
-		
-		while(pr.y < currentSector * sectorHeight - sectorHeight * spc) {
+		} else if(pr.y < currentSector * sectorHeight - sectorHeight * spc) {
 			currentSector--;
 		}
 
 		float delta = getDelta();
 		float goal = currentSector * sectorHeight + 5;
+		if(goal < -10) goal = -10;
 		if(currentY < goal) {
 			currentY = Math.min(goal, currentY + cSpeed * delta);
 		} else if(currentY > goal) {
@@ -152,7 +158,7 @@ public class GameScene extends Scene {
 		}
 		player.wantsToJump = poller.jmp;
 		
-		renderer.setDirectionalShadowCenter(new Vector3(pr.x, pr.y, 0.0f));
+		renderer.setDirectionalShadowCenter(new Vector3(pp.x, pp.y, 0.0f));
 	}
 	
 	@Override

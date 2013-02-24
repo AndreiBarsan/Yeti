@@ -1,12 +1,8 @@
 package barsan.opengl.scenes;
 
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.io.IOException;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -17,11 +13,11 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Billboard;
 import barsan.opengl.rendering.Fog;
-import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.Renderer.ShadowQuality;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light.LightType;
@@ -125,13 +121,10 @@ public class LightTest extends Scene {
 		
 		gui = new DebugGUI(this, drawable.getAnimator());
 		gui.setPosition(new Vector3(220, 10, 0));
-		((DebugGUI)gui).info = "Press [RMB] to cycle through light types\n" +
-				"Use the [scrollwheel] to adjust the point light's Y.\n" +
-				"[Space] toggles normal mapping\n" +
-				"[G] toggles a reduced gamma-correction effect\n" +
-				"[Q] returns to the PlanetHeadsMenu";
 		
 		Yeti.get().addInputProvider(new InputAdapter() {
+			
+			int shadowQuality = 0;
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -154,6 +147,12 @@ public class LightTest extends Scene {
 					}
 				} else if(e.getKeyCode() == KeyEvent.VK_Q) {
 					Yeti.get().loadScene(new MenuScene());
+				} else if(e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
+					ShadowQuality[] vals = ShadowQuality.values();
+					renderer.setShadowQuality(vals[(shadowQuality = (shadowQuality - 1 + vals.length) % vals.length)]);
+				} else if(e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) {
+					ShadowQuality[] vals = ShadowQuality.values();
+					renderer.setShadowQuality(vals[(shadowQuality = (shadowQuality + 1) % vals.length)]);
 				}
 			}
 		});
@@ -225,6 +224,15 @@ public class LightTest extends Scene {
 
 		float lx = (float)Math.cos(a) * 30.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
+		
+		ShadowQuality sq = renderer.getShadowQuality();
+		((DebugGUI)gui).info = String.format("Press [RMB] to cycle through light types\n" +
+				"Use the [scrollwheel] to adjust the point light's Y.\n" +
+				"[LBRACKET][RBRACKET] control shadow quality.\nCurrent: [%s] %s\n" +
+				"[Space] toggles normal mapping\n" +
+				"[G] toggles a reduced gamma-correction effect\n" +
+				"[Q] returns to the PlanetHeadsMenu", sq.name(), sq.getDescription());
+		
 		super.display(drawable);
 	}
 	

@@ -15,7 +15,7 @@ public class DebugGUI extends GUI {
 	Scene host;
 	Camera camera;
 	public String info = "";
-	private final Font debugFont = new Font(Font.MONOSPACED, Font.BOLD, 20);
+	private final Font debugFont = new Font(Font.MONOSPACED, Font.PLAIN, 20);
 	
 	public DebugGUI(Scene scene, GLAnimatorControl glAnimatorControl) {
 		this.animator = glAnimatorControl;
@@ -27,7 +27,6 @@ public class DebugGUI extends GUI {
 	public void render() {
 		float fps = animator.getLastFPS();
 		
-		Yeti.get().gl.glUseProgram(0);
 		TextHelper.setFont(debugFont);
 		TextHelper.beginRendering(camera.getWidth(), camera.getHeight());
 		{

@@ -8,8 +8,16 @@ import com.jogamp.opengl.util.texture.Texture;
 
 public class AnimatedModelInstance extends ModelInstance {
 
-	protected AnimatedModel model;
-	protected AnimatedMaterial material;
+	/* pp */ AnimatedModel model;
+	/* pp */ AnimatedMaterial material;
+	
+	float tweenIndex = 0.0f;
+	int cf = 0;
+	public boolean playing;
+	
+	public AnimatedModelInstance(AnimatedModel model)  {
+		this(model, new AnimatedMaterial(), new Transform());
+	}
 	
 	public AnimatedModelInstance(AnimatedModel model, AnimatedMaterial material) {
 		this(model, material, new Transform());
@@ -20,11 +28,6 @@ public class AnimatedModelInstance extends ModelInstance {
 		this.material = material;
 		localTransform = transform;
 	}
-	
-	float tweenIndex = 0.0f;
-	int cf = 0;
-	
-	public boolean playing;
 	
 	public void updateAnimation(float delta) {
 		int n = model.getFrames().size();
@@ -41,7 +44,6 @@ public class AnimatedModelInstance extends ModelInstance {
 			}
 		}
 	}
-	
 	
 	@Override
 	public void render(RendererState rendererState, Matrix4Stack transformStack) {
@@ -65,21 +67,28 @@ public class AnimatedModelInstance extends ModelInstance {
 		Shader s = material.getShader();
 		s.setU1f("animationIndex", tweenIndex);
 		
+		StaticModel f1model = model.getFrames().get(f1).model;
+		StaticModel f2model = model.getFrames().get(f2).model;
+		
 		int pIndexStart = activeMaterial.getPositionStartIndex();
 		int pIndexEnd = activeMaterial.getPositionEndIndex();
-		model.getFrames().get(f1).model.getVertices().use(pIndexStart);
-		model.getFrames().get(f2).model.getVertices().use(pIndexEnd);
+		f1model.getVertices().use(pIndexStart);
+		f2model.getVertices().use(pIndexEnd);
 		
 		int nIndexStart = activeMaterial.getNormalStartIndex();
 		int nIndexEnd = activeMaterial.getNormalEndIndex();
-		model.getFrames().get(f1).model.getNormals().use(nIndexStart);
-		model.getFrames().get(f2).model.getNormals().use(nIndexEnd);		
+		f1model.getNormals().use(nIndexStart);
+		f2model.getNormals().use(nIndexEnd);		
 		
 		activeMaterial.bindTextureCoodrinates(model);
 		
 		// Buffers are bound by this point
-		activeMaterial.render(rendererState, model);	
-		activeMaterial.unsetBuffers(model);
+		activeMaterial.render(rendererState, model);
+		
+		// Make sure that both bound frames get unbound
+		f1model.cleanUp(pIndexStart, nIndexStart);
+		f2model.cleanUp(nIndexStart, nIndexEnd);
+		
 		activeMaterial.cleanUp(rendererState);
 		
 		for(Renderable mi : children) {

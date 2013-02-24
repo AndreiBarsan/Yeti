@@ -25,14 +25,14 @@ public class Player extends Entity2D {
 	}
 	
 	private void pickUp(Coin coin) {
-		System.out.println("Picked up coin!");
+		score += coin.getValue();
 		coin.destroy();
 	}
 	
 	@Override
 	protected void reset() {
 		super.reset();
-		
+		score = 0;
 	}
 	
 	int i = 0;

@@ -83,12 +83,8 @@ public abstract class Material {
 		int textureIndex = 1;
 		
 		for (MaterialComponent c : components) {
-			//System.out.println("Setting up " + c + "...");
 			c.setup(this, rendererState, modelMatrix);
-			//System.out.println("Binding at TI=" + textureIndex);
 			textureIndex += c.setupTexture(this, rendererState, textureIndex);
-			//System.out.println("TI now equals: " + textureIndex);
-			//System.out.println();
 		}
 	}
 	
@@ -132,15 +128,6 @@ public abstract class Material {
 
 	public void unsetBuffers(Model model) {
 		model.cleanUp(positionIndex, normalIndex, texcoordIndex);
-		/*
-		model.getVertices().cleanUp(positionIndex);
-		if(!ignoreLights) {
-			model.getNormals().cleanUp(normalIndex);
-		}
-		if(texture != null) {
-			// FIXME: sort of a hack
-			model.getTexcoords().cleanUp(texcoordIndex);
-		}*/
 	}
 	
 	public int getPositionIndex() {

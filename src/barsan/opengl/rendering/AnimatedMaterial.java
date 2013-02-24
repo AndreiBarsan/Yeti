@@ -62,7 +62,7 @@ public class AnimatedMaterial extends Material {
 		// All VBO lengths are equal, this should work ok.
 		super.render(rendererState, model);
 	}
-
+	
 	public int getPositionStartIndex() {
 		return positionStartIndex;
 	}

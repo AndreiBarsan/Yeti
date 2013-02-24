@@ -7,8 +7,8 @@ import barsan.opengl.util.Color;
 
 /**
  * 
- * The basic material used in the engine. Built in are Phong ASD lighting, simple
- * texture support and shadow receiving.
+ * The basic material used for static meshes in the engine. Built in are Phong 
+ * ASD lighting, simple texture support and shadow receiving.
  * 
  * Whether something casts a shadow is controlled in the model instance object,
  * not here, due to the way the shadow mapping implementation works.
@@ -16,9 +16,9 @@ import barsan.opengl.util.Color;
  * Other available modules that can be attached are:
  *  - bumpmapping
  *  - fog
- *  - multitexturing (soon available as component)
- *  - emmisive maps	 (coming version 2.0)
- *  - specular maps  (coming version 2.0)
+ *  - multitexturing (planned v2.0)
+ *  - emmisive maps	 (planned v2.0)
+ *  - specular maps  (planned v2.0)
  * 
  * @author Andrei Barsan
  */

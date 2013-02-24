@@ -74,7 +74,7 @@ public class RendererState {
 			}
 			
 			m.getShader().setU1i("useShadows", true);
-			m.getShader().setU1i("shadowQuality", renderer.getShadowQuality());
+			m.getShader().setU1i("shadowQuality", renderer.getShadowQuality().getFlag());
 		}
 	}
 	
