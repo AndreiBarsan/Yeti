@@ -113,10 +113,6 @@ public class Scene {
 		return modelInstances;
 	}
 	
-	public float getDelta() {
-		return (float) (((double)(System.nanoTime() - lastTime)) / 1000000000.0d);
-	}
-
 	public void addModelInstance(ModelInstance modelInstance) {
 		assert (! (modelInstance instanceof Billboard)) : "Billboards should be handled separately!"; 
 		modelInstances.add(modelInstance);

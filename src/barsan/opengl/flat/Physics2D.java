@@ -33,7 +33,7 @@ public class Physics2D {
 	float maxXSpeed = 40.0f;
 	float maxYSpeed = 80.0f;
 	
-	float jumpTimeTotal = 0.065f;
+	float jumpTimeTotal = 0.070f;
 	float jumpTimeLeft = 0.0f;
 	
 	public boolean jumpInput = false;
@@ -63,6 +63,7 @@ public class Physics2D {
 	public void reset() {
 		bounds.set(initialBounds);
 		velocity.set(initialVelocity);
+		intersected.clear();
 	}
 	
 	public boolean collidesWith(Physics2D other) {
@@ -107,7 +108,8 @@ public class Physics2D {
 		velocity.add(new Vector2(acceleration).mul(delta));
 		
 		if( friction > 0.0f ) {
-			velocity.applyFrictionX(friction * delta);
+			// min() prevents too much friction from being applied
+			velocity.applyFrictionX(friction * Math.min(delta, 0.1f));
 		}
 		
 		if(velocity.x < -maxXSpeed) {

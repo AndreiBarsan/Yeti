@@ -139,7 +139,7 @@ public class DemoScene extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		a += 0.8 * getDelta() * 10;
+		a += 0.8 * Yeti.get().getDelta() * 10;
 		
 		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
 		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);

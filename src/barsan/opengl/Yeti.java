@@ -80,6 +80,11 @@ public class Yeti implements GLEventListener {
 	// Detects abnormal contex resets
 	boolean engineInitialized = false;
 	
+	// Timing
+	private long lastFrameStart;
+	private long thisFrameStart;
+	private float delta;
+	
 	/**
 	 * Iterating through a package to find its classes is not as trivial
 	 * as it might seem, so this will do. It's just tempanent anyway.
@@ -208,6 +213,10 @@ public class Yeti implements GLEventListener {
 		settings.playing = true;
 		if(currentScene != null)
 			currentScene.play();
+	}
+	
+	public float getDelta() {
+		return delta;
 	}
 	
 	/**
@@ -344,16 +353,20 @@ public class Yeti implements GLEventListener {
 		}
 		
 		engineInitialized = true;
+		lastFrameStart = thisFrameStart = System.nanoTime();
 	}
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		thisFrameStart = System.nanoTime();
+		delta = (float) (( (double) thisFrameStart - lastFrameStart) / 1000000000d);
 		if(pendingInit) {
 			Yeti.debug("Pending init - so doing init! (display)");
 			currentScene.init(drawable);
 			pendingInit = false;
 		}
 		currentScene.display(drawable);
+		lastFrameStart = thisFrameStart;
 	}
 
 

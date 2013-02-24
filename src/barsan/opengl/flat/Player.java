@@ -9,6 +9,7 @@ import barsan.opengl.planetHeads.HeavenBeam;
 import barsan.opengl.rendering.AnimatedModelInstance;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.scenes.GameScene.InputPoller;
 
 public class Player extends Entity2D {
 
@@ -128,5 +129,17 @@ public class Player extends Entity2D {
 		
 		
 		super.update(delta);
+	}
+	
+	public void handleInput(InputPoller poller) {
+		if(state == State.Active) {
+			getPhysics2d().acceleration.x = 400.0f * poller.move;
+			if(poller.move != 0) {
+				wantsToWalk = true;
+			} else {
+				wantsToWalk = false;
+			}
+			wantsToJump = poller.jmp;
+		}
 	}
 }

@@ -273,7 +273,7 @@ public class Renderer {
 			sortBillboards(scene);
 		}
 		
-		float delta = scene.getDelta();
+		float delta = Yeti.get().getDelta();
 		for(ModelInstance mi : scene.getModelInstances()) {
 			if(mi instanceof AnimatedModelInstance) {
 				((AnimatedModelInstance)mi).updateAnimation(delta);

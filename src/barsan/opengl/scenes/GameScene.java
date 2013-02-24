@@ -30,11 +30,11 @@ public class GameScene extends Scene {
 	InputPoller poller = new InputPoller();
 	protected CameraInput cameraInput;
 	
-	class InputPoller extends InputAdapter {
+	public class InputPoller extends InputAdapter {
 		// Quick hacky class to test physics
 		public float move;
-		
 		public boolean jmp;
+		
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if(e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -98,11 +98,12 @@ public class GameScene extends Scene {
 	float sectorHeight = 15.0f;
 	float spc = 0.9f;
 	float currentY = 0.0f;
-	float cSpeed = 10000.0f * sectorHeight;
+	float cSpeed = 50.0f;
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		world.update(getDelta());
+		// Compensate for MAXIMUM 2.5-ish frames
+		world.update(Math.min(Yeti.get().getDelta(), 0.05f));
 		super.display(drawable);
 		
 		// Handles "smart" camera that doesn't spazz out and follow each jump
@@ -116,7 +117,7 @@ public class GameScene extends Scene {
 			currentSector--;
 		}
 
-		float delta = getDelta();
+		float delta = Yeti.get().getDelta();
 		float goal = currentSector * sectorHeight + 5;
 		if(goal < -10) goal = -10;
 		if(currentY < goal) {
@@ -130,14 +131,7 @@ public class GameScene extends Scene {
 		camera.lookAt(vs, pp, Vector3.UP.copy());
 		
 		// Handle controls (rudimentarily)
-		Player player = world.getPlayer();
-		player.getPhysics2d().acceleration.x = 400.0f * poller.move;
-		if(poller.move != 0) {
-			player.wantsToWalk = true;
-		} else {
-			player.wantsToWalk = false;
-		}
-		player.wantsToJump = poller.jmp;
+		world.getPlayer().handleInput(poller);
 		
 		renderer.setDirectionalShadowCenter(new Vector3(pp.x, pp.y, 0.0f));
 	}

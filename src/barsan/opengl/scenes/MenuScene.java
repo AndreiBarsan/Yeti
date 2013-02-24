@@ -194,7 +194,7 @@ public class MenuScene extends Scene {
 		}
 		
 		renderer.setSortBillboards(false);
-		float delta = getDelta();
+		float delta = Yeti.get().getDelta();
 		float logoY = start;
 		
 		if(initialDelay > 0.0f) {

@@ -206,7 +206,7 @@ public class LightTest extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		float delta = getDelta();
+		float delta = Yeti.get().getDelta();
 		a += delta;
 		
 		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;

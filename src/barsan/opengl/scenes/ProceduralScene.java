@@ -40,6 +40,8 @@ public class ProceduralScene extends Scene {
 		cylinder = new StaticModelInstance(new Cylinder(gl, precision, diameter, height));
 		modelInstances.add(cylinder);
 		
+		addInput(cameraInput = new CameraInput(camera));
+		
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		lights.add(mainLight = new PointLight(new Vector3(0f, 20f, 10f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
@@ -111,5 +113,17 @@ public class ProceduralScene extends Scene {
 		super.display(drawable);
 		
 		drawGUI(drawable);
+	}
+	
+	@Override
+	public void pause() {
+		super.pause();
+		cameraInput.setMouseControlled(false);
+	}
+	
+	@Override
+	public void play() {
+		super.play();
+		cameraInput.setMouseControlled(true);
 	}
 }
