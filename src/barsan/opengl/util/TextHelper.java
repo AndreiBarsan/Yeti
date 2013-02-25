@@ -61,7 +61,7 @@ public class TextHelper {
 		String[] lines = text.split("\n");
 		int height = (int) ren.getBounds(text).getHeight();
 		for(int i = 0; i < lines.length; i++) {
-			drawText(x, (lines.length - i) * height, lines[i], color);
+			drawText(x, y + (lines.length - i) * height, lines[i], color);
 		}
 	}
 	

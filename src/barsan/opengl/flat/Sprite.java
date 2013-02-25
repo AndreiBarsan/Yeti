@@ -23,11 +23,6 @@ public class Sprite extends Billboard {
 	}
 	
 	public void setPosition(Vector2 position) {
-		//float w = Yeti.get().settings.width;
-		//float h = Yeti.get().settings.height;
-		//localTransform.updateTranslate(position.x / w, position.y / h, 0.0f);
-		
-		//System.out.println(localTransform.getTranslate());
 		localTransform.updateTranslate(position.x, position.y, 0.0f);
 	}
 

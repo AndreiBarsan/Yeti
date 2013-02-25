@@ -83,6 +83,7 @@ public class StaticModelInstance extends ModelInstance {
 		return material;
 	}
 
+	@Override
 	public void setMaterial(Material material) {
 		this.material = material;
 	}

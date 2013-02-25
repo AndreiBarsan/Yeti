@@ -32,7 +32,6 @@ public class Billboard extends StaticModelInstance {
 		public BillboardMaterial(AxisClamp axisClamp) {
 			super(ResourceLoader.shader(SHADER_NAME));
 			ignoreLights = true;
-			writesDepthBuffer = false;
 			this.axisClamp = axisClamp;
 		}
 	

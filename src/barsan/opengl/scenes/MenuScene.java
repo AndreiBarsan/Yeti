@@ -157,7 +157,7 @@ public class MenuScene extends Scene {
 		
 		menu.addEntry(menu.new MenuEntry("Begin!", new TransitionAction(new GameScene())));
 		menu.addEntry(menu.new MenuEntry("Light test", new TransitionAction(new LightTest())));
-		menu.addEntry(menu.new MenuEntry("About", new DummyAction()));
+		//menu.addEntry(menu.new MenuEntry("About", new DummyAction()));
 		menu.addEntry(menu.new MenuEntry("Exit", new ExitAction()));
 		
 		Renderer.renderDebug = false;

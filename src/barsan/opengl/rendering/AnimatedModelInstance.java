@@ -105,6 +105,11 @@ public class AnimatedModelInstance extends ModelInstance {
 	}
 	
 	@Override
+	public void setMaterial(Material material) {
+		this.material = (AnimatedMaterial) material;	
+	}
+	
+	@Override
 	public void setTexture(Texture texture) {
 		material.setTexture(texture);
 		material.addComponent(new TextureComponent());

@@ -185,20 +185,18 @@ public class LightTest extends Scene {
 			public void mouseReleased(MouseEvent e) {
 				if(e.getButton() != MouseEvent.BUTTON3) return;	// right-click only!
 				
-				synchronized(lights) {
-					lights.clear();
-					currentlyActive = LightType.values()[(currentlyActive.ordinal() + 1) % LightType.values().length];
-					switch(currentlyActive) {
-					case Directional:
-						lights.add(test_dl);
-						break;
-					case Point:
-						lights.add(test_pl);
-						break;
-					case Spot:
-						lights.add(test_sl);
-						break;
-					}
+				lights.clear();
+				currentlyActive = LightType.values()[(currentlyActive.ordinal() + 1) % LightType.values().length];
+				switch(currentlyActive) {
+				case Directional:
+					lights.add(test_dl);
+					break;
+				case Point:
+					lights.add(test_pl);
+					break;
+				case Spot:
+					lights.add(test_sl);
+					break;
 				}
 			}
 		});

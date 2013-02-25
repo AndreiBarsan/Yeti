@@ -2,6 +2,7 @@ package barsan.opengl.planetHeads;
 
 import barsan.opengl.flat.Entity2D;
 import barsan.opengl.math.Rectangle;
+import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -13,6 +14,9 @@ public class HeavenBeam extends Entity2D {
 		
 		graphics.getTransform().updateScale(1f, 8.0f, 1f);
 		graphics.setCastsShadows(false);
+		
+		graphics.setMaterial(new BasicMaterial());
+		
 		Material beamMat = graphics.getMaterial();
 		beamMat.setDiffuse(new Color(0.33f, 0.44f, 0.94f, 0.4f));
 		beamMat.setAmbient(Color.TRANSPARENTBLACK.copy());

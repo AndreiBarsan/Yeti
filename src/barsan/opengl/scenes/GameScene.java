@@ -16,11 +16,19 @@ import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.planetHeads.Coin;
 import barsan.opengl.planetHeads.GameGUI;
+import barsan.opengl.rendering.Cube;
+import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.BumpComponent;
+import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.Color;
 import barsan.opengl.util.DebugGUI;
 
 public class GameScene extends Scene {
@@ -59,6 +67,10 @@ public class GameScene extends Scene {
 			} else if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 				jmp = false;
 			}
+			else if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				Yeti.get().loadScene(new MenuScene());
+			}
+			
 		}
 	}
 	
@@ -81,10 +93,9 @@ public class GameScene extends Scene {
 		
 		// Let's set up the level
 		world = new World2D(this);
-		
-		Yeti.get().addInputProvider(poller);
-				
 		world.reset();
+		
+		addInput(poller);
 		
 		gui = new GameGUI(world.getPlayer());
 		gui.setPosition(new Vector3(220.0f, 10.0f, 0.0f));
@@ -134,6 +145,12 @@ public class GameScene extends Scene {
 		world.getPlayer().handleInput(poller);
 		
 		renderer.setDirectionalShadowCenter(new Vector3(pp.x, pp.y, 0.0f));
+	}
+	
+	@Override
+	public void beginExit(Yeti engine, Scene next) {
+		world.clearAllEntities();
+		super.beginExit(engine, next);
 	}
 	
 	@Override

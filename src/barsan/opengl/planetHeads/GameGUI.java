@@ -10,6 +10,7 @@ import barsan.opengl.util.TextHelper;
 public class GameGUI extends GUI {
 
 	private Font guiFont = new Font("sans-serif", Font.PLAIN, 30);
+	private Font guiInfoFont = new Font("sans-serif", Font.PLAIN, 20);
 	private int width, height;
 	private Player player;
 	
@@ -22,10 +23,19 @@ public class GameGUI extends GUI {
 	@Override
 	public void render() {
 		TextHelper.setFont(guiFont);
-		Yeti.get().gl.glUseProgram(0);
+		
 		TextHelper.beginRendering(width, height);
 		{
-			String hud = String.format("Score: %d\n", player.score);
+			String hud = String.format("Score: %d", player.score);
+			TextHelper.drawTextMultiLine((int)position.x, (int)position.y + 80, hud);
+		}
+		TextHelper.endRendering();
+		
+		TextHelper.setFont(guiInfoFont);
+		TextHelper.beginRendering(width, height);
+		{
+			String hud = String.format("Controls: Arrow keys and the spacebar\n" +
+					"Press Escape to return to the main menu");
 			TextHelper.drawTextMultiLine((int)position.x, (int)position.y, hud);
 		}
 		TextHelper.endRendering();

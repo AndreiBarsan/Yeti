@@ -1,5 +1,6 @@
 package barsan.opengl.flat;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector2;
@@ -42,7 +43,7 @@ public class Player extends Entity2D {
 	}
 	
 	private void finishLevel() {
-		System.out.println("LEVEL COMPLETE!");
+		Yeti.debug("LEVEL COMPLETE!");
 		int s = score;
 		reset();
 		score = s + 500;

@@ -59,5 +59,6 @@ public abstract class ModelInstance implements Renderable {
 	}
 	
 	public abstract Material getMaterial();
+	public abstract void setMaterial(Material material);
 
 }

@@ -2,7 +2,9 @@ TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
  - collision checking fails at low fps (due to it being a hacky implementation)
- - animation stretches strangely due to frame interpolation
+ - JVM Crash - condition: game scene, last thing added is player, no heaven
+ beam, attempt to leave scene; at the first render call in the menu the JVM 
+ crashes 
  - view matrix straight down causes problems
  - multitexture material broken
  - actually find and write down the (rather old) matrix multiplication BUG
@@ -64,7 +66,7 @@ Version 2.0 (sometime during the 4th semester OpenGL Praktikum):
  - simple (load and play wav sounds) OpenAL sound support
  - batched render calls
  - specular/emmisive maps
- - pallalax mapping
+ - parallax mapping
  - depth-of-field post-processing
  - tone mapping & HDR
  - bloom
