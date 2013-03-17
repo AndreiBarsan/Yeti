@@ -99,7 +99,6 @@ public class World2D {
 		addEntity(new HeavenBeam(195f, 70f));		
 	}
 	
-	
 	public void addEntity(Entity2D entity) {
 		entities.add(entity);
 		entity.init(this);

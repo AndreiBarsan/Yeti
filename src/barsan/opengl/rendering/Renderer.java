@@ -89,7 +89,7 @@ public class Renderer {
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
-	private int MSAASamples = 4;
+	private int MSAASamples = 8;
 	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
@@ -114,7 +114,6 @@ public class Renderer {
 		gl.glDepthFunc(GL2.GL_LEQUAL);
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
-		gl.glFrontFace(GL2.GL_CCW);
 		gl.glClearDepth(1.0d);
 		
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
@@ -123,7 +122,7 @@ public class Renderer {
 		int fboHeight = Yeti.get().settings.height;
 		//*
 		fbo_tex = new FBObject();
-		fbo_tex.reset(gl, fboWidth, fboHeight, 0);
+		fbo_tex.reset(gl, fboWidth, fboHeight);
 		fbo_tex.bind(gl);
 		
 		fbo_tex.attachTexture2D(gl, 0, true);
@@ -186,7 +185,7 @@ public class Renderer {
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();
-		fbo_shadows.reset(gl, shadowMapW, shadowMapH, 0);
+		fbo_shadows.reset(gl, shadowMapW, shadowMapH);
 		fbo_shadows.bind(gl);
 		
 		gl.glGenTextures(1, name, 0);

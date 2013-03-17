@@ -4,7 +4,7 @@ Bugs:
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 
- crashes 
+ crashes; (maybe the updated JOGL fixed it (17.03 - check it!)
  - view matrix straight down causes problems
  - multitexture material broken
  - actually find and write down the (rather old) matrix multiplication BUG
@@ -23,16 +23,21 @@ General TODOs:
  - use tangent & binormal for normal mapping, it's faster (cached values, duh);
  Valve also uses this approach!
  - optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
- - use shadow samplers for the shadow computations, they should be faster
+ - use dedicated shadow samplers for the shadow computations, they should be faster
  - use input polling for the camera -> smoother movement (needed later for the char controls anyway)
- - start working on bounding volumes to start doing lighting the right way!
+ - related to the above - a general polling-based input provider should be created
+ - start working on bounding volumes to start doing lighting, shadowing and maybe
+ 3D collision detection the right way!
  - standardized texture units - only bind things like the shadow map ONCE
  - camera update() method (automatically called by the scene - keep everything in sync, prevent recalculations of the view matrix etc.)
  - perpixel fog & fix fog computation
  - multiple lights
  
  - optional utility to draw:
-   - pie chart render data
+   - pie chart render data (time spent on various draw phases - this is going
+   to be tricky to implement as it is quite hard to figure out what proportion
+   of the time is actually spend rendering, and what proportion is being devoured
+   by the calls into native code)
    - axes
    - NORMALS!
  - when creating post-process effects, compile basic vertex shader, get 
@@ -40,13 +45,13 @@ General TODOs:
   saving (n-1) useless recompilations of the postprocess vertex shaders
   
   - global rendering settings should be part of every material (think
-  gamma correction and tone mapping); should gamma correction be part of a
-  post-processing system?
+  gamma correction and tone mapping);
+  - should gamma correction be part of a post-processing system? YES - the pixels
+  get converted from floating-point color values to integers afterwards
  
  - use uniform blocks for shaders (with possibility of loading multiple items
   in a single action from the App)
- - list of all lights and entities
- - edit lights and entities (entity transforms) through editor
+ - list of all lights and entities and allow editing
  - load .obj dialog with "recents" list in editor
  - log object
  
