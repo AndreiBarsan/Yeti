@@ -34,7 +34,7 @@ smooth out float 	fogFactor;
 smooth out vec4 	vertPos_ec;
 smooth out vec4 	vertPos_wc;
 smooth out vec4 	lightPos_ec;
-smooth out vec3 	lightPos_wc;
+smooth out vec4 	lightPos_wc;
 
 smooth out vec3 	spotDirection_ec;
 
