@@ -22,7 +22,7 @@ public class Scene {
 	// Billboards get special treatment as they're transparent
 	protected ArrayList<Billboard> billboards = new ArrayList<>();
 	
-	protected Renderer renderer;
+	protected ForwardRenderer renderer;
 	protected Camera camera;
 	protected boolean exiting = false;
 	
@@ -54,8 +54,8 @@ public class Scene {
 		}
 		
 		// Prepare the renderer; use the default renderer
-		renderer = new Renderer(Yeti.get().gl.getGL3());
-		Renderer.renderDebug = Yeti.get().debug;
+		renderer = new ForwardRenderer(Yeti.get().gl.getGL3());
+		ForwardRenderer.renderDebug = Yeti.get().debug;
 		
 		lastTime = System.nanoTime();
 	}
@@ -138,11 +138,11 @@ public class Scene {
 		}
 	}
 	
-	public void setRenderer(Renderer renderer) {
+	public void setRenderer(ForwardRenderer renderer) {
 		this.renderer = renderer;
 	}
 	
-	public Renderer getRenderer() {
+	public ForwardRenderer getRenderer() {
 		return renderer;
 	}
 

@@ -18,7 +18,7 @@ import barsan.opengl.planetHeads.Coin;
 import barsan.opengl.planetHeads.GameGUI;
 import barsan.opengl.rendering.Cube;
 import barsan.opengl.rendering.Fog;
-import barsan.opengl.rendering.Renderer;
+import barsan.opengl.rendering.ForwardRenderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.StaticModelInstance;
@@ -88,7 +88,7 @@ public class GameScene extends Scene {
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		
-		Renderer.renderDebug = false;
+		ForwardRenderer.renderDebug = false;
 		shadowsEnabled = true;
 		
 		// Let's set up the level

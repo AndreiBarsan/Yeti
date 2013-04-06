@@ -35,7 +35,7 @@ import com.jogamp.opengl.FBObject.TextureAttachment;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 
-public class Renderer {
+public class ForwardRenderer {
 
 	public static boolean renderDebug = true;
 	
@@ -103,7 +103,7 @@ public class Renderer {
 	// for instance, is missing the 0.5fs from the last line, you won't see any
 	// shadows!
 	
-	public Renderer(GL3 gl) {	
+	public ForwardRenderer(GL3 gl) {	
 		state = new RendererState(this, gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 		

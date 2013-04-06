@@ -25,7 +25,7 @@ public class RendererState {
 	
 	public final GL3 gl;
 	private ArrayList<Light> lights;
-	private Renderer renderer;
+	private ForwardRenderer renderer;
 
 	private AmbientLight ambientLight;
 	private Fog fog; 
@@ -45,7 +45,7 @@ public class RendererState {
 	
 	private Scene scene;
 	
-	public RendererState(Renderer renderer, GL3 gl) {
+	public RendererState(ForwardRenderer renderer, GL3 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
 	}
@@ -65,7 +65,7 @@ public class RendererState {
 				Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
 				
 				// Really important! Converts the z-values from [-1, 1] to [0, 1]
-				Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
+				Matrix4 biasMVP = new Matrix4(ForwardRenderer.shadowBiasMatrix).mul(MVP);
 				
 				m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
 				
