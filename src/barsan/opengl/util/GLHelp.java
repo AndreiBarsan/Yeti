@@ -43,6 +43,14 @@ public class GLHelp {
 
 	public static void fboErr(GL gl) {
 		int result = gl.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
-		Yeti.debug("FBO status check: " + FBObject.getStatusString(result));
+		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+		/*
+		 *  Explanation of the 2:
+		 *   - 0 = the inside of the getStackTrace method
+		 *   - 1 = this method
+		 *   - 2 = this method's caller 
+		 */
+		String caller = stackTraceElements[2].getClassName();
+		Yeti.debug("FBO status check (" + caller + "): " + FBObject.getStatusString(result));
 	}
 }

@@ -78,8 +78,10 @@ public class StaticModel extends Model {
 			texcoords.close();
 		}
 		
-		Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d; Geometry element count: %d",
+		if(Yeti.get().settings.debugModels) {
+			Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d; Geometry element count: %d",
 				getName(), vertices.getSize(), normals.getSize()));
+		}
 	}
 	
 	public void addFace(Face face) {

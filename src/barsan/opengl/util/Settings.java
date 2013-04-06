@@ -18,14 +18,16 @@ public class Settings implements Serializable {
 	// The configuration layout is changing fast, and persistance is not really
 	// important yet
 	private static final long serialVersionUID = 42L;
+	public final static transient String SETTINGS_FILE = "settings.dat";
 	
 	// Not to be saved
 	public transient int width;
 	public transient int height;
 	public transient boolean playing = false;
 	
-	public final static transient String SETTINGS_FILE = "settings.dat";
-	
+	// Debug flags for various sub-systems
+	public boolean debugModels = false;
+		
 	// Actual settings and stats
 	public int lastSceneIndex = 0; 
 	public int anisotropySamples = 1;

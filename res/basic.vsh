@@ -60,11 +60,11 @@ void main() {
 		vVaryingTexCoords = vTexCoord;
 	}
 	
+	gl_Position = mvpMatrix * vVertex;
+	
 	if(fogEnabled) {
 		float len = length(gl_Position);
 		fogFactor = (len - minFogDistance) / (maxFogDistance - minFogDistance);
 		fogFactor = clamp(fogFactor, 0, 1);
 	}
-
-	gl_Position = mvpMatrix * vVertex;
 }

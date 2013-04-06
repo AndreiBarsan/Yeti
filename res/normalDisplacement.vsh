@@ -17,7 +17,9 @@ in vec3 vNormal;
 smooth out float 	fogFactor;
 
 void main() {
-	
+
+	gl_Position = mvpMatrix * vVertex;	
+
 	if(fogEnabled) {
 		float len = length(gl_Position);
 		fogFactor = (len - minFogDistance) / (maxFogDistance - minFogDistance);
@@ -26,7 +28,6 @@ void main() {
 	
 	vec3 eyeNormal = normalMatrix * vNormal;
 	
-	gl_Position = mvpMatrix * vVertex;
 	float distanceToCamera = min(length(gl_Position.xyz - cameraPosition), 20);
 	float df = distanceToCamera * 0.00035;
 	gl_Position += vec4(eyeNormal, 1.0) * df;

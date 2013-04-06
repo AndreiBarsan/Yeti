@@ -17,7 +17,7 @@ import barsan.opengl.util.GLHelp;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * 	The current state of the renderer, i.e. elements that change throughout 
+ * The current state of the renderer, i.e. elements that change throughout 
  * the rendering process. Pending refactoring.
  */
 public class RendererState {

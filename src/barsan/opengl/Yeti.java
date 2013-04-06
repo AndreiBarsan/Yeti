@@ -112,13 +112,7 @@ public class Yeti implements GLEventListener {
 	
 	private void startup() {
 		settings = Settings.load();
-		debug("Starting up Yeti...");		
-		
-		// Create the default scene
-		debug("Available scenes: ");
-		for(Class<?> c : availableScenes) {
-			debug(c.getCanonicalName());
-		}
+		debug("Starting up Yeti...");
 		
 		// Setup transient fields
 		if(settings.width == 0) {

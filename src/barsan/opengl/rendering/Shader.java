@@ -139,26 +139,140 @@ public class Shader {
 		gl.glValidateProgram(shaderProgram);
 		gl.glDeleteShader(vertex);
 		gl.glDeleteShader(fragment);
+		if(hasGeometry) {
+			gl.glDeleteShader(geometry);
+		}
 		
-		Yeti.debug(String.format("Shader \"%s\" loaded OK", name));
 		this.name = name;
 		this.handle = shaderProgram;
 	}
 
-	void dispose() {
+	public int getAttribLocation(String name) {
+		GL2GL3 gl = Yeti.get().gl; 
+		return gl.glGetAttribLocation(handle, name);
+	}
+	
+	public boolean setUMatrix4(String uniformName, Matrix4 matrix) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniformMatrix4fv(pos, 1, false, matrix.getData(), 0);
+		return true;
+	}
+	
+	public boolean setUMatrix4a(String uniformName, Matrix4[] matrix) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		float[] buffer = new float[matrix.length * 16];
+		for(int i = 0; i < matrix.length; i++) {
+			System.arraycopy(matrix[i].getData(), 0, buffer, 16 * i, 16);
+		}
+		
+		gl.glUniformMatrix4fv(pos, matrix.length, false, buffer, 0);
+		
+		return true;
+	}
+	
+	public boolean setUVector4f(String uniformName, float[] value) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniform4fv(pos, 1, value, 0);
+		return true;
+	}
+
+	public boolean setUMatrix3(String uniformName, Matrix3 matrix) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniformMatrix3fv(pos, 1, false, matrix.getData(), 0);
+		return true;
+		
+	}
+
+	public boolean setUVector3f(String uniformName, Vector3 value) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniform3f(pos, value.x, value.y, value.z);
+		return true;
+		
+	}
+	
+	public boolean setU1i(String uniformName, boolean value) {
+		return setU1i(uniformName, (value) ? 1 : 0);
+	}
+	
+	public boolean setU1i(String uniformName, int value) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		gl.glUniform1i(pos, value);
+		return true;
+	}
+
+	public boolean setU1f(String uniformName, float value) {
+		GL2GL3 gl = Yeti.get().gl;
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+
+		gl.glUniform1f(pos, value);
+		return true;
+	}
+	
+	/**
+	 * Called to release the native resource.
+	 */
+	public void dispose() {
 		GL2GL3 gl = Yeti.get().gl; 
 		gl.glDeleteShader(handle);
 	}
 	
-	void checkShader(String message, int handle) {
+
+	/**
+	 * Helper method to get a handle to a uniform. First checks whether that value
+	 * was already looked up, in which case it grabs it from the cache instead of
+	 * performing a native call, avoiding the associated overhead.
+	 */
+	private int grabUniform(String uniformName) {
+		GL2GL3 gl = Yeti.get().gl;
+		
+		int pos;
+		if(uLocCache.containsKey(uniformName)) {
+			pos = uLocCache.get(uniformName); 
+		} else {
+			pos = gl.glGetUniformLocation(handle, uniformName);
+			uLocCache.put(uniformName, pos);
+			
+			if(pos == -1) {
+				Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
+			}
+		}
+		
+		return pos;
+	}
+	
+	private void checkShader(String message, int handle) {
 		check(message, handle, false);
 	}
 	
-	void checkProgram(String message, int handle) {
+	private void checkProgram(String message, int handle) {
 		check(message, handle, true);
 	}
 	
-	void check(String message, int handle, boolean isProgram) {		
+	/**
+	 * Checks whether the entity (shader or shader program, specified by the
+	 * isProgram parameter) compiled successfully. If an error occurred, crashes
+	 * the engine to prompt the programmer to fix the error as soon as possible.
+	 * 
+	 * If warnings are detected, they are printed out.
+	 */
+	private void check(String message, int handle, boolean isProgram) {		
 		GL3 gl = Yeti.get().gl;
 		IntBuffer buff = IntBuffer.allocate(1);
 		String logContents = "Empty log";
@@ -201,146 +315,4 @@ public class Shader {
 	}
 	
 	
-	public int getAttribLocation(String name) {
-		GL2GL3 gl = Yeti.get().gl; 
-		return gl.glGetAttribLocation(handle, name);
-	}
-	
-	public boolean setUMatrix4(String uniformName, Matrix4 matrix) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-		
-		gl.glUniformMatrix4fv(pos, 1, false, matrix.getData(), 0);
-		return true;
-	}
-	
-	public boolean setUMatrix4a(String uniformName, Matrix4[] matrix) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-		
-		float[] buffer = new float[matrix.length * 16];
-		for(int i = 0; i < matrix.length; i++) {
-			System.arraycopy(matrix[i].getData(), 0, buffer, 16 * i, 16);
-		}
-		
-		gl.glUniformMatrix4fv(pos, matrix.length, false, buffer, 0);
-		
-		return true;
-	}
-	
-	public boolean setUVector4f(String uniformName, float[] value) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-		
-		gl.glUniform4fv(pos, 1, value, 0);
-		return true;
-	}
-
-	public boolean setUMatrix3(String uniformName, Matrix3 matrix) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-		
-		gl.glUniformMatrix3fv(pos, 1, false, matrix.getData(), 0);
-		return true;
-		
-	}
-
-	public boolean setUVector3f(String uniformName, Vector3 value) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-		
-		gl.glUniform3f(pos, value.x, value.y, value.z);
-		return true;
-		
-	}
-	
-	public boolean setU1i(String uniformName, boolean value) {
-		return setU1i(uniformName, (value) ? 1 : 0);
-	}
-	
-	public boolean setU1i(String uniformName, int value) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-
-		gl.glUniform1i(pos, value);
-		return true;
-	}
-
-	public boolean setU1f(String uniformName, float value) {
-		GL2GL3 gl = Yeti.get().gl;
-		int pos;
-		if(uLocCache.containsKey(uniformName)) {
-			pos = uLocCache.get(uniformName); 
-		} else {
-			pos = gl.glGetUniformLocation(handle, uniformName);
-			if(pos == -1) Yeti.debug("Uniform not found: %s (in shader %s)", uniformName, name);
-			if(pos != -1) {
-				uLocCache.put(uniformName, pos);
-			}
-		}
-		if(pos == -1) return false;
-
-		gl.glUniform1f(pos, value);
-		return true;
-	}
 }

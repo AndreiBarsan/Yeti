@@ -11,6 +11,7 @@ smooth in vec4 vVertex;
 smooth out float fogFactor;
 
 void main(void) {
+	gl_Position =  mvpMatrix * vVertex;
 
 	// Even if it's flat, it should still be affected by fog	
 	if(fogEnabled) {
@@ -18,6 +19,4 @@ void main(void) {
 		fogFactor = (len - minFogDistance) / (maxFogDistance - minFogDistance);
 		fogFactor = clamp(fogFactor, 0, 1);
 	}
-
-	gl_Position =  mvpMatrix * vVertex;
 }
