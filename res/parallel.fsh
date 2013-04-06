@@ -3,6 +3,8 @@
 uniform bool sampleTexture;
 uniform sampler2D colorMap;
 
+out vec4 vFragColor;
+
 void main(void) {
-	gl_FragColor = vec4(1.0);
+	vFragColor = vec4(1.0);
 }

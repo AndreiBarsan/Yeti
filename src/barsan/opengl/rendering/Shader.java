@@ -108,21 +108,13 @@ public class Shader {
 		
 		gl.glShaderSource(vertex, 1, new String[] { vertexSrc }, (int[])null, 0);
 		gl.glCompileShader(vertex);
-		
-		gl.glGetShaderiv(vertex, GL2.GL_COMPILE_STATUS, result, 0);
-		if(result[0] == GL.GL_FALSE) {
-			shaderError("Vertex shader [" + name + "] failed to compile: ", vertex);
-		}
+		checkShader("Vertex shader [" + name + "]", vertex);
 		
 		if(hasGeometry) {
 			geometry = gl.glCreateShader(GL3.GL_GEOMETRY_SHADER);
 			gl.glShaderSource(geometry, 1, new String[] { geometrySrc }, (int[])null, 0);
 			gl.glCompileShader(geometry);
-			
-			gl.glGetShaderiv(geometry, GL2.GL_COMPILE_STATUS, result, 0);
-			if(result[0] == GL.GL_FALSE) {
-				shaderError("Geometry shader [" + name + "] failed to compile: ", geometry);
-			}
+			checkShader("Geometry shader [" + name + "]", geometry);		
 		}
 		
 		
@@ -130,11 +122,7 @@ public class Shader {
 		// gets corrupted and causes strange errors.
 		gl.glShaderSource(fragment, 1, new String[] { fragmentSrc }, (int[])null, 0);
 		gl.glCompileShader(fragment);
-		
-		gl.glGetShaderiv(fragment, GL2.GL_COMPILE_STATUS, result, 0);
-		if(result[0] == GL2.GL_FALSE) {
-			shaderError("Fragment shader [" + name + "] failed to compile: ", fragment);
-		}
+		checkShader("Fragment shader [" + name + "]", fragment);
 		
 		int shaderProgram = gl.glCreateProgram();
 		gl.glAttachShader(shaderProgram, vertex);
@@ -143,23 +131,10 @@ public class Shader {
 			gl.glAttachShader(shaderProgram, geometry);
 		}
 		
-		// Bind the attributes
-		/*
-		 * It's not mandatory, but it's good practice. If you don't do it, OpenGL
-		 * will assign them automatically, and you'll be forced to use getAttribLocation
-		 * if you ever need one. This solution is more elegant.
-		 */
-		// NOTE: must be done BEFORE linking
-		/*
-		for(int i = 0; i < args.length; i++) {
-			gl.glBindAttribLocation(shaderProgram, i, args[i]);
-		}*/
+		// Maybe pre-bind attributes here?
 		
 		gl.glLinkProgram(shaderProgram);
-		gl.glGetProgramiv(shaderProgram, GL2.GL_LINK_STATUS, result, 0);
-		if(result[0] == GL.GL_FALSE) {
-			shaderLinkError(String.format("Shader \"%s\" failed to link", name), shaderProgram);
-		}
+		checkProgram("Shader [" + name + "]", shaderProgram);
 		
 		gl.glValidateProgram(shaderProgram);
 		gl.glDeleteShader(vertex);
@@ -175,16 +150,56 @@ public class Shader {
 		gl.glDeleteShader(handle);
 	}
 	
-	private void shaderError(String message, int handle) {
-		GL2GL3 gl = Yeti.get().gl; 
-		gl.glGetShaderInfoLog(handle, 512, i_buff, b_buff);
-		Yeti.screwed(message + "\n\t" + new String(b_buff.array(), 0, 512));
+	void checkShader(String message, int handle) {
+		check(message, handle, false);
 	}
 	
-	private void shaderLinkError(String message, int handle) {
-		Yeti.get().gl.glGetProgramInfoLog(handle, 128, i_buff, b_buff);
-		Yeti.screwed("\n\t" + new String(b_buff.array(), 0, 256));
+	void checkProgram(String message, int handle) {
+		check(message, handle, true);
 	}
+	
+	void check(String message, int handle, boolean isProgram) {		
+		GL3 gl = Yeti.get().gl;
+		IntBuffer buff = IntBuffer.allocate(1);
+		String logContents = "Empty log";
+		boolean logEmpty = true;
+		
+		if(isProgram) {
+			gl.glGetProgramiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
+		} else {
+			gl.glGetShaderiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
+		}
+		
+		int l = buff.get();
+		if(l > 1) {
+			logEmpty = false;
+			if(isProgram) {
+				gl.glGetProgramInfoLog(handle, l, i_buff, b_buff);
+			}
+			else {
+				gl.glGetShaderInfoLog(handle, l, i_buff, b_buff);
+			}
+			logContents = new String(b_buff.array(), 0, i_buff.get());
+		}
+		
+		if(isProgram) {
+			gl.glGetProgramiv(handle, GL2.GL_LINK_STATUS, result, 0);
+		} else {
+			gl.glGetShaderiv(handle, GL2.GL_COMPILE_STATUS, result, 0);
+		}
+		
+		String action = isProgram ? "link" : "compile";
+		String actionPT = isProgram ? "linked" : "compiled";
+		if(result[0] == GL2.GL_FALSE) {
+			Yeti.screwed(message + " failed to " + action + "!\n\t" + logContents);
+			return;
+		}
+		
+		if(!logEmpty) {
+			Yeti.warn(message + " " + actionPT + " with warnings!\n\t" + logContents);
+		}
+	}
+	
 	
 	public int getAttribLocation(String name) {
 		GL2GL3 gl = Yeti.get().gl; 
