@@ -9,6 +9,8 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.InputProvider;
+import barsan.opengl.rendering.cameras.Camera;
+import barsan.opengl.rendering.cameras.PerspectiveCamera;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.resources.ResourceLoader;

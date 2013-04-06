@@ -3,6 +3,7 @@ package barsan.opengl.rendering;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.materials.CubeMapMaterial;
 
 import com.jogamp.opengl.util.texture.Texture;

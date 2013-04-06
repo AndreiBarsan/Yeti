@@ -13,7 +13,7 @@ import javax.swing.SwingUtilities;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
-import barsan.opengl.rendering.Camera;
+import barsan.opengl.rendering.cameras.Camera;
 
 public class CameraInput implements InputProvider, KeyListener, MouseListener, MouseMotionListener {
 	

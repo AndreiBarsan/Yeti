@@ -7,6 +7,7 @@ import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.Light.LightType;

@@ -1,4 +1,4 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.cameras;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Quaternion;

@@ -1,5 +1,6 @@
 package barsan.opengl.rendering;
 
+import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.util.Color;
 
 public class Fog {	

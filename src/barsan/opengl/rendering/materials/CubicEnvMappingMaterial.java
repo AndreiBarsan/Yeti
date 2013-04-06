@@ -5,10 +5,10 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.rendering.Camera;
 import barsan.opengl.rendering.CubeTexture;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
 

@@ -2,7 +2,7 @@ package barsan.opengl.util;
 
 import javax.media.opengl.GL2;
 
-import barsan.opengl.rendering.Camera;
+import barsan.opengl.rendering.cameras.Camera;
 
 public class FPCameraAdapter {
 

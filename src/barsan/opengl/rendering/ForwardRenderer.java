@@ -14,6 +14,9 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.cameras.Camera;
+import barsan.opengl.rendering.cameras.OrthographicCamera;
+import barsan.opengl.rendering.cameras.PerspectiveCamera;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.Light.LightType;
@@ -89,7 +92,7 @@ public class ForwardRenderer implements Renderer {
 	// TODO: refactor this into self-contained helper
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
-	private int MSAASamples = 8;
+	private int MSAASamples = 4;
 	private StaticModel screenQuad;
 	
 	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 

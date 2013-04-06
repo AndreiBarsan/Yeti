@@ -2,8 +2,8 @@ package barsan.opengl.util;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.OrthographicCamera;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.cameras.OrthographicCamera;
 import barsan.opengl.rendering.lights.DirectionalLight;
 
 public class SceneHelper {
