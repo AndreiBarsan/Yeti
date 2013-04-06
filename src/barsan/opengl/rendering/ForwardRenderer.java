@@ -35,7 +35,7 @@ import com.jogamp.opengl.FBObject.TextureAttachment;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 
-public class ForwardRenderer {
+public class ForwardRenderer implements Renderer {
 
 	public static boolean renderDebug = true;
 	
@@ -251,10 +251,18 @@ public class ForwardRenderer {
 		 GLHelp.fboErr(gl);		
 	}
 	
+	/* (non-Javadoc)
+	 * @see barsan.opengl.rendering.Renderer#getState()
+	 */
+	@Override
 	public RendererState getState() {
 		return state;
 	}
 		
+	/* (non-Javadoc)
+	 * @see barsan.opengl.rendering.Renderer#render(barsan.opengl.rendering.Scene)
+	 */
+	@Override
 	public void render(final Scene scene) {
 		GL3 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
@@ -448,6 +456,10 @@ public class ForwardRenderer {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see barsan.opengl.rendering.Renderer#dispose(javax.media.opengl.GL3)
+	 */
+	@Override
 	public void dispose(GL3 gl) {
 		state.cubeTexture.destroy(gl);
 		fbo_tex.destroy(gl);

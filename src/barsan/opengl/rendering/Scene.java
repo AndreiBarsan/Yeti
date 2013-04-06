@@ -142,7 +142,7 @@ public class Scene {
 		this.renderer = renderer;
 	}
 	
-	public ForwardRenderer getRenderer() {
+	public Renderer getRenderer() {
 		return renderer;
 	}
 
