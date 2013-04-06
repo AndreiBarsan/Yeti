@@ -11,8 +11,6 @@ import javax.media.opengl.GL3;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
-import barsan.opengl.math.Matrix4Stack;
-import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.cameras.OrthographicCamera;
@@ -23,7 +21,6 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DepthWriterDirectional;
-import barsan.opengl.rendering.materials.DepthWriterDirectionalAnim;
 import barsan.opengl.rendering.materials.DepthWriterPoint;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
@@ -34,52 +31,14 @@ import com.jogamp.opengl.FBObject;
 import com.jogamp.opengl.FBObject.Attachment;
 import com.jogamp.opengl.FBObject.Attachment.Type;
 import com.jogamp.opengl.FBObject.RenderAttachment;
-import com.jogamp.opengl.FBObject.TextureAttachment;
 import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 
-public class ForwardRenderer implements Renderer {
+public class ForwardRenderer extends Renderer {
 
-	public static boolean renderDebug = true;
-	
-	private RendererState state;
 	private FBObject fbo_tex;
 	private FBObject fbo_shadows;
-	private Matrix4Stack matrixstack = new Matrix4Stack();
 	
-	public enum ShadowQuality {
-		Low		(1, "Plain shadow mapping"),
-		Medium	(2, "Added normal dependency"),
-		High	(3, "4 Poisson disk samples"),
-		Ultra	(4, "Randomized poisson sampling");
-		
-		private int shaderFlag;
-		private String description;
-		private ShadowQuality(int shaderFlag, String description) {
-			this.shaderFlag = shaderFlag;
-			this.description = description;
-		}
-		
-		public int getFlag() {
-			return shaderFlag;
-		}
-		
-		public String getDescription() {
-			return description;
-		}
-	}
-	private ShadowQuality shadowQuality = ShadowQuality.Medium;
-	
-	private float omniShadowNear = 0.1f;
-	private float omniShadowFar = 100.0f;
-	
-	private Vector3 directionalShadowCenter = new Vector3();
-	private Vector2 directionalShadowSize = new Vector2(100, 100);
-	private Vector2 directionalShadowDepth = new Vector2(-80, 100);
-	
-	private boolean sortBillboards = true;
-	
-	TextureAttachment tta;
 	
 	int texType = -1;
 	int regTexHandle = -1;
@@ -107,19 +66,7 @@ public class ForwardRenderer implements Renderer {
 	// shadows!
 	
 	public ForwardRenderer(GL3 gl) {	
-		state = new RendererState(this, gl);
-		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
-		
-		// Setup the initial GL state
-		gl.setSwapInterval(1);
-		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LEQUAL);
-		gl.glEnable(GL2.GL_CULL_FACE);
-		gl.glCullFace(GL2.GL_BACK);
-		gl.glClearDepth(1.0d);
-		
-		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
+		super(gl);
 		
 		int fboWidth = Yeti.get().settings.width;
 		int fboHeight = Yeti.get().settings.height;
@@ -253,18 +200,7 @@ public class ForwardRenderer implements Renderer {
 		 
 		 GLHelp.fboErr(gl);		
 	}
-	
-	/* (non-Javadoc)
-	 * @see barsan.opengl.rendering.Renderer#getState()
-	 */
-	@Override
-	public RendererState getState() {
-		return state;
-	}
-		
-	/* (non-Javadoc)
-	 * @see barsan.opengl.rendering.Renderer#render(barsan.opengl.rendering.Scene)
-	 */
+			
 	@Override
 	public void render(final Scene scene) {
 		GL3 gl = state.gl;
@@ -423,7 +359,7 @@ public class ForwardRenderer implements Renderer {
 		screenQuad.getTexcoords().cleanUp(tindex);
 		
 		// Tiny debug renders
-		if(scene.shadowsEnabled) {
+		if(scene.shadowsEnabled && renderDebug) {
 			Shader dr;
 			if(light.getType() == LightType.Point) {
 				dr = ResourceLoader.shader("depthCubeRender");
@@ -459,12 +395,10 @@ public class ForwardRenderer implements Renderer {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see barsan.opengl.rendering.Renderer#dispose(javax.media.opengl.GL3)
-	 */
 	@Override
 	public void dispose(GL3 gl) {
-		state.cubeTexture.destroy(gl);
+		super.dispose(gl);
+		
 		fbo_tex.destroy(gl);
 		fbo_shadows.destroy(gl);
 		gl.glDeleteTextures(2, new int[] {
@@ -525,19 +459,7 @@ public class ForwardRenderer implements Renderer {
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 	}
-	
-	private void sortBillboards(final Scene scene) {
-		Collections.sort(scene.billboards, new Comparator<Billboard>() {
-			@Override
-			public int compare(Billboard o1, Billboard o2) {
-				Vector3 cpos = scene.getCamera().getPosition();
-				Float d1 = o1.getTransform().getTranslate().dist(cpos);
-				Float d2 = o2.getTransform().getTranslate().dist(cpos);
-				return d2.compareTo(d1);
-			}
-		});
-	}
-	
+		
 	private void renderShadowMap(GL3 gl, Scene scene, Camera camera) {
 		state.setCamera(camera);
 		state.depthProjection = camera.getProjection().cpy();
@@ -598,62 +520,6 @@ public class ForwardRenderer implements Renderer {
 		}
 		gl.glPopMatrix();
 
-	}
-
-	public ShadowQuality getShadowQuality() {
-		return shadowQuality;
-	}
-
-	public void setShadowQuality(ShadowQuality shadowQuality) {
-		this.shadowQuality = shadowQuality;
-	}
-	public float getOmniShadowNear() {
-		return omniShadowNear;
-	}
-
-	public void setOmniShadowNear(float omniShadowNear) {
-		this.omniShadowNear = omniShadowNear;
-	}
-
-	public float getOmniShadowFar() {
-		return omniShadowFar;
-	}
-
-	public void setOmniShadowFar(float omniShadowFar) {
-		this.omniShadowFar = omniShadowFar;
-	}
-
-	public Vector2 getDirectionalShadowDepth() {
-		return directionalShadowDepth;
-	}
-
-	public void setDirectionalShadowDepth(Vector2 directionalShadowDepth) {
-		assert directionalShadowDepth.x < directionalShadowDepth.y : "x = near; y = far; x must be smaller than y";
-		this.directionalShadowDepth = directionalShadowDepth;
-	}
-
-	public Vector2 getDirectionalShadowSize() {
-		return directionalShadowSize;
-	}
-
-	public void setDirectionalShadowSize(Vector2 directionalShadowSize) {
-		this.directionalShadowSize = directionalShadowSize;
-	}
-
-	public boolean isSortBillboards() {
-		return sortBillboards;
-	}
-
-	public void setSortBillboards(boolean sortBillboards) {
-		this.sortBillboards = sortBillboards;
-	}
-
-	public Vector3 getDirectionalShadowCenter() {
-		return directionalShadowCenter;
-	}
-
-	public void setDirectionalShadowCenter(Vector3 directionalShadowCenter) {
-		this.directionalShadowCenter = directionalShadowCenter;
 	}
 
 }

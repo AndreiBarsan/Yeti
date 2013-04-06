@@ -14,7 +14,7 @@ import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
-import barsan.opengl.rendering.ForwardRenderer.ShadowQuality;
+import barsan.opengl.rendering.Renderer.ShadowQuality;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.StaticModel;

@@ -11,9 +11,7 @@ import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.Light.LightType;
-import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -26,7 +24,7 @@ public class RendererState {
 	
 	public final GL3 gl;
 	private ArrayList<Light> lights;
-	private ForwardRenderer renderer;
+	private Renderer renderer;
 
 	private AmbientLight ambientLight;
 	private Fog fog; 
@@ -46,7 +44,7 @@ public class RendererState {
 	
 	private Scene scene;
 	
-	public RendererState(ForwardRenderer renderer, GL3 gl) {
+	public RendererState(Renderer renderer, GL3 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
 	}
