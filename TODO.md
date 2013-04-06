@@ -20,6 +20,8 @@ Architecture issues:
    (or, well, doesn't work) on graphics cards
    
 General TODOs:
+ - actually allocate enough space to read the whole GLSL warning/error log
+ - dynamically detect shader warnings -> TREAT AS ERRORS
  - use tangent & binormal for normal mapping, it's faster (cached values, duh);
  Valve also uses this approach!
  - optimize omnidirectional shadow maps with dot products instead of lengths, maybe?

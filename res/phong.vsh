@@ -82,7 +82,7 @@ void main() {
 		vertPos_dmc = mvpMatrixShadows * vVertex;
 	
 		if(samplingCube) {
-			lightPos_wc = lightPosition.xyz;
+			lightPos_wc = lightPosition;
 			vertPos_wc = mMatrix * vVertex;
 		}	
 	}
