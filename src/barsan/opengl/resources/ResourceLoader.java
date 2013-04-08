@@ -151,8 +151,8 @@ public class ResourceLoader {
 		File gFile = new File(baseFolder + baseGName);
 		File fFile = new File(baseFolder + baseFName);
 		
-		if(!vFile.exists() || !fFile.exists()) {
-			Yeti.screwed("Incomplete shader [" + name + "]. It needs both a vertex" +
+		if(! vFile.exists() || ! fFile.exists()) {
+			Yeti.screwed("Incomplete shader [" + name + "]. It needs both a vertex " +
 					"and a fragment shader. Did you forget a custom linking rule?");
 		}
 		

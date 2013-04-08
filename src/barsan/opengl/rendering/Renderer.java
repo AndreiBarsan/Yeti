@@ -53,12 +53,14 @@ public abstract class Renderer {
 	protected Vector2 directionalShadowDepth = new Vector2(-80, 100);
 	
 	protected boolean sortBillboards = true;
-	
+	protected GL3 gl;
 	protected RendererState state;
 	
 	public Renderer(GL3 gl) {
 		state = new RendererState(this, gl);
 		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
+		
+		this.gl = gl;
 		
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
@@ -97,11 +99,10 @@ public abstract class Renderer {
 		});
 	}
 	
-	public void dispose(GL3 gl) {
+	public void dispose() {
 		state.cubeTexture.destroy(gl);
 	}
 	
-
 	public ShadowQuality getShadowQuality() {
 		return shadowQuality;
 	}

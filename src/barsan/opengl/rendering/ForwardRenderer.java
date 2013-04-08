@@ -1,8 +1,5 @@
 package barsan.opengl.rendering;
 
-import java.util.Collections;
-import java.util.Comparator;
-
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
@@ -359,6 +356,7 @@ public class ForwardRenderer extends Renderer {
 		screenQuad.getTexcoords().cleanUp(tindex);
 		
 		// Tiny debug renders
+		// TODO: maybe used glBlitFramebuffer?
 		if(scene.shadowsEnabled && renderDebug) {
 			Shader dr;
 			if(light.getType() == LightType.Point) {
@@ -396,8 +394,8 @@ public class ForwardRenderer extends Renderer {
 	}
 	
 	@Override
-	public void dispose(GL3 gl) {
-		super.dispose(gl);
+	public void dispose() {
+		super.dispose();
 		
 		fbo_tex.destroy(gl);
 		fbo_shadows.destroy(gl);

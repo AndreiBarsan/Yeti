@@ -177,8 +177,10 @@ public class ModelLoader {
 		}
 		model.buildVBOs();
 		
+		/*
 		Yeti.debug(String.format("Finished loading model %s! Vertices: %d, Texture coords: %d, Normal coords: %d, Faces: %d, Groups: %d",
 				model.getName(), vc, tc, nc, fc, model.getGroups().size()));
+				*/
 		return model;
 	}
 	

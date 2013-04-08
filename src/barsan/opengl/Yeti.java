@@ -57,6 +57,7 @@ public class Yeti implements GLEventListener {
 	
 	// TODO: scene manager with a stack / graph of scenes
 	private Scene currentScene;
+	private Scene defaultScene;
 	private Frame frame;
 	private Cursor blankCursor;
 	
@@ -151,8 +152,24 @@ public class Yeti implements GLEventListener {
 		}
 	}
 	
+	/**
+	 * Starts the Yeti application by creating the GL canvas and starting the 
+	 * application loop.
+	 *  
+	 * @param app When hosted in a compatible app, a reference to the app that
+	 * allows Yeti to send various data to the app. App can pe left null signifying
+	 * that there is no app to communicate with (for instance, in the case of a
+	 * game that doesn't require any e.g. Swing controls, apart from the canvas
+	 * itself).
+	 *  
+	 * @param frame The window frame hosting Yeti. Can be the same as the host container.
+	 * @param hostContainer The host container holding the canvas. Can be the frame itself.
+	 * @param canvasFactory The factory providing the actual canvas on which Yeti
+	 * is going to draw.
+	 */
 	public void startApplicationLoop(App app, Frame frame, Container hostContainer,
 			CanvasFactory canvasFactory) {
+		
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				new Thread(new Runnable() {
@@ -341,7 +358,11 @@ public class Yeti implements GLEventListener {
 		//*/
 		
 		try {
-			loadScene((Scene)availableScenes[lastLoadedScene].newInstance());
+			if( null != defaultScene) {
+				loadScene(defaultScene);
+			} else {
+				loadScene((Scene)availableScenes[lastLoadedScene].newInstance());
+			}
 		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
@@ -463,6 +484,14 @@ public class Yeti implements GLEventListener {
 	public int getCanvasHeight() {
 		return canvasHost.getHeight();
 		
+	}
+	
+	public Scene getDefaultScene() {
+		return defaultScene;
+	}
+	
+	public void setDefaultScene(Scene defaultScene) {
+		this.defaultScene = defaultScene;
 	}
 	
 	boolean fullscreen = false;

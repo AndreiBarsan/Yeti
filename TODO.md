@@ -18,12 +18,15 @@ Architecture issues:
  - this also causes numerous undefined states when certain samplers are unbound
    and shouldn't be used, but they get sampled anyway due to how branching works
    (or, well, doesn't work) on graphics cards
+ - handling global paradigm shifts like forward/deferred rendering is ATM rather
+   tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    
 General TODOs:
- - actually allocate enough space to read the whole GLSL warning/error log
- - dynamically detect shader warnings -> TREAT AS ERRORS
+ - material attribute component
  - use tangent & binormal for normal mapping, it's faster (cached values, duh);
  Valve also uses this approach!
+ - REALLY USE T&B for NORMAL MAPPING - it makes the code cleaner; you're refactoring
+ the shaders for Nessie anyway so effin' DO IT!
  - optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
  - use dedicated shadow samplers for the shadow computations, they should be faster
  - use input polling for the camera -> smoother movement (needed later for the char controls anyway)
@@ -68,9 +71,16 @@ Version 1.0 (project presentation 25 Feb 2013):
  - [v] glitch-free toggle-able shadows
  - [v] playable PlanetHeads tech demo
  
-Version 2.0 (sometime during the 4th semester OpenGL Praktikum):
+Version 1.1 (sometime during the 4th semester OpenGL Praktikum):
+--------------------------------------------------------------------------------
+ - deferred rendering with functional bumpmapping and shadow mapping
+ - more flexible material system
+ - dynamic post-processing pipeline
+ 
+Future
 --------------------------------------------------------------------------------
  - simple (load and play wav sounds) OpenAL sound support
+ - particle systems
  - batched render calls
  - specular/emmisive maps
  - parallax mapping
@@ -79,4 +89,4 @@ Version 2.0 (sometime during the 4th semester OpenGL Praktikum):
  - bloom
  - post-process cel-shading 
  - Version 2.0 *could* be re-written in C++ (no more Java requirement for the 
- Praktikum yay!)
+ Praktikum yay!); sadly, not enough time is available;

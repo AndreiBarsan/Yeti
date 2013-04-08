@@ -24,7 +24,7 @@ public class Scene {
 	// Billboards get special treatment as they're transparent
 	protected ArrayList<Billboard> billboards = new ArrayList<>();
 	
-	protected ForwardRenderer renderer;
+	protected Renderer renderer;
 	protected Camera camera;
 	protected boolean exiting = false;
 	
@@ -55,9 +55,13 @@ public class Scene {
 			e.printStackTrace();
 		}
 		
+		// TODO: a more elegat way to specify a renderer
 		// Prepare the renderer; use the default renderer
-		renderer = new ForwardRenderer(Yeti.get().gl.getGL3());
-		ForwardRenderer.renderDebug = Yeti.get().debug;
+		if(renderer == null) {
+			renderer = new ForwardRenderer(Yeti.get().gl.getGL3());
+		}
+		
+		Renderer.renderDebug = Yeti.get().debug;
 		
 		lastTime = System.nanoTime();
 	}
@@ -174,10 +178,11 @@ public class Scene {
 	private Yeti engine;
 	
 	protected void exit() {
-		// Temporary cleanup behavior - at the moment, scenes are independent of each other
+		// Temporary cleanup behavior - at the moment, scenes are independent 
+		// of each other; for games, this doesn't make sense; 
 		pause();
 		ResourceLoader.cleanUp();
-		renderer.dispose(Yeti.get().gl);
+		renderer.dispose();
 		engine.transitionFinished();
 		unregisterInputSources();
 		exiting = false;

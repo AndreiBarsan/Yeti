@@ -37,7 +37,8 @@ public class Rectangle {
 	}
 	
 	public boolean overlaps(Rectangle other) {
-		return ! ( x >= other.x + other.width || x + width <= other.x || y >= other.y + other.height || y + height <= other.y);
+		return 	! ( x >= other.x + other.width || x + width <= other.x 
+				|| y >= other.y + other.height || y + height <= other.y);
 	}
 	
 	public Rectangle intersect(Rectangle other) {
