@@ -27,7 +27,6 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GL3;
@@ -35,10 +34,11 @@ import javax.media.opengl.GL3;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.materials.BumpComponent;
 import barsan.opengl.rendering.materials.ShadowReceiver;
-import barsan.opengl.util.GLHelp;
+import barsan.opengl.util.Color;
 
 /**
  * Shader wrapper class that facilitates material interactions with the underlying
@@ -176,6 +176,36 @@ public class Shader {
 		return true;
 	}
 	
+	public boolean setUVector2f(String uniformName, Vector2 value) {
+		return setUVector2f(uniformName, value.x, value.y);
+	}
+	
+	public boolean setUVector2f(String uniformName, float x, float y) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		gl.glUniform2f(pos, x, y);
+		return true;
+	}
+	
+	public boolean setUVector3f(String uniformName, Vector3 value) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniform3f(pos, value.x, value.y, value.z);
+		return true;
+	}
+	
+	public boolean setUVector3f(String uniformName, Color value) {
+		GL2GL3 gl = Yeti.get().gl; 
+		int pos = grabUniform(uniformName);
+		if(pos == -1) return false;
+		
+		gl.glUniform3f(pos, value.r, value.g, value.b);
+		return true;
+	}
+	
 	public boolean setUVector4f(String uniformName, float[] value) {
 		GL2GL3 gl = Yeti.get().gl; 
 		int pos = grabUniform(uniformName);
@@ -191,16 +221,6 @@ public class Shader {
 		if(pos == -1) return false;
 		
 		gl.glUniformMatrix3fv(pos, 1, false, matrix.getData(), 0);
-		return true;
-		
-	}
-
-	public boolean setUVector3f(String uniformName, Vector3 value) {
-		GL2GL3 gl = Yeti.get().gl; 
-		int pos = grabUniform(uniformName);
-		if(pos == -1) return false;
-		
-		gl.glUniform3f(pos, value.x, value.y, value.z);
 		return true;
 		
 	}

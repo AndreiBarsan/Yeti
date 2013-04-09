@@ -18,10 +18,6 @@ public abstract class Model {
 	 *  - this shouldn't interfere with the basic planned batching system
 	 *  (batch setupMaterial) foreach entry, entry.render
 	 *  
-	 * When all the models in a batch will be put in the same VBO (it's more
-	 * complicated than it sounds), this method will be unusable. However, so
-	 * will be keyframe animations. But that's a long way down the road.
-	 * 
 	 * @param arrayLength 	How many things are to be drawn. Used so both static
 	 * 						and dynamic meshes can polymorphically return their
 	 * 						correct element count.

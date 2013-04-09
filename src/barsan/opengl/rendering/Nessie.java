@@ -7,11 +7,11 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.DRGeometryMaterial;
+import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 
@@ -32,11 +32,16 @@ public class Nessie extends Renderer {
 		
 		private static final int COMPONENT_COUNT 	= 4; 
 		
-		private int fboHandle = -1;
+		private int fboHandle = -1;	
 		private int dtHandle = -1;
 		private int handles[] = new int[COMPONENT_COUNT];
 				
+		private int width, height;
+		
 		public GBuffer(GL3 gl, int width, int height) {
+			this.width = width;
+			this.height = height;
+			
 			IntBuffer buff = IntBuffer.allocate(4);
 			gl.glGenFramebuffers(1, buff);
 			fboHandle = buff.get();
@@ -60,6 +65,8 @@ public class Nessie extends Renderer {
 				gl.glBindTexture(GL2.GL_TEXTURE_2D, h);
 				// Actually allocate the texture data
 				gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_RGB32F, width, height, 0, GL2.GL_RGB, GL2.GL_FLOAT, null);
+				gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+		        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 				// Bind the texture to the FBO
 				gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0 + k - 1, GL2.GL_TEXTURE_2D, h, 0);
 			}
@@ -88,8 +95,17 @@ public class Nessie extends Renderer {
 		}
 		
 		public void bindForReading(GL3 gl) {
-			gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
-			
+			if(mode == Mode.DrawGBuffer) {
+				// Bind the FBO so we can blit from it
+				gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
+			} else {
+				// Bind the textures themselves so we can sample from them
+				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+				for(int i = 0; i < COMPONENT_COUNT; ++i) {
+					gl.glActiveTexture(GL2.GL_TEXTURE0 + i);	
+					gl.glBindTexture(GL2.GL_TEXTURE_2D, handles[POSITION_TEXTURE + i]);
+				}
+			}
 		}
 		
 		public void bindForWriting(GL3 gl) {
@@ -98,6 +114,13 @@ public class Nessie extends Renderer {
 		
 		public void setReadBuffer(GL3 gl, int textureIndex) {
 			gl.glReadBuffer(GL2.GL_COLOR_ATTACHMENT0 + textureIndex);
+		}
+		
+		public void blitComponent(GL3 gl, int component, int x1, int y1, int x2, int y2) {
+			setReadBuffer(gl, component);
+		    gl.glBlitFramebuffer(0, 0, width, height,					// src
+		                    x1, y1, x2, y2,								// dst
+		                    GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);	// params
 		}
 		
 		public void dispose(GL3 gl) {
@@ -117,13 +140,14 @@ public class Nessie extends Renderer {
 		DrawComposedScene
 	}
 	
-	GBuffer gbuffer;
-	Mode mode;
+	public Mode mode;
+	private GBuffer gbuffer;
 	private static final String pre = "[NESSIE] ";
 	
 	public Nessie(GL3 gl) {
 		// Start in debug mode by default
-		this(gl, Mode.DrawGBuffer);
+		//this(gl, Mode.DrawGBuffer);
+		this(gl, Mode.DrawComposedScene);
 	}
 	
 	public Nessie(GL3 gl, Mode mode) {
@@ -149,7 +173,12 @@ public class Nessie extends Renderer {
 	private void geometryPass(Scene scene) {
 		state.setCamera(scene.getCamera());
 		gbuffer.bindForWriting(gl);
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		
+		// Only the geometry pass updates the depth buffer
+	    gl.glDepthMask(true);
+	    gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+	    gl.glEnable(GL2.GL_DEPTH_TEST);
+	    gl.glDisable(GL2.GL_BLEND);		
 		
 		// Always use the same material designed to render to the GBuffer's MRT format
 		state.forceMaterial(new DRGeometryMaterial());
@@ -157,70 +186,64 @@ public class Nessie extends Renderer {
 			modelInstance.render(state, matrixstack);
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
+		
+		// No more writing to the depth buffer this frame!
+	    gl.glDepthMask(false);
+	    gl.glDisable(GL2.GL_DEPTH_TEST);
 	}
 	
 	private void lightingPass(Scene scene) {
 		// Note: technically, here we should draw on another framebuffer, in order
 		// to support post-processing
-		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
-		gbuffer.bindForReading(gl);
-		gbuffer.setReadBuffer(gl, GBuffer.POSITION_TEXTURE);
-		
-		int width = Yeti.get().settings.width;
-		int height = Yeti.get().settings.height;
-		int HalfWidth = width / 2;
-	    int HalfHeight = height / 2;
-
-	    switch(mode) {
+		switch(mode) {
 	    
 	    case DrawGBuffer:
+	    	gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+			gbuffer.bindForReading(gl);
+			
+			int w = Yeti.get().settings.width;
+			int h = Yeti.get().settings.height;
+			int halfW = w / 2;
+		    int halfH = h / 2;
+
 		    // Just render the components of the GBuffer for testing
 		    // Bottom left: POSITION
-		    gbuffer.setReadBuffer(gl, GBuffer.POSITION_TEXTURE);
-		    gl.glBlitFramebuffer(0, 0, width, height,
-		                    0, 0, HalfWidth, HalfHeight, GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
-	
+	    	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, halfW, halfH);
 		    // Top left: DIFFUSE
-		    gbuffer.setReadBuffer(gl, GBuffer.DIFFUSE_TEXTURE);
-		    gl.glBlitFramebuffer(0, 0, width, height, 
-		                    0, HalfHeight, HalfWidth, height, GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
-	
+	    	gbuffer.blitComponent(gl, GBuffer.DIFFUSE_TEXTURE, 0, halfH, halfW, h);
 		    // Top right: NORMAL
-		    gbuffer.setReadBuffer(gl, GBuffer.NORMAL_TEXTURE);
-		    gl.glBlitFramebuffer(0, 0, width, height, 
-		                    HalfWidth, HalfHeight, width, height, GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
-	
+		    gbuffer.blitComponent(gl, GBuffer.NORMAL_TEXTURE, halfW, halfH, w, h);	
 		    // Bottom right: TEXCOORD
-		    gbuffer.setReadBuffer(gl, GBuffer.TEXCOORD_TEXTURE);
-		    gl.glBlitFramebuffer(0, 0, width, height, 
-		                    HalfWidth, 0, width, HalfHeight, GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
+		    gbuffer.blitComponent(gl, GBuffer.TEXCOORD_TEXTURE, halfW, 0, w, halfH);
 		break;
 		
 	    case DrawLightVolumes:
 	    	break;
 	    	
 	    case DrawComposedScene:
-			// Render a bunch of cones and spherers (the lights)
-			// Read in the GBuffer in their FShaders and output the corresponding
-			// light surfaces to the FrameBuffer (well, actually to the postProcess
-			// control)
-			
-			// set super-uniforms (bind g-buffer textures, shadow map)
-			// render all lights as spheres (point) / cones (spot) / quads (directional)
-			
+	    	gl.glEnable(GL2.GL_BLEND);
+	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
+	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
+
+	      	gbuffer.bindForReading(gl);
+	       	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+	    	
+	       	DRLightPass lightPass = new DRLightPass();
+	       	lightPass.setup(gbuffer, state);
+	       	// TODO: technically, the whole loop could go into the technique
 			for(Light l : scene.lights) {
-				if(l instanceof PointLight) {
-					// Render sphere with radius based on the light's fade parameters
-					// TODO: point/stop should have an effect range function
+				switch(l.getType()) {
+				case Directional:
+					// TODO
+					break;
 					
-					// Pass in light position, fade params, colors
-				} else if(l instanceof SpotLight) {
-					// Render cone with height based on the light's fade parameters
-					// and top angle based on the light's angle
+				case Point:
+					lightPass.drawPointLight((PointLight)l, state);
+					break;
 					
-					// Pass in light position, orientation, angles, exp, fade params, colors
-				} else if(l instanceof DirectionalLight) {
-					// Render a full screen quad
+				case Spot:
+					// TODO
+					break;
 				}
 			}
 

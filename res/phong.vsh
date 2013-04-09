@@ -87,7 +87,6 @@ void main() {
 		}	
 	}
 	
-	
 	lightPos_ec = vec4(tLightPos, 1.0f);
 	vertPos_ec = vec4(vPosition3, 1.0f);
 	

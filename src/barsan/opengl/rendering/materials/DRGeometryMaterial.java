@@ -9,6 +9,8 @@ public class DRGeometryMaterial extends Material {
 	public DRGeometryMaterial() {
 		super(ResourceLoader.shader("DRGeometry"));
 		addComponent(new WorldTransformNormals());
+		addComponent(new TextureComponent());
+		setTexture(ResourceLoader.texture("cubetex"));
 	}
 	
 

@@ -28,7 +28,7 @@ public class PointLight extends Light {
 	}
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular) {
-		this(position, diffuse, specular, 0.0f, 0.0f, 0.0f, 0.0f);
+		this(position, diffuse, specular, 0.0f, 1.0f, 0.0f, 0.0f);
 	}
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular,
@@ -37,6 +37,14 @@ public class PointLight extends Light {
 		this.setPosition(position);
 		
 		
+	}
+	
+	@Override
+	public float getBoundingRadius() {
+		Color d = getDiffuse();
+		float maxChannel = Math.max(d.r, Math.max(d.g, d.b));
+		float c = maxChannel * d.a;
+		return 18.0f * (float)Math.sqrt(c) + 1.0f;
 	}
 	
 	public Vector3 getPosition() {

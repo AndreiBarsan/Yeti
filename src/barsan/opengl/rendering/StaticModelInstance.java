@@ -1,5 +1,8 @@
 package barsan.opengl.rendering;
 
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -24,7 +27,7 @@ public class StaticModelInstance extends ModelInstance {
 	public StaticModelInstance(StaticModel model, Transform transform) {
 		this(model, new BasicMaterial(), transform);
 	}
-	
+		
 	public StaticModelInstance(StaticModel model, Material material, Transform localTransform) {
 		this.model = model;
 		this.material = material;
@@ -76,7 +79,28 @@ public class StaticModelInstance extends ModelInstance {
 	
 		transformStack.pop();
 	}
-
+	
+	public void techniqueRender() {
+		int pindex = Technique.current.getVertexIndex();
+		model.getVertices().use(pindex);
+		
+		// Maybe set these in the technique (e.g., in the light pass they are
+		// definitely not needed)
+		int nindex = Technique.current.getNormalIndex();
+		if(nindex != -1) {
+			model.getNormals().use(nindex);
+		}
+	
+		int tindex = Technique.current.getTexCoordIndex();
+		if(material.getTexture() != null) {
+			model.getTexcoords().use(tindex);
+		}
+		
+		// TODO: inline this and leave Model as just a data holder
+		model.render(model.getArrayLength());
+		
+		model.cleanUp(nindex, pindex, tindex);
+	}
 
 	@Override
 	public Material getMaterial() {

@@ -63,7 +63,9 @@ public class LightTest extends Scene {
 		
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("sphere", "sphere.obj");
+		ResourceLoader.loadObj("texcube", "texcube.obj");
 		ResourceLoader.loadTexture("floor", "floor.jpg");
+		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		ResourceLoader.loadCubeTexture("test", "png");
 		
@@ -91,6 +93,13 @@ public class LightTest extends Scene {
 		modelInstances.add(sb);
 		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
+		BasicMaterial cmat = new BasicMaterial();
+		cmat.setTexture(ResourceLoader.texture("cubetex"));
+		cmat.addComponent(new TextureComponent());
+		StaticModelInstance cube = new StaticModelInstance(ResourceLoader.model("texcube"), cmat);
+		cube.getTransform().updateTranslate(2.0f, 2.5f, 0.0f);
+		addModelInstance(cube);
+		
 		float step = 6.0f;
 		int monkeys = 5;
 		for(int i = -monkeys; i < monkeys; i++) {
@@ -112,6 +121,7 @@ public class LightTest extends Scene {
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 								new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 								0.85f, 0.9f, 1.0f);
+		test_sl.setAttenuation(0.0f, 0.0f, 0.0f, 0.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));

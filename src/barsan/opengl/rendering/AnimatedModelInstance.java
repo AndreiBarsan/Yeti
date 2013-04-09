@@ -1,5 +1,6 @@
 package barsan.opengl.rendering;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.Material;
@@ -97,6 +98,11 @@ public class AnimatedModelInstance extends ModelInstance {
 		}
 		
 		transformStack.pop();
+	}
+	
+	@Override
+	public void techniqueRender() {
+		Yeti.screwed("Not yet implemented.");	
 	}
 	
 	@Override

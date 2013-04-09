@@ -31,6 +31,11 @@ public class DirectionalLight extends Light {
 	public void setDirection(Vector3 direction) {
 		this.direction = direction;
 	}
+	
+	@Override
+	public float getBoundingRadius() {
+		return Float.POSITIVE_INFINITY;
+	}
 
 	@Override
 	public LightType getType() {

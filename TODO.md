@@ -22,9 +22,10 @@ Architecture issues:
    tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    
 General TODOs:
- - material attribute component
  - use tangent & binormal for normal mapping, it's faster (cached values, duh);
  Valve also uses this approach!
+ - also in nessie refactoring, since you are rewriting the way data gets sent
+ to the shaders, USE DAMN BLOCKS! (after you get the basic shit working, ofc)
  - REALLY USE T&B for NORMAL MAPPING - it makes the code cleaner; you're refactoring
  the shaders for Nessie anyway so effin' DO IT!
  - optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
