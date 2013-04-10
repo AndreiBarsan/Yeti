@@ -11,6 +11,8 @@ public class DRGeometryMaterial extends Material {
 		addComponent(new WorldTransformNormals());
 		addComponent(new TextureComponent());
 		setTexture(ResourceLoader.texture("cubetex"));
+		
+		throw new Error("Not used. Use techniques instead!");
 	}
 	
 

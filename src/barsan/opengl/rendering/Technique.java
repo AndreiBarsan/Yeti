@@ -1,6 +1,7 @@
 package barsan.opengl.rendering;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.Matrix4;
 
 public abstract class Technique {
 	
@@ -8,6 +9,11 @@ public abstract class Technique {
 	int vi, ni, tci;
 	
 	public static Technique current = null;
+	
+	protected Matrix4 view = new Matrix4();
+	protected Matrix4 projection = new Matrix4();
+	protected Matrix4 viewModel = new Matrix4();
+	protected Matrix4 MVP = new Matrix4();
 	
 	public Technique(Shader program) {
 		this.program = program;
@@ -24,6 +30,11 @@ public abstract class Technique {
 		if(tci == -1) {
 			//Yeti.warn("No texcoord input! " + program);
 		}
+	}
+	
+	public void setup(RendererState rs) {
+		Technique.current = this; 
+		rs.gl.glUseProgram(program.getHandle());
 	}
 	
 	public int getVertexIndex() {

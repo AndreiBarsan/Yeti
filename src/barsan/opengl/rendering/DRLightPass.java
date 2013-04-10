@@ -14,12 +14,7 @@ public class DRLightPass extends Technique {
 	
 	private StaticModel sphere;
 	private ModelInstance sphereInstance;
-	
-	protected Matrix4 view = new Matrix4();
-	protected Matrix4 projection = new Matrix4();
-	protected Matrix4 viewModel = new Matrix4();
-	protected Matrix4 MVP = new Matrix4();
-	
+
 	public DRLightPass() {
 		super(ResourceLoader.shader("DRLight"));
 		sphere = ResourceLoader.model("DR_sphere");
@@ -27,9 +22,10 @@ public class DRLightPass extends Technique {
 	}
 	
 	// Setup common items
-	public void setup(GBuffer gbuffer, RendererState rs) {
-		Technique.current = this; 
-		rs.gl.glUseProgram(program.getHandle());
+	@Override
+	public void setup(RendererState rs) {
+		super.setup(rs);
+		
 		view.set(rs.getCamera().getView());
 		projection.set(rs.getCamera().getProjection());
 		

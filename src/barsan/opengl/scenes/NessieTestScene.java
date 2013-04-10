@@ -61,6 +61,7 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("DR_sphere", "sphere.obj");
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		box = new StaticModelInstance(ResourceLoader.model("box"));
+		box.getMaterial().setTexture(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, -2.5f, 0.0f);
 		addModelInstance(box);
 		

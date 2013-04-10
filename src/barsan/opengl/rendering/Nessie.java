@@ -181,11 +181,9 @@ public class Nessie extends Renderer {
 	    gl.glDisable(GL2.GL_BLEND);		
 		
 		// Always use the same material designed to render to the GBuffer's MRT format
-		state.forceMaterial(new DRGeometryMaterial());
-		for(ModelInstance modelInstance : scene.modelInstances) {
-			modelInstance.render(state, matrixstack);
-			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
-		}
+		DRGeometryPass pass = new DRGeometryPass();
+		pass.setup(state);
+		pass.renderModelInstances(state, scene.modelInstances);
 	}
 	
 	private void lightingPass(Scene scene) {
@@ -233,7 +231,7 @@ public class Nessie extends Renderer {
 	       	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
 	    	
 	       	DRLightPass lightPass = new DRLightPass();
-	       	lightPass.setup(gbuffer, state);
+	       	lightPass.setup(state);
 	       	// TODO: technically, the whole loop could go into the technique
 			for(Light l : scene.lights) {
 				switch(l.getType()) {
