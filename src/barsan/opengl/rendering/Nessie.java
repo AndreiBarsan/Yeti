@@ -186,15 +186,16 @@ public class Nessie extends Renderer {
 			modelInstance.render(state, matrixstack);
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
-		
-		// No more writing to the depth buffer this frame!
-	    gl.glDepthMask(false);
-	    gl.glDisable(GL2.GL_DEPTH_TEST);
 	}
 	
 	private void lightingPass(Scene scene) {
 		// Note: technically, here we should draw on another framebuffer, in order
 		// to support post-processing
+		
+		// Disable depth writing for this step
+	    gl.glDepthMask(false);
+	    gl.glDisable(GL2.GL_DEPTH_TEST);
+		
 		switch(mode) {
 	    
 	    case DrawGBuffer:
@@ -218,6 +219,9 @@ public class Nessie extends Renderer {
 		break;
 		
 	    case DrawLightVolumes:
+	    	gbuffer.bindForReading(gl);
+	       	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+	       	
 	    	break;
 	    	
 	    case DrawComposedScene:
@@ -249,6 +253,10 @@ public class Nessie extends Renderer {
 
 	    	break;
 	    }
+
+		// Important to reset this, to allow font rendering and other stuff
+		// that expect the default texture unit to be active to work
+		gl.glActiveTexture(GL2.GL_TEXTURE0);
 	}
 	
 	class Effect {

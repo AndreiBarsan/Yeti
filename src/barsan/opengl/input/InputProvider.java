@@ -1,5 +1,9 @@
 package barsan.opengl.input;
 
-public interface InputProvider {
-
-}
+/**
+ * Tag interface that specifies that an object implementing is should provide
+ * input to the application.
+ * 
+ * @author Andrei Bârsan
+ */
+public interface InputProvider { }
