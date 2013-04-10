@@ -130,7 +130,7 @@ public class LightTest extends Scene {
 		lights.add(test_pl);
 		
 		gui = new DebugGUI(this, drawable.getAnimator());
-		gui.setPosition(new Vector3(220, 10, 0));
+		gui.setPosition(220, 10);
 		
 		Yeti.get().addInputProvider(new InputAdapter() {
 			

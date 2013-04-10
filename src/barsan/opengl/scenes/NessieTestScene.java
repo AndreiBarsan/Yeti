@@ -31,6 +31,7 @@ public class NessieTestScene extends Scene {
 		addInput(cameraInput = new CameraInput(camera));
 		gui = new DebugGUI(this, drawable.getAnimator());
 		
+		
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		
@@ -65,8 +66,10 @@ public class NessieTestScene extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		super.display(drawable);
 		box.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 3);
+		
 		((DebugGUI)gui).info = "Testing deferred rendering. " + 
 		 String.format("%d lights in the scene.", lights.size());
+		
 		time += Yeti.get().getDelta();
 		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
 	}

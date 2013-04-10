@@ -98,7 +98,7 @@ public class GameScene extends Scene {
 		addInput(poller);
 		
 		gui = new GameGUI(world.getPlayer());
-		gui.setPosition(new Vector3(220.0f, 10.0f, 0.0f));
+		gui.setPosition(new Vector2(220.0f, 10.0f));
 		
 		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
 	}
