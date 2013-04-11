@@ -39,11 +39,13 @@ public class DRLightPass extends Technique {
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 	}
 	
+	public void stencilCheck(PointLight pointLight, RendererState rs) {
+		
+	}
+	
 	public void drawPointLight(PointLight pointLight, RendererState rs) {
 		
 		float scale = pointLight.getBoundingRadius();
-		//System.out.println(scale);
-		//scale = 4.0f;
 		Transform t = new Transform().setTranslate(pointLight.getPosition())
 				.setScale(scale);
 		t.refresh();
@@ -63,7 +65,7 @@ public class DRLightPass extends Technique {
 		//program.setU1i("lightType", 0); 	// use for dir/spot?
 		
 		program.setUVector3f("pointLight.Base.Color", pointLight.getDiffuse());
-		program.setU1f("pointLight.Base.AmbientIntensity", 0.5f);
+		program.setU1f("pointLight.Base.AmbientIntensity", 0.0f);
 		program.setU1f("pointLight.Base.DiffuseIntensity", pointLight.getDiffuse().a);
 		program.setUVector3f("pointLight.Position", pointLight.getPosition());
 		

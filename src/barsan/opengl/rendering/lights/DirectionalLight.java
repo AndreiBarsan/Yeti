@@ -5,7 +5,7 @@ import barsan.opengl.util.Color;
 
 /**
  * @author Andrei Bârsan
- *
+ * TODO: maybe move att. components down to point lights
  */
 public class DirectionalLight extends Light {
 
@@ -20,7 +20,7 @@ public class DirectionalLight extends Light {
 	}
 	
 	public DirectionalLight(Vector3 direction, Color diffuse, Color specular) {
-		super(diffuse, specular, 0.0f, 0.0f, 0.0f, 0.0f);
+		super(diffuse, specular, 0.0f, 0.0f, 0.0f);
 		this.direction = direction;
 	}
 	

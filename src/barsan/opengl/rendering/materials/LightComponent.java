@@ -37,7 +37,6 @@ public class LightComponent implements MaterialComponent {
 		m.shader.setU1f("constantAt", light.getConstantAttenuation());
 		m.shader.setU1f("linearAt", light.getLinearAttenuation());
 		m.shader.setU1f("quadraticAt", light.getQuadraticAttenuation());
-		m.shader.setU1f("cubicAt", light.getCubicAttenuation());
 		
 		// This isn't very clean - TODO: delegate this to special components
 		if(light.getType() == LightType.Spot) {

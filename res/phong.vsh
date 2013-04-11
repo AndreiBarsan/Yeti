@@ -25,6 +25,8 @@ uniform mat4 	mvpMatrixShadows;
 layout(location = 0) in vec4 vVertex;
 layout(location = 1) in vec3 vNormal;
 layout(location = 2) in vec2 vTexCoord;
+layout(location = 3) in vec3 vTang;
+layout(location = 4) in vec3 vBinorm;
 
 smooth out vec3 	normal_ec;
 smooth out vec3 	lightDir;
@@ -65,15 +67,9 @@ void main() {
 	}
 	
 	if(useBump) {
-		vec3 vNormal = normalize(vNormal);
-		vec3 vTang = normalize(vec3(-vNormal.z, 0, vNormal.x));
-		if( vNormal.z == vNormal.x) { 
-			vTang = vec3 (1.0, 0.0, 0.0);
-		}
-		vec3 vBinorm = normalize(cross(vTang, vNormal));
 		mNTB[0] = vTang;
 		mNTB[1] = vBinorm;
-		mNTB[2] = vNormal;
+		mNTB[2] = normalize(vNormal);
 		mNTB = normalMatrix * mNTB;
 	}
 	

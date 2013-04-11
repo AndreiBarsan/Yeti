@@ -17,16 +17,14 @@ public abstract class Light {
 	protected float constantAttenuation;
 	protected float linearAttenuation;
 	protected float quadraticAttenuation;
-	protected float cubicAttenuation;
-		
-	public Light(Color diffuse, Color specular, float ka, float la, float qa, float ca) {
+
+	public Light(Color diffuse, Color specular, float ka, float la, float qa) {
 		this.setDiffuse(diffuse);
 		this.setSpecular(specular);
 		
 		constantAttenuation = ka;
 		linearAttenuation = la;
 		quadraticAttenuation = qa;
-		cubicAttenuation = ca;
 	}
 	
 	public abstract float getBoundingRadius();
@@ -73,20 +71,9 @@ public abstract class Light {
 		this.quadraticAttenuation = quadraticAttenuation;
 	}
 
-	public float getCubicAttenuation() {
-		return cubicAttenuation;
+	public void setAttenuation(float ka, float la, float qa) {
+		constantAttenuation = ka;
+		linearAttenuation = la;
+		quadraticAttenuation = qa;
 	}
-
-	public void setCubicAttenuation(float cubicAttenuation) {
-		this.cubicAttenuation = cubicAttenuation;
-	}
-
-	public void setAttenuation(float ka, float la, float qa,
-			float ca) {
-				constantAttenuation = ka;
-				linearAttenuation = la;
-				quadraticAttenuation = qa;
-				cubicAttenuation = ca;
-			}
-
 }

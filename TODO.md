@@ -1,6 +1,9 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
+ - models with bump maps but no diffuse texture aren't showing right since the
+ engine is only checking whether an object has a diffuse texture before binding
+ the tex coords
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 
@@ -22,12 +25,8 @@ Architecture issues:
    tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    
 General TODOs:
- - use tangent & binormal for normal mapping, it's faster (cached values, duh);
- Valve also uses this approach!
  - also in nessie refactoring, since you are rewriting the way data gets sent
  to the shaders, USE DAMN BLOCKS! (after you get the basic shit working, ofc)
- - REALLY USE T&B for NORMAL MAPPING - it makes the code cleaner; you're refactoring
- the shaders for Nessie anyway so effin' DO IT!
  - optimize omnidirectional shadow maps with dot products instead of lengths, maybe?
  - use dedicated shadow samplers for the shadow computations, they should be faster
  - use input polling for the camera -> smoother movement (needed later for the char controls anyway)
@@ -75,7 +74,8 @@ Version 1.0 (project presentation 25 Feb 2013):
 Version 1.1 (sometime during the 4th semester OpenGL Praktikum):
 --------------------------------------------------------------------------------
  - deferred rendering with functional bumpmapping and shadow mapping
- - more flexible material system
+ - more flexible material system -> technique based rendering, no more rendering
+ code in the model and material objects
  - dynamic post-processing pipeline
  
 Future

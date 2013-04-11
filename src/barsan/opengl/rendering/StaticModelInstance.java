@@ -55,6 +55,12 @@ public class StaticModelInstance extends ModelInstance {
 		if (!activeMaterial.ignoresLights()) {
 			int nindex = activeMaterial.getNormalIndex();
 			model.getNormals().use(nindex);
+			
+			int tindex = activeMaterial.getTangentIndex();
+			model.getTangents().use(tindex);
+			
+			int bnindex = activeMaterial.getBiormalIndex();
+			model.getBinormals().use(bnindex);
 		}
 	
 		activeMaterial.bindTextureCoodrinates(model);

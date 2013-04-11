@@ -29,16 +29,35 @@ public class ModelLoader {
 		public Vector3[] points;
 		public Vector3[] texCoords;
 		public Vector3[] normals;
-		public Vector3 tangent;
-		public Vector3 bitangent;
+		public Vector3[] tangents;
+		public Vector3[] binormals;
 		
-		public int[] pindex, tindex, nindex;
+		public int[] pindex, tcindex, nindex, tindex;
+		
+		public void computeTangents() {
+			tangents = new Vector3[normals.length];
+			binormals = new Vector3[normals.length];
+			
+			for(int i = 0; i < normals.length; ++i) {
+				Vector3 normal = normals[i];
+				if(normal == null) {
+					assert false : "NOPE";
+				}
+				Vector3 t = new Vector3(-normal.z, 0, normal.x).normalize();
+				if(normal.z == normal.x) {
+					t.set(1.0f, 0.0f, 0.0f);
+				}
+								
+				tangents[i] = t;
+				binormals[i] = new Vector3(t).cross(normal).normalize();
+			}
+		}
 		
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			for(int i = 0; i < 3; i++) {
-				sb.append(String.format("%d/%d/%d ", pindex[i], tindex[i], nindex[i]));
+				sb.append(String.format("%d/%d/%d ", pindex[i], tcindex[i], nindex[i]));
 			}
 			return sb.toString();
 		}
@@ -300,7 +319,7 @@ public class ModelLoader {
 		
 		// Save the original inidices for debugging purposes
 		face.pindex = verts;
-		face.tindex = texs;
+		face.tcindex = texs;
 		face.nindex = norms;
 		return face;
 	}

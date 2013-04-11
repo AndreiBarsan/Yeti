@@ -16,12 +16,14 @@ import barsan.opengl.resources.ModelLoader.Group;
 public class StaticModel extends Model {
 	
 	public static final int COORDS_PER_POINT = 3;
-	public static final int T_COORDS_PER_POINT = 2;
+	public static final int TEX_COORDS_PER_POINT = 2;
 
 	// Vertex buffers for faster rendering
 	private VBO vertices;
 	private VBO texcoords;
 	private VBO normals;
+	private VBO tangents;
+	private VBO binormals;
 	
 	protected HashMap<String, Group> groups = new HashMap<>();
 	public Group master = new Group();
@@ -42,11 +44,11 @@ public class StaticModel extends Model {
 		// Tried & tested - this is just the right buffer length
 		int size = master.faces.size() *  pointsPerFace;
 		
-		vertices = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		normals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, T_COORDS_PER_POINT);
-		//tangents = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		//bitangents = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		vertices = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		normals = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, TEX_COORDS_PER_POINT);
+		tangents = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		binormals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		
 		vertices.open();
 		for(Face f : master.faces) {
@@ -64,6 +66,26 @@ public class StaticModel extends Model {
 				}
 			}
 			normals.close();
+			
+			for(Face f : master.faces) {
+				f.computeTangents();
+			}
+			
+			tangents.open();
+			for(Face f : master.faces) {
+				for(int i = pointsPerFace - 1; i >= 0; i--) {
+					tangents.append(f.tangents[i]);
+				}
+			}
+			tangents.close();
+			
+			binormals.open();
+			for(Face f : master.faces) {
+				for(int i = pointsPerFace - 1; i >= 0; i--) {
+					binormals.append(f.binormals[i]);
+				}
+			}
+			binormals.close();
 		}
 		
 		if(master.faces.get(0).texCoords != null) {
@@ -79,7 +101,8 @@ public class StaticModel extends Model {
 		}
 		
 		if(Yeti.get().settings.debugModels) {
-			Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d; Geometry element count: %d",
+			Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d;" +
+					" Geometry element count: %d. Also added precomputed tangents and binormals.",
 				getName(), vertices.getSize(), normals.getSize()));
 		}
 	}
@@ -117,7 +140,15 @@ public class StaticModel extends Model {
 	public VBO getNormals() {
 		return normals;
 	}
-
+	
+	public VBO getTangents() {
+		return tangents;
+	}
+	
+	public VBO getBinormals() {
+		return binormals;
+	}
+	
 	public String getName() {
 		return name;
 	}

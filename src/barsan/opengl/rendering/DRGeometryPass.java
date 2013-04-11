@@ -12,8 +12,17 @@ import com.jogamp.opengl.util.texture.Texture;
 
 public class DRGeometryPass extends Technique {
 
-	public DRGeometryPass() {
+	// Where we start mount the items' texture (diffuse/bump/ etc.)
+	private int textureSlotStart;
+	private int diffuseSlot;
+	private int bumpSlot;
+	
+	public DRGeometryPass(int textureSlotStart) {
 		super(ResourceLoader.shader("DRGeometry"));
+		
+		this.textureSlotStart = textureSlotStart;
+		diffuseSlot = textureSlotStart;
+		bumpSlot = textureSlotStart + 1;
 	}
 
 	public void renderModelInstances(RendererState rs, List<ModelInstance> modelInstances) {
@@ -31,6 +40,13 @@ public class DRGeometryPass extends Technique {
 		projection.set(rs.getCamera().getProjection());
 	}
 	
+	private void bindTexture(RendererState rs, Texture t, int slot) {
+		t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + diffuseSlot);
+		t.bind(rs.gl);
+		program.setU1i("colorMap", diffuseSlot);
+	}
+	
 	private void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
 		matrixStack.push(mi.getTransform().get());
 		Matrix4 modelMatrix = matrixStack.peek().cpy();
@@ -42,10 +58,7 @@ public class DRGeometryPass extends Technique {
 		Texture t = mi.getMaterial().getTexture();
 		if(t != null) {
 			program.setU1i("useTexture", true);
-			t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
-			rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 5);
-			t.bind(rs.gl);
-			program.setU1i("colorMap", 5);		// TODO: non-magic number
+			bindTexture(rs, t, diffuseSlot);
 		} else {
 			program.setU1i("useTexture", false);
 		}

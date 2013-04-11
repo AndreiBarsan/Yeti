@@ -7,11 +7,9 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.materials.DRGeometryMaterial;
-import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.scenes.NullTechnique;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 
@@ -143,6 +141,7 @@ public class Nessie extends Renderer {
 	public Mode mode;
 	private GBuffer gbuffer;
 	private static final String pre = "[NESSIE] ";
+	private NullTechnique nullTechnique = new NullTechnique(); 
 	
 	public Nessie(GL3 gl) {
 		// Start in debug mode by default
@@ -162,6 +161,7 @@ public class Nessie extends Renderer {
 	public void render(Scene scene) {
 		geometryPass(scene);
 		lightingPass(scene);
+		finalizePass(scene);
 		postProcessPass();
 	}
 
@@ -181,9 +181,13 @@ public class Nessie extends Renderer {
 	    gl.glDisable(GL2.GL_BLEND);		
 		
 		// Always use the same material designed to render to the GBuffer's MRT format
-		DRGeometryPass pass = new DRGeometryPass();
+		DRGeometryPass pass = new DRGeometryPass(GBuffer.COMPONENT_COUNT);
 		pass.setup(state);
 		pass.renderModelInstances(state, scene.modelInstances);
+	}
+	
+	private void stencilPass(Scene scene) {
+		
 	}
 	
 	private void lightingPass(Scene scene) {
@@ -232,6 +236,7 @@ public class Nessie extends Renderer {
 	    	
 	       	DRLightPass lightPass = new DRLightPass();
 	       	lightPass.setup(state);
+	       	gl.glEnable(GL2.GL_STENCIL_TEST);
 	       	// TODO: technically, the whole loop could go into the technique
 			for(Light l : scene.lights) {
 				switch(l.getType()) {
@@ -248,13 +253,21 @@ public class Nessie extends Renderer {
 					break;
 				}
 			}
-
+			gl.glDisable(GL2.GL_STENCIL_TEST);
 	    	break;
 	    }
 
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
+	}
+	
+	private void stencilPass(PointLight l) {
+		nullTechnique.setup(state);
+	}
+	
+	public void finalizePass(Scene scene) {
+		
 	}
 	
 	class Effect {

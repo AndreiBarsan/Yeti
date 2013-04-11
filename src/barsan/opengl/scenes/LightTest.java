@@ -121,7 +121,7 @@ public class LightTest extends Scene {
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 								new Vector3(1.0f, -1.0f, 0.0f).normalize(),
 								0.85f, 0.9f, 1.0f);
-		test_sl.setAttenuation(0.0f, 0.0f, 0.0f, 0.0f);
+		test_sl.setAttenuation(0.0f, 0.0f, 0.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
@@ -225,7 +225,7 @@ public class LightTest extends Scene {
 		test_sl.getPosition().setX((float)Math.cos(a / 2) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
-		test_pl.setAttenuation(0.0f, 0.0f, 0.005f, 0.0f);
+		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);
 		
 		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
 		test_dl.getDirection().set(tv).normalize();

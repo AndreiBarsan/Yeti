@@ -25,7 +25,7 @@ import com.jogamp.opengl.util.texture.Texture;
  */
 public abstract class Material {
 	
-	protected int positionIndex, normalIndex, texcoordIndex, tangentIndex, bitangentIndex;
+	protected int positionIndex, normalIndex, texcoordIndex, tangentIndex, binormalIndex;
 	protected Shader shader;
 	protected Color ambient, diffuse, specular;
 	
@@ -52,8 +52,8 @@ public abstract class Material {
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);
 		this.normalIndex = shader.getAttribLocation(Shader.A_NORMAL);
 		this.texcoordIndex = shader.getAttribLocation(Shader.A_TEXCOORD);
-	//	this.tangentIndex = shader.getAttribLocation("vTangent");
-	//	this.bitangentIndex = shader.getAttribLocation("vBitangent");
+		this.tangentIndex = shader.getAttribLocation("vTang");
+		this.binormalIndex = shader.getAttribLocation("vBinorm");
 		
 		this.ambient = ambient;
 		this.diffuse = diffuse;
@@ -127,7 +127,7 @@ public abstract class Material {
 	}
 
 	public void unsetBuffers(Model model) {
-		model.cleanUp(positionIndex, normalIndex, texcoordIndex);
+		model.cleanUp(positionIndex, normalIndex, texcoordIndex, tangentIndex, binormalIndex);
 	}
 	
 	public int getPositionIndex() {
@@ -146,8 +146,8 @@ public abstract class Material {
 		return tangentIndex;
 	}
 	
-	public int getBitangentIndex() {
-		return bitangentIndex;
+	public int getBiormalIndex() {
+		return binormalIndex;
 	}
 
 	public Color getDiffuse() {
