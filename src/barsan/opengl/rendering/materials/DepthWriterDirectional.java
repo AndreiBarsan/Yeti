@@ -8,7 +8,7 @@ import barsan.opengl.resources.ResourceLoader;
 public class DepthWriterDirectional extends Material {
 
 	public DepthWriterDirectional() {
-		super(ResourceLoader.shader("depthWriter"));
+		super(ResourceLoader.shader("null"));
 		
 		// Do not expect normals
 		ignoreLights = true;

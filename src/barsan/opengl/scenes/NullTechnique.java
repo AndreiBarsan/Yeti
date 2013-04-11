@@ -6,7 +6,7 @@ import barsan.opengl.resources.ResourceLoader;
 public class NullTechnique extends Technique {
 
 	public NullTechnique() {
-		super(ResourceLoader.shader("depthWriter"));
+		super(ResourceLoader.shader("null"));
 	}
 
 }
