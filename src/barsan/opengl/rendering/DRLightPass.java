@@ -39,12 +39,16 @@ public class DRLightPass extends Technique {
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 	}
 	
+	/*
 	public void stencilCheck(PointLight pointLight, RendererState rs) {
 		
 	}
+	*/
+	
+	// TODO: maybe use renderDude for this one as well, only placing the rest
+	// of the logic 
 	
 	public void drawPointLight(PointLight pointLight, RendererState rs) {
-		
 		float scale = pointLight.getBoundingRadius();
 		Transform t = new Transform().setTranslate(pointLight.getPosition())
 				.setScale(scale);

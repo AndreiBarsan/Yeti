@@ -33,7 +33,7 @@ public class NessieTestScene extends Scene {
 		nessie = new Nessie(Yeti.get().gl);
 		renderer = nessie;
 		
-		super.init(drawable);
+		super.init(drawable);		
 		
 		Yeti.get().gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		
@@ -65,19 +65,31 @@ public class NessieTestScene extends Scene {
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, -1.5f, 0.0f);
 		addModelInstance(box);
 		
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.1f, 0.1f, 1.0f));
-		addModelInstance(new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat));
-		
-		ModelInstance aux = new StaticModelInstance(ModelLoader.buildPlane(50.0f, 50.0f, 10, 10));
+		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.4f, 0.4f, 0.9f));
+		int mlim = 4;
+		for(int i = -mlim; i < mlim; ++i) {
+			for(int j = -mlim; j < mlim; ++j) {
+				StaticModelInstance monkey 
+					= new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat);
+				monkey.getTransform().updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
+				addModelInstance(monkey);
+			}
+		}
+		ModelInstance aux = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 10, 10));
 		aux.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
 		addModelInstance(aux);
 		
-		for(int i = -3; i < 3; ++i) {
-			for(int j = -3; j < 3; ++j) {
-				lights.add(new PointLight(new Vector3(i * 5.0f, -1.0f, j * 5.0f),
-						new Color(1.0f, 0.33f, 0.33f, 0.5f)));
+		//*
+		int lim = 3;
+		for(int i = -lim; i < lim; ++i) {
+			for(int j = -lim; j < lim; ++j) {
+				lights.add(new PointLight(new Vector3(i * 10.0f, -5.0f, j * 10.0f),
+						new Color((float)Math.random(), 
+								(float)Math.random(), 
+								(float)Math.random(), 
+								3.0f)));
 			}
-		}
+		}//*/
 		
 		camera.lookAt(new Vector3(10.0f, 10.0f, -12.0f), box.getTransform().getTranslate(), Vector3.UP.copy());
 		
@@ -91,6 +103,8 @@ public class NessieTestScene extends Scene {
 				super.keyTyped(e);
 			}
 		});
+		
+		nessie.init();
 	}
 	
 	float time;
@@ -98,13 +112,14 @@ public class NessieTestScene extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		super.display(drawable);
-		gui.render();
+		
 		box.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 3);
 		
+		//*
 		((DebugGUI)gui).info = "Testing deferred rendering. " + 
 		 String.format("%d lights in the scene.", lights.size()) + "\n" +
 		 "Rendering: " + nessie.mode.toString();
-		
+		//*/
 		time += Yeti.get().getDelta();
 		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
 	}

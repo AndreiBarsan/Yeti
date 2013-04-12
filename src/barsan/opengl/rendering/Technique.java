@@ -1,8 +1,23 @@
 package barsan.opengl.rendering;
 
+import java.util.List;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.Matrix4Stack;
 
+/**
+ * TODO: the light pass technique violates the current Technique contract, in that
+ * it doesn't supply support for rendering model instances.
+ * 
+ * Possible solution:
+ * 		- [ABC] Technique -> (DirectTechnique OR IndirectTechnique)
+ * 		- DirectTechnique prevents functionality for rendering dudes directly
+ * 		- IndirectTechnique doesn't - it should be the base for more advanced stuff
+ * 			like the light pass
+ * 
+ * @author Andrei Bârsan
+ */
 public abstract class Technique {
 	
 	protected Shader program;
@@ -47,6 +62,40 @@ public abstract class Technique {
 	
 	public int getTexCoordIndex() {
 		return tci;
+	}
+	
+	public void renderModelInstances(RendererState rs, List<ModelInstance> modelInstances) {
+		Matrix4Stack matrixStack = new Matrix4Stack();
+		for(ModelInstance modelInstance : modelInstances) {
+			renderDude(modelInstance, rs, matrixStack);
+		}
+	}
+	
+	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) 
+	{
+	}
+	
+	/**
+	 * Standard method that allows hierarchies of model instances to be rendered.
+	 * Specific uniform binding should occurr in the instanceRenderSetup method.
+	 */
+	public void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
+		matrixStack.push(mi.getTransform().get());
+		Matrix4 modelMatrix = matrixStack.peek().cpy();
+		viewModel.set(view).mul(modelMatrix);
+		MVP.set(projection).mul(view).mul(modelMatrix);
+		
+		program.setUMatrix4("mvpMatrix", MVP);
+		program.setUMatrix4("mMatrix", modelMatrix);
+		
+		instanceRenderSetup(mi, rs, matrixStack);
+		
+		mi.techniqueRender();
+		
+		for(ModelInstance child : mi.children) {
+			renderDude(child, rs, matrixStack);
+		}
+		matrixStack.pop();
 	}
 	
 	//public abstract void render(GL3 gl, List<ModelInstance> toDraw);

@@ -3,6 +3,7 @@ package barsan.opengl.rendering;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -102,8 +103,9 @@ public class StaticModelInstance extends ModelInstance {
 			model.getTexcoords().use(tindex);
 		}
 		
-		// TODO: inline this and leave Model as just a data holder
-		model.render(model.getArrayLength());
+		GL2 gl = Yeti.get().gl;
+		gl.glDrawArrays(model.getFaceMode(), 0, model.getArrayLength());
+		//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		
 		model.cleanUp(nindex, pindex, tindex);
 	}

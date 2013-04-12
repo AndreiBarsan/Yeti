@@ -66,10 +66,10 @@ public abstract class Renderer {
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDepthFunc(GL2.GL_LEQUAL);
+		//gl.glDepthFunc(GL2.GL_LEQUAL);
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
-		gl.glClearDepth(1.0d);
+		//gl.glClearDepth(1.0d);
 		
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);		
 	}

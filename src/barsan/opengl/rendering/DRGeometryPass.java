@@ -25,13 +25,6 @@ public class DRGeometryPass extends Technique {
 		bumpSlot = textureSlotStart + 1;
 	}
 
-	public void renderModelInstances(RendererState rs, List<ModelInstance> modelInstances) {
-		Matrix4Stack matrixStack = new Matrix4Stack();
-		for(ModelInstance modelInstance : modelInstances) {
-			renderDude(modelInstance, rs, matrixStack);
-		}
-	}
-	
 	@Override
 	public void setup(RendererState rs) {
 		super.setup(rs);
@@ -47,14 +40,8 @@ public class DRGeometryPass extends Technique {
 		program.setU1i("colorMap", diffuseSlot);
 	}
 	
-	private void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
-		matrixStack.push(mi.getTransform().get());
-		Matrix4 modelMatrix = matrixStack.peek().cpy();
-		viewModel.set(view).mul(modelMatrix);
-		MVP.set(projection).mul(view).mul(modelMatrix);
-		
-		program.setUMatrix4("mvpMatrix", MVP);
-		program.setUMatrix4("mMatrix", modelMatrix);
+	@Override
+	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
 		Texture t = mi.getMaterial().getTexture();
 		if(t != null) {
 			program.setU1i("useTexture", true);
@@ -64,12 +51,5 @@ public class DRGeometryPass extends Technique {
 		}
 		
 		program.setUVector4f("matDiffuse", mi.getMaterial().getDiffuse().getData());
-		
-		mi.techniqueRender();
-		
-		for(ModelInstance child : mi.children) {
-			renderDude(child, rs, matrixStack);
-		}
-		matrixStack.pop();
 	}
 }
