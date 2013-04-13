@@ -185,7 +185,7 @@ public class Nessie extends Renderer {
 	private DRGeometryPass geomPassTechnique;
 	
 	public Nessie(GL3 gl) {
-		this(gl, Mode.DrawComposedScene);
+		this(gl, Mode.DrawComposedScene);		
 	}
 	
 	public Nessie(GL3 gl, Mode mode) {

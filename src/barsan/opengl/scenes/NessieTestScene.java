@@ -10,6 +10,7 @@ import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Nessie;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Nessie.Mode;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
@@ -44,7 +45,7 @@ public class NessieTestScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		
-		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 0f, 0.0f), new Color(0.0f, 0.0f, 0.9f, 1.0f)));
+		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 0f, 0.0f), new Color(0.0f, 0.0f, 0.9f, 2.0f)));
 		lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//mainLight.setAttenuation(1.0f, 2.5f, 1.0f, 0.0f);
@@ -60,13 +61,14 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("DR_sphere", "sphere.obj");
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
+		ResourceLoader.loadTexture("rock", "floor.jpg");
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setTexture(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, -1.5f, 0.0f);
 		addModelInstance(box);
 		
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.4f, 0.4f, 0.9f));
-		int mlim = 4;
+		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f, 0.9f));
+		int mlim = 16;
 		for(int i = -mlim; i < mlim; ++i) {
 			for(int j = -mlim; j < mlim; ++j) {
 				StaticModelInstance monkey 
@@ -75,15 +77,17 @@ public class NessieTestScene extends Scene {
 				addModelInstance(monkey);
 			}
 		}
-		ModelInstance aux = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 10, 10));
-		aux.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
-		addModelInstance(aux);
+		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 25, 25));
+		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
+		floor.getMaterial().setTexture(ResourceLoader.texture("rock"));
+		addModelInstance(floor);
 		
 		//*
-		int lim = 3;
-		for(int i = -lim; i < lim; ++i) {
-			for(int j = -lim; j < lim; ++j) {
-				lights.add(new PointLight(new Vector3(i * 10.0f, -5.0f, j * 10.0f),
+		int lightLim = 2;
+		float lgs = 8.0f;
+		for(int i = -lightLim; i < lightLim; ++i) {
+			for(int j = -lightLim; j < lightLim; ++j) {
+				lights.add(new PointLight(new Vector3(i * lgs, -5.0f, j * lgs),
 						new Color((float)Math.random(), 
 								(float)Math.random(), 
 								(float)Math.random(), 

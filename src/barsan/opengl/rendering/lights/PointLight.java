@@ -42,7 +42,7 @@ public class PointLight extends Light {
 		Color d = getDiffuse();
 		float maxChannel = Math.max(d.r, Math.max(d.g, d.b));
 		float c = maxChannel * d.a;
-		return 24.0f * (float)Math.sqrt(c) + 1.0f;
+		return 16.0f * (float)Math.sqrt(c) + 1.0f;
 	}
 	
 	public Vector3 getPosition() {

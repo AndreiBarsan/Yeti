@@ -3,7 +3,6 @@ package barsan.opengl.rendering;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
-import barsan.opengl.rendering.Nessie.GBuffer;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 
@@ -39,14 +38,6 @@ public class DRLightPass extends Technique {
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 	}
 	
-	/*
-	public void stencilCheck(PointLight pointLight, RendererState rs) {
-		
-	}
-	*/
-	
-	// TODO: maybe use renderDude for this one as well, only placing the rest
-	// of the logic 
 	
 	public void drawPointLight(PointLight pointLight, RendererState rs) {
 		float scale = pointLight.getBoundingRadius();
@@ -59,7 +50,7 @@ public class DRLightPass extends Technique {
 		
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
-		float matSpecularIntensity = 10.0f;
+		float matSpecularIntensity = 100.0f;
 		float specularPower = 128.0f;
 		// TODO: remove unnecessary computations
 		
@@ -77,7 +68,6 @@ public class DRLightPass extends Technique {
 		program.setU1f("pointLight.Atten.Linear", pointLight.getLinearAttenuation());
 		program.setU1f("pointLight.Atten.Quadratic", pointLight.getQuadraticAttenuation());
 
-		
 		sphereInstance.techniqueRender();
 	}
 

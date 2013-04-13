@@ -101,6 +101,11 @@ public class AnimatedModelInstance extends ModelInstance {
 	}
 	
 	@Override
+	public AnimatedModel getModel() {
+		return model;
+	}
+	
+	@Override
 	public void techniqueRender() {
 		Yeti.screwed("Not yet implemented.");	
 	}

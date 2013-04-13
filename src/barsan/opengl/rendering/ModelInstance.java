@@ -26,6 +26,8 @@ public abstract class ModelInstance implements Renderable {
 	// less code smell by using techniques.
 	public abstract void techniqueRender();
 	
+	public abstract Model getModel();
+	
 	public Transform getTransform() {
 		return localTransform;
 	}

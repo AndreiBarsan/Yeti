@@ -120,7 +120,8 @@ public class StaticModelInstance extends ModelInstance {
 		this.material = material;
 	}
 
-	public Model getModel() {
+	@Override
+	public StaticModel getModel() {
 		return model;
 	}
 
