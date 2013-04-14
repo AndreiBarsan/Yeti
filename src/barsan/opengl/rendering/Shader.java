@@ -22,9 +22,12 @@
 
 package barsan.opengl.rendering;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.media.opengl.GL2;
@@ -55,12 +58,8 @@ public class Shader {
 	public static final String A_NORMAL = "vNormal";
 	public static final String A_TEXCOORD = "vTexCoord";
 	
-	public static final Map<Class<?>, String> componentFlags = new HashMap<>();
-	static {
-		// Not yet implemented
-		componentFlags.put(BumpComponent.class, "BUMPMAPPING");
-		componentFlags.put(ShadowReceiver.class, "SHADOWMAPPING");
-	}
+	private static final List<String> groks = Arrays.asList("No errors.");
+	
 	
 	// Utility buffers
 	static final IntBuffer i_buff = IntBuffer.allocate(8);
@@ -116,7 +115,6 @@ public class Shader {
 			gl.glCompileShader(geometry);
 			checkShader("Geometry shader [" + name + "]", geometry);		
 		}
-		
 		
 		// The null int[] is required -> otherwise the source code somehow
 		// gets corrupted and causes strange errors.
@@ -330,7 +328,12 @@ public class Shader {
 		}
 		
 		if(!logEmpty) {
-			Yeti.warn(message + " " + actionPT + " with warnings!\n\t" + logContents);
+			if( ! groks.contains(logContents.trim())) {
+				// Some drivers do fill the log even though there are no actual
+				// warnings. We don't want to treat the a message like "No errors."
+				// as a warning!
+				Yeti.warn(message + " " + actionPT + " with warnings!\n\t" + logContents);
+			}
 		}
 	}
 	
