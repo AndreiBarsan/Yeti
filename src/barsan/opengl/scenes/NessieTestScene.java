@@ -91,7 +91,7 @@ public class NessieTestScene extends Scene {
 						new Color((float)Math.random(), 
 								(float)Math.random(), 
 								(float)Math.random(), 
-								3.0f)));
+								6.0f)));
 			}
 		}//*/
 		

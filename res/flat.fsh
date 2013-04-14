@@ -4,7 +4,7 @@ uniform vec4 	matColor;
 uniform bool 	fogEnabled;
 uniform vec4	fogColor;
 
-smooth in float fogFactor;
+in float fogFactor;
 
 out vec4 vFragColor;
 

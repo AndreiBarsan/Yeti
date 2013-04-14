@@ -3,7 +3,7 @@
 in vec4 vVertex;
 in vec2 vTexCoord;
 
-smooth out vec2 vVaryingTexCoords;
+out vec2 vVaryingTexCoords;
 
 void main(void) {
 	// Just pass the data through

@@ -6,9 +6,9 @@ uniform bool	fogEnabled;
 uniform float 	minFogDistance;
 uniform float 	maxFogDistance;
 
-smooth in vec4 vVertex; 
+in vec4 vVertex; 
 
-smooth out float fogFactor;
+out float fogFactor;
 
 void main(void) {
 	gl_Position =  mvpMatrix * vVertex;

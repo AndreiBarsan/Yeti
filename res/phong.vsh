@@ -28,20 +28,20 @@ layout(location = 2) in vec2 vTexCoord;
 layout(location = 3) in vec3 vTang;
 layout(location = 4) in vec3 vBinorm;
 
-smooth out vec3 	normal_ec;
-smooth out vec3 	lightDir;
-smooth out vec2 	texCoords;
-smooth out float 	fogFactor;
+out vec3 	normal_ec;
+out vec3 	lightDir;
+out vec2 	texCoords;
+out float 	fogFactor;
 
-smooth out vec4 	vertPos_ec;
-smooth out vec4 	vertPos_wc;
-smooth out vec4 	lightPos_ec;
-smooth out vec4 	lightPos_wc;
+out vec4 	vertPos_ec;
+out vec4 	vertPos_wc;
+out vec4 	lightPos_ec;
+out vec4 	lightPos_wc;
 
-smooth out vec3 	spotDirection_ec;
+out vec3 	spotDirection_ec;
 
-smooth out mat3 	mNTB;
-smooth out vec4 	vertPos_dmc;	// Used in shadow mapping
+out mat3 	mNTB;
+out vec4 	vertPos_dmc;	// Used in shadow mapping
 
 void main() {
 	// Surface normal in eye coords

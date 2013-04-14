@@ -33,11 +33,11 @@ public abstract class Material {
 	protected boolean checksDepthBuffer = true;
 	protected boolean ignoreLights = false;
 	
-	/**
-	 *	This is the exponent of the specular highlight. 
-	 */
+	/// The exponent of the specular highlight. 
 	protected int shininess = 128;
 	protected Texture texture = null;
+	protected Texture bumpMap = null;
+	
 	protected List<MaterialComponent> components = new ArrayList<MaterialComponent>();
 	
 	public Material(Shader shader) {

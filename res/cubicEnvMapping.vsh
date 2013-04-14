@@ -8,8 +8,8 @@ layout(location = 0) in vec4 vVertex;
 layout(location = 1) in vec3 vNormal;
 layout(location = 2) in vec2 vTexCoord;
 
-smooth out vec3 vVaryingTexCoords; 
-smooth out vec2 texCoords2d;
+out vec3 vVaryingTexCoords; 
+out vec2 texCoords2d;
 
 void main(void) {
 	

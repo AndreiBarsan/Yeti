@@ -11,6 +11,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.NullTechnique;
 import barsan.opengl.util.GLHelp;
@@ -134,8 +135,7 @@ public class Nessie extends Renderer {
 				gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 			}
 			else {
-				//gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
-				gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT4);
+				gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 				for(int i = 0; i < handles.length; ++i) {
 					gl.glActiveTexture(GL2.GL_TEXTURE0 + i);	
 					gl.glBindTexture(GL2.GL_TEXTURE_2D, handles[POSITION_TEXTURE + i]);
@@ -146,7 +146,7 @@ public class Nessie extends Renderer {
 		public void bindForFinalPass() {
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, 0);
 			gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
-			gl.glReadBuffer(GL3.GL_COLOR_ATTACHMENT4);
+			gl.glReadBuffer(GL3.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 		}
 		
 		public void setReadBuffer(GL3 gl, int textureIndex) {
@@ -184,6 +184,10 @@ public class Nessie extends Renderer {
    	private DRLightPass lightPassTechnique;
 	private DRGeometryPass geomPassTechnique;
 	
+	private Matrix4Stack nullStack = new Matrix4Stack();
+	ModelInstance plVolume;
+	ModelInstance slVolume;
+
 	public Nessie(GL3 gl) {
 		this(gl, Mode.DrawComposedScene);		
 	}
@@ -204,6 +208,12 @@ public class Nessie extends Renderer {
 		Settings s = Yeti.get().settings;
 		gbuffer = new GBuffer(gl, s.width, s.height);
 		Yeti.debug(pre + "Created GBuffer.");
+		
+		gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR, GL.GL_KEEP);
+		gl.glStencilOpSeparate(GL.GL_FRONT, GL.GL_KEEP, GL.GL_DECR, GL.GL_KEEP);
+		
+		plVolume = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
+		slVolume = new StaticModelInstance(ResourceLoader.model("DR_cone"));
 	}
 	
 	@Override
@@ -279,7 +289,7 @@ public class Nessie extends Renderer {
 			for(Light l : scene.lights) {
 				switch(l.getType()) {
 				case Directional:
-					// TODO
+					
 					break;
 					
 				case Point:
@@ -287,7 +297,7 @@ public class Nessie extends Renderer {
 					break;
 					
 				case Spot:
-					// TODO
+					renderLightVolume((SpotLight)l);
 					break;
 				}
 			}
@@ -299,9 +309,12 @@ public class Nessie extends Renderer {
 		// that expect the default texture unit to be active to work
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 	}
+			
+	private void renderLightVolume(SpotLight l) {
 		
-	private Matrix4Stack nullStack = new Matrix4Stack();
+	}
 	
+
 	private void renderLightVolume(PointLight l) {
 		
 		// Perform the stencil step
@@ -312,17 +325,15 @@ public class Nessie extends Renderer {
 		gl.glDisable(GL2.GL_CULL_FACE);
 		gl.glClear(GL2.GL_STENCIL_BUFFER_BIT);
 		
+		// Stencil operations are simply set once, in the init() method
 		gl.glStencilFunc(GL2.GL_ALWAYS, 0, 0);
-		gl.glStencilOpSeparate(GL.GL_BACK, GL.GL_KEEP, GL.GL_INCR, GL.GL_KEEP);
-		gl.glStencilOpSeparate(GL.GL_FRONT, GL.GL_KEEP, GL.GL_DECR, GL.GL_KEEP);
 		
-		ModelInstance si = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
-		si.getTransform()
+		plVolume.getTransform()
 			.setTranslate(l.getPosition())
 			.setScale(l.getBoundingRadius())
 			.refresh();
 		
-		nullTechnique.renderDude(si, state, nullStack);
+		nullTechnique.renderDude(plVolume, state, nullStack);
 		
 		// Render the actual light volume
 		gbuffer.bindForLightPass();

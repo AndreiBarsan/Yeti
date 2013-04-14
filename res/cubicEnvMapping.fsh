@@ -3,8 +3,8 @@
 uniform samplerCube cubeMap;
 uniform sampler2D colorMap;
 
-smooth in vec3 vVaryingTexCoords;
-smooth in vec2 texCoords2d;
+in vec3 vVaryingTexCoords;
+in vec2 texCoords2d;
 
 out vec4 vFragColor;
 

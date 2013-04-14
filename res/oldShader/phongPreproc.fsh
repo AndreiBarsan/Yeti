@@ -202,7 +202,7 @@ float computeVisibility(in float NL) {
 			}
 		} else if(shadowQuality >= 4) {
 			for (int i = 0; i < 4; i++) {
-				int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
+				int index = int(mod(16.0 * rand(gl_FragCoord.xyy, i)), 16));
 				vec2 coord = sc + pD[index] / pFac;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     				visibility -= 0.2;

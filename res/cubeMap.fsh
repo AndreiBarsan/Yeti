@@ -4,7 +4,7 @@ uniform samplerCube cubeMap;
 uniform bool 		useGammaCorrection;
 uniform float 		invGamma;
 
-smooth in vec3 		vVaryingTexCoords;
+in vec3 		vVaryingTexCoords;
 
 out vec4 			vFragColor;
 

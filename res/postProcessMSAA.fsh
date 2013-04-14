@@ -8,9 +8,9 @@ uniform int sampleCount;
 // TODO: actually use a proper kernel
 uniform float kernel[];
 
-smooth in 	vec2 vVaryingTexCoords;
+in vec2 vVaryingTexCoords;
 
-smooth out	vec4 vFragColor;
+out vec4 vFragColor;
  
 void main(void) {
 	// Calculate un-normalized texture coordinates

@@ -68,19 +68,19 @@ uniform float 	invGamma;
 uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
 
-smooth in vec3 	normal_ec;
-smooth in vec3 	lightDir;
-smooth in vec2 	texCoords;
-smooth in float fogFactor;
+in vec3 	normal_ec;
+in vec3 	lightDir;
+in vec2 	texCoords;
+in float 	fogFactor;
 
-smooth in vec4 	vertPos_wc;
-smooth in vec4 	vertPos_ec;
-smooth in vec4 	lightPos_ec;
-smooth in vec4 	lightPos_wc;
+in vec4 	vertPos_wc;
+in vec4 	vertPos_ec;
+in vec4 	lightPos_ec;
+in vec4 	lightPos_wc;
 
-smooth in vec3 	spotDirection_ec;
-smooth in vec4 	vertPos_dmc;	// Used in shadow mapping
-smooth in mat3 	mNTB;			// Used in normal mapping
+in vec3 	spotDirection_ec;
+in vec4 	vertPos_dmc;	// Used in shadow mapping
+in mat3 	mNTB;			// Used in normal mapping
 
 out vec4 vFragColor;
 
@@ -186,7 +186,7 @@ float computeVisibility(in float NL) {
 			}
 		} else if(shadowQuality >= 4) {
 			for (int i = 0; i < 4; i++) {
-				int index = int(16.0 * rand(gl_FragCoord.xyy, i)) % 16;
+				int index = int(mod(16.0 * rand(gl_FragCoord.xyy, i), 16));
 				vec2 coord = sc + pD[index] / pFac;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     				visibility -= 0.2;
@@ -228,7 +228,7 @@ void main() {
 	}
 	
 	if(useBump) {
-		vec3 vBump = 2.0f * texture2D(normalMap, texCoords).rgb - 1.0f;
+		vec3 vBump = 2.0f * texture(normalMap, texCoords).rgb - 1.0f;
 		vBump = normalize(mNTB * vBump);
 		nNormal = vBump;
 	}
@@ -271,7 +271,7 @@ void main() {
 	//vFragColor += vec4(d_l_current_fragment  / (far - near)); // works
 	//vFragColor += vec4(d_l_closest_occluder);
 	 
-	//float diff = texture2D( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
+	//float diff = texture( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(visibility);
 	//vFragColor.a = 1.0f;
