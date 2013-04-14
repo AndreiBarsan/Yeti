@@ -315,7 +315,14 @@ public class Shader {
 			else {
 				gl.glGetShaderInfoLog(handle, l, i_buff, b_buff);
 			}
-			logContents = new String(b_buff.array(), 0, i_buff.get());
+			if(i_buff.remaining() == 0) {
+				// Attempt to use the already-found version for drivers that don't
+				// populate the int buffer
+				logContents = new String(b_buff.array(), 0, l);
+			} 
+			else {
+				logContents = new String(b_buff.array(), 0, i_buff.get());
+			}
 		}
 		
 		if(isProgram) {
