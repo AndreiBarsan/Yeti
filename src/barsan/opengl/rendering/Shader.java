@@ -302,10 +302,6 @@ public class Shader {
 			gl.glGetShaderiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
 		}
 		
-		if(buff.remaining() != 1) {
-			Yeti.screwed("Ba edy ce plm de driver ai?");
-		}
-		
 		int l = buff.get();
 		if(l > 1) {
 			logEmpty = false;
@@ -317,7 +313,7 @@ public class Shader {
 			}
 			if(i_buff.remaining() == 0) {
 				// Attempt to use the already-found version for drivers that don't
-				// populate the int buffer
+				// populate the int buffer when calling glGet[X]InfoLog
 				logContents = new String(b_buff.array(), 0, l);
 			} 
 			else {

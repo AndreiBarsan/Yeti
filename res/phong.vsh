@@ -22,11 +22,11 @@ uniform bool 	useShadows;
 uniform bool 	samplingCube;
 uniform mat4 	mvpMatrixShadows;
 
-layout(location = 0) in vec4 vVertex;
-layout(location = 1) in vec3 vNormal;
-layout(location = 2) in vec2 vTexCoord;
-layout(location = 3) in vec3 vTang;
-layout(location = 4) in vec3 vBinorm;
+in vec4 vVertex;
+in vec3 vNormal;
+in vec2 vTexCoord;
+in vec3 vTang;
+in vec3 vBinorm;
 
 out vec3 	normal_ec;
 out vec3 	lightDir;

@@ -8,7 +8,7 @@ uniform samplerCube colorMap;
 in vec2 UV;
 
 // Ouput data
-layout(location = 0) out vec4 color;
+out vec4 color;
 
 void main(){
 	// color = texture(colorMap, vec3(1.0f, UV.y, UV.x));

@@ -10,9 +10,9 @@ uniform mat4 mMatrix;
 //uniform mat3 normalMatrix;
 uniform bool useTexture;
 
-layout(location = 0) in vec4 vVertex;
-layout(location = 1) in vec3 vNormal;
-layout(location = 2) in vec2 vTexCoord;
+in vec4 vVertex;
+in vec3 vNormal;
+in vec2 vTexCoord;
 
 
 out vec3 WorldPos;
