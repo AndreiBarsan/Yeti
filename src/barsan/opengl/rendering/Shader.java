@@ -302,6 +302,10 @@ public class Shader {
 			gl.glGetShaderiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
 		}
 		
+		if(buff.remaining() != 1) {
+			Yeti.screwed("Ba edy ce plm de driver ai?");
+		}
+		
 		int l = buff.get();
 		if(l > 1) {
 			logEmpty = false;
