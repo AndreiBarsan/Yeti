@@ -12,8 +12,10 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.techniques.DRGeometryPass;
+import barsan.opengl.rendering.techniques.DRLightPass;
+import barsan.opengl.rendering.techniques.NullTechnique;
 import barsan.opengl.resources.ResourceLoader;
-import barsan.opengl.scenes.NullTechnique;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 

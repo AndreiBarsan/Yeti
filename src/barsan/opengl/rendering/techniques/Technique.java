@@ -1,10 +1,13 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.techniques;
 
 import java.util.List;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.Shader;
 
 /**
  * TODO: the light pass technique violates the current Technique contract, in that
@@ -101,7 +104,7 @@ public abstract class Technique {
 		
 		mi.techniqueRender();
 		
-		for(ModelInstance child : mi.children) {
+		for(ModelInstance child : mi.getChildren()) {
 			renderDude(child, rs, matrixStack);
 		}
 		matrixStack.pop();

@@ -8,6 +8,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.TextureComponent;
+import barsan.opengl.rendering.techniques.Technique;
 
 import com.jogamp.opengl.util.texture.Texture;
 

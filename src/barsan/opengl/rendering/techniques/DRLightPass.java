@@ -1,8 +1,12 @@
-package barsan.opengl.rendering;
+package barsan.opengl.rendering.techniques;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.resources.ResourceLoader;
 

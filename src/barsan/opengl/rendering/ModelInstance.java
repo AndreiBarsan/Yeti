@@ -1,6 +1,7 @@
 package barsan.opengl.rendering;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -60,6 +61,10 @@ public abstract class ModelInstance implements Renderable {
 			Yeti.screwed("Tried to remove inexisting ModelInstance child.");
 		}
 		child.setParent(null);
+	}
+	
+	public List<ModelInstance> getChildren() {
+		return children;
 	}
 
 	private void setParent(ModelInstance parent) {

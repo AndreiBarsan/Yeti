@@ -1,7 +1,6 @@
-package barsan.opengl.scenes;
+package barsan.opengl.rendering.techniques;
 
 import barsan.opengl.rendering.RendererState;
-import barsan.opengl.rendering.Technique;
 import barsan.opengl.resources.ResourceLoader;
 
 public class NullTechnique extends Technique {
