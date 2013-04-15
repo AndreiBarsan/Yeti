@@ -41,7 +41,7 @@ public class BasicMaterial extends Material {
 	public BasicMaterial(Color ambient, Color diffuse, Color specular) {
 		super(ResourceLoader.shader(PHONG_NAME), ambient, diffuse, specular);
 		
-		addComponent(new WorldTransformNormals());
+		addComponent(new WorldTransform());
 		addComponent(new LightComponent());
 		addComponent(new ShadowReceiver());
 	}

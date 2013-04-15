@@ -1,6 +1,5 @@
 package barsan.opengl.rendering.materials;
 
-import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.RendererState;
 
@@ -29,9 +28,6 @@ public class WorldTransform implements MaterialComponent {
 		
 		m.shader.setUMatrix4("mMatrix", modelMatrix);
 		m.shader.setUMatrix4("mvpMatrix", MVP);
-		m.shader.setUMatrix4("mvMatrix", viewModel);
-		m.shader.setUMatrix4("vMatrix", view);
-		m.shader.setUMatrix3("vMatrix3x3", new Matrix3(view));
 	}
 
 	@Override

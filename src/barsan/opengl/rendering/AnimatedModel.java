@@ -2,11 +2,6 @@ package barsan.opengl.rendering;
 
 import java.util.List;
 
-import javax.media.opengl.GL2;
-
-import barsan.opengl.Yeti;
-import barsan.opengl.resources.ModelLoader.Face;
-
 public class AnimatedModel extends Model {
 	
 	public static class Frame {

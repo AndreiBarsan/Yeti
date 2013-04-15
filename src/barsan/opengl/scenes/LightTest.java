@@ -125,6 +125,7 @@ public class LightTest extends Scene {
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
 		test_pl = new PointLight(new Vector3(lightX, pointLightY, lightZ));
+		test_pl.setAttenuation(1.0f, 0.5f, 1.5f);
 		
 		test_dl = new DirectionalLight(new Vector3(0.0f, -1.0f, 1.0f).normalize());
 		lights.add(test_pl);

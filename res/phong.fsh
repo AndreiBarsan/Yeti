@@ -26,11 +26,11 @@ const vec2 pD[16] = vec2[](
 uniform vec4 globalAmbient;
 
 // ADS shading model
-uniform vec4 lightDiffuse;
-uniform vec4 lightSpecular;
-uniform float lightTheta;
-uniform float lightPhi;
-uniform float lightExponent;
+uniform vec4 	lightDiffuse;
+uniform vec4 	lightSpecular;
+uniform float 	lightTheta;
+uniform float 	lightPhi;
+uniform float 	lightExponent;
 
 uniform int shininess;
 uniform vec4 matAmbient;
@@ -41,11 +41,10 @@ uniform vec4 matSpecular;
 uniform float constantAt;
 uniform float linearAt;
 uniform float quadraticAt;
-uniform float cubicAt;
 
 // Texture stuff
 uniform bool useTexture;
-uniform sampler2D colorMap;
+uniform sampler2D diffuseMap;
 
 // Normal mapping
 uniform bool useBump;
@@ -69,17 +68,14 @@ uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
 
 in vec3 	normal_wc;
-in vec3 	normal_ec;
 in vec3 	lightDir;
 in vec2 	texCoords;
 in float 	fogFactor;
 
 in vec4 	vertPos_wc;
-in vec4 	vertPos_ec;
-in vec4 	lightPos_ec;
 in vec4 	lightPos_wc;
-
 in vec3 	spotDirection_wc;
+
 in vec4 	vertPos_dmc;	// Used in shadow mapping
 in mat3 	mNTB;			// Used in normal mapping
 
@@ -93,12 +89,10 @@ float rand(in vec3 seed3, in int index) {
 
 // Cubic attenuation function
 float att(float d) {
-	float den = constantAt + d * linearAt + d * d * quadraticAt + d * d * d * cubicAt;
-
+	float den = constantAt + d * linearAt + d * d * quadraticAt;
 	if(den == 0.0f) {
 		return 1.0f;
 	}
-	
 	return min(1.0f, 1.0f / den);
 }
 
@@ -119,7 +113,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 		intensity *= spotEffect;
 	}
 	
-	float attenuation = att( length(lightPos_ec - vertPos_ec) );
+	float attenuation = att( length(lightPos_wc - vertPos_wc) );
 	intensity *= attenuation;
 
 	return intensity;
@@ -208,7 +202,7 @@ void main() {
 	float at, af;
 
 	if(useTexture) {
-		texel = texture(colorMap, texCoords); 
+		texel = texture(diffuseMap, texCoords); 
 	} 
 	
 	ct = texel.rgb;

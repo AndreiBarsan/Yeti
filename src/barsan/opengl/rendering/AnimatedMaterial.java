@@ -4,7 +4,7 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.materials.LightComponent;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.materials.ShadowReceiver;
-import barsan.opengl.rendering.materials.WorldTransformNormals;
+import barsan.opengl.rendering.materials.WorldTransform;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 
@@ -38,7 +38,7 @@ public class AnimatedMaterial extends Material {
 		// Updated name
 		texcoordIndex = shader.getAttribLocation(A_TEXCOORD);
 		
-		addComponent(new WorldTransformNormals());
+		addComponent(new WorldTransform());
 		addComponent(new LightComponent());
 		addComponent(new ShadowReceiver());
 		

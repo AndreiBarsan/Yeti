@@ -22,13 +22,11 @@
 
 package barsan.opengl.rendering;
 
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
@@ -39,8 +37,6 @@ import barsan.opengl.math.Matrix3;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.materials.BumpComponent;
-import barsan.opengl.rendering.materials.ShadowReceiver;
 import barsan.opengl.util.Color;
 
 /**

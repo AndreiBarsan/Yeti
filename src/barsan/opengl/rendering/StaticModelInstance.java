@@ -1,6 +1,5 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;

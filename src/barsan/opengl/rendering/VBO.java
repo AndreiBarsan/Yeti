@@ -179,6 +179,10 @@ public class VBO {
 	public int getSize() {
 		return elementGroupCount;
 	}
+	
+	public int getSizeOfElement() {
+		return elementSizeOf;
+	}
 
 	public int getHandle() {
 		return nativeHandle;

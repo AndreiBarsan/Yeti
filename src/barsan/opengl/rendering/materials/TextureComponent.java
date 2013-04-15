@@ -16,7 +16,7 @@ public class TextureComponent implements MaterialComponent {
 	public int setupTexture(Material m, RendererState rs, int slot) {
 		rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
 		m.shader.setU1i("useTexture", true);
-		m.shader.setU1i("colorMap", slot);
+		m.shader.setU1i("diffuseMap", slot);
 		m.diffuseMap.bind(rs.gl);
 		m.diffuseMap.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 		
