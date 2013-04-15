@@ -82,7 +82,7 @@ public class LightTest extends Scene {
 		gammaCorrection = new GammaCorrection(1.2f);
 		
 		final Material floorMat = new BasicMaterial(new Color(1.0f, 1.0f, 1.0f));	
-		floorMat.setTexture(ResourceLoader.texture("floor"));
+		floorMat.setDiffuseMap(ResourceLoader.texture("floor"));
 		floorMat.addComponent(new TextureComponent());
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
@@ -94,7 +94,7 @@ public class LightTest extends Scene {
 		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
 		BasicMaterial cmat = new BasicMaterial();
-		cmat.setTexture(ResourceLoader.texture("cubetex"));
+		cmat.setDiffuseMap(ResourceLoader.texture("cubetex"));
 		cmat.addComponent(new TextureComponent());
 		StaticModelInstance cube = new StaticModelInstance(ResourceLoader.model("texcube"), cmat);
 		cube.getTransform().updateTranslate(2.0f, 2.5f, 0.0f);

@@ -10,7 +10,7 @@ public class DRGeometryMaterial extends Material {
 		super(ResourceLoader.shader("DRGeometry"));
 		addComponent(new WorldTransformNormals());
 		addComponent(new TextureComponent());
-		setTexture(ResourceLoader.texture("cubetex"));
+		setDiffuseMap(ResourceLoader.texture("cubetex"));
 		
 		throw new Error("Not used. Use techniques instead!");
 	}

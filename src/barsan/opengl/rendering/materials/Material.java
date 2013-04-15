@@ -11,7 +11,6 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
-import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.util.Color;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -35,8 +34,8 @@ public abstract class Material {
 	
 	/// The exponent of the specular highlight. 
 	protected int shininess = 128;
-	protected Texture texture = null;
-	protected Texture bumpMap = null;
+	protected Texture diffuseMap = null;
+	protected Texture normalMap = null;
 	
 	protected List<MaterialComponent> components = new ArrayList<MaterialComponent>();
 	
@@ -121,7 +120,7 @@ public abstract class Material {
 	}
 	
 	public void bindTextureCoodrinates(Model model) {
-		if(texture != null) {
+		if(diffuseMap != null) {
 			model.getTexCoords().use(texcoordIndex);
 		}
 	}
@@ -174,14 +173,22 @@ public abstract class Material {
 		this.shininess = shininess;
 	}
 
-	public Texture getTexture() {
-		return texture;
+	public Texture getDiffuseMap() {
+		return diffuseMap;
 	}
 
-	public void setTexture(Texture texture) {
-		this.texture = texture;
+	public void setDiffuseMap(Texture texture) {
+		this.diffuseMap = texture;
 	}
 
+	public Texture getNormalMap() {
+		return normalMap;
+	}
+	
+	public void setNormalMap(Texture bump) {
+		this.normalMap = bump;
+	}
+	
 	public boolean getUseDepthBuffer() {
 		return writesDepthBuffer;
 	}

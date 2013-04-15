@@ -1,32 +1,41 @@
 #version 400 core
 
-struct FSOutput
-{ 
-    vec3 WorldPos; 
-    vec3 Diffuse; 
-    vec3 Normal; 
-    vec3 TexCoord; 
-};
-
 uniform bool 		useTexture;
-uniform sampler2D 	colorMap; 
+uniform sampler2D 	diffuseMap;
+
+uniform bool 		useBump;
+uniform sampler2D 	normalMap;
+  
 uniform vec4 		matDiffuse;
 
 in vec3 WorldPos;
 in vec2 TexCoord;
-in vec3 Normal; 
+in vec3 Normal;
+in mat3 mNTB;
 
-out FSOutput FSout;
+out vec3 outWorldPos; 
+out vec3 outDiffuse; 
+out vec3 outNormal; 
+out vec3 outTexCoord;
 
 void main()
 {	
-    FSout.WorldPos = WorldPos;	
+    outWorldPos = WorldPos;	
+
+	vec3 nNormal = normalize(Normal);
+	if(useBump) {
+		vec3 vBump = 2.0f * texture(normalMap, TexCoord).rgb - 1.0f;
+		vBump = normalize(mNTB * vBump);
+		nNormal = vBump;
+	}
+	outNormal = nNormal;
+	
 	if(useTexture) {
-    	FSout.Diffuse = texture(colorMap, TexCoord).rgb * matDiffuse.rgb;
+    	outDiffuse = texture(diffuseMap, TexCoord).rgb * matDiffuse.rgb;
 	}
 	else {
-		FSout.Diffuse = matDiffuse.rgb;
+		outDiffuse = matDiffuse.rgb;
 	}	
-    FSout.Normal = normalize(Normal);	
-    FSout.TexCoord = vec3(TexCoord, 0.0);	
+	
+    outTexCoord = vec3(TexCoord, 0.0);	
 };

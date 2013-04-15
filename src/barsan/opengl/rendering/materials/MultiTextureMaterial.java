@@ -23,7 +23,7 @@ public class MultiTextureMaterial extends BasicMaterial {
 	public MultiTextureMaterial(Texture lowerTexture, Texture upperTexture,
 			float minHeight, float maxHeight) {
 		shininess = 0;
-		setTexture(lowerTexture);
+		setDiffuseMap(lowerTexture);
 		this.upperTexture = upperTexture;
 		this.minHeight = minHeight;
 		this.maxHeight = maxHeight;

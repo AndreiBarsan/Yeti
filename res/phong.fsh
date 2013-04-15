@@ -68,6 +68,7 @@ uniform float 	invGamma;
 uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
 
+in vec3 	normal_wc;
 in vec3 	normal_ec;
 in vec3 	lightDir;
 in vec2 	texCoords;
@@ -78,7 +79,7 @@ in vec4 	vertPos_ec;
 in vec4 	lightPos_ec;
 in vec4 	lightPos_wc;
 
-in vec3 	spotDirection_ec;
+in vec3 	spotDirection_wc;
 in vec4 	vertPos_dmc;	// Used in shadow mapping
 in mat3 	mNTB;			// Used in normal mapping
 
@@ -105,12 +106,12 @@ float att(float d) {
 float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {	
 	float intensity = max(0.0f, dot(nNormal, nLightDir));
 
-	// If we are a point light
+	// If we are a spot light
 	if(lightTheta > 0.0f) {
 		float cos_outer_cone = lightTheta;
 		float cos_inner_cone = lightPhi;
 		float cos_inner_minus_outer = cos_inner_cone - cos_outer_cone;
-		float cos_cur = dot(normalize(spotDirection_ec), -nLightDir);
+		float cos_cur = dot(normalize(spotDirection_wc), -nLightDir);
 		// d3d style smooth edge
 		float spotEffect = clamp((cos_cur - cos_outer_cone) / 
 	      						cos_inner_minus_outer, 0.0, 1.0);
@@ -213,10 +214,10 @@ void main() {
 	ct = texel.rgb;
 	at = texel.a;
 
-	vec3 nNormal = normalize(normal_ec);
+	vec3 nNormal = normalize(normal_wc);
 	vec3 nLightDir = normalize(lightDir);
-	float NL = dot(nNormal, nLightDir);
 	
+	float NL = dot(nNormal, nLightDir);
 	float visibility = 1.0f;
 	
 	if(useShadows) {
@@ -241,8 +242,6 @@ void main() {
 	
 	if(intensity > 0.0f && shininess > 0.0f) {
 		// Specular light
-		//  - 	added *after* the texture color is multiplied so that
-		//		we get a truly shiny result
 		vec3 vReflection = normalize(reflect(-nLightDir, nNormal));
 		float spec = max(0.0, dot(nNormal, vReflection));
 		float fSpec = pow(spec, shininess) * lightSpecular.a;
@@ -262,7 +261,8 @@ void main() {
 	}
 	
 	//vFragColor -= vFragColor;
-	//vFragColor += vec4(visibility);
+	//vFragColor += vec4(nNormal, 1.0f);
+	//vFragColor += vec4(vec3(length(lightDir) / 100), 1.0f);
 	//vFragColor += texture(cubeShadowMap, vec3(1.0f, 2.3f, 1.0f));
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);

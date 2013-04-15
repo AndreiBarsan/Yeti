@@ -1,10 +1,8 @@
 package barsan.opengl.rendering;
 
-import java.util.List;
-
 import javax.media.opengl.GL2;
 
-import barsan.opengl.math.Matrix4;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.resources.ResourceLoader;
 
@@ -13,16 +11,14 @@ import com.jogamp.opengl.util.texture.Texture;
 public class DRGeometryPass extends Technique {
 
 	// Where we start mount the items' texture (diffuse/bump/ etc.)
-	private int textureSlotStart;
-	private int diffuseSlot;
-	private int bumpSlot;
+	private int diffuseMapSlot;
+	private int normalMapSlot;
 	
 	public DRGeometryPass(int textureSlotStart) {
 		super(ResourceLoader.shader("DRGeometry"));
 		
-		this.textureSlotStart = textureSlotStart;
-		diffuseSlot = textureSlotStart;
-		bumpSlot = textureSlotStart + 1;
+		diffuseMapSlot = textureSlotStart;
+		normalMapSlot = textureSlotStart + 1;
 	}
 
 	@Override
@@ -33,19 +29,28 @@ public class DRGeometryPass extends Technique {
 		projection.set(rs.getCamera().getProjection());
 	}
 	
-	private void bindTexture(RendererState rs, Texture t, int slot) {
-		t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
-		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + diffuseSlot);
+	private void bindTexture(RendererState rs, Texture t, String name, int slot) {
+		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + slot);
 		t.bind(rs.gl);
-		program.setU1i("colorMap", diffuseSlot);
+		t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+		program.setU1i(name, slot);
 	}
 	
 	@Override
 	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
-		Texture t = mi.getMaterial().getTexture();
-		if(t != null) {
+		Texture normalMap = mi.getMaterial().getNormalMap();
+		if(normalMap != null) {
+			program.setU1i("useBump", true);
+			program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
+			bindTexture(rs, normalMap, "normalMap", normalMapSlot);
+		} else {
+			program.setU1i("useBump", false);
+		}
+		
+		Texture diffuseMap = mi.getMaterial().getDiffuseMap();
+		if(diffuseMap != null) {
 			program.setU1i("useTexture", true);
-			bindTexture(rs, t, diffuseSlot);
+			bindTexture(rs, diffuseMap, "diffuseMap", diffuseMapSlot);
 		} else {
 			program.setU1i("useTexture", false);
 		}

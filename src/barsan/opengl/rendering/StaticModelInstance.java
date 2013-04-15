@@ -94,20 +94,25 @@ public class StaticModelInstance extends ModelInstance {
 		// Maybe set these in the technique (e.g., in the light pass they are
 		// definitely not needed)
 		int nindex = Technique.current.getNormalIndex();
+		int tindex = -1;
+		int bindex = -1;
 		if(nindex != -1) {
 			model.getNormals().use(nindex);
+			
+			tindex = Technique.current.getTangentIndex();
+			bindex = Technique.current.getBinormalIndex();
 		}
 	
-		int tindex = Technique.current.getTexCoordIndex();
-		if(material.getTexture() != null) {
-			model.getTexcoords().use(tindex);
+		int tcindex = Technique.current.getTexCoordIndex();
+		if(tcindex != -1) {
+			model.getTexcoords().use(tcindex);
 		}
 		
 		GL2 gl = Yeti.get().gl;
 		gl.glDrawArrays(model.getFaceMode(), 0, model.getArrayLength());
-		//gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		
-		model.cleanUp(nindex, pindex, tindex);
+		model.cleanUp(pindex, nindex, tindex, bindex, tcindex);
 	}
 
 	@Override
@@ -131,7 +136,7 @@ public class StaticModelInstance extends ModelInstance {
 	
 	@Override
 	public void setTexture(Texture texture) {
-		material.setTexture(texture);
+		material.setDiffuseMap(texture);
 		material.addComponent(new TextureComponent());
 	}
 }

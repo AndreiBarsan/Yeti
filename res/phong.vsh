@@ -29,6 +29,7 @@ in vec3 vTang;
 in vec3 vBinorm;
 
 out vec3 	normal_ec;
+out vec3 	normal_wc;
 out vec3 	lightDir;
 out vec2 	texCoords;
 out float 	fogFactor;
@@ -38,26 +39,27 @@ out vec4 	vertPos_wc;
 out vec4 	lightPos_ec;
 out vec4 	lightPos_wc;
 
-out vec3 	spotDirection_ec;
+out vec3 	spotDirection_wc;
 
 out mat3 	mNTB;
 out vec4 	vertPos_dmc;	// Used in shadow mapping
 
 void main() {
 	// Surface normal in eye coords
-	normal_ec = normalMatrix * vNormal;
+	//normal_ec = normalMatrix * vNormal;
+	normal_wc = (mMatrix * vec4(vNormal, 0.0f)).xyz;
 
-	vec4 vPosition4 = mvMatrix * vVertex;
+	vec4 vPosition4 = mMatrix * vVertex;
 	vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 	
-	vec4 tLightPos4 = vMatrix * lightPosition;
+	vec4 tLightPos4 = lightPosition;
 	vec3 tLightPos  = tLightPos4.xyz / tLightPos4.w;
 
 	if(lightPosition.w == 0.0f) {
 		// Directional light
 		lightDir = tLightPos4.xyz;
 	} else {
-		// Point light
+		// Point / spot light
 		// Vector to light source (do NOT normalize this!)
 		lightDir = tLightPos - vPosition3;
 	}
@@ -70,18 +72,17 @@ void main() {
 		mNTB[0] = vTang;
 		mNTB[1] = vBinorm;
 		mNTB[2] = normalize(vNormal);
-		mNTB = normalMatrix * mNTB;
+		// seems to work without the normal matrix
+		mNTB = mat3(mMatrix) * mNTB;
 	}
 	
 	if(useShadows) {
 		// Convert the vertex to shadowmap coordinates
 		vertPos_dmc = mvpMatrixShadows * vVertex;
-	
-		if(samplingCube) {
-			lightPos_wc = lightPosition;
-			vertPos_wc = mMatrix * vVertex;
-		}	
 	}
+	
+	lightPos_wc = lightPosition;
+	vertPos_wc = mMatrix * vVertex;
 	
 	lightPos_ec = vec4(tLightPos, 1.0f);
 	vertPos_ec = vec4(vPosition3, 1.0f);
@@ -91,7 +92,7 @@ void main() {
 	// you try to light a rotated object it blows up in your face. It's a
 	// direction, not a normal. (not mathematically different, but still 
 	// different in our case)
-	spotDirection_ec = vMatrix3x3 * spotDirection;	// Important! 
+	spotDirection_wc = spotDirection;	// Important! 
 	
 	// Projected vertex
 	gl_Position = mvpMatrix * vVertex;

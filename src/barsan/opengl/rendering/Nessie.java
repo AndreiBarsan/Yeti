@@ -116,10 +116,11 @@ public class Nessie extends Renderer {
 		
 		public void bindForGeometryPass() {
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
-			gl.glDrawBuffers(3, new int[] {
-					GL2.GL_COLOR_ATTACHMENT0,
-					GL2.GL_COLOR_ATTACHMENT1,
-					GL2.GL_COLOR_ATTACHMENT2
+			gl.glDrawBuffers(4, new int[] {
+					GL2.GL_COLOR_ATTACHMENT0 + POSITION_TEXTURE,
+					GL2.GL_COLOR_ATTACHMENT0 + DIFFUSE_TEXTURE,
+					GL2.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE,
+					GL2.GL_COLOR_ATTACHMENT0 + TEXCOORD_TEXTURE
 			}, 0);
 		}
 		

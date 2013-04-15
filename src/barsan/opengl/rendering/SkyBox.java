@@ -17,7 +17,7 @@ public class SkyBox extends StaticModelInstance {
 
 		Texture t = cubeTexture.getTexture();
 		CubeMapMaterial cmm = (CubeMapMaterial) getMaterial();
-		cmm.setTexture(t);
+		cmm.setDiffuseMap(t);
 		
 		cmm.setWriteDepthBuffer(false);
 		cmm.setCheckDepthBuffer(false);

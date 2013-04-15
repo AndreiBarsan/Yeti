@@ -122,7 +122,7 @@ public class AnimatedModelInstance extends ModelInstance {
 	
 	@Override
 	public void setTexture(Texture texture) {
-		material.setTexture(texture);
+		material.setDiffuseMap(texture);
 		material.addComponent(new TextureComponent());
 	}
 }

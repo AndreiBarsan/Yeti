@@ -45,25 +45,26 @@ public class NessieTestScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		
-		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 0f, 0.0f), new Color(0.0f, 0.0f, 0.9f, 2.0f)));
-		lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
-		lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		lights.add(mainLight = new PointLight(new Vector3(-0.25f, -2.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 3.0f)));
+		//lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		//lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//mainLight.setAttenuation(1.0f, 2.5f, 1.0f, 0.0f);
 		PointLight l = new PointLight(new Vector3(0.1f, 0.75f, 0.33f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
 		//l.setAttenuation(1.0f, 0.25f, 1.0f, 0.0f);
-		lights.add(l);
+		//lights.add(l);
 		
 		l2 = new PointLight(new Vector3(-0.5f, 0.75f, -0.33f), new Color(1.0f, 1.0f, 0.9f, 0.44f));
 		//l2.setAttenuation(0.0f, 0.25f, 1.0f, 0.0f);
-		lights.add(l2);
+		//lights.add(l2);
 		
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("DR_sphere", "sphere.obj");
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
-		ResourceLoader.loadTexture("rock", "floor.jpg");
+		ResourceLoader.loadTexture("floor", "floor.jpg");
+		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		box = new StaticModelInstance(ResourceLoader.model("box"));
-		box.getMaterial().setTexture(ResourceLoader.texture("cubetex"));
+		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, -1.5f, 0.0f);
 		addModelInstance(box);
 		
@@ -79,19 +80,20 @@ public class NessieTestScene extends Scene {
 		}
 		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 25, 25));
 		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
-		floor.getMaterial().setTexture(ResourceLoader.texture("rock"));
+		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
+		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		addModelInstance(floor);
 		
-		//*
+		/*
 		int lightLim = 2;
-		float lgs = 8.0f;
+		float lgs = 15.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				lights.add(new PointLight(new Vector3(i * lgs, -5.0f, j * lgs),
 						new Color((float)Math.random(), 
 								(float)Math.random(), 
 								(float)Math.random(), 
-								6.0f)));
+								3.0f)));
 			}
 		}//*/
 		
@@ -125,7 +127,9 @@ public class NessieTestScene extends Scene {
 		 "Rendering: " + nessie.mode.toString();
 		//*/
 		time += Yeti.get().getDelta();
-		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
+		//l2.getPosition().x = (float)Math.sin(time) * 0.33f;
+		
+		mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;
 	}
 
 	@Override

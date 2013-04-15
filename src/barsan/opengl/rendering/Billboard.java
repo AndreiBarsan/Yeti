@@ -69,7 +69,7 @@ public class Billboard extends StaticModelInstance {
 			GL2 gl = Yeti.get().gl;
 			gl.glActiveTexture(GL2.GL_TEXTURE0);
 			shader.setU1i("colorMap", 0);
-			texture.bind(rendererState.gl);
+			diffuseMap.bind(rendererState.gl);
 		}
 		
 		@Override
@@ -92,7 +92,7 @@ public class Billboard extends StaticModelInstance {
 	public Billboard(GL2 gl, Texture texture, Transform transform) {
 		super(ModelLoader.buildQuad(texture.getAspectRatio(), 1.0f, false), new BillboardMaterial(AxisClamp.None), transform);
 		
-		getMaterial().setTexture(texture);
+		getMaterial().setDiffuseMap(texture);
 		
 		b_ref = (BillboardMaterial)getMaterial();
 	}

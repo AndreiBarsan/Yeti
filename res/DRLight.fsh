@@ -107,4 +107,6 @@ void main(void) {
    	vec3 Normal = texture(normalMap, TexCoord).xyz;
    	Normal = normalize(Normal);
    	vFragColor = vec4(Color, 1.0) * calcPointLight(WorldPos, Normal);
+	vFragColor -= 0.99f * vFragColor;
+	vFragColor = vec4(Normal, 1.0f);
 }

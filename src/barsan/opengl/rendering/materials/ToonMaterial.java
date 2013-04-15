@@ -51,7 +51,7 @@ public class ToonMaterial extends BasicMaterial {
 	NormalDisplacementMaterial fm = new NormalDisplacementMaterial(Color.BLACK);
 	
 	public ToonMaterial(Texture tex) {
-		setTexture(tex);
+		setDiffuseMap(tex);
 		shader = ResourceLoader.shader("cel");
 	}
 	

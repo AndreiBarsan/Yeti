@@ -22,6 +22,8 @@ public abstract class Technique {
 	
 	protected Shader program;
 	int vi, ni, tci;
+	int tangentIndex;
+	int binormalIndex;
 	
 	public static Technique current = null;
 	
@@ -36,14 +38,12 @@ public abstract class Technique {
 		ni = program.getAttribLocation(Shader.A_NORMAL);
 		tci = program.getAttribLocation(Shader.A_TEXCOORD);
 		
+		tangentIndex = program.getAttribLocation("vTang");
+		binormalIndex = program.getAttribLocation("vBinorm");
+		
 		if(vi == -1) {
-			Yeti.warn("No vertex input! " + program);
-		}
-		if(ni == -1) {
-			//Yeti.warn("No normal input! " + program);
-		}
-		if(tci == -1) {
-			//Yeti.warn("No texcoord input! " + program);
+			Yeti.warn("No vertex input! Vertices are pretty important. Are you " +
+					"sure this is the behavior you want? Culprit: " + program);
 		}
 	}
 	
@@ -62,6 +62,14 @@ public abstract class Technique {
 	
 	public int getTexCoordIndex() {
 		return tci;
+	}
+	
+	public int getTangentIndex() {
+		return tangentIndex;
+	}
+	
+	public int getBinormalIndex() {
+		return binormalIndex;
 	}
 	
 	public void renderModelInstances(RendererState rs, List<ModelInstance> modelInstances) {
@@ -86,6 +94,7 @@ public abstract class Technique {
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
 		program.setUMatrix4("mvpMatrix", MVP);
+		program.setUMatrix4("mvMatrix", viewModel);
 		program.setUMatrix4("mMatrix", modelMatrix);
 		
 		instanceRenderSetup(mi, rs, matrixStack);

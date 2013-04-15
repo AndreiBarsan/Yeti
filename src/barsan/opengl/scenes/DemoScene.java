@@ -78,7 +78,7 @@ public class DemoScene extends Scene {
 		
 		BasicMaterial groundMat = new BasicMaterial();
 		groundMat.setShininess(0);
-		groundMat.setTexture(ResourceLoader.texture("grass"));
+		groundMat.setDiffuseMap(ResourceLoader.texture("grass"));
 		groundMat.addComponent(new TextureComponent());
 		modelInstances.add(new StaticModelInstance(
 				groundMesh,
@@ -92,7 +92,7 @@ public class DemoScene extends Scene {
 		shadowsEnabled = false;
 		
 		Material bumpMat = new BasicMaterial();
-		bumpMat.setTexture(ResourceLoader.texture("stone"));
+		bumpMat.setDiffuseMap(ResourceLoader.texture("stone"));
 		bumpMat.addComponent(new TextureComponent());
 		bumpMat.addComponent(new BumpComponent(ResourceLoader.texture("stone.bump")));
 		
@@ -115,7 +115,8 @@ public class DemoScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 50.00f, 0.0f));
 		((PerspectiveCamera)camera).setFOV(90.0f);
 		
-		lights.add(pl = new PointLight(new Vector3(0f, 15f, 10f), new Color(0.75f, 0.80f, 0.75f, 1.0f)));
+		lights.add(pl = new PointLight(new Vector3(0f, 75f, 10f), new Color(0.75f, 0.90f, 0.75f, 1.0f)));
+		pl.setAttenuation(0.0f, 0.0f, 0.0f);
 		
 		globalAmbientLight.setColor(new Color(0.05f, 0.05f, 0.05f));
 		
@@ -141,8 +142,8 @@ public class DemoScene extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		a += 0.8 * Yeti.get().getDelta() * 10;
 		
-		pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
-		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 15);
+		//pl.getPosition().x = 10 * (float)(30 * Math.sin(a / 10));
+		tct.updateRotation(0.0f, 1.0f, 0.0f, a * 5);
 		
 		m2.getTransform().updateRotation(0.0f, 1.0f, 0.0f, a * 10);
 		float orbit = 2.0f;

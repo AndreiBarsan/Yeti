@@ -29,7 +29,7 @@ public class CubeMapMaterial extends Material {
 		shader.setU1i("cubeMap", 0);
 		rendererState.gl.glActiveTexture(GLHelp.textureSlot[0]);
 		// It contains the texture wrapped by the CubeTexture
-		texture.bind(rendererState.gl);
+		diffuseMap.bind(rendererState.gl);
 		
 		// Some test code
 		//shader.setU1i("derpMap", 1);
