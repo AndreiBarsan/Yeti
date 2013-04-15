@@ -22,6 +22,7 @@ out vec2 TexCoord;
 out vec3 Normal; 
 out mat3 mNTB; 
 
+
 void main() {
 	Normal = (mMatrix * vec4(vNormal, 0.0f)).xyz;
 

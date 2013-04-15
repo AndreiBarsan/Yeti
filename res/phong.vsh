@@ -55,8 +55,7 @@ void main() {
 		mNTB[0] = vTang;
 		mNTB[1] = vBinorm;
 		mNTB[2] = normalize(vNormal);
-		// seems to work without the normal matrix
-		mNTB = mat3(mMatrix) * mNTB;
+		mNTB = mat3(mMatrix) * mNTB;	// seems to work without the normal matrix
 	}
 	
 	if(useShadows) {

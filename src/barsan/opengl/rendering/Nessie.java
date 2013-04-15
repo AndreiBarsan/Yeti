@@ -221,6 +221,7 @@ public class Nessie extends Renderer {
 	
 	@Override
 	public void render(Scene scene) {
+		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
 		gbuffer.startFrame();
 		geometryPass(scene);
 		lightingPass(scene);

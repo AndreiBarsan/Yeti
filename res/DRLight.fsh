@@ -72,10 +72,12 @@ vec4 CalcLightInternal(BaseLight Light,
     if (DiffuseFactor > 0) {
         dColor = vec4(Light.Color, 1.0f) * Light.DiffuseIntensity * DiffuseFactor;
 
-        vec3 VertexToEye = normalize(eyeWorldPos - WorldPos);
-        vec3 LightReflect = normalize(reflect(LightDirection, Normal));
-        float SpecularFactor = dot(VertexToEye, LightReflect);
-        SpecularFactor = pow(SpecularFactor, specularPower);
+        //vec3 VertexToEye = normalize(eyeWorldPos - WorldPos);
+        //vec3 LightReflect = normalize(reflect(LightDirection, Normal));
+        //float SpecularFactor = max(0.0f, dot(VertexToEye, LightReflect);
+		vec3 vReflection = normalize(reflect(LightDirection, Normal));
+		float spec = max(0.0, dot(Normal, vReflection));
+        float SpecularFactor = pow(spec, specularPower);
         if (SpecularFactor > 0) {
             sColor = vec4(Light.Color, 1.0f) * matSpecularIntensity * SpecularFactor;
         }
@@ -107,6 +109,4 @@ void main(void) {
    	vec3 Normal = texture(normalMap, TexCoord).xyz;
    	Normal = normalize(Normal);
    	vFragColor = vec4(Color, 1.0) * calcPointLight(WorldPos, Normal);
-	vFragColor -= 0.99f * vFragColor;
-	vFragColor = vec4(Normal, 1.0f);
 }

@@ -1,9 +1,5 @@
 package barsan.opengl.math;
 
-import java.util.Arrays;
-
-
-
 /**
  * Matrix helper. Inspired by libgdx implementation by badlogicgames@gmail.com
  * @author Andrei Barsan
@@ -241,7 +237,6 @@ public class Matrix4 {
 	public Matrix4 setTranslate(Vector3 v) {
 		return setTranslate(v.x, v.y, v.z);
 	}
-
 	
 	/*
 	 * 01 00 00 tx
@@ -424,7 +419,6 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 setToOrtho (float left, float right, float bottom, float top, float near, float far) {
-
 		float x_orth = 2 / (right - left);
 		float y_orth = 2 / (top - bottom);
 		float z_orth = -2 / (far - near);

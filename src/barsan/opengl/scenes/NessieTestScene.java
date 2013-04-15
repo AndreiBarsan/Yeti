@@ -45,8 +45,8 @@ public class NessieTestScene extends Scene {
 		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
 		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
 		
-		lights.add(mainLight = new PointLight(new Vector3(-0.25f, -2.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 3.0f)));
-		//lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 5.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 5.0f)));
+		lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//mainLight.setAttenuation(1.0f, 2.5f, 1.0f, 0.0f);
 		PointLight l = new PointLight(new Vector3(0.1f, 0.75f, 0.33f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
@@ -65,31 +65,33 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
-		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, -1.5f, 0.0f);
+		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
 		addModelInstance(box);
 		
-		BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f, 0.9f));
-		int mlim = 16;
+		//BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f, 0.9f));
+		//*
+		int mlim = 8;
 		for(int i = -mlim; i < mlim; ++i) {
 			for(int j = -mlim; j < mlim; ++j) {
-				StaticModelInstance monkey 
-					= new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat);
+				StaticModelInstance monkey = new StaticModelInstance(
+						ResourceLoader.model("monkey"), 
+						new BasicMaterial( Color.random() ));
 				monkey.getTransform().updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
 				addModelInstance(monkey);
 			}
-		}
+		}//*/
 		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 25, 25));
 		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
 		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
 		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		addModelInstance(floor);
 		
-		/*
-		int lightLim = 2;
-		float lgs = 15.0f;
+		//*
+		int lightLim = 6;
+		float lgs = 20.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
-				lights.add(new PointLight(new Vector3(i * lgs, -5.0f, j * lgs),
+				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs),
 						new Color((float)Math.random(), 
 								(float)Math.random(), 
 								(float)Math.random(), 

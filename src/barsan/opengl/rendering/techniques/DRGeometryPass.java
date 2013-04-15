@@ -34,7 +34,8 @@ public class DRGeometryPass extends Technique {
 	private void bindTexture(RendererState rs, Texture t, String name, int slot) {
 		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + slot);
 		t.bind(rs.gl);
-		t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+		int aiso = rs.getAnisotropySamples();
+		t.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, aiso);
 		program.setU1i(name, slot);
 	}
 	

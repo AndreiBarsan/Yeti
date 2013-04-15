@@ -55,6 +55,20 @@ public class Color {
 		return data;
 	}
 	
-	// TODO: maybe HSV conversion and other shizznit
+	public static Color random() {
+		return new Color(
+				(float) Math.random(),
+				(float) Math.random(),
+				(float) Math.random(),
+				1.0f);
+	}
+	
+	public static Color randomWithAlpha() {
+		return new Color(
+				(float) Math.random(),
+				(float) Math.random(),
+				(float) Math.random(),
+				(float) Math.random());
+	}
 
 }

@@ -18,8 +18,7 @@ out vec3 outDiffuse;
 out vec3 outNormal; 
 out vec3 outTexCoord;
 
-void main()
-{	
+void main() {	
     outWorldPos = WorldPos;	
 
 	vec3 nNormal = normalize(Normal);

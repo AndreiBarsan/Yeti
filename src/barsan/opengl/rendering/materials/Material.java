@@ -16,13 +16,12 @@ import barsan.opengl.util.Color;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * This should wrap around a shader. Given a certain ModelInstance and RenderState,
- * it should know how to set up all the shader's uniforms and attributes.
- * 
+ * Contains material data that's to be rendered with a certain technique.
+ *  
  * @author Andrei Barsan
  *
  */
-public abstract class Material {
+public class Material {
 	
 	protected int positionIndex, normalIndex, texcoordIndex, tangentIndex, binormalIndex;
 	protected Shader shader;

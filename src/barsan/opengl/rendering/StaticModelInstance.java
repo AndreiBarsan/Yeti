@@ -100,7 +100,9 @@ public class StaticModelInstance extends ModelInstance {
 			model.getNormals().use(nindex);
 			
 			tindex = Technique.current.getTangentIndex();
+			model.getTangents().use(tindex);
 			bindex = Technique.current.getBinormalIndex();
+			model.getBinormals().use(bindex);
 		}
 	
 		int tcindex = Technique.current.getTexCoordIndex();
