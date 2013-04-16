@@ -332,20 +332,12 @@ public class Nessie extends Renderer {
        	gl.glDisable(GL2.GL_BLEND);
 	}
 
-	private void renderPLVol(PointLight l) {
-		
-		plVolume.getTransform()
-			.setTranslate(l.getPosition())
-			.setScale(l.getBoundingRadius())
-			.refresh();
-		
-		nullTechnique.renderDude(plVolume, state, nullStack);
-		
+	private void prepareLightPass(RendererState state) {
 		// Render the actual light volume
 		gbuffer.bindForLightPass();
        	lightPassTechnique.setup(state);
        	gl.glStencilFunc(GL2.GL_NOTEQUAL, 0, 0xFF);
-       	gl.glDisable(GL2.GL_DEPTH_TEST);	// actually done with the depth test!
+       	gl.glDisable(GL2.GL_DEPTH_TEST);	// finally done with the depth test!
 		gl.glDepthMask(false);
        	
     	gl.glEnable(GL2.GL_BLEND);
@@ -354,16 +346,32 @@ public class Nessie extends Renderer {
       	
       	gl.glEnable(GL2.GL_CULL_FACE);
       	gl.glCullFace(GL2.GL_FRONT);
+	}
+	
+	private void renderPLVol(PointLight l) {
+		plVolume.getTransform()
+			.setTranslate(l.getPosition())
+			.setScale(l.getBoundingRadius())
+			.refresh();
+		
+		nullTechnique.renderDude(plVolume, state, nullStack);
+		
+		prepareLightPass(state);
        	
        	lightPassTechnique.drawPointLight(l, state);
 	}
 	
+	
 	private void renderSLVol(SpotLight l) {
+		float w = 1.0f;
+		float h = 1.0f;
 		// Compute cone scale and rotation based on the light
+		slVolume.getTransform()
+			.setTranslate(l.getPosition())
+			.setScale(w, h, w);
 	}
 	
 	public void finalizePass(Scene scene) {
-		// TODO: blit from gbuffer to screen
 		gbuffer.bindForFinalPass();
 		gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
 								0, 0, gbuffer.width, gbuffer.height,

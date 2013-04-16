@@ -30,8 +30,8 @@ public class LightComponent implements MaterialComponent {
 			SpotLight sl = (SpotLight)light;
 			Vector3 ld = sl.getDirection();
 			
-			m.shader.setU1f("lightTheta", sl.getTheta());
-			m.shader.setU1f("lightPhi", sl.getPhi());
+			m.shader.setU1f("lightTheta", sl.getOuter());
+			m.shader.setU1f("lightPhi", sl.getInner());
 			m.shader.setU1f("lightExponent", sl.getExponent());
 			m.shader.setUVector3f("spotDirection", sl.getDirection());
 			

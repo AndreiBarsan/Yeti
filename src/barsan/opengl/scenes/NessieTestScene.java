@@ -123,13 +123,12 @@ public class NessieTestScene extends Scene {
 		
 		box.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 3);
 		
-		//*
 		((DebugGUI)gui).info = "Testing deferred rendering. " + 
 		 String.format("%d lights in the scene.", lights.size()) + "\n" +
 		 "Rendering: " + nessie.mode.toString();
-		//*/
+		
 		time += Yeti.get().getDelta();
-		//l2.getPosition().x = (float)Math.sin(time) * 0.33f;
+		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
 		
 		mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;
 	}

@@ -74,6 +74,8 @@ public class LightTest extends Scene {
 		StaticModel quad = ModelLoader.buildPlane(500.0f, 500.0f, 50, 50);
 		monkeyMat = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
 		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
+		monkeyMat.setSpecularPower(128);
+		
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
 		camera.setPosition(new Vector3(0.0f, 20.0f, 0.0f));
@@ -86,7 +88,7 @@ public class LightTest extends Scene {
 		floorMat.addComponent(new TextureComponent());
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
-		floorMat.setSpecularPower(128);
+		floorMat.setSpecularPower(64);
 		
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();
@@ -120,7 +122,9 @@ public class LightTest extends Scene {
 		
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 								new Vector3(1.0f, -1.0f, 0.0f).normalize(),
-								0.85f, 0.9f, 1.0f);
+								(float)Math.cos(MathUtil.DEG_TO_RAD * 60f),
+								(float)Math.cos(MathUtil.DEG_TO_RAD * 45f),
+								1.0f);
 		test_sl.setAttenuation(0.0f, 0.0f, 0.0f);
 		test_sl.setDiffuse(new Color(0.55f, 0.55f, 0.55f));
 		
@@ -216,14 +220,15 @@ public class LightTest extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		float delta = Yeti.get().getDelta();
+		float sl_speedScale = 5.0f;
 		a += delta;
 		
-		test_sl.getDirection().x =  (float)Math.sin(a / 20) * 20.0f;
-		test_sl.getDirection().z = -(float)Math.cos(a / 20) * 20.0f;
+		test_sl.getDirection().x =  (float)Math.sin(a / sl_speedScale) * 20.0f;
+		test_sl.getDirection().z = -(float)Math.cos(a / sl_speedScale) * 20.0f;
 		test_sl.getDirection().y = -20.0f;
 		test_sl.getDirection().normalize();
 		
-		test_sl.getPosition().setX((float)Math.cos(a / 20) * 40f);
+		test_sl.getPosition().setX((float)Math.cos(a / sl_speedScale) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);

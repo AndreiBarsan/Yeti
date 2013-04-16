@@ -5,42 +5,42 @@ import barsan.opengl.util.Color;
 
 public class SpotLight extends PointLight {
 
-	private float theta, phi;
+	private float outer, inner;
 	private float exponent;
 	private Vector3 direction;
 	
-	public SpotLight(Vector3 position, Vector3 direction, float theta, float phi,
+	public SpotLight(Vector3 position, Vector3 direction, float outer, float inner,
 			float exponent, Color diffuse, Color specular) {
 		super(position, diffuse, specular);
 		
-		this.theta = theta;
-		this.phi = phi;
+		this.outer = outer;
+		this.inner = inner;
 		this.exponent = exponent;
 		this.direction = direction;
 	}
 	
-	public SpotLight(Vector3 position, Vector3 direction, float theta, float phi, float exponent) {
-		this(position, direction, theta, phi, exponent, Color.WHITE, Color.WHITE);
+	public SpotLight(Vector3 position, Vector3 direction, float outer, float inner, float exponent) {
+		this(position, direction, outer, inner, exponent, Color.WHITE, Color.WHITE);
 	}
 	
 	public SpotLight(Vector3 position, Vector3 direction) {
 		this(position, direction, 1.0f, 1.0f, 2.0f);
 	}
 
-	public float getTheta() {
-		return theta;
+	public float getOuter() {
+		return outer;
 	}
 
-	public void setTheta(float theta) {
-		this.theta = theta;
+	public void setOuter(float outer) {
+		this.outer = outer;
 	}
 
-	public float getPhi() {
-		return phi;
+	public float getInner() {
+		return inner;
 	}
 
-	public void setPhi(float phi) {
-		this.phi = phi;
+	public void setInner(float inner) {
+		this.inner = inner;
 	}
 
 	public Vector3 getDirection() {
