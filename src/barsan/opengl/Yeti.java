@@ -205,7 +205,7 @@ public class Yeti implements GLEventListener {
 		frame.pack();
 		frame.setVisible(true);
 		
-		animator.setUpdateFPSFrames(30, null);
+		animator.setUpdateFPSFrames(5, null);
 		animator.start();
 		
 		glpanel.addMouseListener(new MouseAdapter() {

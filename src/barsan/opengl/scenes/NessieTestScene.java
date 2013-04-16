@@ -42,8 +42,7 @@ public class NessieTestScene extends Scene {
 		gui = new DebugGUI(this, drawable.getAnimator());
 		gui.setPosition(10, 10);
 		
-		camera.setPosition(new Vector3(0.0f, 0.25f, -4.0f));
-		camera.setDirection(new Vector3(0.0f, 0.0f, -1.0f));
+		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f, -10.0f, 0.0f), Vector3.UP.copy());
 		
 		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 5.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 5.0f)));
 		lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
@@ -66,11 +65,17 @@ public class NessieTestScene extends Scene {
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
-		addModelInstance(box);
+		//addModelInstance(box);
+		
+		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 25, 25));
+		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
+		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
+		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
+		addModelInstance(floor);
 		
 		//BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f, 0.9f));
 		//*
-		int mlim = 8;
+		int mlim = 10;
 		for(int i = -mlim; i < mlim; ++i) {
 			for(int j = -mlim; j < mlim; ++j) {
 				StaticModelInstance monkey = new StaticModelInstance(
@@ -80,26 +85,17 @@ public class NessieTestScene extends Scene {
 				addModelInstance(monkey);
 			}
 		}//*/
-		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(250.0f, 250.0f, 25, 25));
-		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
-		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
-		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
-		addModelInstance(floor);
 		
 		//*
-		int lightLim = 6;
-		float lgs = 20.0f;
+		int lightLim = 2;
+		float lgs = 16.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
-				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs),
-						new Color((float)Math.random(), 
-								(float)Math.random(), 
-								(float)Math.random(), 
-								3.0f)));
+				Color c = Color.random();
+				c.a = 2.0f;
+				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
 			}
 		}//*/
-		
-		camera.lookAt(new Vector3(10.0f, 10.0f, -12.0f), box.getTransform().getTranslate(), Vector3.UP.copy());
 		
 		addInput(new InputAdapter() {
 			@Override

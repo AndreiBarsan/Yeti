@@ -54,8 +54,8 @@ public class DRLightPass extends Technique {
 		
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
-		float matSpecularIntensity = 5.0f;
-		float specularPower = 256.0f;
+		float matSpecularIntensity = 15.0f;
+		float specularPower = 96.0f;
 		// TODO: remove unnecessary computations
 		program.setUMatrix4("vMatrix", view);
 		

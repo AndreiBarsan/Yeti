@@ -70,7 +70,7 @@ public class Nessie extends Renderer {
 				// Bind the texture so we can work on it
 				gl.glBindTexture(GL2.GL_TEXTURE_2D, h);
 				// Actually allocate the texture data
-				gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_RGB32F, width, height, 0, GL2.GL_RGB, GL2.GL_FLOAT, null);
+				gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_RGBA32F, width, height, 0, GL2.GL_RGBA, GL2.GL_FLOAT, null);
 				gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 		        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 				// Bind the texture to the FBO
@@ -118,11 +118,11 @@ public class Nessie extends Renderer {
 		
 		public void bindForGeometryPass() {
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
-			gl.glDrawBuffers(4, new int[] {
+			gl.glDrawBuffers(3, new int[] {
 					GL2.GL_COLOR_ATTACHMENT0 + POSITION_TEXTURE,
 					GL2.GL_COLOR_ATTACHMENT0 + DIFFUSE_TEXTURE,
 					GL2.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE,
-					GL2.GL_COLOR_ATTACHMENT0 + TEXCOORD_TEXTURE
+					//GL2.GL_COLOR_ATTACHMENT0 + TEXCOORD_TEXTURE
 			}, 0);
 		}
 		
@@ -315,9 +315,8 @@ public class Nessie extends Renderer {
 	}
 			
 	private void renderLightVolume(SpotLight l) {
-		
+		// TODO
 	}
-	
 
 	private void renderLightVolume(PointLight l) {
 		

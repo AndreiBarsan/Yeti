@@ -31,6 +31,9 @@ uniform vec4 	lightSpecular;
 uniform float 	lightTheta;
 uniform float 	lightPhi;
 uniform float 	lightExponent;
+uniform vec3 	lightPosition;
+uniform vec3    lightDirection;
+uniform int 	lightType;
 
 uniform int shininess;
 uniform vec4 matAmbient;
@@ -68,13 +71,10 @@ uniform bool 	fogEnabled;
 uniform vec4 	fogColor;
 
 in vec3 	normal_wc;
-in vec3 	lightDir;
 in vec2 	texCoords;
 in float 	fogFactor;
 
-in vec4 	vertPos_wc;
-in vec4 	lightPos_wc;
-in vec3 	spotDirection_wc;
+in vec3 	vertPos_wc;
 
 in vec4 	vertPos_dmc;	// Used in shadow mapping
 in mat3 	mNTB;			// Used in normal mapping
@@ -97,15 +97,15 @@ float att(float d) {
 }
 
 
-float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {	
-	float intensity = max(0.0f, dot(nNormal, nLightDir));
+float computeIntensity(in vec3 nNormal, in vec3 nLightDir, in float NL) {	
+	float intensity = max(0.0f, NL);
 
 	// If we are a spot light
-	if(lightTheta > 0.0f) {
+	if( lightType == 2 ) {
 		float cos_outer_cone = lightTheta;
 		float cos_inner_cone = lightPhi;
 		float cos_inner_minus_outer = cos_inner_cone - cos_outer_cone;
-		float cos_cur = dot(normalize(spotDirection_wc), -nLightDir);
+		float cos_cur = dot(normalize(lightDirection), -nLightDir);
 		// d3d style smooth edge
 		float spotEffect = clamp((cos_cur - cos_outer_cone) / 
 	      						cos_inner_minus_outer, 0.0, 1.0);
@@ -113,7 +113,7 @@ float computeIntensity(in vec3 nNormal, in vec3 nLightDir) {
 		intensity *= spotEffect;
 	}
 	
-	float attenuation = att( length(lightPos_wc - vertPos_wc) );
+	float attenuation = att( length(lightPosition - vertPos_wc) );
 	intensity *= attenuation;
 
 	return intensity;
@@ -129,7 +129,7 @@ float computeVisibilityCube(in float NL) {
 	// to 6 'views' at once, there's no single 'eye space' to tell the second
 	// pass about, there's six of them!
 	// Vielen Dank, TU Wien!
-	vec3 cm_lookup_vec = vertPos_wc.xyz - lightPos_wc.xyz;
+	vec3 cm_lookup_vec = vertPos_wc - lightPosition;
 	float d_l_closest_occluder = texture(cubeShadowMap, cm_lookup_vec ).z;
 	float d_l_current_fragment = length(cm_lookup_vec);
 	
@@ -173,10 +173,10 @@ float computeVisibility(in float NL) {
 			}
 		}
 		else if(shadowQuality == 3) {
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 16; i++) {
 				vec2 coord = sc + pD[i] / pFac;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    				visibility -= 0.2;
+    				visibility -= 0.05;
   				}
 			}
 		} else if(shadowQuality >= 4) {
@@ -209,7 +209,19 @@ void main() {
 	at = texel.a;
 
 	vec3 nNormal = normalize(normal_wc);
-	vec3 nLightDir = normalize(lightDir);
+	vec3 nLightDir = vec3(0.0f);
+	if(lightType == 0) {			// Directional
+		nLightDir = normalize(lightDirection);
+	} else {		// Point / spot
+		nLightDir = normalize(lightPosition - vertPos_wc);
+	}
+	
+	
+	if(useBump) {
+		vec3 vBump = 2.0f * texture(normalMap, texCoords).rgb - 1.0f;
+		vBump = normalize(mNTB * vBump);
+		nNormal = vBump;
+	}
 	
 	float NL = dot(nNormal, nLightDir);
 	float visibility = 1.0f;
@@ -222,13 +234,7 @@ void main() {
 		}
 	}
 	
-	if(useBump) {
-		vec3 vBump = 2.0f * texture(normalMap, texCoords).rgb - 1.0f;
-		vBump = normalize(mNTB * vBump);
-		nNormal = vBump;
-	}
-	
-	float intensity = computeIntensity(nNormal, nLightDir);	// nNormal updated by the normal mapping!
+	float intensity = computeIntensity(nNormal, nLightDir, NL);
 	intensity *= visibility;
 	
 	cf = matAmbient.rgb * globalAmbient.rgb + intensity * lightDiffuse.rgb * matDiffuse.rgb;	

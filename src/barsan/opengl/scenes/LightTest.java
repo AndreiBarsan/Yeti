@@ -218,12 +218,12 @@ public class LightTest extends Scene {
 		float delta = Yeti.get().getDelta();
 		a += delta;
 		
-		test_sl.getDirection().x =  (float)Math.sin(a / 4) * 20.0f;
-		test_sl.getDirection().z = -(float)Math.cos(a / 4) * 20.0f;
+		test_sl.getDirection().x =  (float)Math.sin(a / 20) * 20.0f;
+		test_sl.getDirection().z = -(float)Math.cos(a / 20) * 20.0f;
 		test_sl.getDirection().y = -20.0f;
 		test_sl.getDirection().normalize();
 		
-		test_sl.getPosition().setX((float)Math.cos(a / 2) * 40f);
+		test_sl.getPosition().setX((float)Math.cos(a / 20) * 40f);
 		
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);

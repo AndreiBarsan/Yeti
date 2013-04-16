@@ -247,10 +247,10 @@ public abstract class Camera {
 	public void lookAt(Vector3 eye, Vector3 target, Vector3 up) {
 		eyePosition.set(eye);
 		direction.set(target).sub(eye).normalize();
-		up.set(up);
+		this.up.set(up);
 		
 		projectionDirty = true;
-		viewDirty = true;
+		viewDirty = true;		
 	}
 
 	@Override

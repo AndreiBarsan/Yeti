@@ -36,7 +36,6 @@ public class ForwardRenderer extends Renderer {
 	private FBObject fbo_tex;
 	private FBObject fbo_shadows;
 	
-	
 	int texType = -1;
 	int regTexHandle = -1;
 	

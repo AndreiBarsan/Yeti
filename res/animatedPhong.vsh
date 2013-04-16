@@ -26,24 +26,21 @@ uniform mat4 	mvpMatrixShadows;
 uniform float animationIndex;  
 in vec4 inPositionStart;
 in vec3 inNormalStart;
+in vec3 inTangStart;
+in vec3 inBinormStart;
 
 in vec4 inPositionEnd;
 in vec3 inNormalEnd;
+in vec3 inTangEnd;
+in vec3 inBinormEnd;
 
 in vec2 inTexCoords;
 
-
-out vec3 	normal_ec;
-out vec3 	lightDir;
+out vec3 	normal_wc;
 out vec2 	texCoords;
 out float 	fogFactor;
 
-out vec4 	vertPos_ec;
-out vec4 	vertPos_wc;
-out vec4 	lightPos_ec;
-out vec4 	lightPos_wc;
-
-out vec3 	spotDirection_ec;
+out vec3 	vertPos_wc;
 
 out mat3 	mNTB;
 out vec4 	vertPos_dmc;	// Used in shadow mapping
@@ -52,55 +49,30 @@ void main(void) {
 
 	vec4 interpolatedPosition 	= mix(inPositionStart, inPositionEnd, animationIndex);
 	vec3 interpolatedNormal		= mix(inNormalStart, inNormalEnd, animationIndex);
+	vec3 interpolatedTangent	= mix(inTangStart, inTangEnd, animationIndex);
+	vec3 interpolatedBinormal	= mix(inBinormStart, inBinormEnd, animationIndex);
 
-	normal_ec = normalMatrix * interpolatedNormal;
-
+	normal_wc = (mMatrix * vec4(interpolatedNormal, 0.0f)).xyz;
+	
 	vec4 vPosition4 = mvMatrix * interpolatedPosition;
-	vec3 vPosition3 = vPosition4.xyz / vPosition4.w;
 
-	vec4 tLightPos4 = vMatrix * lightPosition;
-	vec3 tLightPos  = tLightPos4.xyz / tLightPos4.w;
-
-	lightPos_ec = vec4(tLightPos, 1.0f);
-	vertPos_ec = vec4(vPosition3, 1.0f);
-	
-	spotDirection_ec = vMatrix3x3 * spotDirection;	// Important! 
-
-	if(lightPosition.w == 0.0f) {
-		// Directional light
-		lightDir = tLightPos4.xyz;
-	} else {
-		// Point light
-		lightDir = tLightPos - vPosition3;
-	}
-	
 	if(useTexture) {
 		texCoords = inTexCoords;
 	}
 	
 	if(useBump) {
-		vec3 vNormal = normalize(interpolatedNormal);
-		vec3 vTang = normalize(vec3(-vNormal.z, 0, vNormal.x));
-		if( vNormal.z == vNormal.x) { 
-			vTang = vec3 (1.0, 0.0, 0.0);
-		}
-		vec3 vBinorm = normalize(cross(vTang, vNormal));
-		mNTB[0] = vTang;
-		mNTB[1] = vBinorm;
-		mNTB[2] = vNormal;
-		mNTB = normalMatrix * mNTB;
+		mNTB[0] = interpolatedTangent;
+		mNTB[1] = interpolatedBinormal;
+		mNTB[2] = normalize(interpolatedNormal);
+		mNTB = mat3(mMatrix) * mNTB;
 	}
 	
 	if(useShadows) {
 		// Convert the vertex to shadowmap coordinates
 		vertPos_dmc = mvpMatrixShadows * interpolatedPosition;
-	
-		if(samplingCube) {
-			lightPos_wc = lightPosition;
-			vertPos_wc = mMatrix * interpolatedPosition;
-		}	
 	}
 	
+	vertPos_wc = (mMatrix * interpolatedPosition).xyz;	
 	gl_Position =  mvpMatrix * interpolatedPosition;
 	
 	if(fogEnabled) {

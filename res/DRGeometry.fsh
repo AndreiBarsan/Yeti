@@ -16,7 +16,7 @@ in mat3 mNTB;
 out vec3 outWorldPos; 
 out vec3 outDiffuse; 
 out vec3 outNormal; 
-out vec3 outTexCoord;
+//out vec3 outTexCoord;
 
 void main() {	
     outWorldPos = WorldPos;	
@@ -36,5 +36,5 @@ void main() {
 		outDiffuse = matDiffuse.rgb;
 	}	
 	
-    outTexCoord = vec3(TexCoord, 0.0);	
+    //outTexCoord = vec3(TexCoord, 0.0);	
 };

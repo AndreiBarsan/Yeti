@@ -24,29 +24,20 @@ in vec3 vTang;
 in vec3 vBinorm;
 
 out vec3 	normal_wc;
-out vec3 	lightDir;
 out vec2 	texCoords;
+// TODO: PER PIXEL MORON
 out float 	fogFactor;
 
-out vec4 	vertPos_wc;
-out vec4 	lightPos_wc;
-out vec3 	spotDirection_wc;
+out vec3 	vertPos_wc;
 
-out mat3 	mNTB;
+out mat3 	mNTB;			// Used in normal mapping
 out vec4 	vertPos_dmc;	// Used in shadow mapping
 
 void main() {
-	// Surface normal in eye coords
 	normal_wc = (mMatrix * vec4(vNormal, 0.0f)).xyz;
 
 	vec4 vPosition4 = mMatrix * vVertex;
 
-	if(lightPosition.w == 0.0f) {	// Directional light
-		lightDir = lightPosition.xyz;
-	} else { 						// Point / spot light
-		lightDir = (lightPosition.xyz / lightPosition.w) - (vPosition4.xyz / vPosition4.w);
-	}
-	
 	if(useTexture) {
 		texCoords = vTexCoord;
 	}
@@ -63,8 +54,7 @@ void main() {
 		vertPos_dmc = mvpMatrixShadows * vVertex;
 	}
 	
-	lightPos_wc = lightPosition;
-	vertPos_wc = mMatrix * vVertex;
+	vertPos_wc = (mMatrix * vVertex).xyz;
 	
 	// Do not use the vMatrix here - it's a direction not a position!
 	// Do not use the normalMatrix here. It might seem it works, but once
@@ -73,8 +63,8 @@ void main() {
 	// different in our case)
 	
 	// See? See what happens when you get confused and think you *have* to compute
-	// everything in eye coordinates? Just use world coords:
-	spotDirection_wc = spotDirection;
+	// everything in eye coordinates? Just use world coords, and just don't do
+	// anything in the VS.
 	
 	// Projected vertex
 	gl_Position = mvpMatrix * vVertex;

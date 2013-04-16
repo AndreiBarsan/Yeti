@@ -15,19 +15,30 @@ public class LightComponent implements MaterialComponent {
 
 	@Override
 	public void setup(Material m, RendererState rs, Matrix4 modelMatrix) {
-		// TODO: implement ARRAYS OF LIGHTS here!
+		
 		Light light = rs.getLights().get(0);
 		AmbientLight ambientLight = rs.getAmbientLight();
-		
+				
 		if(light.getType() == LightType.Point || light.getType() == LightType.Spot) {
 			Vector3 lp = ((PointLight)light).getPosition();
-			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 1.0f };
-			m.shader.setUVector4f("lightPosition", buff4f);
-		} else {
-			// Directional light
-			Vector3 lp = ((DirectionalLight)light).getDirection();
-			float[] buff4f = new float[] { lp.x, lp.y, lp.z, 0.0f };
-			m.shader.setUVector4f("lightPosition", buff4f);
+			m.shader.setUVector3f("lightPosition", lp);
+		}
+		
+		m.shader.setU1i("lightType", light.getType().ordinal());
+		
+		if(light.getType() == LightType.Spot) {
+			SpotLight sl = (SpotLight)light;
+			Vector3 ld = sl.getDirection();
+			
+			m.shader.setU1f("lightTheta", sl.getTheta());
+			m.shader.setU1f("lightPhi", sl.getPhi());
+			m.shader.setU1f("lightExponent", sl.getExponent());
+			m.shader.setUVector3f("spotDirection", sl.getDirection());
+			
+			m.shader.setUVector3f("lightDirection", ld);
+		} else if(light.getType() == LightType.Directional) {
+			Vector3 ld = ((DirectionalLight)light).getDirection();
+			m.shader.setUVector3f("lightDirection", ld);
 		}
 		
 		m.shader.setUVector4f("globalAmbient", ambientLight.getColor().getData());
@@ -38,18 +49,16 @@ public class LightComponent implements MaterialComponent {
 		m.shader.setU1f("linearAt", light.getLinearAttenuation());
 		m.shader.setU1f("quadraticAt", light.getQuadraticAttenuation());
 		
-		// This isn't very clean - TODO: delegate this to special components
 		if(light.getType() == LightType.Spot) {
 			SpotLight sl = (SpotLight)light;
-			m.shader.setU1f("lightTheta", sl.getTheta());
-			m.shader.setU1f("lightPhi", sl.getPhi());
-			m.shader.setU1f("lightExponent", sl.getExponent());
-			m.shader.setUVector3f("spotDirection", sl.getDirection());		
+				
 		} else {
+			/*
 			m.shader.setU1f("lightTheta", 0.0f);
 			m.shader.setU1f("lightPhi", 0.0f);
 			m.shader.setU1f("lightExponent", 1.0f);
 			m.shader.setUVector3f("spotDirection", Vector3.ZERO);
+			*/
 		}
 	}
 

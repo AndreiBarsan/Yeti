@@ -25,6 +25,8 @@ Architecture issues:
    tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    
 General TODOs:
+ - note: don't render lights on the skybox! make sure that skyboxes don't count
+ in the stencil test
  - no longer send position - compute from screen coords & z; maybe better? though
  we don't really have a bandwidth problem - we don't use motion blur for instance
  - also in nessie refactoring, since you are rewriting the way data gets sent

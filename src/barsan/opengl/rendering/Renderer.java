@@ -25,8 +25,8 @@ public abstract class Renderer {
 	public enum ShadowQuality {
 		Low		(1, "Plain shadow mapping"),
 		Medium	(2, "Added normal dependency"),
-		High	(3, "4 Poisson disk samples"),
-		Ultra	(4, "Randomized poisson sampling");
+		High	(3, "16 Poisson Disk samples"),
+		Ultra	(4, "4x Randomized Poisson sampling");
 		
 		private int shaderFlag;
 		private String description;
