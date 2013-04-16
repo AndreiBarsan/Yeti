@@ -291,19 +291,7 @@ public class Nessie extends Renderer {
 	       	gl.glEnable(GL2.GL_STENCIL_TEST);
 	       	// TODO: technically, the whole loop could go into the technique
 			for(Light l : scene.lights) {
-				switch(l.getType()) {
-				case Directional:
-					
-					break;
-					
-				case Point:
-					renderLightVolume((PointLight)l);
-					break;
-					
-				case Spot:
-					renderLightVolume((SpotLight)l);
-					break;
-				}
+				renderLightVolume(l);
 			}
 			gl.glDisable(GL2.GL_STENCIL_TEST);
 	    	break;
@@ -314,12 +302,8 @@ public class Nessie extends Renderer {
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
 	}
 			
-	private void renderLightVolume(SpotLight l) {
-		// TODO
-	}
-
-	private void renderLightVolume(PointLight l) {
-		
+	
+	private void renderLightVolume(Light light) {
 		// Perform the stencil step
 		nullTechnique.setup(state);
 		
@@ -330,6 +314,25 @@ public class Nessie extends Renderer {
 		
 		// Stencil operations are simply set once, in the init() method
 		gl.glStencilFunc(GL2.GL_ALWAYS, 0, 0);
+		
+		switch(light.getType()) {
+			case Directional:
+				break;
+				
+			case Point:
+				renderPLVol((PointLight)light);
+				break;
+				
+			case Spot:
+				renderSLVol((SpotLight)light);
+				break;
+		}
+		
+       	gl.glCullFace(GL2.GL_BACK);
+       	gl.glDisable(GL2.GL_BLEND);
+	}
+
+	private void renderPLVol(PointLight l) {
 		
 		plVolume.getTransform()
 			.setTranslate(l.getPosition())
@@ -353,9 +356,10 @@ public class Nessie extends Renderer {
       	gl.glCullFace(GL2.GL_FRONT);
        	
        	lightPassTechnique.drawPointLight(l, state);
-       	
-       	gl.glCullFace(GL2.GL_BACK);
-       	gl.glDisable(GL2.GL_BLEND);
+	}
+	
+	private void renderSLVol(SpotLight l) {
+		// Compute cone scale and rotation based on the light
 	}
 	
 	public void finalizePass(Scene scene) {

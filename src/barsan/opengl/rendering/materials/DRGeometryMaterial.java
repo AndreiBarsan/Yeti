@@ -23,7 +23,7 @@ public class DRGeometryMaterial extends Material {
 		shader.setUVector4f("matAmbient", ambient.getData());
 		shader.setUVector4f("matDiffuse", diffuse.getData());
 		shader.setUVector4f("matSpecular", specular.getData());
-		shader.setU1i("shininess", shininess);
+		shader.setU1i("shininess", specularPower);
 	}
 
 }

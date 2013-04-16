@@ -7,19 +7,21 @@ uniform bool 		useBump;
 uniform sampler2D 	normalMap;
   
 uniform vec4 		matDiffuse;
+uniform float 		matSpecularIntensity;
+uniform float 		matSpecularPower;
 
 in vec3 WorldPos;
 in vec2 TexCoord;
 in vec3 Normal;
 in mat3 mNTB;
 
-out vec3 outWorldPos; 
-out vec3 outDiffuse; 
-out vec3 outNormal; 
+out vec4 outWorldPos; 
+out vec4 outDiffuse; 
+out vec4 outNormal; 
 //out vec3 outTexCoord;
 
 void main() {	
-    outWorldPos = WorldPos;	
+    outWorldPos.xyz = WorldPos;	
 
 	vec3 nNormal = normalize(Normal);
 	if(useBump) {
@@ -27,14 +29,19 @@ void main() {
 		vBump = normalize(mNTB * vBump);
 		nNormal = vBump;
 	}
-	outNormal = nNormal;
+	outNormal.xyz = nNormal;
 	
 	if(useTexture) {
-    	outDiffuse = texture(diffuseMap, TexCoord).rgb * matDiffuse.rgb;
+    	outDiffuse.rgb = texture(diffuseMap, TexCoord).rgb * matDiffuse.rgb;
 	}
 	else {
-		outDiffuse = matDiffuse.rgb;
+		outDiffuse.rgb = matDiffuse.rgb;
 	}	
+	
+	// Write specular intensity to out-diffuse-alpha
+	outDiffuse.a = matSpecularIntensity / 1000.0f;
+	// Write specular exponent to out-normal-alpha
+	outNormal.a  = log(matSpecularPower) / 10.5f;
 	
     //outTexCoord = vec3(TexCoord, 0.0);	
 };

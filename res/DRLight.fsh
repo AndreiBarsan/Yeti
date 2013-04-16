@@ -47,8 +47,6 @@ struct SpotLight
 
 uniform PointLight 	pointLight;
 uniform vec3 		eyeWorldPos;
-uniform float 		matSpecularIntensity;
-uniform float 		specularPower;
 uniform int 		lightType;
 
 
@@ -61,7 +59,8 @@ vec2 CalcTexCoord() {
 vec4 CalcLightInternal(BaseLight Light,
 					   vec3 LightDirection,
 					   vec3 WorldPos,
-					   vec3 Normal)
+					   vec3 Normal,
+					   float SpecularIntensity, float SpecularPower)
 {
     vec4 AmbientColor = vec4(Light.Color, 1.0f) * Light.AmbientIntensity;
     float DiffuseFactor = dot(Normal, -LightDirection);
@@ -72,26 +71,25 @@ vec4 CalcLightInternal(BaseLight Light,
     if (DiffuseFactor > 0) {
         dColor = vec4(Light.Color, 1.0f) * Light.DiffuseIntensity * DiffuseFactor;
 
-        //vec3 VertexToEye = normalize(eyeWorldPos - WorldPos);
-        //vec3 LightReflect = normalize(reflect(LightDirection, Normal));
-        //float SpecularFactor = max(0.0f, dot(VertexToEye, LightReflect);
 		vec3 vReflection = normalize(reflect(LightDirection, Normal));
 		float spec = max(0.0, dot(Normal, vReflection));
-        float SpecularFactor = pow(spec, specularPower);
+        float SpecularFactor = pow(spec, SpecularPower);
         if (SpecularFactor > 0) {
-            sColor = vec4(Light.Color, 1.0f) * matSpecularIntensity * SpecularFactor;
+            sColor = vec4(Light.Color, 1.0f) * SpecularIntensity * SpecularFactor;
         }
     }
 
     return (AmbientColor + dColor + sColor);
 }
 
-vec4 calcPointLight(vec3 WorldPos, vec3 Normal) {	
+vec4 calcPointLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {	
 	vec3 LightDirection = WorldPos - pointLight.Position;
     float Distance = length(LightDirection);
     LightDirection = normalize(LightDirection);
 
-    vec4 Color = CalcLightInternal(pointLight.Base, LightDirection, WorldPos, Normal);
+    vec4 Color = CalcLightInternal(pointLight.Base, LightDirection, 
+									WorldPos, Normal,
+									MSI, SP);
 
     float Attenuation =  pointLight.Atten.Constant +
                          pointLight.Atten.Linear * Distance +
@@ -108,5 +106,7 @@ void main(void) {
    	vec3 Color = texture(colorMap, TexCoord).xyz;
    	vec3 Normal = texture(normalMap, TexCoord).xyz;
    	Normal = normalize(Normal);
-   	vFragColor = vec4(Color, 1.0) * calcPointLight(WorldPos, Normal);
+	float MSI = texture(colorMap, TexCoord).a * 1000.0f;
+	float SP = pow(2, texture(normalMap, TexCoord).a * 10.5f);
+   	vFragColor = vec4(Color, 1.0) * calcPointLight(WorldPos, Normal, MSI, SP);
 }

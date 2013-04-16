@@ -6,6 +6,7 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -41,7 +42,8 @@ public class DRGeometryPass extends Technique {
 	
 	@Override
 	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
-		Texture normalMap = mi.getMaterial().getNormalMap();
+		Material material = mi.getMaterial();
+		Texture normalMap = material.getNormalMap();
 		if(normalMap != null) {
 			program.setU1i("useBump", true);
 			program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
@@ -50,7 +52,7 @@ public class DRGeometryPass extends Technique {
 			program.setU1i("useBump", false);
 		}
 		
-		Texture diffuseMap = mi.getMaterial().getDiffuseMap();
+		Texture diffuseMap = material.getDiffuseMap();
 		if(diffuseMap != null) {
 			program.setU1i("useTexture", true);
 			bindTexture(rs, diffuseMap, "diffuseMap", diffuseMapSlot);
@@ -58,6 +60,8 @@ public class DRGeometryPass extends Technique {
 			program.setU1i("useTexture", false);
 		}
 		
-		program.setUVector4f("matDiffuse", mi.getMaterial().getDiffuse().getData());
+		program.setUVector4f("matDiffuse", material.getDiffuse().getData());
+		program.setU1f("matSpecularIntensity", (float) material.getSpecularIntensity());
+		program.setU1f("matSpecularPower", (float) material.getSpecularPower());
 	}
 }

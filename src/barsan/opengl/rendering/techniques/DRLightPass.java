@@ -54,14 +54,9 @@ public class DRLightPass extends Technique {
 		
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
-		float matSpecularIntensity = 15.0f;
-		float specularPower = 96.0f;
-		// TODO: remove unnecessary computations
 		program.setUMatrix4("vMatrix", view);
 		
 		program.setUMatrix4("mvpMatrix", MVP);
-		program.setU1f("matSpecularIntensity", matSpecularIntensity);
-		program.setU1f("specularPower", specularPower);
 		//program.setU1i("lightType", 0); 	// use for dir/spot?
 		
 		program.setUVector3f("pointLight.Base.Color", pointLight.getDiffuse());

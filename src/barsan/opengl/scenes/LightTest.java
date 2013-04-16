@@ -86,7 +86,7 @@ public class LightTest extends Scene {
 		floorMat.addComponent(new TextureComponent());
 		bc = new BumpComponent(ResourceLoader.texture("floor.bump"));
 		floorMat.setAmbient(new Color(0.01f, 0.01f, 0.01f));
-		floorMat.setShininess(128);
+		floorMat.setSpecularPower(128);
 		
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();

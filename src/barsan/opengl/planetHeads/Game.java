@@ -4,7 +4,6 @@ import java.awt.Frame;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.platform.AWTFactory;
-import barsan.opengl.scenes.MenuScene;
 
 public class Game {
 	public static void main(String[] args) {

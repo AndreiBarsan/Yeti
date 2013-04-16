@@ -31,8 +31,9 @@ public class Material {
 	protected boolean checksDepthBuffer = true;
 	protected boolean ignoreLights = false;
 	
-	/// The exponent of the specular highlight. 
-	protected int shininess = 128;
+	protected float specularIntensity = 1;
+	protected int specularPower = 1;
+	
 	protected Texture diffuseMap = null;
 	protected Texture normalMap = null;
 	
@@ -164,12 +165,12 @@ public class Material {
 		this.specular = specular;
 	}
 
-	public float getShininess() {
-		return shininess;
+	public float getSpecularPower() {
+		return specularPower;
 	}
 
-	public void setShininess(int shininess) {
-		this.shininess = shininess;
+	public void setSpecularPower(int specularPower) {
+		this.specularPower = specularPower;
 	}
 
 	public Texture getDiffuseMap() {
@@ -240,5 +241,13 @@ public class Material {
 	
 	public Shader getShader() {
 		return shader;
+	}
+
+	public float getSpecularIntensity() {
+		return specularIntensity;
+	}
+
+	public void setSpecularIntensity(float specularIntensity) {
+		this.specularIntensity = specularIntensity;
 	}
 }

@@ -77,7 +77,7 @@ public class DemoScene extends Scene {
 		
 		
 		BasicMaterial groundMat = new BasicMaterial();
-		groundMat.setShininess(0);
+		groundMat.setSpecularPower(0);
 		groundMat.setDiffuseMap(ResourceLoader.texture("grass"));
 		groundMat.addComponent(new TextureComponent());
 		modelInstances.add(new StaticModelInstance(

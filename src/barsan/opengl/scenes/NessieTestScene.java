@@ -16,6 +16,7 @@ import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -63,7 +64,7 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		box = new StaticModelInstance(ResourceLoader.model("box"));
-		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
+		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));		
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
 		//addModelInstance(box);
 		
@@ -71,6 +72,8 @@ public class NessieTestScene extends Scene {
 		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
 		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
 		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
+		floor.getMaterial().setSpecularIntensity(2.0f);
+		floor.getMaterial().setSpecularPower(512);
 		addModelInstance(floor);
 		
 		//BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f, 0.9f));
@@ -78,9 +81,10 @@ public class NessieTestScene extends Scene {
 		int mlim = 10;
 		for(int i = -mlim; i < mlim; ++i) {
 			for(int j = -mlim; j < mlim; ++j) {
-				StaticModelInstance monkey = new StaticModelInstance(
-						ResourceLoader.model("monkey"), 
-						new BasicMaterial( Color.random() ));
+				Material mat = new BasicMaterial( Color.random() );
+				mat.setSpecularIntensity(10.0f);
+				mat.setSpecularPower(64);
+				StaticModelInstance monkey = new StaticModelInstance(ResourceLoader.model("monkey"), mat);
 				monkey.getTransform().updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
 				addModelInstance(monkey);
 			}
@@ -92,7 +96,7 @@ public class NessieTestScene extends Scene {
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 2.0f;
+				c.a = 3.0f;
 				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
 			}
 		}//*/
