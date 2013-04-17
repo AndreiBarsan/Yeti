@@ -1,7 +1,7 @@
 //#define SAMPLINGCUBE
 #version 400 core
 
-const float bias = 0.005f;
+const float bias = 0.01f;
 const float pFac = 2500.0f;
 
 const vec2 pD[16] = vec2[]( 

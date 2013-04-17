@@ -1,13 +1,17 @@
 package barsan.opengl.rendering.techniques;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.resources.ResourceLoader;
 
 /** 
@@ -17,11 +21,13 @@ public class DRLightPass extends Technique {
 	
 	private StaticModel sphere;
 	private ModelInstance sphereInstance;
+	private ModelInstance coneInstance;
 
 	public DRLightPass() {
 		super(ResourceLoader.shader("DRLight"));
 		sphere = ResourceLoader.model("DR_sphere");
 		sphereInstance = new StaticModelInstance(sphere);
+		coneInstance = new StaticModelInstance(ResourceLoader.model("DR_cone"));
 	}
 	
 	// Setup common items
@@ -42,6 +48,32 @@ public class DRLightPass extends Technique {
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 	}
 	
+	public void drawSpotLight(ModelInstance volume, SpotLight spotLight, RendererState rs) {
+		
+		Matrix4 modelMatrix = volume.getTransform().get();
+		viewModel.set(view).mul(modelMatrix);
+		MVP.set(projection).mul(view).mul(modelMatrix);
+		
+		program.setUMatrix4("vMatrix", view);
+		program.setUMatrix4("mvpMatrix", MVP);
+		
+		program.setU1i("lightType", LightType.Spot.ordinal());
+		program.setUVector3f("spotLight.Base.Base.Color", spotLight.getDiffuse());
+		program.setU1f("spotLight.Base.Base.AmbientIntensity", 0.0f);
+		program.setU1f("spotLight.Base.Base.DiffuseIntensity", spotLight.getDiffuse().a);
+		program.setUVector3f("spotLight.Base.Position", spotLight.getPosition());
+		
+		program.setU1f("spotLight.Base.Atten.Constant", spotLight.getConstantAttenuation());
+		program.setU1f("spotLight.Base.Atten.Linear", spotLight.getLinearAttenuation());
+		program.setU1f("spotLight.Base.Atten.Quadratic", spotLight.getQuadraticAttenuation());
+
+		program.setUVector3f("spotLight.Direction", spotLight.getDirection());
+		program.setU1f("spotLight.CosInner", spotLight.getCosInner());
+		program.setU1f("spotLight.CosOuter", spotLight.getCosOuter());
+		program.setU1f("spotLight.Exponent", spotLight.getExponent());
+		
+		volume.techniqueRender();
+	}
 	
 	public void drawPointLight(PointLight pointLight, RendererState rs) {
 		float scale = pointLight.getBoundingRadius();
@@ -51,13 +83,12 @@ public class DRLightPass extends Technique {
 		Matrix4 modelMatrix = t.get();
 		
 		viewModel.set(view).mul(modelMatrix);
-		
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
 		program.setUMatrix4("vMatrix", view);
 		
 		program.setUMatrix4("mvpMatrix", MVP);
-		//program.setU1i("lightType", 0); 	// use for dir/spot?
+		program.setU1i("lightType", LightType.Point.ordinal());
 		
 		program.setUVector3f("pointLight.Base.Color", pointLight.getDiffuse());
 		program.setU1f("pointLight.Base.AmbientIntensity", 0.0f);

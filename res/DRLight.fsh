@@ -40,12 +40,14 @@ struct SpotLight
 {
     PointLight Base;
     vec3 Direction;
-    float Theta;
-	float Phi;
+    float CosInner;
+	float CosOuter;
 	float Exponent;
 };
 
 uniform PointLight 	pointLight;
+uniform SpotLight spotLight;
+
 uniform vec3 		eyeWorldPos;
 uniform int 		lightType;
 
@@ -82,31 +84,60 @@ vec4 CalcLightInternal(BaseLight Light,
     return (AmbientColor + dColor + sColor);
 }
 
-vec4 calcPointLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {	
-	vec3 LightDirection = WorldPos - pointLight.Position;
+vec4 calcPointLight(PointLight pl, vec3 WorldPos, vec3 Normal, float MSI, float SP) {	
+	vec3 LightDirection = WorldPos - pl.Position;
     float Distance = length(LightDirection);
     LightDirection = normalize(LightDirection);
 
-    vec4 Color = CalcLightInternal(pointLight.Base, LightDirection, 
+    vec4 Color = CalcLightInternal(pl.Base, LightDirection, 
 									WorldPos, Normal,
 									MSI, SP);
 
-    float Attenuation =  pointLight.Atten.Constant +
-                         pointLight.Atten.Linear * Distance +
-                         pointLight.Atten.Quadratic * Distance * Distance;
+    float Attenuation =  pl.Atten.Constant +
+                         pl.Atten.Linear * Distance +
+                         pl.Atten.Quadratic * Distance * Distance;
 
     Attenuation = max(1.0, Attenuation);
 
     return Color / Attenuation;
 }
 
+vec4 calcSpotLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {
+
+		vec4 Color = calcPointLight(spotLight.Base, WorldPos, Normal, MSI, SP);
+		vec3 LightDirection = WorldPos - spotLight.Base.Position;
+		vec3 nLightDir = normalize(LightDirection);
+
+		float cos_outer_cone = spotLight.CosOuter;
+		float cos_inner_cone = spotLight.CosInner;
+		float cos_diff = cos_inner_cone - cos_outer_cone;
+		float cos_cur = dot(normalize(spotLight.Direction), nLightDir);
+		float spotEffect = clamp((cos_cur - cos_outer_cone) / cos_diff, 0.0, 1.0);
+		spotEffect = pow(spotEffect, spotLight.Exponent);
+		
+		return Color * spotEffect;
+}
+
 void main(void) {
 	vec2 TexCoord = CalcTexCoord();
-   	vec3 WorldPos = texture(positionMap, TexCoord).xyz;
-   	vec3 Color = texture(colorMap, TexCoord).xyz;
-   	vec3 Normal = texture(normalMap, TexCoord).xyz;
-   	Normal = normalize(Normal);
-	float MSI = texture(colorMap, TexCoord).a * 1000.0f;
-	float SP = pow(2, texture(normalMap, TexCoord).a * 10.5f);
-   	vFragColor = vec4(Color, 1.0) * calcPointLight(WorldPos, Normal, MSI, SP);
+
+	vec4 pdata = texture(positionMap, TexCoord);
+	vec4 cdata = texture(colorMap, TexCoord);
+	vec4 ndata = texture(normalMap, TexCoord);
+	
+   	vec3 WorldPos = pdata.xyz;
+   	vec3 Color = cdata.xyz;
+   	vec3 Normal = normalize(ndata.xyz);
+
+	float MSI = cdata.a;
+	float SP = ndata.a;
+	if(lightType == 0) {		// Directional
+		vFragColor = vec4(Color, 1.0f);
+	}
+	else if(lightType == 1) {	// Point
+   		vFragColor = vec4(Color, 1.0) * calcPointLight(pointLight, WorldPos, Normal, MSI, SP);
+	} 
+	else {						// Spot
+		vFragColor = vec4(Color, 1.0) * calcSpotLight(WorldPos, Normal, MSI, SP);
+	}
 }

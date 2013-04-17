@@ -91,13 +91,13 @@ public abstract class Technique {
 	 * Specific uniform binding should occurr in the instanceRenderSetup method.
 	 */
 	public void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
-		matrixStack.push(mi.getTransform().get());
-		Matrix4 modelMatrix = matrixStack.peek().cpy();
+		Matrix4 modelMatrix = mi.getTransform().get().cpy();
+		matrixStack.push(modelMatrix);
 		viewModel.set(view).mul(modelMatrix);
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
 		program.setUMatrix4("mvpMatrix", MVP);
-		program.setUMatrix4("mvMatrix", viewModel);
+		//program.setUMatrix4("mvMatrix", viewModel);
 		program.setUMatrix4("mMatrix", modelMatrix);
 		
 		instanceRenderSetup(mi, rs, matrixStack);

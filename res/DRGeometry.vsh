@@ -1,14 +1,8 @@
 #version 400 core
 
 uniform mat4 mvpMatrix;
-uniform mat4 mvMatrix;
 uniform mat4 mMatrix;
-//uniform mat4 vMatrix;
 
-//uniform mat3 vMatrix3x3;
-
-uniform mat3 normalMatrix;
-uniform bool useTexture;
 uniform bool useBump;
 
 in vec4 vVertex;

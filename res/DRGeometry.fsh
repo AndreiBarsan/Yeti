@@ -39,9 +39,7 @@ void main() {
 	}	
 	
 	// Write specular intensity to out-diffuse-alpha
-	outDiffuse.a = matSpecularIntensity / 1000.0f;
+	outDiffuse.a = matSpecularIntensity;
 	// Write specular exponent to out-normal-alpha
-	outNormal.a  = log(matSpecularPower) / 10.5f;
-	
-    //outTexCoord = vec3(TexCoord, 0.0);	
+	outNormal.a  = matSpecularPower;
 };

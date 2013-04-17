@@ -8,6 +8,7 @@ public class Vector3 {
 	public static final Vector3 Z = new Vector3(0.0f, 0.0f, 1.0f);
 	public static final Vector3 UP = Y;
 	
+	public static final float EPSILON = 0.000001f;
 	
 	// Computation helpers
 	static Quaternion aux1 = new Quaternion();
@@ -192,5 +193,21 @@ public class Vector3 {
 	@Override
 	public String toString() {
 		return String.format("[%.2f, %.2f, %.2f]", x, y, z);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(super.equals(obj)) {
+			return true;
+		}
+		
+		if(! (obj instanceof Vector3)) {
+			return false;
+		}
+		
+		Vector3 ov = (Vector3)obj;
+		return	Math.abs(ov.x - x) < EPSILON
+			&&	Math.abs(ov.y - y) < EPSILON
+			&&	Math.abs(ov.z - z) < EPSILON;
 	}
 }

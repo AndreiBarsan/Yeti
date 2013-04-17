@@ -5,42 +5,38 @@ import barsan.opengl.util.Color;
 
 public class SpotLight extends PointLight {
 
-	private float outer, inner;
+	private float cosOuter, cosInner;
 	private float exponent;
 	private Vector3 direction;
 	
-	public SpotLight(Vector3 position, Vector3 direction, float outer, float inner,
+	public SpotLight(Vector3 position, Vector3 direction, float inner, float outer,
 			float exponent, Color diffuse, Color specular) {
 		super(position, diffuse, specular);
 		
-		this.outer = outer;
-		this.inner = inner;
+		this.cosOuter = outer;
+		this.cosInner = inner;
 		this.exponent = exponent;
 		this.direction = direction;
 	}
 	
-	public SpotLight(Vector3 position, Vector3 direction, float outer, float inner, float exponent) {
-		this(position, direction, outer, inner, exponent, Color.WHITE, Color.WHITE);
+	public SpotLight(Vector3 position, Vector3 direction, float inner, float outer, float exponent) {
+		this(position, direction, inner, outer, exponent, Color.WHITE, Color.WHITE);
 	}
 	
-	public SpotLight(Vector3 position, Vector3 direction) {
-		this(position, direction, 1.0f, 1.0f, 2.0f);
+	public float getCosOuter() {
+		return cosOuter;
 	}
 
-	public float getOuter() {
-		return outer;
+	public void setCosOuter(float cosOuter) {
+		this.cosOuter = cosOuter;
 	}
 
-	public void setOuter(float outer) {
-		this.outer = outer;
+	public float getCosInner() {
+		return cosInner;
 	}
 
-	public float getInner() {
-		return inner;
-	}
-
-	public void setInner(float inner) {
-		this.inner = inner;
+	public void setCosInner(float cosInner) {
+		this.cosInner = cosInner;
 	}
 
 	public Vector3 getDirection() {

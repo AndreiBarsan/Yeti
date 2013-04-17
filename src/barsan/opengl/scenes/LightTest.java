@@ -122,7 +122,7 @@ public class LightTest extends Scene {
 		
 		test_sl = new SpotLight(new Vector3(0.0f, 12.0f, 1.5f), 
 								new Vector3(1.0f, -1.0f, 0.0f).normalize(),
-								(float)Math.cos(MathUtil.DEG_TO_RAD * 60f),
+								(float)Math.cos(MathUtil.DEG_TO_RAD * 30f),
 								(float)Math.cos(MathUtil.DEG_TO_RAD * 45f),
 								1.0f);
 		test_sl.setAttenuation(0.0f, 0.0f, 0.0f);

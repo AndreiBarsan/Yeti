@@ -29,13 +29,12 @@ public class LightComponent implements MaterialComponent {
 		if(light.getType() == LightType.Spot) {
 			SpotLight sl = (SpotLight)light;
 			Vector3 ld = sl.getDirection();
-			
-			m.shader.setU1f("lightTheta", sl.getOuter());
-			m.shader.setU1f("lightPhi", sl.getInner());
-			m.shader.setU1f("lightExponent", sl.getExponent());
-			m.shader.setUVector3f("spotDirection", sl.getDirection());
-			
 			m.shader.setUVector3f("lightDirection", ld);
+			
+			m.shader.setU1f("lightTheta", sl.getCosOuter());
+			m.shader.setU1f("lightPhi", sl.getCosInner());
+			m.shader.setU1f("lightExponent", sl.getExponent());			
+			
 		} else if(light.getType() == LightType.Directional) {
 			Vector3 ld = ((DirectionalLight)light).getDirection();
 			m.shader.setUVector3f("lightDirection", ld);
@@ -48,18 +47,6 @@ public class LightComponent implements MaterialComponent {
 		m.shader.setU1f("constantAt", light.getConstantAttenuation());
 		m.shader.setU1f("linearAt", light.getLinearAttenuation());
 		m.shader.setU1f("quadraticAt", light.getQuadraticAttenuation());
-		
-		if(light.getType() == LightType.Spot) {
-			SpotLight sl = (SpotLight)light;
-				
-		} else {
-			/*
-			m.shader.setU1f("lightTheta", 0.0f);
-			m.shader.setU1f("lightPhi", 0.0f);
-			m.shader.setU1f("lightExponent", 1.0f);
-			m.shader.setUVector3f("spotDirection", Vector3.ZERO);
-			*/
-		}
 	}
 
 	@Override

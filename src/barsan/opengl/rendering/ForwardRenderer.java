@@ -266,7 +266,7 @@ public class ForwardRenderer extends Renderer {
 						shadowMapH);
 				// Theta is the cos of the outer angle of the cone
 				// Note that to get the FOV, we need to double that
-				float th = slight.getOuter();
+				float th = slight.getCosOuter();
 				float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
 				pc.setFOV(angle);
 				pc.setFrustumNear(1f);

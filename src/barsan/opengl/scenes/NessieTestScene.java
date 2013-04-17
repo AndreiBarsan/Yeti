@@ -7,6 +7,7 @@ import javax.media.opengl.GLAutoDrawable;
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.InputAdapter;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Nessie;
@@ -15,6 +16,7 @@ import barsan.opengl.rendering.Nessie.Mode;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader;
@@ -45,13 +47,14 @@ public class NessieTestScene extends Scene {
 		
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f, -10.0f, 0.0f), Vector3.UP.copy());
 		
-		lights.add(mainLight = new PointLight(new Vector3(-0.25f, 5.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 5.0f)));
-		lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
+		//lights.add(mainLight = new PointLight(new Vector3(-0.25f, 5.0f, 0.0f), new Color(1.0f, 1.0f, 0.9f, 5.0f)));
+		//lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new Color(0.9f, 0.9f, 0.9f, 1.0f)));
 		//mainLight.setAttenuation(1.0f, 2.5f, 1.0f, 0.0f);
 		PointLight l = new PointLight(new Vector3(0.1f, 0.75f, 0.33f), new Color(1.0f, 1.0f, 1.0f, 1.0f));
 		//l.setAttenuation(1.0f, 0.25f, 1.0f, 0.0f);
 		//lights.add(l);
+		
 		
 		l2 = new PointLight(new Vector3(-0.5f, 0.75f, -0.33f), new Color(1.0f, 1.0f, 0.9f, 0.44f));
 		//l2.setAttenuation(0.0f, 0.25f, 1.0f, 0.0f);
@@ -60,6 +63,7 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("DR_sphere", "sphere.obj");
+		ResourceLoader.loadObj("DR_cone", "cone.obj");
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
@@ -91,15 +95,46 @@ public class NessieTestScene extends Scene {
 		}//*/
 		
 		//*
-		int lightLim = 2;
-		float lgs = 16.0f;
+		int lightLim = 4;
+		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 3.0f;
-				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
+				c.a = 2.75f;
+				//lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
+				
+				
 			}
 		}//*/
+		
+		ModelInstance testCone = new StaticModelInstance(ResourceLoader.model("DR_cone"));
+		addModelInstance(testCone);
+		
+		//*
+		int al = 6;
+		float sector = ((float)Math.PI * 2.0f) / al;
+		for(int i = 0; i < al; ++i) {
+			SpotLight spot = new SpotLight(
+					new Vector3(0.0f, -2.0f, 0),
+					new Vector3(-(float)Math.cos(i * sector), 0.0f, (float)Math.sin(i * sector)).normalize(),
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 30.0f), 
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 32.0f), 
+					1.0f);
+			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
+			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.95f));
+			lights.add(spot);
+			
+		}//*/
+		
+		SpotLight spot = new SpotLight(
+				new Vector3(0.0f, -2.0f, 0.0f),
+				new Vector3(0.1f, -1.0f, 0.0f).normalize(),
+				(float)Math.cos(MathUtil.DEG_TO_RAD * 30.0f), 
+				(float)Math.cos(MathUtil.DEG_TO_RAD * 32.0f), 
+				1.0f);
+		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
+		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
+		lights.add(spot);
 		
 		addInput(new InputAdapter() {
 			@Override
@@ -130,7 +165,7 @@ public class NessieTestScene extends Scene {
 		time += Yeti.get().getDelta();
 		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
 		
-		mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;
+		//mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;
 	}
 
 	@Override

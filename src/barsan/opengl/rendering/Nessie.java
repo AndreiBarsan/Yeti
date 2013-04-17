@@ -8,7 +8,9 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
@@ -23,6 +25,8 @@ import barsan.opengl.util.Settings;
  * Nessie is our Deferred Renderer. The development process will involve several
  * stages before it gets on par with the forward renderer, in terms of features.
  * In terms of speed it will already be blazingly fast!
+ * 
+ * Current bottleneck: GPU bandwidth
  * 
  * @author Andrei Bârsan
  */
@@ -222,6 +226,8 @@ public class Nessie extends Renderer {
 	@Override
 	public void render(Scene scene) {
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
+		state.setCamera(scene.getCamera());
+		
 		gbuffer.startFrame();
 		geometryPass(scene);
 		lightingPass(scene);
@@ -236,8 +242,6 @@ public class Nessie extends Renderer {
 	}
 	
 	private void geometryPass(Scene scene) {
-		state.setCamera(scene.getCamera());
-		
 		geomPassTechnique.setup(state);
 		gbuffer.bindForGeometryPass();
 		
@@ -338,7 +342,6 @@ public class Nessie extends Renderer {
        	lightPassTechnique.setup(state);
        	gl.glStencilFunc(GL2.GL_NOTEQUAL, 0, 0xFF);
        	gl.glDisable(GL2.GL_DEPTH_TEST);	// finally done with the depth test!
-		gl.glDepthMask(false);
        	
     	gl.glEnable(GL2.GL_BLEND);
       	gl.glBlendEquation(GL2.GL_FUNC_ADD);
@@ -349,6 +352,8 @@ public class Nessie extends Renderer {
 	}
 	
 	private void renderPLVol(PointLight l) {
+		// Compute transform for the null pass
+		// TODO: cleaner code
 		plVolume.getTransform()
 			.setTranslate(l.getPosition())
 			.setScale(l.getBoundingRadius())
@@ -357,18 +362,39 @@ public class Nessie extends Renderer {
 		nullTechnique.renderDude(plVolume, state, nullStack);
 		
 		prepareLightPass(state);
-       	
        	lightPassTechnique.drawPointLight(l, state);
 	}
-	
-	
+	 
+	final static float SPOT_RED = 2.0f; 
 	private void renderSLVol(SpotLight l) {
-		float w = 1.0f;
-		float h = 1.0f;
+		float h = l.getBoundingRadius() * SPOT_RED;
+		float w = (float)( h * (Math.tan( 1.25f * Math.acos(l.getCosOuter()))));
+		
+		Vector3 lightDir = l.getDirection();
+		Vector3 pos = l.getPosition();//.copy().add(lightDir.copy().mul(-1.0f));
+		Vector3 axis;
+		if(lightDir.equals(Vector3.Y)) {
+			axis = Vector3.X;
+		} else if(lightDir.equals(Vector3.Y.copy().inv())) {
+			axis = Vector3.X;			
+		}
+		else {
+			axis = new Vector3(lightDir).cross(Vector3.Y);
+		}
+		
+		float angle = 180.0f + MathUtil.RAD_TO_DEG * (float)Math.acos(Vector3.Y.dot(lightDir));
+		
 		// Compute cone scale and rotation based on the light
 		slVolume.getTransform()
-			.setTranslate(l.getPosition())
-			.setScale(w, h, w);
+			.setTranslate(pos)
+			.setScale(w, h, w)
+			.setRotation(axis, angle)
+			.refresh();
+		
+		nullTechnique.renderDude(slVolume, state, nullStack);
+		prepareLightPass(state);
+       	//gl.glDisable(GL2.GL_STENCIL_TEST);
+		lightPassTechnique.drawSpotLight(slVolume, l, state);
 	}
 	
 	public void finalizePass(Scene scene) {
