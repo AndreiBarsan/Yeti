@@ -31,12 +31,16 @@ public class PointLight extends Light {
 		this.setPosition(position);
 	}
 	
+	float threshold = 255.0f;
 	@Override
 	public float getBoundingRadius() {
 		Color d = getDiffuse();
+		
+		float delta = linearAttenuation * linearAttenuation - 4 * (constantAttenuation - threshold) * quadraticAttenuation;
+		float res = (-linearAttenuation + (float)Math.sqrt(delta)) / (2 * quadraticAttenuation);
+		
 		float maxChannel = Math.max(d.r, Math.max(d.g, d.b));
-		float c = maxChannel * d.a;
-		return 12.0f * (float)Math.sqrt(c) + 1.0f;
+		return maxChannel * res + 1.0f;
 	}
 	
 	public Vector3 getPosition() {

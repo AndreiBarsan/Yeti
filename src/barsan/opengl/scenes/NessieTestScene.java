@@ -60,8 +60,8 @@ public class NessieTestScene extends Scene {
 		
 		
 		l2 = new PointLight(new Vector3(-0.5f, 0.75f, -0.33f), new Color(1.0f, 1.0f, 0.9f, 0.44f));
-		//l2.setAttenuation(0.0f, 0.25f, 1.0f, 0.0f);
-		//lights.add(l2);
+		l2.setAttenuation(0.0f, 0.00f, 1.5f);
+		lights.add(l2);
 		
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
