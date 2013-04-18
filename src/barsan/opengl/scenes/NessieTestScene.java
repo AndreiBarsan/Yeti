@@ -1,6 +1,7 @@
 package barsan.opengl.scenes;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -32,6 +33,8 @@ public class NessieTestScene extends Scene {
 	ModelInstance box;
 	Nessie nessie;
 	
+	ArrayList<SpotLight> slights = new ArrayList<>();
+	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		nessie = new Nessie(Yeti.get().gl);
@@ -62,7 +65,7 @@ public class NessieTestScene extends Scene {
 		
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
-		ResourceLoader.loadObj("DR_sphere", "sphere.obj");
+		ResourceLoader.loadObj("DR_sphere", "dr_icosphere.obj");
 		ResourceLoader.loadObj("DR_cone", "cone.obj");
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		ResourceLoader.loadTexture("floor", "floor.jpg");
@@ -95,13 +98,13 @@ public class NessieTestScene extends Scene {
 		}//*/
 		
 		//*
-		int lightLim = 4;
+		int lightLim = 1;
 		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
 				c.a = 2.75f;
-				//lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
+				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
 				
 				
 			}
@@ -110,20 +113,20 @@ public class NessieTestScene extends Scene {
 		ModelInstance testCone = new StaticModelInstance(ResourceLoader.model("DR_cone"));
 		addModelInstance(testCone);
 		
-		//*
+		/*
 		int al = 6;
 		float sector = ((float)Math.PI * 2.0f) / al;
 		for(int i = 0; i < al; ++i) {
 			SpotLight spot = new SpotLight(
 					new Vector3(0.0f, -2.0f, 0),
 					new Vector3(-(float)Math.cos(i * sector), 0.0f, (float)Math.sin(i * sector)).normalize(),
-					(float)Math.cos(MathUtil.DEG_TO_RAD * 30.0f), 
-					(float)Math.cos(MathUtil.DEG_TO_RAD * 32.0f), 
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 35.0f), 
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 40.0f), 
 					1.0f);
 			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.95f));
 			lights.add(spot);
-			
+			slights.add(spot);			
 		}//*/
 		
 		SpotLight spot = new SpotLight(
@@ -133,7 +136,7 @@ public class NessieTestScene extends Scene {
 				(float)Math.cos(MathUtil.DEG_TO_RAD * 32.0f), 
 				1.0f);
 		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
-		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
+		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.55f));
 		lights.add(spot);
 		
 		addInput(new InputAdapter() {
@@ -164,6 +167,18 @@ public class NessieTestScene extends Scene {
 		
 		time += Yeti.get().getDelta();
 		l2.getPosition().x = (float)Math.sin(time) * 0.33f;
+		
+		for(SpotLight sl : slights) {
+			double angle = Math.atan2(sl.getDirection().z, sl.getDirection().x);
+			angle += Math.PI / 8 * (Yeti.get().getDelta());
+			sl.getDirection().set(
+					(float) Math.cos(angle),
+					sl.getDirection().y,
+					(float)  Math.sin(angle)
+					);
+			
+			sl.getDiffuse().a = 0.5f + ((float)Math.sin(time * 10) + 1) / 2.0f * 0.5f;
+		}
 		
 		//mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;
 	}

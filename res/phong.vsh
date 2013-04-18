@@ -24,6 +24,7 @@ in vec3 vTang;
 in vec3 vBinorm;
 
 out vec3 	normal_wc;
+
 out vec2 	texCoords;
 // TODO: PER PIXEL MORON
 out float 	fogFactor;

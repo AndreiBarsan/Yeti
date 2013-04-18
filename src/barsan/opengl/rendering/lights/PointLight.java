@@ -13,12 +13,6 @@ public class PointLight extends Light {
 
 	private Vector3 position;
 	
-	/**
-	 * Scaling factor of the position. Usually 1 for point lights and 0 for
-	 * directional lights.
-	 */
-	private float factor;			
-	
 	public PointLight(Vector3 position) {
 		this(position, Color.WHITE, Color.WHITE);
 	}
@@ -28,7 +22,7 @@ public class PointLight extends Light {
 	}
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular) {
-		this(position, diffuse, specular, 1.0f, 0.05f, 0.05f);
+		this(position, diffuse, specular, 0.00f, 0.00f, 0.10f);
 	}
 	
 	public PointLight(Vector3 position, Color diffuse, Color specular,
@@ -42,7 +36,7 @@ public class PointLight extends Light {
 		Color d = getDiffuse();
 		float maxChannel = Math.max(d.r, Math.max(d.g, d.b));
 		float c = maxChannel * d.a;
-		return 32.0f * (float)Math.sqrt(c) + 1.0f;
+		return 12.0f * (float)Math.sqrt(c) + 1.0f;
 	}
 	
 	public Vector3 getPosition() {
@@ -51,14 +45,6 @@ public class PointLight extends Light {
 
 	public void setPosition(Vector3 position) {
 		this.position = position;
-	}
-
-	public float getFactor() {
-		return factor;
-	}
-
-	public void setFactor(float factor) {
-		this.factor = factor;
 	}
 	
 	@Override

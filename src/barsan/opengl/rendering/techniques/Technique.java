@@ -24,7 +24,9 @@ import barsan.opengl.rendering.Shader;
 public abstract class Technique {
 	
 	protected Shader program;
-	int vi, ni, tci;
+	int vertexIndex;
+	int normalIndex;
+	int texCoordIndex;
 	int tangentIndex;
 	int binormalIndex;
 	
@@ -37,14 +39,13 @@ public abstract class Technique {
 	
 	public Technique(Shader program) {
 		this.program = program;
-		vi = program.getAttribLocation(Shader.A_POSITION);
-		ni = program.getAttribLocation(Shader.A_NORMAL);
-		tci = program.getAttribLocation(Shader.A_TEXCOORD);
-		
+		vertexIndex = program.getAttribLocation(Shader.A_POSITION);
+		normalIndex = program.getAttribLocation(Shader.A_NORMAL);
+		texCoordIndex = program.getAttribLocation(Shader.A_TEXCOORD);
 		tangentIndex = program.getAttribLocation("vTang");
 		binormalIndex = program.getAttribLocation("vBinorm");
 		
-		if(vi == -1) {
+		if(vertexIndex == -1) {
 			Yeti.warn("No vertex input! Vertices are pretty important. Are you " +
 					"sure this is the behavior you want? Culprit: " + program);
 		}
@@ -56,15 +57,15 @@ public abstract class Technique {
 	}
 	
 	public int getVertexIndex() {
-		return vi;
+		return vertexIndex;
 	}
 	
 	public int getNormalIndex() {
-		return ni;
+		return normalIndex;
 	}
 	
 	public int getTexCoordIndex() {
-		return tci;
+		return texCoordIndex;
 	}
 	
 	public int getTangentIndex() {
@@ -97,13 +98,11 @@ public abstract class Technique {
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
 		program.setUMatrix4("mvpMatrix", MVP);
-		//program.setUMatrix4("mvMatrix", viewModel);
 		program.setUMatrix4("mMatrix", modelMatrix);
 		
 		instanceRenderSetup(mi, rs, matrixStack);
 		
 		mi.techniqueRender();
-		
 		for(ModelInstance child : mi.getChildren()) {
 			renderDude(child, rs, matrixStack);
 		}

@@ -9,8 +9,8 @@ in float fogFactor;
 out vec4 vFragColor;
 
 void main(void) {
-	vFragColor = matColor;
-	
+	vFragColor = matColor * 0.33f;
+
 	if(fogEnabled) {
 		vFragColor = mix(vFragColor, fogColor, fogFactor);
 	}

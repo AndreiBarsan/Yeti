@@ -16,8 +16,10 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.techniques.DRGeometryPass;
 import barsan.opengl.rendering.techniques.DRLightPass;
+import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 
@@ -188,6 +190,7 @@ public class Nessie extends Renderer {
 	private GBuffer gbuffer;
 	private static final String pre = "[NESSIE] ";
 	private NullTechnique nullTechnique;
+	private FlatTechnique flatTechnique;
    	private DRLightPass lightPassTechnique;
 	private DRGeometryPass geomPassTechnique;
 	
@@ -211,6 +214,7 @@ public class Nessie extends Renderer {
 		nullTechnique = new NullTechnique();
 	   	lightPassTechnique = new DRLightPass();
 		geomPassTechnique = new DRGeometryPass(GBuffer.COMPONENT_COUNT);
+		flatTechnique = new FlatTechnique();
 		
 		Settings s = Yeti.get().settings;
 		gbuffer = new GBuffer(gl, s.width, s.height);
@@ -221,6 +225,8 @@ public class Nessie extends Renderer {
 		
 		plVolume = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
 		slVolume = new StaticModelInstance(ResourceLoader.model("DR_cone"));
+		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
+		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 	}
 	
 	@Override
@@ -257,10 +263,7 @@ public class Nessie extends Renderer {
 	    gl.glDepthMask(false);	
 	}	
 	
-	private void lightingPass(Scene scene) {
-		// Note: technically, here we should draw on another framebuffer, in order
-		// to support post-processing
-		
+	private void lightingPass(Scene scene) {		
 		// Disable depth writing for this step
 	    gl.glDepthMask(false);
 	    gl.glDisable(GL2.GL_DEPTH_TEST);
@@ -287,15 +290,31 @@ public class Nessie extends Renderer {
 		break;
 		
 	    case DrawLightVolumes:
-	       	gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
-	       	
+	    	gl.glEnable(GL2.GL_STENCIL_TEST);
+	       	// TODO: technically, the whole loop could go into the technique
+			for(Light l : scene.lights) {
+				renderLightVolume(l, true);
+			}
+			gl.glDisable(GL2.GL_STENCIL_TEST);
+			
+	       	gl.glDisable(GL2.GL_DEPTH_TEST);
+	    	gl.glEnable(GL2.GL_BLEND);
+	    	gl.glDisable(GL2.GL_CULL_FACE);
+	    	//gl.glCullFace(GL2.GL_FRONT);
+	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
+	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
+	      	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, 300, 300);
+	      	flatTechnique.setup(state);
+	       	for(Light l : scene.lights) {
+				renderLightVolume(l, false);
+			}
+	    	
 	    	break;
 	    	
 	    case DrawComposedScene:	    	
 	       	gl.glEnable(GL2.GL_STENCIL_TEST);
-	       	// TODO: technically, the whole loop could go into the technique
 			for(Light l : scene.lights) {
-				renderLightVolume(l);
+				renderLightVolume(l, true);
 			}
 			gl.glDisable(GL2.GL_STENCIL_TEST);
 	    	break;
@@ -307,33 +326,38 @@ public class Nessie extends Renderer {
 	}
 			
 	
-	private void renderLightVolume(Light light) {
+	private void renderLightVolume(Light light, boolean computeLight) {
 		// Perform the stencil step
-		nullTechnique.setup(state);
 		
-		gbuffer.bindForStencilPass();
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glDisable(GL2.GL_CULL_FACE);
-		gl.glClear(GL2.GL_STENCIL_BUFFER_BIT);
-		
-		// Stencil operations are simply set once, in the init() method
-		gl.glStencilFunc(GL2.GL_ALWAYS, 0, 0);
+		if(computeLight) {
+			nullTechnique.setup(state);
+			
+			gbuffer.bindForStencilPass();
+			gl.glEnable(GL2.GL_DEPTH_TEST);
+			gl.glDisable(GL2.GL_CULL_FACE);
+			gl.glClear(GL2.GL_STENCIL_BUFFER_BIT);
+			
+			// Stencil operations are simply set once, in the init() method
+			gl.glStencilFunc(GL2.GL_ALWAYS, 0, 0);
+		}
 		
 		switch(light.getType()) {
 			case Directional:
 				break;
 				
 			case Point:
-				renderPLVol((PointLight)light);
+				renderPLVol((PointLight)light, computeLight);
 				break;
 				
 			case Spot:
-				renderSLVol((SpotLight)light);
+				renderSLVol((SpotLight)light, computeLight);
 				break;
 		}
 		
-       	gl.glCullFace(GL2.GL_BACK);
-       	gl.glDisable(GL2.GL_BLEND);
+		if(computeLight) {
+	       	gl.glCullFace(GL2.GL_BACK);
+	       	gl.glDisable(GL2.GL_BLEND);
+		}
 	}
 
 	private void prepareLightPass(RendererState state) {
@@ -351,7 +375,7 @@ public class Nessie extends Renderer {
       	gl.glCullFace(GL2.GL_FRONT);
 	}
 	
-	private void renderPLVol(PointLight l) {
+	private void renderPLVol(PointLight l, boolean computeLight) {
 		// Compute transform for the null pass
 		// TODO: cleaner code
 		plVolume.getTransform()
@@ -359,30 +383,37 @@ public class Nessie extends Renderer {
 			.setScale(l.getBoundingRadius())
 			.refresh();
 		
-		nullTechnique.renderDude(plVolume, state, nullStack);
-		
-		prepareLightPass(state);
-       	lightPassTechnique.drawPointLight(l, state);
-	}
-	 
-	final static float SPOT_RED = 2.0f; 
-	private void renderSLVol(SpotLight l) {
-		float h = l.getBoundingRadius() * SPOT_RED;
-		float w = (float)( h * (Math.tan( 1.25f * Math.acos(l.getCosOuter()))));
-		
-		Vector3 lightDir = l.getDirection();
-		Vector3 pos = l.getPosition();//.copy().add(lightDir.copy().mul(-1.0f));
-		Vector3 axis;
-		if(lightDir.equals(Vector3.Y)) {
-			axis = Vector3.X;
-		} else if(lightDir.equals(Vector3.Y.copy().inv())) {
-			axis = Vector3.X;			
+		if(computeLight) {
+			nullTechnique.renderDude(plVolume, state, nullStack);
+			prepareLightPass(state);
+	       	lightPassTechnique.drawPointLight(l, state);
 		}
 		else {
-			axis = new Vector3(lightDir).cross(Vector3.Y);
+			flatTechnique.renderDude(plVolume, state, nullStack);
+		}
+	}
+	 
+	final static float SPOT_RED = 4.0f; 
+	private void renderSLVol(SpotLight l, boolean computeLight) {
+		float h = l.getBoundingRadius() * SPOT_RED;
+		float w = (float)( h * (Math.tan(Math.acos(l.getCosOuter()))));
+		
+		Vector3 lightDir = l.getDirection();
+		Vector3 pos = l.getPosition();
+		Vector3 axis;
+		float angle = 0.0f;
+		if(lightDir.equals(Vector3.Y)) {
+			axis = Vector3.Z.copy().inv();
+			angle = 180.0f;
+		} else if(lightDir.equals(Vector3.Y.copy().inv())) {
+			axis = Vector3.Z.copy().inv();
+			angle = 180.0f;
+		}
+		else {
+			axis = new Vector3(Vector3.Y).cross(lightDir);
 		}
 		
-		float angle = 180.0f + MathUtil.RAD_TO_DEG * (float)Math.acos(Vector3.Y.dot(lightDir));
+		angle += MathUtil.RAD_TO_DEG * (float)Math.acos(Vector3.Y.dot(lightDir));
 		
 		// Compute cone scale and rotation based on the light
 		slVolume.getTransform()
@@ -391,10 +422,13 @@ public class Nessie extends Renderer {
 			.setRotation(axis, angle)
 			.refresh();
 		
-		nullTechnique.renderDude(slVolume, state, nullStack);
-		prepareLightPass(state);
-       	//gl.glDisable(GL2.GL_STENCIL_TEST);
-		lightPassTechnique.drawSpotLight(slVolume, l, state);
+		if(computeLight) {
+			nullTechnique.renderDude(slVolume, state, nullStack);
+			prepareLightPass(state);
+			lightPassTechnique.drawSpotLight(slVolume, l, state);
+		} else {
+			flatTechnique.renderDude(slVolume, state, nullStack);
+		}
 	}
 	
 	public void finalizePass(Scene scene) {
