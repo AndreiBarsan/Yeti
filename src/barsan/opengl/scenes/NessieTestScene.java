@@ -16,6 +16,7 @@ import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Nessie.Mode;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
+import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -58,9 +59,10 @@ public class NessieTestScene extends Scene {
 		//l.setAttenuation(1.0f, 0.25f, 1.0f, 0.0f);
 		//lights.add(l);
 		
+		lights.add(new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize()));
 		
-		l2 = new PointLight(new Vector3(-0.5f, 0.75f, -0.33f), new Color(1.0f, 1.0f, 0.9f, 0.44f));
-		l2.setAttenuation(0.0f, 0.00f, 1.5f);
+		l2 = new PointLight(new Vector3(-0.5f, -2.75f, -0.33f), new Color(1.0f, 1.0f, 0.5f, 3.44f));
+		l2.setAttenuation(0.0f, 0.00f, 0.05f);
 		lights.add(l2);
 		
 		ResourceLoader.loadObj("box", "texcube.obj");
@@ -97,7 +99,7 @@ public class NessieTestScene extends Scene {
 			}
 		}//*/
 		
-		//*
+		/*
 		int lightLim = 1;
 		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
@@ -110,10 +112,7 @@ public class NessieTestScene extends Scene {
 			}
 		}//*/
 		
-		ModelInstance testCone = new StaticModelInstance(ResourceLoader.model("DR_cone"));
-		addModelInstance(testCone);
-		
-		//*
+		/*
 		int al = 10;
 		float sector = ((float)Math.PI * 2.0f) / al;
 		for(int i = 0; i < al; ++i) {
@@ -123,7 +122,7 @@ public class NessieTestScene extends Scene {
 					(float)Math.cos(MathUtil.DEG_TO_RAD * 25.0f), 
 					(float)Math.cos(MathUtil.DEG_TO_RAD * 27.0f), 
 					1.0f);
-			spot.setAttenuation(1.0f, 0.0f, 0.005f);
+			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
 			lights.add(spot);
 			slights.add(spot);			

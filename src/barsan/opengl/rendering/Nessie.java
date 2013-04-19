@@ -228,7 +228,7 @@ public class Nessie extends Renderer {
 		
 		plVolume = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
 		slVolume = new StaticModelInstance(ResourceLoader.model("DR_cone"));
-		dlVolume = new StaticModelInstance(ModelLoader.buildQuad(1.0f, 1.0f)); 
+		dlVolume = new StaticModelInstance(ModelLoader.buildQuad(2.0f, 2.0f, false)); 
 				
 		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
@@ -382,7 +382,12 @@ public class Nessie extends Renderer {
 	private void renderDLVol(DirectionalLight l, boolean computeLight) {
 		// no stencil pass needed (yet - perhaps we can optimizie this and not
 		// compute dir lights on stuff like the skybox)
-		
+		if(computeLight) {
+			prepareLightPass(state);
+			gl.glDisable(GL2.GL_STENCIL_TEST);
+			gl.glDisable(GL2.GL_CULL_FACE);
+			lightPassTechnique.drawDirectionalLight(dlVolume, l, state);
+		}
 	}
 	
 	private void renderPLVol(PointLight l, boolean computeLight) {
@@ -396,7 +401,7 @@ public class Nessie extends Renderer {
 		if(computeLight) {
 			nullTechnique.renderDude(plVolume, state, nullStack);
 			prepareLightPass(state);
-	       	lightPassTechnique.drawPointLight(l, state);
+	       	lightPassTechnique.drawPointLight(plVolume, l, state);
 		}
 		else {
 			flatTechnique.renderDude(plVolume, state, nullStack);
