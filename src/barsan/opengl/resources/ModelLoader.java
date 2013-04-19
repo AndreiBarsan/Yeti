@@ -364,8 +364,12 @@ public class ModelLoader {
 		return result;
 	}
 	
-	public static StaticModel buildQuad(float width, float height) {
+	public static StaticModel buildQuadXZ(float width, float height) {
 		return buildQuad(width, height, true);
+	}
+	
+	public static StaticModel buildQuadXY(float width, float height) {
+		return buildQuad(width, height, false);
 	}
 	
 	/**
@@ -373,7 +377,7 @@ public class ModelLoader {
 	 * 
 	 * @param xz whether to build the quad in the xz plane. xy otherwise.
 	 */
-	public static StaticModel buildQuad(float width, float height, boolean xz) {
+	private static StaticModel buildQuad(float width, float height, boolean xz) {
 		GL2 gl = Yeti.get().gl.getGL2();
 		StaticModel result = new StaticModel(gl, "quad");
 		result.setPointsPerFace(4);

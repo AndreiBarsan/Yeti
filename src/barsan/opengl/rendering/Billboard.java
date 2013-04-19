@@ -90,7 +90,7 @@ public class Billboard extends StaticModelInstance {
 	
 	// TODO: use point sprites!
 	public Billboard(GL2 gl, Texture texture, Transform transform) {
-		super(ModelLoader.buildQuad(texture.getAspectRatio(), 1.0f, false), new BillboardMaterial(AxisClamp.None), transform);
+		super(ModelLoader.buildQuadXY(texture.getAspectRatio(), 1.0f), new BillboardMaterial(AxisClamp.None), transform);
 		
 		getMaterial().setDiffuseMap(texture);
 		

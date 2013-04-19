@@ -228,7 +228,7 @@ public class Nessie extends Renderer {
 		
 		plVolume = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
 		slVolume = new StaticModelInstance(ResourceLoader.model("DR_cone"));
-		dlVolume = new StaticModelInstance(ModelLoader.buildQuad(2.0f, 2.0f, false)); 
+		dlVolume = new StaticModelInstance(ModelLoader.buildQuadXY(2.0f, 2.0f)); 
 				
 		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));

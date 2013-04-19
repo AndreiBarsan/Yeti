@@ -127,7 +127,7 @@ public class ForwardRenderer extends Renderer {
 		
 		fbo_tex.unbind(gl);
 		
-		screenQuad = ModelLoader.buildQuad(2.0f, 2.0f, false);
+		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();
