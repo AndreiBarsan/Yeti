@@ -45,8 +45,9 @@ struct SpotLight
 	float Exponent;
 };
 
-uniform PointLight 	pointLight;
-uniform SpotLight spotLight;
+uniform PointLight 			pointLight;
+uniform SpotLight			spotLight;
+uniform DirectionalLight	dirLight;
 
 uniform vec3 		eyeWorldPos;
 uniform int 		lightType;
@@ -118,6 +119,11 @@ vec4 calcSpotLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {
 		return Color * spotEffect;
 }
 
+vec4 calcDirLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {
+	return CalcLightInternal(dirLight.Base, dirLight.Direction, 
+								WorldPos, Normal, MSI, SP);
+} 
+
 void main(void) {
 	vec2 TexCoord = CalcTexCoord();
 
@@ -132,7 +138,7 @@ void main(void) {
 	float MSI = cdata.a;
 	float SP = ndata.a;
 	if(lightType == 0) {		// Directional
-		vFragColor = vec4(Color, 1.0f);
+		vFragColor = vec4(Color, 1.0f) * calcDirLight(WorldPos, Normal, MSI, SP);
 	}
 	else if(lightType == 1) {	// Point
    		vFragColor = vec4(Color, 1.0) * calcPointLight(pointLight, WorldPos, Normal, MSI, SP);

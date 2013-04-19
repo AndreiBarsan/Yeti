@@ -113,18 +113,18 @@ public class NessieTestScene extends Scene {
 		ModelInstance testCone = new StaticModelInstance(ResourceLoader.model("DR_cone"));
 		addModelInstance(testCone);
 		
-		/*
-		int al = 6;
+		//*
+		int al = 10;
 		float sector = ((float)Math.PI * 2.0f) / al;
 		for(int i = 0; i < al; ++i) {
 			SpotLight spot = new SpotLight(
 					new Vector3(0.0f, -2.0f, 0),
 					new Vector3(-(float)Math.cos(i * sector), 0.0f, (float)Math.sin(i * sector)).normalize(),
-					(float)Math.cos(MathUtil.DEG_TO_RAD * 35.0f), 
-					(float)Math.cos(MathUtil.DEG_TO_RAD * 40.0f), 
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 25.0f), 
+					(float)Math.cos(MathUtil.DEG_TO_RAD * 27.0f), 
 					1.0f);
-			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
-			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.95f));
+			spot.setAttenuation(1.0f, 0.0f, 0.005f);
+			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
 			lights.add(spot);
 			slights.add(spot);			
 		}//*/
@@ -177,7 +177,7 @@ public class NessieTestScene extends Scene {
 					(float)  Math.sin(angle)
 					);
 			
-			sl.getDiffuse().a = 0.5f + ((float)Math.sin(time * 10) + 1) / 2.0f * 0.5f;
+			sl.getDiffuse().a = 0.4f + ((float)Math.sin(time * 10) + 1) / 2.0f * 0.4f;
 		}
 		
 		//mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;

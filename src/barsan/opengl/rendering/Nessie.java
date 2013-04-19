@@ -11,6 +11,7 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
@@ -18,6 +19,7 @@ import barsan.opengl.rendering.techniques.DRGeometryPass;
 import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
@@ -197,6 +199,7 @@ public class Nessie extends Renderer {
 	private Matrix4Stack nullStack = new Matrix4Stack();
 	ModelInstance plVolume;
 	ModelInstance slVolume;
+	ModelInstance dlVolume;
 
 	public Nessie(GL3 gl) {
 		this(gl, Mode.DrawComposedScene);		
@@ -225,6 +228,8 @@ public class Nessie extends Renderer {
 		
 		plVolume = new StaticModelInstance(ResourceLoader.model("DR_sphere"));
 		slVolume = new StaticModelInstance(ResourceLoader.model("DR_cone"));
+		dlVolume = new StaticModelInstance(ModelLoader.buildQuad(1.0f, 1.0f)); 
+				
 		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 	}
@@ -300,7 +305,6 @@ public class Nessie extends Renderer {
 	       	gl.glDisable(GL2.GL_DEPTH_TEST);
 	    	gl.glEnable(GL2.GL_BLEND);
 	    	gl.glDisable(GL2.GL_CULL_FACE);
-	    	//gl.glCullFace(GL2.GL_FRONT);
 	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
 	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
 	      	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, 300, 300);
@@ -328,7 +332,6 @@ public class Nessie extends Renderer {
 	
 	private void renderLightVolume(Light light, boolean computeLight) {
 		// Perform the stencil step
-		
 		if(computeLight) {
 			nullTechnique.setup(state);
 			
@@ -343,6 +346,7 @@ public class Nessie extends Renderer {
 		
 		switch(light.getType()) {
 			case Directional:
+				renderDLVol((DirectionalLight)light, computeLight);
 				break;
 				
 			case Point:
@@ -375,6 +379,12 @@ public class Nessie extends Renderer {
       	gl.glCullFace(GL2.GL_FRONT);
 	}
 	
+	private void renderDLVol(DirectionalLight l, boolean computeLight) {
+		// no stencil pass needed (yet - perhaps we can optimizie this and not
+		// compute dir lights on stuff like the skybox)
+		
+	}
+	
 	private void renderPLVol(PointLight l, boolean computeLight) {
 		// Compute transform for the null pass
 		// TODO: cleaner code
@@ -392,10 +402,9 @@ public class Nessie extends Renderer {
 			flatTechnique.renderDude(plVolume, state, nullStack);
 		}
 	}
-	 
-	final static float SPOT_RED = 4.0f; 
+	
 	private void renderSLVol(SpotLight l, boolean computeLight) {
-		float h = l.getBoundingRadius() * SPOT_RED;
+		float h = l.getBoundingRadius();
 		float w = (float)( h * (Math.tan(Math.acos(l.getCosOuter()))));
 		
 		Vector3 lightDir = l.getDirection();

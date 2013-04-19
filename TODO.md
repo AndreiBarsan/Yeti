@@ -1,9 +1,6 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
- - models with bump maps but no diffuse texture aren't showing right since the
- engine is only checking whether an object has a diffuse texture before binding
- the tex coords
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 
