@@ -9,12 +9,16 @@ import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
+import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.cameras.Camera;
+import barsan.opengl.rendering.cameras.PerspectiveCamera;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.techniques.DRGeometryPass;
 import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
@@ -29,8 +33,6 @@ import barsan.opengl.util.Settings;
  * Nessie is our Deferred Renderer. The development process will involve several
  * stages before it gets on par with the forward renderer, in terms of features.
  * In terms of speed it will already be blazingly fast!
- * 
- * Current bottleneck: GPU bandwidth
  * 
  * @author Andrei Bârsan
  */
@@ -140,6 +142,11 @@ public class Nessie extends Renderer {
 		}
 		
 		public void bindForLightPass() {
+			
+			// Need to bind the whole buffer, since it keeps getting un-bound
+			// by the shadow map FBO
+			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
+			
 			if(mode == Mode.DrawGBuffer) {
 				// Bind the FBO so we can blit from it
 				gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
@@ -188,6 +195,13 @@ public class Nessie extends Renderer {
 		DrawComposedScene
 	}
 	
+	// Shadow mapping
+	int shadowMapW = 2048;
+	int shadowMapH = 2048;
+	int cubeMapSide = 1024;
+	int fboShadowFlat = -1;
+	int fboShaodwCube = -1;
+
 	public Mode mode;
 	private GBuffer gbuffer;
 	private static final String pre = "[NESSIE] ";
@@ -232,6 +246,39 @@ public class Nessie extends Renderer {
 				
 		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
+		
+		int[] intBuffer = new int[1];
+		gl.glGenFramebuffers(1, intBuffer, 0);
+		fboShadowFlat = intBuffer[0];
+		
+		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, fboShadowFlat);
+		gl.glGenTextures(1, intBuffer, 0);
+		state.shadowTexture = intBuffer[0];
+		
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+		gl.glTexImage2D(GL2.GL_TEXTURE_2D, 
+						0,
+						GL2.GL_DEPTH_COMPONENT16, 
+						shadowMapW, shadowMapH,
+						0,
+						GL2.GL_DEPTH_COMPONENT,
+						GL2.GL_UNSIGNED_BYTE, 
+						null);
+		
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+		// Do we need border color?
+		gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
+		
+		
+		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT,
+				GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
+		gl.glDrawBuffer(GL2.GL_NONE);
+		
+		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+		GLHelp.fboErr(gl);
 	}
 	
 	@Override
@@ -323,7 +370,31 @@ public class Nessie extends Renderer {
 			gl.glDisable(GL2.GL_STENCIL_TEST);
 	    	break;
 	    }
-
+		
+		int oldDim[] = new int[4];
+		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
+		
+		Shader dr = ResourceLoader.shader("depthRender");
+		gl.glUseProgram(dr.handle);
+		dr.setU1i("colorMap", 0);
+		
+		float depthRenFactor = 10.0f;
+		dr.setU1f("factor", depthRenFactor);
+		
+		gl.glActiveTexture(GLHelp.textureSlot[0]);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+		
+		int sqi = dr.getAttribLocation(Shader.A_POSITION);
+		gl.glViewport(10, 10, 200, 200);
+		screenQuad.getVertices().use(sqi);
+		
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		screenQuad.getVertices().cleanUp(sqi);
+		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
@@ -333,10 +404,16 @@ public class Nessie extends Renderer {
 	private void renderLightVolume(Light light, boolean computeLight) {
 		// Perform the stencil step
 		if(computeLight) {
-			nullTechnique.setup(state);
-			
-			gbuffer.bindForStencilPass();
 			gl.glEnable(GL2.GL_DEPTH_TEST);
+			gl.glDepthMask(true);	
+			computeShadowMap(light);
+
+			// Re-bind the gbuffer
+			this.gbuffer.bindForLightPass();
+			
+			nullTechnique.setup(state);
+			gl.glDepthMask(false);
+			gbuffer.bindForStencilPass();
 			gl.glDisable(GL2.GL_CULL_FACE);
 			gl.glClear(GL2.GL_STENCIL_BUFFER_BIT);
 			
@@ -450,6 +527,55 @@ public class Nessie extends Renderer {
 		gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
 								0, 0, gbuffer.width, gbuffer.height,
 								GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
+	}
+	
+	private void computeShadowMap(Light light) {
+		Camera aux = state.getCamera();
+		int oldDim[] = new int[4];
+		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
+		
+		switch(light.getType()) {
+			case Spot:
+				prepareSpotSM((SpotLight)light);
+				break;
+				
+			default:
+				throw new UnsupportedOperationException("Only Spot lights can cast shadows at the moment in Nessie");
+		}
+		
+		//*
+		nullTechnique.setup(state);
+		Matrix4Stack ms = new Matrix4Stack();
+		for(ModelInstance mi : state.getScene().modelInstances) {
+			nullTechnique.renderDude(mi, state, ms);
+		}//*/
+		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+		state.setCamera(aux);
+	}
+	
+	private void prepareSpotSM(SpotLight spotLight) {
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShadowFlat);
+		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+		
+		Vector3 camDir = spotLight.getDirection().copy();
+		
+		PerspectiveCamera pc = new PerspectiveCamera(
+				spotLight.getPosition().copy(),
+				camDir,
+				shadowMapW, 
+				shadowMapH);
+		
+		float th = spotLight.getCosOuter();
+		float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
+		pc.setFOV(angle);
+		pc.setFrustumNear(1f);
+		pc.setFrustumFar(240.0f);
+		
+		gl.glViewport(0, 0, shadowMapW, shadowMapH);
+		
+		state.setCamera(pc);
+		state.depthProjection = pc.getProjection().cpy();
+		state.depthView = pc.getView().cpy();
 	}
 	
 	class Effect {

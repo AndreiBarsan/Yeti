@@ -7,7 +7,6 @@ import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.cameras.OrthographicCamera;
@@ -48,19 +47,6 @@ public class ForwardRenderer extends Renderer {
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
-	private StaticModel screenQuad;
-	
-	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] 
-			{
-				0.5f, 0.0f, 0.0f, 0.0f,
-				0.0f, 0.5f, 0.0f, 0.0f,
-				0.0f, 0.0f, 0.5f, 0.0f,
-				0.5f, 0.5f, 0.5f, 1.0f
-			});
-	// 18.01.2013 - make sure you write your matrices down right! If this matrix,
-	// for instance, is missing the 0.5fs from the last line, you won't see any
-	// shadows!
-	
 	public ForwardRenderer(GL3 gl) {	
 		super(gl);
 		
@@ -126,8 +112,6 @@ public class ForwardRenderer extends Renderer {
 		}
 		
 		fbo_tex.unbind(gl);
-		
-		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();

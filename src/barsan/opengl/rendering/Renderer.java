@@ -6,9 +6,11 @@ import java.util.Comparator;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL3;
 
+import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.util.GLHelp;
 
 /**
@@ -17,6 +19,13 @@ import barsan.opengl.util.GLHelp;
  * @author Andrei Bârsan
  */
 public abstract class Renderer {
+
+	public static final Matrix4 shadowBiasMatrix = new Matrix4(new float[] {
+		0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, 0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f
+	});
 
 	public static boolean renderDebug = true;
 	
@@ -55,6 +64,8 @@ public abstract class Renderer {
 	protected boolean sortBillboards = true;
 	protected GL3 gl;
 	protected RendererState state;
+
+	protected StaticModel screenQuad;
 	
 	public Renderer(GL3 gl) {
 		state = new RendererState(this, gl);
@@ -66,12 +77,12 @@ public abstract class Renderer {
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
-		//gl.glDepthFunc(GL2.GL_LEQUAL);
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
-		//gl.glClearDepth(1.0d);
 		
-		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);		
+		// Used in post-processing and debug rendering
+		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
+		
 	}
 	
 	public RendererState getState() {
@@ -158,6 +169,4 @@ public abstract class Renderer {
 	public void setDirectionalShadowCenter(Vector3 directionalShadowCenter) {
 		this.directionalShadowCenter = directionalShadowCenter;
 	}
-
-
 }

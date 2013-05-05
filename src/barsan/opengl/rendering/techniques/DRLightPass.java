@@ -1,5 +1,7 @@
 package barsan.opengl.rendering.techniques;
 
+import javax.media.opengl.GL2;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
@@ -37,6 +39,9 @@ public class DRLightPass extends Technique {
 		program.setU1i("normalMap", 2);
 		
 		// Common parameters that don't change from volume to volume 
+		// NOTE: since we still keep turning this program on and off, these params
+		// keep getting set! No need for that, though, we need to find a way to
+		// prevent these extra pointless calls
 		program.setUVector2f("screenSize", Yeti.get().settings.width, Yeti.get().settings.height);
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 	}
@@ -51,7 +56,7 @@ public class DRLightPass extends Technique {
 		program.setUVector3f("dirLight.Base.Color", light.getDiffuse());
 		program.setU1f("dirLight.Base.AmbientIntensity", 0.0f);
 		program.setU1f("dirLight.Base.DiffuseIntensity", light.getDiffuse().a);
-		
+				
 		quad.techniqueRender();
 	}
 	
@@ -106,6 +111,17 @@ public class DRLightPass extends Technique {
 		program.setU1f("spotLight.CosInner", spotLight.getCosInner());
 		program.setU1f("spotLight.CosOuter", spotLight.getCosOuter());
 		program.setU1f("spotLight.Exponent", spotLight.getExponent());
+		
+		boolean lightCastsShadows = true;
+		if(lightCastsShadows) {
+			program.setU1i("shadowMap", 4);
+			rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 4);
+			rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);
+			
+			// Spaghetti warning: we are not using the state's texture binding function,
+			// but we are using the state's "rest-of-the-stuff" binding function
+			rs.shadowMapBindings(program, modelMatrix);
+		}
 		
 		volume.techniqueRender();
 	}

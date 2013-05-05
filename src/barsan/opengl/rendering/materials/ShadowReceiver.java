@@ -36,12 +36,12 @@ public class ShadowReceiver implements MaterialComponent {
 	public void setup(Material m, RendererState rs, Matrix4 modelMatrix) {
 		// These settings are not material- or material-instance specific, but, 
 		// rather, renderer (state) specific.
-		rs.shadowMapBindings(m, modelMatrix);
+		rs.shadowMapBindings(m.shader, modelMatrix);
 	}
 
 	@Override
 	public int setupTexture(Material m, RendererState rs, int slot) {
-		return rs.shadowMapTextureBindings(m, slot);
+		return rs.shadowMapTextureBindings(m.shader, slot);
 	}
 
 	@Override

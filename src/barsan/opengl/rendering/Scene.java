@@ -144,7 +144,7 @@ public class Scene {
 		}
 	}
 	
-	public void setRenderer(ForwardRenderer renderer) {
+	public void setRenderer(Renderer renderer) {
 		this.renderer = renderer;
 	}
 	

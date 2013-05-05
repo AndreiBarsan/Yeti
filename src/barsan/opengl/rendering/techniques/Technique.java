@@ -89,7 +89,7 @@ public abstract class Technique {
 	
 	/**
 	 * Standard method that allows hierarchies of model instances to be rendered.
-	 * Specific uniform binding should occurr in the instanceRenderSetup method.
+	 * Specific uniform binding should occur in the instanceRenderSetup method.
 	 */
 	public void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
 		Matrix4 modelMatrix = mi.getTransform().get().cpy();
@@ -101,8 +101,8 @@ public abstract class Technique {
 		program.setUMatrix4("mMatrix", modelMatrix);
 		
 		instanceRenderSetup(mi, rs, matrixStack);
-		
 		mi.techniqueRender();
+		
 		for(ModelInstance child : mi.getChildren()) {
 			renderDude(child, rs, matrixStack);
 		}

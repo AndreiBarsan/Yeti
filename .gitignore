@@ -16,6 +16,7 @@ unused_res/
 *.dat
 *.psd
 glsl-optimizer/
+OpenSubdiv/
 
 #################
 ## Eclipse

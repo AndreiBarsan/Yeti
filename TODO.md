@@ -1,6 +1,7 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
+ - shadow volumes still broken when cones are pointing down
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 

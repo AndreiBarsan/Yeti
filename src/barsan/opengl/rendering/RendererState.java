@@ -54,47 +54,52 @@ public class RendererState {
 	 * obsolete by the implementation of multiple light casters that can be
 	 * occluded, but that's a long way down the road.
 	 */
-	public void shadowMapBindings(Material m, Matrix4 modelMatrix) {
+	public void shadowMapBindings(Shader program, Matrix4 modelMatrix) {
 		if(scene.shadowsEnabled) {
 			if(lights.get(0).getType() != LightType.Point) {
 				// We don't need this matrix if we're working with point lights and cube maps.
 				Matrix4 projection = depthProjection;
 				Matrix4 view = depthView;
 				
-				Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
+				Matrix4 VP = new Matrix4(projection).mul(view);//.mul(modelMatrix);
 				
 				// Really important! Converts the z-values from [-1, 1] to [0, 1]
-				Matrix4 biasMVP = new Matrix4(ForwardRenderer.shadowBiasMatrix).mul(MVP);
+				Matrix4 biasVP = new Matrix4(Renderer.shadowBiasMatrix).mul(VP);
 				
-				m.getShader().setUMatrix4("mvpMatrixShadows", biasMVP);
+				program.setUMatrix4("vpMatrixShadows", biasVP);
+				
+				Matrix4 invCamP = new Matrix4(camera.getProjection()).inv();
+				program.setUMatrix4("invCamP", invCamP);
+				Matrix4 invCamV = new Matrix4(camera.getView()).inv();
+				program.setUMatrix4("invCamV", invCamV);
 				
 			} else {
-				m.getShader().setU1f("far", renderer.getOmniShadowFar());
+				program.setU1f("far", renderer.getOmniShadowFar());
 			}
 			
-			m.getShader().setU1i("useShadows", true);
-			m.getShader().setU1i("shadowQuality", renderer.getShadowQuality().getFlag());
+			program.setU1i("useShadows", true);
+			program.setU1i("shadowQuality", renderer.getShadowQuality().getFlag());
 		}
 	}
 	
 	/** @see #shadowMapBindings(Material m)  */
-	public int shadowMapTextureBindings(Material m, int slot) {
+	public int shadowMapTextureBindings(Shader program, int slot) {
 		// This binds the maps anyway, even if the scene doesn't have shadows
 		// enabled, in order to prevent errors caused by unassigned samplers of
 		// different types.
 		if(lights.get(0).getType() == LightType.Point) {
-			m.getShader().setU1i("samplingCube", true);
+			program.setU1i("samplingCube", true);
 		}
 		else {
-			m.getShader().setU1i("samplingCube", false);
+			program.setU1i("samplingCube", false);
 		}
 		
 		gl.glActiveTexture(GLHelp.textureSlot[slot]);
-		m.getShader().setU1i("cubeShadowMap", slot);
+		program.setU1i("cubeShadowMap", slot);
 		cubeTexture.bind(gl);
 			
 		gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
-		m.getShader().setU1i("shadowMap", slot + 1);
+		program.setU1i("shadowMap", slot + 1);
 		gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
 		return 2;
 	}

@@ -18,7 +18,7 @@ import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector2;
-import barsan.opengl.rendering.ForwardRenderer;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.materials.BasicMaterial;
@@ -160,7 +160,7 @@ public class MenuScene extends Scene {
 		//menu.addEntry(menu.new MenuEntry("About", new DummyAction()));
 		menu.addEntry(menu.new MenuEntry("Exit", new ExitAction()));
 		
-		ForwardRenderer.renderDebug = false;
+		Renderer.renderDebug = false;
 		
 		addInput(new InputAdapter() {
 			@Override
