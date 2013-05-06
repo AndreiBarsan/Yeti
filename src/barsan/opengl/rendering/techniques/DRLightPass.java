@@ -112,8 +112,7 @@ public class DRLightPass extends Technique {
 		program.setU1f("spotLight.CosOuter", spotLight.getCosOuter());
 		program.setU1f("spotLight.Exponent", spotLight.getExponent());
 		
-		boolean lightCastsShadows = true;
-		if(lightCastsShadows) {
+		if(spotLight.castsShadows()) {
 			program.setU1i("shadowMap", 4);
 			rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 4);
 			rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);

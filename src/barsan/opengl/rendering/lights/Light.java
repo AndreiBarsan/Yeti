@@ -12,6 +12,7 @@ public abstract class Light {
 		Spot		
 	}
 	
+	private boolean castsShadows;
 	private Color diffuseColor;
 	private Color specularColor;
 	protected float constantAttenuation;
@@ -25,6 +26,8 @@ public abstract class Light {
 		constantAttenuation = ka;
 		linearAttenuation = la;
 		quadraticAttenuation = qa;
+		
+		castsShadows = false;
 	}
 	
 	public abstract float getBoundingRadius();
@@ -75,5 +78,13 @@ public abstract class Light {
 		constantAttenuation = ka;
 		linearAttenuation = la;
 		quadraticAttenuation = qa;
+	}
+
+	public boolean castsShadows() {
+		return castsShadows;
+	}
+
+	public void setCastsShadows(boolean castsShadows) {
+		this.castsShadows = castsShadows;
 	}
 }

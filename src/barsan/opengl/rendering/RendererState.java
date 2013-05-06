@@ -68,11 +68,6 @@ public class RendererState {
 				
 				program.setUMatrix4("vpMatrixShadows", biasVP);
 				
-				Matrix4 invCamP = new Matrix4(camera.getProjection()).inv();
-				program.setUMatrix4("invCamP", invCamP);
-				Matrix4 invCamV = new Matrix4(camera.getView()).inv();
-				program.setUMatrix4("invCamV", invCamV);
-				
 			} else {
 				program.setU1f("far", renderer.getOmniShadowFar());
 			}
