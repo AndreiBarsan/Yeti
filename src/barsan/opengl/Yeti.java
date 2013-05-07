@@ -9,7 +9,6 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -19,6 +18,7 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
@@ -28,7 +28,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 
 import barsan.opengl.editor.App;
-import barsan.opengl.input.GlobalConsoleInput;
+import barsan.opengl.input.GlobalConsole;
 import barsan.opengl.input.InputProvider;
 import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
@@ -38,6 +38,7 @@ import barsan.opengl.scenes.GameScene;
 import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.MenuScene;
 import barsan.opengl.scenes.ProceduralScene;
+import barsan.opengl.util.ConsoleRenderer;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -80,6 +81,9 @@ public class Yeti implements GLEventListener {
 	
 	// Detects abnormal contex resets
 	boolean engineInitialized = false;
+	
+	// Renders the input console, when needed
+	ConsoleRenderer consoleRenderer;
 	
 	// Timing
 	private long lastFrameStart;
@@ -150,6 +154,60 @@ public class Yeti implements GLEventListener {
 			// No scene to transition out of, so we're instantly finished
 			transitionFinished();
 		}
+	}
+	
+	public String executeCommand(String input) {
+		String[] parts = input.split("\\s");
+		
+		if(parts.length == 0) {
+			return "";
+		}
+		
+		String cmd = parts[0];
+		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+		
+		switch(cmd) {
+		case "derp":
+			return "HERP";
+			
+		case "ls":
+		case "scenes":
+			String out = "Available scenes: ";
+			for(Class<?> c : availableScenes) {
+				out += c.getSimpleName() + "\n";
+			}
+			return out;
+			
+		case "load":
+			if(args.length > 0) {
+				boolean found = false;
+				for(Class<?> c : availableScenes)
+				{
+					if(c.getSimpleName().toUpperCase().equals(args[0].toUpperCase()))
+					{
+						found = true;
+						try {
+							loadScene((Scene) c.newInstance());
+						} catch (InstantiationException e) {
+							e.printStackTrace();
+						} catch (IllegalAccessException e) {
+							e.printStackTrace();
+						}
+						return "Loading scene: " + c.getSimpleName();
+					}
+				}
+				if( ! found) {
+					return "Scene " + args[0] + " not found.";
+				}
+			}
+			else 
+			{
+				return "Please specify a scene name";
+			}
+			break;
+		}
+		
+		return "Unknown command: " + cmd;		
 	}
 	
 	/**
@@ -293,26 +351,6 @@ public class Yeti implements GLEventListener {
 		System.exit(0);		
 	}
 	
-	private class QuickSceneSwitcher implements KeyListener, InputProvider {
-		public void keyTyped(KeyEvent e) { }
-		public void keyPressed(KeyEvent e) { }
-		
-		public void keyReleased(KeyEvent e) {
-			char in = e.getKeyChar();
-			if(in >= '0' && in <= '9') {
-				int selection = in - '0';
-				if(selection < availableScenes.length) {
-					try {
-						loadScene( (Scene)availableScenes[selection].newInstance());
-						settings.lastSceneIndex = selection;
-					} catch (InstantiationException | IllegalAccessException e1) {
-						e1.printStackTrace();
-					}
-				}
-			}
-		}
-	}
-	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 
@@ -328,21 +366,20 @@ public class Yeti implements GLEventListener {
 		}
 		
 		if(hostApp != null) {
-			// TODO: list of callbaks (also maybe make host apps implement
-			// some hook functionality)
+			// TODO: list of callbaks (also maybe make host apps implement some hook functionality)
 			hostApp.generateGLKnobs(this);
 		}
 		
-		// Runing in debug mode
+		// Only displays when actually in debug mode
 		Yeti.debug("Running in debug GL mode"); 
 		
 		final int lastLoadedScene = settings.lastSceneIndex;
 		ResourceLoader.init();	
-		
-		addInputProvider(this.new QuickSceneSwitcher());
 
 		// Soon-to-be global controller of GL settings
-		addInputProvider(new GlobalConsoleInput());
+		GlobalConsole console = new GlobalConsole();
+		consoleRenderer = new ConsoleRenderer(console);
+		addInputProvider(console);
 
 		/*
 		Thread.currentThread().setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -381,6 +418,7 @@ public class Yeti implements GLEventListener {
 			pendingInit = false;
 		}
 		currentScene.display(drawable);
+		consoleRenderer.render();
 		lastFrameStart = thisFrameStart;
 	}
 

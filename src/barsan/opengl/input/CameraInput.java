@@ -57,6 +57,10 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	@Override
 	public void keyPressed(KeyEvent e) {
 		
+		if(e.isConsumed()) {
+			return;
+		}
+		
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_Q:
 				camera.strafeLeft();

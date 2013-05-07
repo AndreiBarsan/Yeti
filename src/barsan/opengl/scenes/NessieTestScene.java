@@ -138,6 +138,7 @@ public class NessieTestScene extends Scene {
 			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
 			lights.add(spot);
+			spot.setCastsShadows(true);
 			slights.add(spot);
 		}// */
 
@@ -151,7 +152,11 @@ public class NessieTestScene extends Scene {
 
 		addInput(new InputAdapter() {
 			@Override
-			public void keyTyped(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
+				if(e.isConsumed()) {
+					return;
+				}
+				
 				if (e.getKeyChar() == KeyEvent.VK_SPACE) {
 					Mode[] m = Nessie.Mode.values();
 					nessie.mode = m[(nessie.mode.ordinal() + 1) % m.length];
