@@ -6,9 +6,8 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.ModelInstance;
+import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.RendererState;
-import barsan.opengl.rendering.StaticModel;
-import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
@@ -117,9 +116,17 @@ public class DRLightPass extends Technique {
 			rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 4);
 			rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);
 			
-			// Spaghetti warning: we are not using the state's texture binding function,
-			// but we are using the state's "rest-of-the-stuff" binding function
-			rs.shadowMapBindings(program, modelMatrix);
+			Matrix4 projection = rs.depthProjection;
+			Matrix4 view = rs.depthView;
+			
+			Matrix4 VP = new Matrix4(projection).mul(view);
+			
+			program.setUMatrix4("vpMatrixShadows", VP);
+			program.setUMatrix4("mMatrix", modelMatrix);
+			program.setUMatrix4("biasMatrix", Renderer.shadowBiasMatrix);
+			
+			program.setU1i("useShadows", true);
+			program.setU1i("shadowQuality", rs.getShadowQuality().getFlag());
 		}
 		
 		volume.techniqueRender();

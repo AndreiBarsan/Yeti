@@ -17,7 +17,7 @@ uniform float 	maxFogDistance;
 
 uniform bool 	useShadows;
 uniform bool 	samplingCube;
-uniform mat4 	vpMatrixShadows;
+uniform mat4 	mvpMatrixShadows;
 
 in vec4 vVertex;
 in vec3 vNormal;
@@ -54,7 +54,7 @@ void main() {
 	
 	if(useShadows) {
 		// Convert the vertex to shadowmap coordinates
-		vertPos_dmc = biasMatrix * (vpMatrixShadows * mMatrix) * vVertex;
+		vertPos_dmc = mvpMatrixShadows * vVertex;
 	}
 	
 	vertPos_wc = (mMatrix * vVertex).xyz;

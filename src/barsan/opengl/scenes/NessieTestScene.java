@@ -112,13 +112,13 @@ public class NessieTestScene extends Scene {
 			}
 		}// */
 
-		/*
+		//*
 		int lightLim = 2;
 		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 0.75f;
+				c.a = 1.75f;
 				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
 			}
 		}//*/
@@ -138,7 +138,7 @@ public class NessieTestScene extends Scene {
 					(float) Math.cos(MathUtil.DEG_TO_RAD * 10.0f),
 					(float) Math.cos(MathUtil.DEG_TO_RAD * 15.0f), 1.0f);
 			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
-			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
+			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.95f));
 			lights.add(spot);
 			spot.setCastsShadows(true);
 			slights.add(spot);
@@ -150,7 +150,8 @@ public class NessieTestScene extends Scene {
 				(float) Math.cos(MathUtil.DEG_TO_RAD * 75.0f), 1.0f);
 		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.55f));
-		//lights.add(spot);
+		lights.add(spot);
+		// spot.setCastsShadows(true);
 
 		addInput(new InputAdapter() {
 			@Override
@@ -187,16 +188,15 @@ public class NessieTestScene extends Scene {
 
 		//*
 		for (SpotLight sl : slights) {
-			double angle = Math.atan2(sl.getDirection().z, sl.getDirection().x);
-			angle += Math.PI / 8 * (Yeti.get().getDelta());
+			//double angle = Math.atan2(sl.getDirection().z, sl.getDirection().x);
+			//angle += Math.PI / 8 * (Yeti.get().getDelta());
 			//sl.getDirection().set((float) Math.cos(angle), sl.getDirection().y,
 			//		(float) Math.sin(angle));
 			
 			sl.getPosition().x = (float)Math.sin(time) * 8.0f;
-			double aa = (45 + Math.sin(time) * 25);
+			double aa = (35 + Math.sin(time) * 15);
 			sl.setCosOuter((float)Math.cos( aa * MathUtil.DEG_TO_RAD));
-			sl.setCosInner((float)Math.cos( (aa - 8.0f) * MathUtil.DEG_TO_RAD));
-			// sl.getDiffuse().a = 0.4f + ((float) Math.sin(time * 10) + 1) / 2.0f * 0.4f;
+			sl.setCosInner((float)Math.cos( (aa - 2.0f) * MathUtil.DEG_TO_RAD));
 		}
 		 	//*/
 		// mainLight.getPosition().x = (float)Math.sin(time) * 30.0f;

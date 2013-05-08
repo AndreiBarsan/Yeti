@@ -7,6 +7,7 @@ import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
+import barsan.opengl.rendering.Renderer.ShadowQuality;
 import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.lights.AmbientLight;
 import barsan.opengl.rendering.lights.Light;
@@ -59,14 +60,11 @@ public class RendererState {
 				Matrix4 projection = depthProjection;
 				Matrix4 view = depthView;
 				
-				Matrix4 VP = new Matrix4(projection).mul(view);//.mul(modelMatrix);
+				Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
 				
 				// Really important! Converts the z-values from [-1, 1] to [0, 1]
-				//Matrix4 biasVP = new Matrix4(Renderer.shadowBiasMatrix).mul(VP);
-				
-				program.setUMatrix4("vpMatrixShadows", VP);
-				program.setUMatrix4("mMatrix", modelMatrix);
-				program.setUMatrix4("biasMatrix", Renderer.shadowBiasMatrix);
+				Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
+				program.setUMatrix4("mvpMatrixShadows", biasMVP);
 				
 			} else {
 				program.setU1f("far", renderer.getOmniShadowFar());
@@ -178,5 +176,9 @@ public class RendererState {
 
 	public void setScene(Scene scene) {
 		this.scene = scene;
+	}
+	
+	public ShadowQuality getShadowQuality() {
+		return renderer.getShadowQuality();
 	}
 }
