@@ -50,9 +50,7 @@ public class RendererState {
 	}
 	
 	/**
-	 * Binds the proper shadow map to the active material. This might be made
-	 * obsolete by the implementation of multiple light casters that can be
-	 * occluded, but that's a long way down the road.
+	 * Binds the proper shadow map to the active material. 
 	 */
 	public void shadowMapBindings(Shader program, Matrix4 modelMatrix) {
 		if(scene.shadowsEnabled) {
@@ -64,9 +62,11 @@ public class RendererState {
 				Matrix4 VP = new Matrix4(projection).mul(view);//.mul(modelMatrix);
 				
 				// Really important! Converts the z-values from [-1, 1] to [0, 1]
-				Matrix4 biasVP = new Matrix4(Renderer.shadowBiasMatrix).mul(VP);
+				//Matrix4 biasVP = new Matrix4(Renderer.shadowBiasMatrix).mul(VP);
 				
-				program.setUMatrix4("vpMatrixShadows", biasVP);
+				program.setUMatrix4("vpMatrixShadows", VP);
+				program.setUMatrix4("mMatrix", modelMatrix);
+				program.setUMatrix4("biasMatrix", Renderer.shadowBiasMatrix);
 				
 			} else {
 				program.setU1f("far", renderer.getOmniShadowFar());

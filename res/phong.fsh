@@ -1,7 +1,7 @@
 //#define SAMPLINGCUBE
 #version 400 core
 
-const float bias = 0.01f;
+const float bias = 0.05f;
 const float pFac = 2500.0f;
 
 const vec2 pD[16] = vec2[]( 
@@ -34,6 +34,9 @@ uniform float 	lightExponent;
 uniform vec3 	lightPosition;
 uniform vec3    lightDirection;
 uniform int 	lightType;
+
+uniform mat4 	mMatrix;
+uniform mat4 	biasMatrix;
 
 uniform int shininess;
 uniform vec4 matAmbient;
@@ -149,6 +152,7 @@ float computeVisibilityCube(in float NL) {
 }
 
 float computeVisibility(in float NL) {
+
 	float visibility = 1.0f;
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
@@ -270,9 +274,8 @@ void main() {
 	//vFragColor += vec4(vertPos_dmc.z) * 0.5;
 	//vFragColor += vec4(d_l_current_fragment  / (far - near)); // works
 	//vFragColor += vec4(d_l_closest_occluder);
-	 
 	//float diff = texture( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
-	//vFragColor += vec4(visibility);
+	//vFragColor += vec4(val);
 	//vFragColor.a = 1.0f;
 } 	

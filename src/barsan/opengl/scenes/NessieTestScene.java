@@ -118,23 +118,25 @@ public class NessieTestScene extends Scene {
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 2.75f;
+				c.a = 0.75f;
 				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
-				
-				
 			}
 		}//*/
 
 		//*
-		int al = 3;
+		int al = 6;
 		float sector = ((float) Math.PI * 2.0f) / al;
 		for (int i = 0; i < al; ++i) {
-			SpotLight spot = new SpotLight(new Vector3(0.0f, 4.0f, 0),
+			SpotLight spot = new SpotLight(
+					new Vector3(-(float)Math.cos(i * sector) * 2.0f,
+							-3.0f,
+							(float)Math.sin(i * sector) * 2.0f),
+					
 					new Vector3(-(float) Math.cos(i * sector),
 							-1.0f,
 							(float) Math.sin(i * sector)).normalize(),
-					(float) Math.cos(MathUtil.DEG_TO_RAD * 25.0f),
-					(float) Math.cos(MathUtil.DEG_TO_RAD * 27.0f), 1.0f);
+					(float) Math.cos(MathUtil.DEG_TO_RAD * 10.0f),
+					(float) Math.cos(MathUtil.DEG_TO_RAD * 15.0f), 1.0f);
 			spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 			spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.95f));
 			lights.add(spot);
@@ -187,11 +189,13 @@ public class NessieTestScene extends Scene {
 		for (SpotLight sl : slights) {
 			double angle = Math.atan2(sl.getDirection().z, sl.getDirection().x);
 			angle += Math.PI / 8 * (Yeti.get().getDelta());
-			sl.getDirection().set((float) Math.cos(angle), sl.getDirection().y,
-					(float) Math.sin(angle));
+			//sl.getDirection().set((float) Math.cos(angle), sl.getDirection().y,
+			//		(float) Math.sin(angle));
 			
-			//sl.getPosition().x = (float)Math.sin(time * 2f) * 8.0f;
-
+			sl.getPosition().x = (float)Math.sin(time) * 8.0f;
+			double aa = (45 + Math.sin(time) * 25);
+			sl.setCosOuter((float)Math.cos( aa * MathUtil.DEG_TO_RAD));
+			sl.setCosInner((float)Math.cos( (aa - 8.0f) * MathUtil.DEG_TO_RAD));
 			// sl.getDiffuse().a = 0.4f + ((float) Math.sin(time * 10) + 1) / 2.0f * 0.4f;
 		}
 		 	//*/

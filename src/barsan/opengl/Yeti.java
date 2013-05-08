@@ -178,6 +178,12 @@ public class Yeti implements GLEventListener {
 			}
 			return out;
 			
+		case "rs":
+			// refresh shaders
+			// Note: this can also be made into an utility that monitors file 
+			// changes and recompiles shaders on the fly
+			break;
+			
 		case "load":
 			if(args.length > 0) {
 				boolean found = false;

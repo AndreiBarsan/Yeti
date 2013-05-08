@@ -2,14 +2,21 @@ package barsan.opengl.util;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
-
-import com.jogamp.opengl.FBObject;
+import javax.media.opengl.GL3;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.resources.ModelLoader;
+import barsan.opengl.resources.ResourceLoader;
+
+import com.jogamp.opengl.FBObject;
 
 public class GLHelp {
 	
 	private static float[] out = new float[] { -1 };
+	
+	private static StaticModel screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
 	
 	/** Lookup table for converting between integer-defined texture slots
 	 * 	and GL flags.
@@ -52,5 +59,31 @@ public class GLHelp {
 		 */
 		String caller = stackTraceElements[2].getClassName();
 		Yeti.debug("FBO status check (" + caller + "): " + FBObject.getStatusString(result));
+	}
+	
+	public static void dumpDepthBuffer(int x, int y, int w, int h, float depthRenFactor, int handle) {
+		int oldDim[] = new int[4];
+		GL3 gl = Yeti.get().gl;
+		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
+		
+		Shader dr = ResourceLoader.shader("depthRender");
+		gl.glUseProgram(dr.getHandle());
+		dr.setU1i("colorMap", 0);
+		
+		dr.setU1f("factor", depthRenFactor);
+		
+		gl.glActiveTexture(GLHelp.textureSlot[0]);
+		gl.glBindTexture(GL2.GL_TEXTURE_2D, handle);
+		
+		int sqi = dr.getAttribLocation(Shader.A_POSITION);
+		gl.glViewport(x, y, w, h);
+		screenQuad.getVertices().use(sqi);
+		
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		screenQuad.getVertices().cleanUp(sqi);
+		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 	}
 }

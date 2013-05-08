@@ -3,6 +3,7 @@ package barsan.opengl.scenes;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.ArrayList;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -41,6 +42,8 @@ public class LightTest extends Scene {
 	DirectionalLight test_dl;
 
 	LightType currentlyActive = LightType.Point;
+	
+	ArrayList<StaticModelInstance> monkeys = new ArrayList<>();
 	
 	BumpComponent bc;
 	GammaCorrection gammaCorrection;
@@ -92,7 +95,7 @@ public class LightTest extends Scene {
 		
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();
-		modelInstances.add(sb);
+		//modelInstances.add(sb);
 		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
 		BasicMaterial cmat = new BasicMaterial();
@@ -103,12 +106,14 @@ public class LightTest extends Scene {
 		addModelInstance(cube);
 		
 		float step = 6.0f;
-		int monkeys = 5;
-		for(int i = -monkeys; i < monkeys; i++) {
-			for(int j = -monkeys; j < monkeys; j++) {
+		int nrMonkeys = 5;
+		for(int i = -nrMonkeys; i < nrMonkeys; i++) {
+			for(int j = -nrMonkeys; j < nrMonkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
 				pm.refresh();
-				modelInstances.add(new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm));
+				StaticModelInstance smi = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm);
+				modelInstances.add(smi);
+				this.monkeys.add(smi);
 			}
 		}//*/
 		modelInstances.add(chosenOne = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
@@ -223,6 +228,14 @@ public class LightTest extends Scene {
 		float sl_speedScale = 5.0f;
 		a += delta;
 		
+		for(StaticModelInstance smi : monkeys) {
+			Vector3 oldPos = smi.getTransform().getTranslate();
+			smi.getTransform().updateTranslate(
+					oldPos.x,
+					20.0f,
+					oldPos.z);
+		}
+		
 		test_sl.getDirection().x =  (float)Math.sin(a / sl_speedScale) * 20.0f;
 		test_sl.getDirection().z = -(float)Math.cos(a / sl_speedScale) * 20.0f;
 		test_sl.getDirection().y = -20.0f;
@@ -233,11 +246,12 @@ public class LightTest extends Scene {
 		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);
 		
-		tv.set(1.0f, 1.0f, (float)Math.sin(a) * 1.5f);
+		tv.set(4.0f, 4.0f, (float)Math.sin(a / 4.0f) * 1.5f);
+		//tv.set(1.0f, 1.0f, -0.255f);
 		test_dl.getDirection().set(tv).normalize();
 
 		float lx = (float)Math.cos(a) * 30.0f;
-		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
+		//chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
 		
 		ShadowQuality sq = renderer.getShadowQuality();
 		((DebugGUI)gui).info = String.format("Press [RMB] to cycle through light types\n" +

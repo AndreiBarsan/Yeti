@@ -3,6 +3,8 @@
 uniform mat4 mvpMatrix;
 uniform mat4 mMatrix;
 
+uniform mat4 biasMatrix;
+
 uniform vec4 	lightPosition;
 uniform vec3 	spotDirection;
 
@@ -52,7 +54,7 @@ void main() {
 	
 	if(useShadows) {
 		// Convert the vertex to shadowmap coordinates
-		vertPos_dmc = vpMatrixShadows * vVertex;
+		vertPos_dmc = biasMatrix * (vpMatrixShadows * mMatrix) * vVertex;
 	}
 	
 	vertPos_wc = (mMatrix * vVertex).xyz;

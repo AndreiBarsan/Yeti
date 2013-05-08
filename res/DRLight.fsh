@@ -11,8 +11,7 @@ uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D shadowMap;
 
-uniform mat4 invCamP;
-uniform mat4 invCamV;
+uniform mat4 biasMatrix;
 uniform mat4 vpMatrixShadows;
 uniform int shadowQuality;
 
@@ -224,7 +223,7 @@ void main(void) {
 
 	// Computation needs to be done in the light space
 	//WorldPos = (vec4(WorldPos, 1.0f) * (invCamP * invCamV)).xyz;
-	vertPos_dmc = vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
+	vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
 	//Color = texture(shadowMap, vertPos_dmc.xy / vertPos_dmc.w).rgb;
 	//Color = vec3(vertPos_dmc.rgb / 200);
 

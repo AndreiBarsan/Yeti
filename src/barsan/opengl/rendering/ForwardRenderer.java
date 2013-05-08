@@ -342,37 +342,30 @@ public class ForwardRenderer extends Renderer {
 		// TODO: maybe used glBlitFramebuffer?
 		if(scene.shadowsEnabled && renderDebug) {
 			Shader dr;
-			if(light.getType() == LightType.Point) {
+			if(light.getType() != LightType.Point) {
+				GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
+			}
+			else {
 				dr = ResourceLoader.shader("depthCubeRender");
-			} else {
-				dr = ResourceLoader.shader("depthRender");
-			}
-			gl.glUseProgram(dr.handle);
-			dr.setU1i("colorMap", 0);
+				gl.glUseProgram(dr.handle);
+				dr.setU1i("colorMap", 0);
+				float depthRenFactor = 15.0f;
+				dr.setU1f("factor", depthRenFactor);
 			
-			float depthRenFactor = 1.0f;
-			if(light.getType() != LightType.Directional) {
-				depthRenFactor = 15.0f;
-			}
-			dr.setU1f("factor", depthRenFactor);
-			
-			gl.glActiveTexture(GLHelp.textureSlot[0]);
-			if(light.getType() == LightType.Point) {
+				gl.glActiveTexture(GLHelp.textureSlot[0]);
 				state.cubeTexture.bind(gl);
-			} else {
-				gl.glBindTexture(GL2.GL_TEXTURE_2D, state.shadowTexture);
+				
+				int sqi = dr.getAttribLocation(Shader.A_POSITION);
+				gl.glViewport(10, 10, 200, 200);
+				screenQuad.getVertices().use(sqi);
+				
+				gl.glDisable(GL2.GL_DEPTH_TEST);
+				gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+				gl.glEnable(GL2.GL_DEPTH_TEST);
+				
+				screenQuad.getVertices().cleanUp(sqi);
+				gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 			}
-			
-			int sqi = dr.getAttribLocation(Shader.A_POSITION);
-			gl.glViewport(10, 10, 200, 200);
-			screenQuad.getVertices().use(sqi);
-			
-			gl.glDisable(GL2.GL_DEPTH_TEST);
-			gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
-			gl.glEnable(GL2.GL_DEPTH_TEST);
-			
-			screenQuad.getVertices().cleanUp(sqi);
-			gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 		}
 	}
 	

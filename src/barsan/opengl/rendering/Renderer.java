@@ -82,7 +82,6 @@ public abstract class Renderer {
 		
 		// Used in post-processing and debug rendering
 		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
-		
 	}
 	
 	public RendererState getState() {
