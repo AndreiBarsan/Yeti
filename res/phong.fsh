@@ -1,7 +1,7 @@
 //#define SAMPLINGCUBE
 #version 400 core
 
-const float bias = 0.05f;
+const float bias = 0.01f;
 const float pFac = 2500.0f;
 
 const vec2 pD[16] = vec2[]( 
@@ -154,6 +154,7 @@ float computeVisibilityCube(in float NL) {
 float computeVisibility(in float NL) {
 
 	float visibility = 1.0f;
+
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
@@ -263,17 +264,18 @@ void main() {
 	}
 	
 	//vFragColor -= vFragColor;
+	
 	//vFragColor += vec4(nNormal, 1.0f);
 	//vFragColor += vec4(vec3(length(lightDir) / 100), 1.0f);
 	//vFragColor += texture(cubeShadowMap, vec3(1.0f, 2.3f, 1.0f));
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
-	//vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
+	vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
 	//vFragColor += vec4(vertPos_dmc.z) * 0.5;
 	//vFragColor += vec4(d_l_current_fragment  / (far - near)); // works
 	//vFragColor += vec4(d_l_closest_occluder);
 	//float diff = texture( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(val);
-	//vFragColor.a = 1.0f;
+	vFragColor.a = 1.0f;
 } 	

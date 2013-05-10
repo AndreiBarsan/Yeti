@@ -12,7 +12,6 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Nessie;
-import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.Nessie.Mode;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.StaticModelInstance;
@@ -48,7 +47,7 @@ public class NessieTestScene extends Scene {
 
 		addInput(cameraInput = new CameraInput(camera));
 		gui = new DebugGUI(this, drawable.getAnimator());
-		gui.setPosition(10, 10);
+		gui.setPosition(220, 10);
 
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
 				-10.0f, 0.0f), Vector3.UP.copy());
@@ -56,13 +55,10 @@ public class NessieTestScene extends Scene {
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
 		dl.setCastsShadows(true);
+		dl.getDiffuse().a = 0.33f;
 		lights.add(dl);
 		//*/
-		l2 = new PointLight(new Vector3(-0.5f, -2.75f, -0.33f), new Color(1.0f,
-				1.0f, 0.5f, 3.44f));
-		l2.setAttenuation(0.0f, 0.00f, 0.05f);
-		//lights.add(l2);
-
+		
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("DR_sphere", "dr_icosphere.obj");
@@ -87,7 +83,7 @@ public class NessieTestScene extends Scene {
 		// BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f,
 		// 0.9f));
 		// *
-		int mlim = 10;
+		int mlim = 6;
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
@@ -95,20 +91,21 @@ public class NessieTestScene extends Scene {
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
 						ResourceLoader.model("monkey"), mat);
-				monkey.getTransform()
-						.updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
+				monkey.getTransform().updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
 				addModelInstance(monkey);
 			}
 		}// */
 
-		/*
-		int lightLim = 2;
+		//*
+		int lightLim = 4;
 		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 1.75f;
-				lights.add(new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c));
+				c.a = 20.0f;
+				PointLight light = new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c);
+				light.setAttenuation(0.0f, 0.0f, 0.75f);
+				lights.add(light);
 			}
 		}//*/
 
@@ -173,7 +170,6 @@ public class NessieTestScene extends Scene {
 				+ "\n" + "Rendering: " + nessie.mode.toString();
 
 		time += Yeti.get().getDelta();
-		l2.getPosition().x = (float) Math.sin(time) * 0.33f;
 
 		//*
 		for (SpotLight sl : slights) {

@@ -70,7 +70,7 @@ public class GlobalConsole implements KeyListener, InputProvider {
 					}
 					
 					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-						if(consoleInput.length() > 0) {
+						if(consoleInput.length() > 1) {
 							consoleInput = consoleInput.substring(0, consoleInput.length() - 2);
 						}
 					}
@@ -78,8 +78,6 @@ public class GlobalConsole implements KeyListener, InputProvider {
 					e.consume();
 				}
 		}
-		
-		
 	}
 
 	@Override
@@ -95,5 +93,9 @@ public class GlobalConsole implements KeyListener, InputProvider {
 	
 	public ArrayList<String> getHistory() {
 		return history;
+	}
+	
+	public String getTitle() {
+		return "Yeti console (press ~ to close)";
 	}
 }

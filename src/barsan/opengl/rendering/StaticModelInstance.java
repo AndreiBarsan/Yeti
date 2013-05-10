@@ -7,10 +7,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.rendering.techniques.Technique;
-
-import com.jogamp.opengl.util.texture.Texture;
 
 public class StaticModelInstance extends ModelInstance {
 
@@ -134,11 +131,5 @@ public class StaticModelInstance extends ModelInstance {
 
 	public void setModel(StaticModel model) {
 		this.model = model;
-	}
-	
-	@Override
-	public void setTexture(Texture texture) {
-		material.setDiffuseMap(texture);
-		material.addComponent(new TextureComponent());
 	}
 }

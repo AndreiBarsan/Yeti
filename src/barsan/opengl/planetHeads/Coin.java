@@ -2,6 +2,7 @@ package barsan.opengl.planetHeads;
 
 import barsan.opengl.flat.Entity2D;
 import barsan.opengl.math.Vector2;
+import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.resources.ResourceLoader;
 
 public class Coin extends Entity2D {
@@ -12,7 +13,8 @@ public class Coin extends Entity2D {
 	
 	public Coin(Vector2 position) {
 		super(position, ResourceLoader.model("coin"));
-		graphics.setTexture(ResourceLoader.texture("coin"));
+		graphics.getMaterial().addComponent(new TextureComponent());
+		graphics.getMaterial().setDiffuseMap(ResourceLoader.texture("coin"));
 		graphics.getTransform().updateScale(0.25f);
 	}
 	

@@ -4,9 +4,6 @@ import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.Material;
-import barsan.opengl.rendering.materials.TextureComponent;
-
-import com.jogamp.opengl.util.texture.Texture;
 
 public class AnimatedModelInstance extends ModelInstance {
 
@@ -118,11 +115,5 @@ public class AnimatedModelInstance extends ModelInstance {
 	@Override
 	public void setMaterial(Material material) {
 		this.material = (AnimatedMaterial) material;	
-	}
-	
-	@Override
-	public void setTexture(Texture texture) {
-		material.setDiffuseMap(texture);
-		material.addComponent(new TextureComponent());
 	}
 }

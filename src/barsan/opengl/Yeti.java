@@ -32,14 +32,13 @@ import javax.media.opengl.GLProfile;
 import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsole;
 import barsan.opengl.input.InputProvider;
-import barsan.opengl.math.Vector3;
 import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
-import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.GameScene;
@@ -176,6 +175,11 @@ public class Yeti implements GLEventListener {
 		switch(cmd) {
 		case "derp":
 			return "HERP";
+			
+		case "exit":
+		case "quit":
+			Yeti.quit();
+			return "Shutting down Yeti...";
 			
 		case "ls":
 		case "scenes":

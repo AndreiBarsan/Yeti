@@ -2,6 +2,7 @@ package barsan.opengl.flat;
 
 import barsan.opengl.math.Rectangle;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.materials.TextureComponent;
 import barsan.opengl.resources.ResourceLoader;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -17,7 +18,8 @@ public class Block extends Entity2D {
 		super(bounds, true, false, ResourceLoader.model("cube"));
 		
 		if(texture != null) {
-			graphics.setTexture(texture);
+			graphics.getMaterial().addComponent(new TextureComponent());
+			graphics.getMaterial().setDiffuseMap(texture);
 		}
 	}
 	

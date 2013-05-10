@@ -9,8 +9,6 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.Material;
 
-import com.jogamp.opengl.util.texture.Texture;
-
 public abstract class ModelInstance implements Renderable {
 
 	protected Transform localTransform;
@@ -48,8 +46,6 @@ public abstract class ModelInstance implements Renderable {
 	public boolean castsShadows() {
 		return castsShadows;
 	}
-	
-	public abstract void setTexture(Texture texture);
 	
 	public void addChild(ModelInstance child) {
 		children.add(child);
