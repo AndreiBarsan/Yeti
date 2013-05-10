@@ -90,8 +90,7 @@ public class DRLightPass extends Technique {
 		program.setU1f("pointLight.Atten.Quadratic", pointLight.getQuadraticAttenuation());
 
 		if(pointLight.castsShadows()) {
-			assert false : "Not yet implemented!";
-			bindCubeMap(rs);
+			// bindCubeMap(rs);
 		} else {
 			program.setU1i("useShadows", false);
 		}
@@ -150,6 +149,11 @@ public class DRLightPass extends Technique {
 	}
 	
 	private void bindCubeMap(RendererState rs) {
-		// do cube shadow map stuff
+		program.setU1i("cubeSadowMap", 5);
+		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 5);
+		rs.getShadowMapCube().bind(rs.gl);
+		
+		program.setU1i("useShadows", true);
+		program.setU1i("shadowQuality", rs.getShadowQuality().getFlag());
 	}
 }

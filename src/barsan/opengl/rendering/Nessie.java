@@ -22,11 +22,14 @@ import barsan.opengl.rendering.techniques.DRGeometryPass;
 import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
+import barsan.opengl.rendering.techniques.PointLightSM;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
+
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  * Nessie is our Deferred Renderer. The development process will involve several
@@ -200,12 +203,14 @@ public class Nessie extends Renderer {
 	int cubeMapSide = 1024;
 	int fboShadowFlat = -1;
 	int fboShaodwCube = -1;
+	Texture texShadowCube;
 
 	public Mode mode;
 	private GBuffer gbuffer;
 	private static final String pre = "[NESSIE] ";
 	private NullTechnique nullTechnique;
 	private FlatTechnique flatTechnique;
+	private PointLightSM pointLightSMTechnique;
    	private DRLightPass lightPassTechnique;
 	private DRGeometryPass geomPassTechnique;
 	
@@ -231,6 +236,7 @@ public class Nessie extends Renderer {
 	   	lightPassTechnique = new DRLightPass();
 		geomPassTechnique = new DRGeometryPass(GBuffer.COMPONENT_COUNT);
 		flatTechnique = new FlatTechnique();
+		pointLightSMTechnique = new PointLightSM();
 		
 		shadowQuality = ShadowQuality.High;
 		
@@ -248,11 +254,17 @@ public class Nessie extends Renderer {
 		slVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		plVolume.getMaterial().setDiffuse(new Color(0.6f, 0.2f, 0.2f, 1.0f));
 		
+		setupFlatShadowmap();
+		setupCubeShadowmap();
+	}
+	
+	private void setupFlatShadowmap() {
 		int[] intBuffer = new int[1];
 		gl.glGenFramebuffers(1, intBuffer, 0);
 		fboShadowFlat = intBuffer[0];
 		
 		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, fboShadowFlat);
+		
 		gl.glGenTextures(1, intBuffer, 0);
 		state.shadowTexture = intBuffer[0];
 		
@@ -272,11 +284,53 @@ public class Nessie extends Renderer {
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
 		
 		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT,
-				GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
+				GL2.GL_TEXTURE_2D, state.shadowTexture, 0);
+		
 		gl.glDrawBuffer(GL2.GL_NONE);
 		
 		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
 		GLHelp.fboErr(gl);
+	}
+	
+	private void setupCubeShadowmap() {
+		int[] intBuffer = new int[1];
+		gl.glGenFramebuffers(1, intBuffer, 0);
+		fboShaodwCube = intBuffer[0];
+		
+		//*
+		texShadowCube = new Texture(GL.GL_TEXTURE_CUBE_MAP);
+		texShadowCube.bind(gl);
+		
+		/*
+		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
+		//*/
+		
+		for(int face = 0; face < 6; face++) {
+			gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
+					cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
+					GL.GL_FLOAT, null);
+		 }
+		// */
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShaodwCube);
+		
+		//*
+		gl.glFramebufferTexture(GL2.GL_FRAMEBUFFER,
+					GL2.GL_DEPTH_ATTACHMENT, 
+					texShadowCube.getTextureObject(gl),
+					0);
+		//			*/
+			
+		// Don't bind any texture here
+		gl.glDrawBuffer(GL2.GL_NONE); 
+		gl.glReadBuffer(GL2.GL_NONE);
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+		
+		GLHelp.checkError(gl);
+		
+		GLHelp.fboErr(gl);	
 	}
 	
 	@Override
@@ -361,7 +415,9 @@ public class Nessie extends Renderer {
 	    	break;
 	    }
 		
-		GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
+		
+		// GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
+		GLHelp.dumpDepthCubeBuffer(10, 10, 200, 200, 1.0f, texShadowCube.getTextureObject(gl));
 		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
@@ -518,7 +574,8 @@ public class Nessie extends Renderer {
 				break;
 				
 			case Point:
-				preparePointSM((SpotLight)light);
+				preparePointSM((PointLight)light);
+				renderPLOccluders(state, (PointLight)light);
 				break;
 				
 			case Spot:
@@ -555,7 +612,8 @@ public class Nessie extends Renderer {
 	}
 	
 	private void preparePointSM(PointLight light) {
-		
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShaodwCube);
+		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 	}
 		
 	private void prepareSpotSM(SpotLight spotLight) {
@@ -588,6 +646,16 @@ public class Nessie extends Renderer {
 		Matrix4Stack ms = new Matrix4Stack();
 		for(ModelInstance mi : state.getScene().modelInstances) {
 			nullTechnique.renderDude(mi, state, ms);
+		}
+	}
+	
+	private void renderPLOccluders(RendererState state, PointLight light) {
+		pointLightSMTechnique.setLightPosition(light.getPosition());
+		// TODO: maybe base far on the light's range?
+		pointLightSMTechnique.setup(state);
+		Matrix4Stack ms = new Matrix4Stack();
+		for(ModelInstance mi : state.getScene().modelInstances) {
+			pointLightSMTechnique.renderDude(mi, state, ms);
 		}
 	}
 	

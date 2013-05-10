@@ -97,6 +97,7 @@ public abstract class Technique {
 		viewModel.set(view).mul(modelMatrix);
 		MVP.set(projection).mul(view).mul(modelMatrix);
 		
+		// TODO: maybe only bind these in techniques where they're actually needed?
 		program.setUMatrix4("mvpMatrix", MVP);
 		program.setUMatrix4("mMatrix", modelMatrix);
 		

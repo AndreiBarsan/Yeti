@@ -86,4 +86,29 @@ public class GLHelp {
 		screenQuad.getVertices().cleanUp(sqi);
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 	}
+	
+	public static void dumpDepthCubeBuffer(int x, int y, int w, int h, float depthRenFactor, int handle) {
+		int oldDim[] = new int[4];
+		GL3 gl = Yeti.get().gl;
+		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
+		
+		Shader dr = ResourceLoader.shader("depthCubeRender");
+		gl.glUseProgram(dr.getHandle());
+		dr.setU1i("colorMap", 0);
+		dr.setU1f("factor", depthRenFactor);
+	
+		gl.glActiveTexture(GLHelp.textureSlot[0]);
+		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, handle);
+		
+		int sqi = dr.getAttribLocation(Shader.A_POSITION);
+		gl.glViewport(10, 10, 200, 200);
+		screenQuad.getVertices().use(sqi);
+		
+		gl.glDisable(GL2.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		
+		screenQuad.getVertices().cleanUp(sqi);
+		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+	}
 }

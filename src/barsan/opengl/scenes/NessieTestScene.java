@@ -52,7 +52,7 @@ public class NessieTestScene extends Scene {
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
 				-10.0f, 0.0f), Vector3.UP.copy());
 
-		//*
+		/*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
 		dl.setCastsShadows(true);
 		dl.getDiffuse().a = 0.33f;
@@ -87,7 +87,7 @@ public class NessieTestScene extends Scene {
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
-				mat.setSpecularIntensity(10.0f);
+				mat.setSpecularIntensity(4.0f);
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
 						ResourceLoader.model("monkey"), mat);
@@ -96,19 +96,24 @@ public class NessieTestScene extends Scene {
 			}
 		}// */
 
-		//*
-		int lightLim = 4;
-		float lgs = 24.0f;
+		/*
+		int lightLim = 3;
+		float lgs = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 20.0f;
-				PointLight light = new PointLight(new Vector3(i * lgs, -4.0f, j * lgs), c);
-				light.setAttenuation(0.0f, 0.0f, 0.75f);
+				c.a = 12.0f;
+				PointLight light = new PointLight(new Vector3(i * lgs, -6.0f, j * lgs), c);
+				light.setAttenuation(0.0f, 0.0f, 0.5f);
 				lights.add(light);
 			}
 		}//*/
 
+		PointLight light = new PointLight(new Vector3(4, -2.0f, 15), Color.random());
+		light.setAttenuation(0.0f, 0.0f, 0.001f);
+		light.setCastsShadows(true);
+		lights.add(light);
+		
 		/*
 		int al = 6;
 		float sector = ((float) Math.PI * 2.0f) / al;

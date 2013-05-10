@@ -53,10 +53,7 @@ public abstract class Renderer {
 		}
 	}
 	protected ShadowQuality shadowQuality = ShadowQuality.Medium;
-	
-	protected float omniShadowNear = 0.1f;
-	protected float omniShadowFar = 100.0f;
-	
+		
 	protected Vector3 directionalShadowCenter = new Vector3();
 	protected Vector2 directionalShadowSize = new Vector2(100, 100);
 	protected Vector2 directionalShadowDepth = new Vector2(-100, 100);
@@ -120,22 +117,7 @@ public abstract class Renderer {
 	public void setShadowQuality(ShadowQuality shadowQuality) {
 		this.shadowQuality = shadowQuality;
 	}
-	public float getOmniShadowNear() {
-		return omniShadowNear;
-	}
-
-	public void setOmniShadowNear(float omniShadowNear) {
-		this.omniShadowNear = omniShadowNear;
-	}
-
-	public float getOmniShadowFar() {
-		return omniShadowFar;
-	}
-
-	public void setOmniShadowFar(float omniShadowFar) {
-		this.omniShadowFar = omniShadowFar;
-	}
-
+	
 	public Vector2 getDirectionalShadowDepth() {
 		return directionalShadowDepth;
 	}

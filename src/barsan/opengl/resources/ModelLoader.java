@@ -364,17 +364,19 @@ public class ModelLoader {
 		return result;
 	}
 	
+	/** Builds a Quad over the plane defined by X and Z. Useful for floors. */
 	public static StaticModel buildQuadXZ(float width, float height) {
 		return buildQuad(width, height, true);
 	}
 	
+	/** Builds a Quad over the plane defined by X and Y. Useful for screen-oriented
+	 * stuff, like billboards and post-process stuff. */
 	public static StaticModel buildQuadXY(float width, float height) {
 		return buildQuad(width, height, false);
 	}
 	
 	/**
 	 * Builds a simple quad.
-	 * 
 	 * @param xz whether to build the quad in the xz plane. xy otherwise.
 	 */
 	private static StaticModel buildQuad(float width, float height, boolean xz) {

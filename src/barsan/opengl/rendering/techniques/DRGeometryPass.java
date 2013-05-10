@@ -46,7 +46,8 @@ public class DRGeometryPass extends Technique {
 		Texture normalMap = material.getNormalMap();
 		if(normalMap != null) {
 			program.setU1i("useBump", true);
-			program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
+			// Note: having this disabled means no non-uniform scaling is allowed
+			// program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
 			bindTexture(rs, normalMap, "normalMap", normalMapSlot);
 		} else {
 			program.setU1i("useBump", false);

@@ -43,6 +43,8 @@ uniform vec4 matAmbient;
 uniform vec4 matDiffuse;
 uniform vec4 matSpecular;
 
+uniform vec3 eyeWorldPos;
+
 // Cubic attenuation parameters
 uniform float constantAt;
 uniform float linearAt;
@@ -246,7 +248,8 @@ void main() {
 	if(intensity > 0.0f && shininess > 0.0f) {
 		// Specular light
 		vec3 vReflection = normalize(reflect(-nLightDir, nNormal));
-		float spec = max(0.0, dot(nNormal, vReflection));
+		vec3 vertexToEye = normalize(eyeWorldPos - vertPos_wc);
+		float spec = max(0.0, dot(vertexToEye, vReflection));
 		float fSpec = pow(spec, shininess) * lightSpecular.a;
 		cf += intensity * vec3(fSpec) * lightSpecular.rgb * matSpecular.rgb;
 	}
@@ -270,12 +273,12 @@ void main() {
 	//vFragColor += texture(cubeShadowMap, vec3(1.0f, 2.3f, 1.0f));
 	//vFragColor += vec4(vertexTangent_cameraspace, 1.0f);
 	//vFragColor += vec4(intensity, intensity, intensity, 1.0f);
-	vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
+	// vFragColor += vec4(texture(shadowMap, vertPos_dmc.xy ).z) * 0.88f;	
 	//vFragColor += vec4(vertPos_dmc.z) * 0.5;
 	//vFragColor += vec4(d_l_current_fragment  / (far - near)); // works
 	//vFragColor += vec4(d_l_closest_occluder);
 	//float diff = texture( shadowMap, vertPos_dmc.xy ).z - vertPos_dmc.z;
 	//vFragColor += vec4(length(vertPos_wc - lightPos_wc) / (far - near));
 	//vFragColor += vec4(val);
-	vFragColor.a = 1.0f;
+	//vFragColor.a = 1.0f;
 } 	

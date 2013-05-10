@@ -25,6 +25,7 @@ public class LightComponent implements MaterialComponent {
 		}
 		
 		m.shader.setU1i("lightType", light.getType().ordinal());
+		m.shader.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
 		
 		if(light.getType() == LightType.Spot) {
 			SpotLight sl = (SpotLight)light;

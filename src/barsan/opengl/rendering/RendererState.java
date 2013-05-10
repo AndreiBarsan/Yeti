@@ -45,6 +45,9 @@ public class RendererState {
 	
 	private Scene scene;
 	
+	protected float omniShadowNear = 0.1f;
+	protected float omniShadowFar = 100.0f;
+	
 	public RendererState(Renderer renderer, GL3 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
@@ -67,7 +70,7 @@ public class RendererState {
 				program.setUMatrix4("mvpMatrixShadows", biasMVP);
 				
 			} else {
-				program.setU1f("far", renderer.getOmniShadowFar());
+				program.setU1f("far", getOmniShadowFar());
 			}
 			
 			program.setU1i("useShadows", true);
@@ -181,4 +184,21 @@ public class RendererState {
 	public ShadowQuality getShadowQuality() {
 		return renderer.getShadowQuality();
 	}
+	
+	public float getOmniShadowNear() {
+		return omniShadowNear;
+	}
+
+	public void setOmniShadowNear(float omniShadowNear) {
+		this.omniShadowNear = omniShadowNear;
+	}
+
+	public float getOmniShadowFar() {
+		return omniShadowFar;
+	}
+
+	public void setOmniShadowFar(float omniShadowFar) {
+		this.omniShadowFar = omniShadowFar;
+	}
+
 }

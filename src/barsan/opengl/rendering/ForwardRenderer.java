@@ -129,29 +129,29 @@ public class ForwardRenderer extends Renderer {
 				GL2.GL_DEPTH_COMPONENT,
 				GL2.GL_UNSIGNED_BYTE, //GL2.GL_FLOAT, 
 				null);
-		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
-		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-		 gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-		 gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
+		gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
 		 
-		 gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
-		 gl.glDrawBuffer(GL2.GL_NONE);
-		 fbo_shadows.unbind(gl);
+		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
+		gl.glDrawBuffer(GL2.GL_NONE);
+		fbo_shadows.unbind(gl);
 		 
-		 // Build the point light cubemap FBO
-		 gl.glGenFramebuffers(1, name, 0);
-		 fbo_pointShadows = name[0];
+		// Build the point light cubemap FBO
+		gl.glGenFramebuffers(1, name, 0);
+		fbo_pointShadows = name[0];
 		 
-		 state.cubeTexture = new Texture(GL.GL_TEXTURE_CUBE_MAP);
-		 state.cubeTexture.bind(gl);
-		 state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		 state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-		 state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-		 state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
-		 
-		 for(int face = 0; face < 6; face++) {
-			 /* How do you generate empty textures in JOGL? You need to feed
+		state.cubeTexture = new Texture(GL.GL_TEXTURE_CUBE_MAP);
+		state.cubeTexture.bind(gl);
+		state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+		state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+		state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
+		
+		for(int face = 0; face < 6; face++) {
+			/* How do you generate empty textures in JOGL? You need to feed
 			  * them TextureData, which need a Buffer. Allocating an empty buffer
 			  * for this seems silly, when I don't *want* any data in my texture.
 			  * 
@@ -160,25 +160,24 @@ public class ForwardRenderer extends Renderer {
 			  * because you can't actually use the Texture object with fbos
 			  * unless you're willing to hack the system a little.
 			  */
-			 gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
-					 cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
-					 GL.GL_FLOAT, null);
-			 
+			gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
+					cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
+					GL.GL_FLOAT, null);
 		 }
 		 
-		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
-		 // We obviously don't want to use glFramebufferTexture2D over here
-		 gl.glFramebufferTexture(GL2.GL_FRAMEBUFFER,
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
+		// We obviously don't want to use glFramebufferTexture2D over here
+		gl.glFramebufferTexture(GL2.GL_FRAMEBUFFER,
 					GL2.GL_DEPTH_ATTACHMENT, 
 					state.cubeTexture.getTextureObject(gl),
 					0);
 			
-		 // Don't bind any texture here
-		 gl.glDrawBuffer(GL2.GL_NONE); 
-		 gl.glReadBuffer(GL2.GL_NONE);
-		 gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
+		// Don't bind any texture here
+		gl.glDrawBuffer(GL2.GL_NONE); 
+		gl.glReadBuffer(GL2.GL_NONE);
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		 
-		 GLHelp.fboErr(gl);		
+		GLHelp.fboErr(gl);		
 	}
 			
 	@Override
@@ -265,7 +264,7 @@ public class ForwardRenderer extends Renderer {
 
 				PointLight pl = (PointLight)light;
 				
-				state.forceMaterial(new DepthWriterPoint(pl.getPosition(), omniShadowNear, omniShadowFar));
+				state.forceMaterial(new DepthWriterPoint(pl.getPosition(), state.omniShadowNear, state.omniShadowFar));
 				gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fbo_pointShadows);
 				
 				// Render to a cubemap
@@ -341,30 +340,12 @@ public class ForwardRenderer extends Renderer {
 		// Tiny debug renders
 		// TODO: maybe used glBlitFramebuffer?
 		if(scene.shadowsEnabled && renderDebug) {
-			Shader dr;
+			
 			if(light.getType() != LightType.Point) {
 				GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
 			}
 			else {
-				dr = ResourceLoader.shader("depthCubeRender");
-				gl.glUseProgram(dr.handle);
-				dr.setU1i("colorMap", 0);
-				float depthRenFactor = 15.0f;
-				dr.setU1f("factor", depthRenFactor);
-			
-				gl.glActiveTexture(GLHelp.textureSlot[0]);
-				state.cubeTexture.bind(gl);
-				
-				int sqi = dr.getAttribLocation(Shader.A_POSITION);
-				gl.glViewport(10, 10, 200, 200);
-				screenQuad.getVertices().use(sqi);
-				
-				gl.glDisable(GL2.GL_DEPTH_TEST);
-				gl.glDrawArrays(GL2.GL_QUADS, 0, screenQuad.getVertices().getSize());		
-				gl.glEnable(GL2.GL_DEPTH_TEST);
-				
-				screenQuad.getVertices().cleanUp(sqi);
-				gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+				GLHelp.dumpDepthCubeBuffer(10, 10, 200, 200, 1.0f, state.getShadowMapCube().getTextureObject(gl));
 			}
 		}
 	}

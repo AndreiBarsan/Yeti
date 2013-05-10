@@ -4,40 +4,6 @@
 // Valve-tier GLSL code cleanliness, man!
 // If you're somehow reading this, thank you a million times for all the tutorials!
 
-uniform vec2 screenSize;
-
-uniform sampler2D positionMap;
-uniform sampler2D colorMap;
-uniform sampler2D normalMap;
-uniform sampler2D shadowMap;
-
-uniform bool useShadows;
-uniform mat4 biasMatrix;
-uniform mat4 vpMatrixShadows;
-uniform int shadowQuality;
-
-const float bias = 0.01f;
-const float pFac = 6500.0f;
-
-const vec2 pD[16] = vec2[]( 
-   vec2( -0.94201624, -0.39906216 ), 
-   vec2( 0.94558609, -0.76890725 ), 
-   vec2( -0.094184101, -0.92938870 ), 
-   vec2( 0.34495938, 0.29387760 ), 
-   vec2( -0.91588581, 0.45771432 ), 
-   vec2( -0.81544232, -0.87912464 ), 
-   vec2( -0.38277543, 0.27676845 ), 
-   vec2( 0.97484398, 0.75648379 ), 
-   vec2( 0.44323325, -0.97511554 ), 
-   vec2( 0.53742981, -0.47373420 ), 
-   vec2( -0.26496911, -0.41893023 ), 
-   vec2( 0.79197514, 0.19090188 ), 
-   vec2( -0.24188840, 0.99706507 ), 
-   vec2( -0.81409955, 0.91437590 ), 
-   vec2( 0.19984126, 0.78641367 ), 
-   vec2( 0.14383161, -0.14100790 ) 
-);
-
 struct BaseLight
 {
     vec3 Color;
@@ -78,15 +44,54 @@ uniform PointLight 			pointLight;
 uniform SpotLight			spotLight;
 uniform DirectionalLight	dirLight;
 
+uniform vec2 screenSize;
+
+uniform sampler2D 	positionMap;
+uniform sampler2D 	colorMap;
+uniform sampler2D 	normalMap;
+
+uniform sampler2D 	shadowMap;
+uniform samplerCube cubeShadowMap;
+
 uniform vec3 		eyeWorldPos;
 uniform int 		lightType;
 
+uniform bool 		useShadows;
+uniform mat4 		biasMatrix;
+uniform mat4 		vpMatrixShadows;
+uniform int 		shadowQuality;
+
+uniform float 		far;
+
+const float 		bias = 0.01f;
+const float 		pFac = 6500.0f;
+
+const vec2 pD[16] = vec2[]( 
+   vec2( -0.94201624, -0.39906216 ), 
+   vec2( 0.94558609, -0.76890725 ), 
+   vec2( -0.094184101, -0.92938870 ), 
+   vec2( 0.34495938, 0.29387760 ), 
+   vec2( -0.91588581, 0.45771432 ), 
+   vec2( -0.81544232, -0.87912464 ), 
+   vec2( -0.38277543, 0.27676845 ), 
+   vec2( 0.97484398, 0.75648379 ), 
+   vec2( 0.44323325, -0.97511554 ), 
+   vec2( 0.53742981, -0.47373420 ), 
+   vec2( -0.26496911, -0.41893023 ), 
+   vec2( 0.79197514, 0.19090188 ), 
+   vec2( -0.24188840, 0.99706507 ), 
+   vec2( -0.81409955, 0.91437590 ), 
+   vec2( 0.19984126, 0.78641367 ), 
+   vec2( 0.14383161, -0.14100790 ) 
+);
 
 out vec4 vFragColor;
 
-// Global stuff :(
-float NL;
+float NL;	/* atm not used */
 vec4 vertPos_dmc;
+vec3 WorldPos;
+vec3 Color;
+vec3 Normal;
 
 vec2 CalcTexCoord() {
    return gl_FragCoord.xy / screenSize;
@@ -98,20 +103,39 @@ float rand(in vec3 seed3, in int index) {
     return fract(sin(dot_product) * 43758.5453);
 }
 
-// Compute a point's visiblity based on a shadow map, in relation to either a
-// directional light, or a spotlight
-float computeVisibility() {
-	float visibility = 1.0f;
 
-	if( ! useShadows) {
-		return visibility;
+float computeVisibilityCube() {
+	float visibility = 1.0f;
+	
+	vec3 cm_lookup_vec = WorldPos - pointLight.Position;
+	float d_l_closest_occluder = texture(cubeShadowMap, cm_lookup_vec ).z;
+	float d_l_current_fragment = length(cm_lookup_vec);
+	
+	d_l_closest_occluder *= far;
+	
+	float t_bias = bias;
+	if(shadowQuality > 1) {
+	//	t_bias *= tan(acos(NL));	
+	//	t_bias  = clamp(t_bias, 0.00f, bias);
+	}
+
+	if( d_l_closest_occluder  + t_bias < d_l_current_fragment ) {
+		visibility = 0.3f;
 	}
 	
+	return visibility;
+}
+
+// Compute a point's visiblity based on a shadow map, in relation to either a
+// directional light, or a spotlight
+float computeVisibilityFlat() {
+
+	float visibility = 1.0f;
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
 	
-	// Note: maybe re-introduce NL-based check 
+	// TODO: re-introduce NL-based check 
 	float t_bias = bias;
 	
 	if( vertPos_dmc.w <= 0 ) {
@@ -124,25 +148,29 @@ float computeVisibility() {
 				visibility = 0.2f;
 			}
 		}
-		else if(shadowQuality == 3) {
+		else {
 			for (int i = 0; i < 16; i++) {
 				vec2 coord = sc + pD[i] / pFac;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
     				visibility -= 0.05;
   				}
 			}
-		} else if(shadowQuality >= 4) {
-			for (int i = 0; i < 4; i++) {
-				int index = int(mod(16.0 * rand(gl_FragCoord.xyy, i), 16));
-				vec2 coord = sc + pD[index] / pFac;
-				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    				visibility -= 0.2;
-  				}
-			}
-  		}
+		}
 	}
 
 	return visibility;
+}
+
+float computeVisibility() {
+	if( ! useShadows) {
+		return 1.0f;
+	}
+	
+	if(lightType == 1) {
+		return computeVisibilityCube();
+	}
+	
+	return computeVisibilityFlat();
 }
 
 vec4 CalcLightInternal(BaseLight Light,
@@ -161,7 +189,8 @@ vec4 CalcLightInternal(BaseLight Light,
         dColor = vec4(Light.Color, 1.0f) * Light.DiffuseIntensity * DiffuseFactor;
 
 		vec3 vReflection = normalize(reflect(LightDirection, Normal));
-		float spec = max(0.0, dot(Normal, vReflection));
+		vec3 vertexToEye = normalize(eyeWorldPos - WorldPos);
+		float spec = max(0.0, dot(vertexToEye, vReflection));
         float SpecularFactor = pow(spec, SpecularPower);
         if (SpecularFactor > 0) {
             sColor = vec4(Light.Color, 1.0f) * SpecularIntensity * SpecularFactor;
@@ -217,9 +246,9 @@ void main(void) {
 	vec4 cdata = texture(colorMap, TexCoord);
 	vec4 ndata = texture(normalMap, TexCoord);
 	
-   	vec3 WorldPos = pdata.xyz;
-   	vec3 Color = cdata.xyz;
-   	vec3 Normal = normalize(ndata.xyz);
+   	WorldPos = pdata.xyz;
+   	Color = cdata.xyz;
+   	Normal = normalize(ndata.xyz);
 
 	float MSI = cdata.a;
 	float SP = ndata.a;
