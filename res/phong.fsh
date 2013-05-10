@@ -164,8 +164,6 @@ float computeVisibility(in float NL) {
 		t_bias  = clamp(t_bias, 0.00f, bias);
 	}
 	
-	// we don't even *need* to project the vertex on a certain texture when
-	// doing omnidirectional shadowmapping
 	if( vertPos_dmc.w <= 0 ) {
 		visibility = 1.0f;
 	} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {

@@ -64,12 +64,15 @@ public class GlobalConsole implements KeyListener, InputProvider {
 				default:
 				if(consoleEnabled) {
 					char ch = e.getKeyChar();
-					if(Character.isJavaIdentifierPart(ch) || ch == ' ') {
+					if(Character.isJavaIdentifierPart(ch) ||
+							".,- +/*".contains(String.valueOf(ch))) {
 						consoleInput += ch;
 					}
 					
 					if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-						consoleInput = consoleInput.substring(0, consoleInput.length() - 2);
+						if(consoleInput.length() > 0) {
+							consoleInput = consoleInput.substring(0, consoleInput.length() - 2);
+						}
 					}
 					
 					e.consume();

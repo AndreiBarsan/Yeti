@@ -18,7 +18,9 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
@@ -30,8 +32,14 @@ import javax.media.opengl.GLProfile;
 import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsole;
 import barsan.opengl.input.InputProvider;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.lights.DirectionalLight;
+import barsan.opengl.rendering.lights.Light;
+import barsan.opengl.rendering.lights.PointLight;
+import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.GameScene;
@@ -39,6 +47,7 @@ import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.MenuScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.ConsoleRenderer;
+import barsan.opengl.util.ReflectUtil;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -130,13 +139,11 @@ public class Yeti implements GLEventListener {
 		
 		settings.playing = false;
 		
-		// Create blank cursor
+		// Create blank cursor (used for hidin the mouse)
 		// Transparent 16 x 16 pixel cursor image.
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-
-		// Create a new blank cursor used for hiding the mouse
-		blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-		    cursorImg, new Point(0, 0), "blank cursor");
+		blankCursor = Toolkit.getDefaultToolkit()
+				.createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 
 	}
 	
@@ -177,6 +184,52 @@ public class Yeti implements GLEventListener {
 				out += c.getSimpleName() + "\n";
 			}
 			return out;
+			
+		case "l":
+			Scene s = Yeti.get().currentScene;
+			try {
+				if(args.length <= 2) {
+					return "At least 3 parameters needed.";
+				}
+				
+				int id = Integer.parseInt(args[0]);
+				List<Light> la = s.getLights();
+				if(la.size() <= id) {
+					return "Only " + la.size() + " lights available."; 
+				}
+				
+				Light currentLight = la.get(id);
+				Class<?> LC = 
+					currentLight.getType() == LightType.Directional ? DirectionalLight.class
+					: currentLight.getType() == LightType.Point ?	PointLight.class
+					: SpotLight.class;
+				
+				Field lightFields[] = LC.getDeclaredFields();
+				Field target = null;
+				for(Field f : lightFields) {
+					if(f.getName().toUpperCase().equals(args[1].toUpperCase())) {
+						target = f;
+						break;
+					}
+				}
+				
+				if(target == null) {
+					return "Field " + args[1] + " not found.";
+				}
+				
+				try {
+					String parseParams[] = Arrays.copyOfRange(args, 2, args.length);
+					ReflectUtil.setParameter(currentLight, target, parseParams);
+					return "Set field " + target.getName() + " to " + Arrays.toString(parseParams);
+					
+				} catch(IllegalArgumentException | IllegalAccessException e) {
+					e.printStackTrace();
+					return "Bad parameter value(s)";
+				}
+			
+			} catch(NumberFormatException e) {
+				return "The first parameter must be a number.";
+			}
 			
 		case "rs":
 			// refresh shaders

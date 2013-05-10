@@ -11,12 +11,13 @@ uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D shadowMap;
 
+uniform bool useShadows;
 uniform mat4 biasMatrix;
 uniform mat4 vpMatrixShadows;
 uniform int shadowQuality;
 
 const float bias = 0.01f;
-const float pFac = 2500.0f;
+const float pFac = 6500.0f;
 
 const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 
@@ -101,14 +102,18 @@ float rand(in vec3 seed3, in int index) {
 // directional light, or a spotlight
 float computeVisibility() {
 	float visibility = 1.0f;
+
+	if( ! useShadows) {
+		return visibility;
+	}
+	
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
 	
+	// Note: maybe re-introduce NL-based check 
 	float t_bias = bias;
 	
-	// we don't even *need* to project the vertex on a certain texture when
-	// doing omnidirectional shadowmapping
 	if( vertPos_dmc.w <= 0 ) {
 		visibility = 1.0f;
 	} else if(sc.x <= 0.0 || sc.x >= 1.0f || sc.y <= 0.0 || sc.y >= 1.0f) {
@@ -148,8 +153,6 @@ vec4 CalcLightInternal(BaseLight Light,
 {
     vec4 AmbientColor = vec4(Light.Color, 1.0f) * Light.AmbientIntensity;
     float DiffuseFactor = dot(Normal, -LightDirection);
-
-	//NL = dot(normalize(Normal), normalize(LightDirection));
 
     vec4 dColor  = vec4(0, 0, 0, 0);
     vec4 sColor = vec4(0, 0, 0, 0);
@@ -198,8 +201,8 @@ vec4 calcSpotLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {
 		float cos_cur = dot(normalize(spotLight.Direction), nLightDir);
 		float spotEffect = clamp((cos_cur - cos_outer_cone) / cos_diff, 0.0, 1.0);
 		spotEffect = pow(spotEffect, spotLight.Exponent);
-		
-		return Color * spotEffect * computeVisibility();
+
+		return Color * spotEffect;
 }
 
 vec4 calcDirLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {
@@ -221,12 +224,6 @@ void main(void) {
 	float MSI = cdata.a;
 	float SP = ndata.a;
 
-	// Computation needs to be done in the light space
-	//WorldPos = (vec4(WorldPos, 1.0f) * (invCamP * invCamV)).xyz;
-	vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
-	//Color = texture(shadowMap, vertPos_dmc.xy / vertPos_dmc.w).rgb;
-	//Color = vec3(vertPos_dmc.rgb / 200);
-
 	if(lightType == 0) {		// Directional
 		vFragColor = vec4(Color, 1.0f) * calcDirLight(WorldPos, Normal, MSI, SP);
 	}
@@ -235,5 +232,25 @@ void main(void) {
 	} 
 	else {						// Spot
 		vFragColor = vec4(Color, 1.0) * calcSpotLight(WorldPos, Normal, MSI, SP);
+	}
+
+	// Computation needs to be done in the light space
+	if(useShadows) {
+		vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
+		vFragColor *= computeVisibility();
+
+
+		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
+		vec2 sc  = sc4.xy;		
+	
+		float closestOcc = texture(shadowMap, sc).z; 
+		float me = (vertPos_dmc.z - 0.01) /  vertPos_dmc.w ;
+		//vFragColor -= 0.99 * vFragColor;
+		//if(me < closestOcc) {
+		//	vFragColor += vec4(1.0f, 0.33f, 0.33f, 1.0f); 
+		//}
+		
+		//vFragColor += vec4(vec3(vertPos_dmc.z), 1.0f);
+		//vFragColor += vec4(vec3(closestOcc) / 10, 1.0f);
 	}
 }

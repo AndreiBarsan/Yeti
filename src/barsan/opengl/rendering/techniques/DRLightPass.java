@@ -56,14 +56,19 @@ public class DRLightPass extends Technique {
 		program.setU1f("dirLight.Base.AmbientIntensity", 0.0f);
 		program.setU1f("dirLight.Base.DiffuseIntensity", light.getDiffuse().a);
 				
+		if(light.castsShadows()) {
+			bindFlatMap(rs);
+		} else {
+			program.setU1i("useShadows", false);
+		}
+		
 		quad.techniqueRender();
 	}
 	
 
 	public void drawPointLight(ModelInstance volume, PointLight pointLight, RendererState rs) {
 		float scale = pointLight.getBoundingRadius();
-		Transform t = new Transform().setTranslate(pointLight.getPosition())
-				.setScale(scale);
+		Transform t = new Transform().setTranslate(pointLight.getPosition()).setScale(scale);
 		t.refresh();
 		Matrix4 modelMatrix = t.get();
 		
@@ -84,6 +89,13 @@ public class DRLightPass extends Technique {
 		program.setU1f("pointLight.Atten.Linear", pointLight.getLinearAttenuation());
 		program.setU1f("pointLight.Atten.Quadratic", pointLight.getQuadraticAttenuation());
 
+		if(pointLight.castsShadows()) {
+			assert false : "Not yet implemented!";
+			bindCubeMap(rs);
+		} else {
+			program.setU1i("useShadows", false);
+		}
+		
 		volume.techniqueRender();
 	}
 	
@@ -112,23 +124,32 @@ public class DRLightPass extends Technique {
 		program.setU1f("spotLight.Exponent", spotLight.getExponent());
 		
 		if(spotLight.castsShadows()) {
-			program.setU1i("shadowMap", 4);
-			rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 4);
-			rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);
-			
-			Matrix4 projection = rs.depthProjection;
-			Matrix4 view = rs.depthView;
-			
-			Matrix4 VP = new Matrix4(projection).mul(view);
-			
-			program.setUMatrix4("vpMatrixShadows", VP);
-			program.setUMatrix4("mMatrix", modelMatrix);
-			program.setUMatrix4("biasMatrix", Renderer.shadowBiasMatrix);
-			
-			program.setU1i("useShadows", true);
-			program.setU1i("shadowQuality", rs.getShadowQuality().getFlag());
+			bindFlatMap(rs);
+		} else {
+			program.setU1i("useShadows", false);
 		}
 		
 		volume.techniqueRender();
+	}
+	
+	private void bindFlatMap(RendererState rs) {
+		program.setU1i("shadowMap", 4);
+		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + 4);
+		rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, rs.shadowTexture);
+		
+		Matrix4 projection = rs.depthProjection;
+		Matrix4 view = rs.depthView;
+		
+		Matrix4 VP = new Matrix4(projection).mul(view);
+		
+		program.setUMatrix4("vpMatrixShadows", VP);
+		program.setUMatrix4("biasMatrix", Renderer.shadowBiasMatrix);
+		
+		program.setU1i("useShadows", true);
+		program.setU1i("shadowQuality", rs.getShadowQuality().getFlag());
+	}
+	
+	private void bindCubeMap(RendererState rs) {
+		// do cube shadow map stuff
 	}
 }

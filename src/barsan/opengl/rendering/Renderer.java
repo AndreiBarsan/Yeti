@@ -59,7 +59,7 @@ public abstract class Renderer {
 	
 	protected Vector3 directionalShadowCenter = new Vector3();
 	protected Vector2 directionalShadowSize = new Vector2(100, 100);
-	protected Vector2 directionalShadowDepth = new Vector2(-80, 100);
+	protected Vector2 directionalShadowDepth = new Vector2(-100, 100);
 	
 	protected boolean sortBillboards = true;
 	protected GL3 gl;

@@ -53,21 +53,10 @@ public class NessieTestScene extends Scene {
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
 				-10.0f, 0.0f), Vector3.UP.copy());
 
-		// lights.add(mainLight = new PointLight(new Vector3(-0.25f, 5.0f,
-		// 0.0f), new Color(1.0f, 1.0f, 0.9f, 5.0f)));
-		// lights.add(new PointLight(new Vector3(1.2f, -.1f, 1f), new
-		// Color(0.9f, 0.9f, 0.9f, 1.0f)));
-		// lights.add(new PointLight(new Vector3(3f, 10.0f, 0.0f), new
-		// Color(0.9f, 0.9f, 0.9f, 1.0f)));
-		// mainLight.setAttenuation(1.0f, 2.5f, 1.0f, 0.0f);
-		PointLight l = new PointLight(new Vector3(0.1f, 0.75f, 0.33f),
-				new Color(1.0f, 1.0f, 1.0f, 1.0f));
-		// l.setAttenuation(1.0f, 0.25f, 1.0f, 0.0f);
-		// lights.add(l);
-
-		/*
-		lights.add(new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f)
-				.normalize()));
+		//*
+		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
+		dl.setCastsShadows(true);
+		lights.add(dl);
 		//*/
 		l2 = new PointLight(new Vector3(-0.5f, -2.75f, -0.33f), new Color(1.0f,
 				1.0f, 0.5f, 3.44f));
@@ -91,8 +80,8 @@ public class NessieTestScene extends Scene {
 		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
 		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
 		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
-		floor.getMaterial().setSpecularIntensity(2.0f);
-		floor.getMaterial().setSpecularPower(512);
+		floor.getMaterial().setSpecularIntensity(0.8f);
+		floor.getMaterial().setSpecularPower(127);
 		addModelInstance(floor);
 
 		// BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f,
@@ -112,7 +101,7 @@ public class NessieTestScene extends Scene {
 			}
 		}// */
 
-		//*
+		/*
 		int lightLim = 2;
 		float lgs = 24.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
@@ -123,7 +112,7 @@ public class NessieTestScene extends Scene {
 			}
 		}//*/
 
-		//*
+		/*
 		int al = 6;
 		float sector = ((float) Math.PI * 2.0f) / al;
 		for (int i = 0; i < al; ++i) {
@@ -150,7 +139,7 @@ public class NessieTestScene extends Scene {
 				(float) Math.cos(MathUtil.DEG_TO_RAD * 75.0f), 1.0f);
 		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
 		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.55f));
-		lights.add(spot);
+		// lights.add(spot);
 		// spot.setCastsShadows(true);
 
 		addInput(new InputAdapter() {

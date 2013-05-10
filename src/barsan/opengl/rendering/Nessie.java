@@ -12,6 +12,7 @@ import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.cameras.Camera;
+import barsan.opengl.rendering.cameras.OrthographicCamera;
 import barsan.opengl.rendering.cameras.PerspectiveCamera;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light;
@@ -269,9 +270,6 @@ public class Nessie extends Renderer {
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
 		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-		// Do we need border color?
-		//gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
-		
 		
 		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT,
 				GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
@@ -313,15 +311,11 @@ public class Nessie extends Renderer {
 	}	
 	
 	private void lightingPass(Scene scene) {		
-		// Disable depth writing for this step
-	    gl.glDepthMask(false);
-	    gl.glDisable(GL2.GL_DEPTH_TEST);
 		gbuffer.bindForLightPass();
 		
 		switch(mode) {
 	    
 	    case DrawGBuffer:
-	    	
 			int w = Yeti.get().settings.width;
 			int h = Yeti.get().settings.height;
 			int halfW = w / 2;
@@ -358,7 +352,7 @@ public class Nessie extends Renderer {
 	    	gl.glDisable(GL2.GL_CULL_FACE);
 	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
 	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
-	      	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, 300, 300);
+	      	// gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, 300, 300);
 	      	flatTechnique.setup(state);
 	       	for(Light l : scene.lights) {
 				renderLightVolume(l, false);
@@ -367,7 +361,7 @@ public class Nessie extends Renderer {
 	    	break;
 	    }
 		
-		GLHelp.dumpDepthBuffer(10, 10, 200, 200, 15.0f, state.shadowTexture);
+		GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
 		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
@@ -375,8 +369,8 @@ public class Nessie extends Renderer {
 	}
 	
 	private void renderLightVolume(Light light, boolean computeLight) {
-		// Perform the stencil step
 		if(computeLight) {
+			// Compute shadow map, if needed
 			gl.glEnable(GL2.GL_DEPTH_TEST);
 			
 			if(light.castsShadows()) {
@@ -385,15 +379,16 @@ public class Nessie extends Renderer {
 			}
 
 			// Re-bind the gbuffer
-			this.gbuffer.bindForLightPass();
-			
+			gbuffer.bindForLightPass();
+
+			// Perform the stencil step
 			nullTechnique.setup(state);
 			gl.glDepthMask(false);
 			gbuffer.bindForStencilPass();
 			gl.glDisable(GL2.GL_CULL_FACE);
 			gl.glClear(GL2.GL_STENCIL_BUFFER_BIT);
 			
-			// Stencil operations are simply set once, in the init() method
+			// Note: stencil operations are simply set once, in the init() method
 			gl.glStencilFunc(GL2.GL_ALWAYS, 0, 0);
 		}
 		
@@ -484,8 +479,6 @@ public class Nessie extends Renderer {
 		}
 		
 		angle += MathUtil.RAD_TO_DEG * (float)Math.acos(Vector3.Y.dot(lightDir));
-		// System.out.println(angle);
-		//angle += 90.0f;
 		
 		// Compute cone scale and rotation based on the light
 		slVolume.getTransform()
@@ -495,7 +488,10 @@ public class Nessie extends Renderer {
 			.refresh();
 		
 		if(computeLight) {
+			// Perform the stencil test
 			nullTechnique.renderDude(slVolume, state, nullStack);
+			
+			// And then draw the volume
 			prepareLightPass(state);
 			lightPassTechnique.drawSpotLight(slVolume, l, state);
 		} else {
@@ -516,24 +512,52 @@ public class Nessie extends Renderer {
 		gl.glGetIntegerv(GL2.GL_VIEWPORT, oldDim, 0);
 		
 		switch(light.getType()) {
-			case Spot:
-				prepareSpotSM((SpotLight)light);
+			case Directional:
+				prepareDirectionalSM((DirectionalLight)light);
+				renderOccluders(state, light);
 				break;
 				
-			default:
-				throw new UnsupportedOperationException("Only Spot lights can cast shadows at the moment in Nessie");
+			case Point:
+				preparePointSM((SpotLight)light);
+				break;
+				
+			case Spot:
+				prepareSpotSM((SpotLight)light);
+				renderOccluders(state, light);
+				break;
 		}
 		
-		//*
-		nullTechnique.setup(state);
-		Matrix4Stack ms = new Matrix4Stack();
-		for(ModelInstance mi : state.getScene().modelInstances) {
-			nullTechnique.renderDude(mi, state, ms);
-		}//*/
+		
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 		state.setCamera(aux);
 	}
 	
+	private void prepareDirectionalSM(DirectionalLight light) {
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShadowFlat);
+		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
+		
+		OrthographicCamera oc = new OrthographicCamera(
+				(int) directionalShadowSize.x,
+				(int) directionalShadowSize.y
+				);
+		oc.setFrustumNear(directionalShadowDepth.y);
+		oc.setFrustumFar(directionalShadowDepth.x);
+		
+		Vector3 ld = light.getDirection();
+		oc.lookAt(directionalShadowCenter.copy().add(ld),
+				directionalShadowCenter,
+				Vector3.UP);
+		gl.glViewport(0, 0, shadowMapW, shadowMapH);
+		
+		state.setCamera(oc);
+		state.depthProjection = oc.getProjection().cpy();
+		state.depthView = oc.getView().cpy();
+	}
+	
+	private void preparePointSM(PointLight light) {
+		
+	}
+		
 	private void prepareSpotSM(SpotLight spotLight) {
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShadowFlat);
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
@@ -557,6 +581,14 @@ public class Nessie extends Renderer {
 		state.setCamera(pc);
 		state.depthProjection = pc.getProjection().cpy();
 		state.depthView = pc.getView().cpy();
+	}
+	
+	private void renderOccluders(RendererState state, Light light) {
+		nullTechnique.setup(state);
+		Matrix4Stack ms = new Matrix4Stack();
+		for(ModelInstance mi : state.getScene().modelInstances) {
+			nullTechnique.renderDude(mi, state, ms);
+		}
 	}
 	
 	class Effect {
