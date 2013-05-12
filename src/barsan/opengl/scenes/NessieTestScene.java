@@ -9,11 +9,14 @@ import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
+import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.Nessie;
 import barsan.opengl.rendering.Nessie.Mode;
+import barsan.opengl.rendering.Renderer.ShadowQuality;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.PointLight;
@@ -50,6 +53,8 @@ public class NessieTestScene extends Scene {
 		addInput(cameraInput = new CameraInput(camera));
 		gui = new DebugGUI(this, drawable.getAnimator());
 		gui.setPosition(10, 210);
+		
+		nessie.setShadowQuality(ShadowQuality.High);
 
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
 				-10.0f, 0.0f), Vector3.UP.copy());
@@ -57,7 +62,7 @@ public class NessieTestScene extends Scene {
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.70f;
+		dl.getDiffuse().a = 0.30f;
 		lights.add(dl);
 		//*/
 		
@@ -82,10 +87,28 @@ public class NessieTestScene extends Scene {
 		floor.getMaterial().setSpecularPower(127);
 		addModelInstance(floor);
 
+		StaticModel wm = ModelLoader.buildPlane(250.0f, 10.0f, 25, 1);
+		ModelInstance wall = new StaticModelInstance(wm);
+		wall.getTransform().updateTranslate(0.0f, -10.0f, 15.0f)
+							.updateRotation(1.0f, 0.0f, 0.0f, -90.0f);
+		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
+		wall.getMaterial().setSpecularIntensity(0.0f);
+		addModelInstance(wall);
+		
+		wall = new StaticModelInstance(wm);
+		wall.getTransform().updateTranslate(0.0f, 0.0f, 16.0f)
+							.updateRotation(1.0f, 0.0f, 0.0f, 90.0f);
+		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
+		wall.getMaterial().setSpecularIntensity(0.0f);
+		addModelInstance(wall);
+
+		
+		
 		// BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f,
 		// 0.9f));
 		// *
-		int mlim = 2;
+		int mlim = 3;
+		float mGrid = 3f;
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
@@ -93,18 +116,22 @@ public class NessieTestScene extends Scene {
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
 						ResourceLoader.model("monkey"), mat);
-				monkey.getTransform().updateTranslate(i * 4.2f, -8.5f, j * 4.2f);
+				monkey.getTransform().updateTranslate(i * mGrid, -8.5f, j * mGrid);
 				addModelInstance(monkey);
 			}
 		}// */
+		
+		float sz = mGrid * (mlim + 1) * 2;
+		nessie.setDirectionalShadowSize(new Vector2(sz, sz));
+		nessie.setDirectionalShadowCenter(new Vector3(-sz / 2, 0, 0));
 
-		/*
+		//*
 		int lightLim = 3;
 		float lgs = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 1.0f;
+				c.a = 16.0f;
 				PointLight light = new PointLight(new Vector3(i * lgs, -6.0f, j * lgs), c);
 				light.setAttenuation(0.0f, 0.0f, 1.5f);
 				lights.add(light);
@@ -113,13 +140,15 @@ public class NessieTestScene extends Scene {
 
 		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.random());
 		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
+		plShadowTest.getDiffuse().a = 5.0f;
 		plShadowTest.setCastsShadows(true);
-		//lights.add(plShadowTest);
+		lights.add(plShadowTest);
 		
-		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.WHITE.copy());
+		plShadowTest = new PointLight(new Vector3(4, -6.0f, -4.0f), Color.WHITE.copy());
 		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
+		plShadowTest.getDiffuse().a = 5.0f;
 		plShadowTest.setCastsShadows(true);
-		//lights.add(plShadowTest);
+		lights.add(plShadowTest);
 		
 		
 		/*
@@ -143,14 +172,14 @@ public class NessieTestScene extends Scene {
 			slights.add(spot);
 		}// */
 
-		SpotLight spot = new SpotLight(new Vector3(0.0f, 14.0f, 0.0f),
-				new Vector3(0.1f, -3.0f, 0.0f).normalize(),
-				(float) Math.cos(MathUtil.DEG_TO_RAD * 65.0f),
-				(float) Math.cos(MathUtil.DEG_TO_RAD * 75.0f), 1.0f);
+		SpotLight spot = new SpotLight(new Vector3(15.0f, 2.0f, 5.0f),
+				new Vector3(-8.0f, -3.0f, 0.0f).normalize(),
+				(float) Math.cos(MathUtil.DEG_TO_RAD * 25.0f),
+				(float) Math.cos(MathUtil.DEG_TO_RAD * 30.0f), 1.0f);
 		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
-		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 0.55f));
-		// lights.add(spot);
-		// spot.setCastsShadows(true);
+		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.75f));
+		lights.add(spot);
+		spot.setCastsShadows(true);
 
 		addInput(new InputAdapter() {
 			@Override
