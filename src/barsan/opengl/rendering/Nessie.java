@@ -381,13 +381,11 @@ public class Nessie extends Renderer {
 		break;
 		
 	    case DrawComposedScene:
-	    	//*
 	       	gl.glEnable(GL2.GL_STENCIL_TEST);
 			for(Light l : scene.lights) {
 				renderLightVolume(l, true);
 			}
 			gl.glDisable(GL2.GL_STENCIL_TEST);
-			//*/
 	    	break;
 		
 	    case DrawLightVolumes:

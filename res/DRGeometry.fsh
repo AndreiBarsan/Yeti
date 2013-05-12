@@ -38,6 +38,12 @@ void main() {
 		outDiffuse.rgb = matDiffuse.rgb;
 	}	
 	
+	/* 
+	outDiffuse.r = pow(outDiffuse.r, 2.2f);
+	outDiffuse.g = pow(outDiffuse.g, 2.2f);
+	outDiffuse.b = pow(outDiffuse.b, 2.2f);
+	*/
+	
 	// Write specular intensity to out-diffuse-alpha
 	outDiffuse.a = matSpecularIntensity;
 	// Write specular exponent to out-normal-alpha

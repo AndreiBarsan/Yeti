@@ -5,7 +5,6 @@
 
 #define UNLIT			0.1f
 #define PDSAMPLES		16
-#define UNLIT_STEP		UNLIT / PDSAMPLES
 
 // Structure heavily inspired by Etay Meiri's examples (http://ogldev.atspace.co.uk/index.html)
 // Extending for multiple light type support, normal mapping and shadow mapping 
@@ -74,7 +73,7 @@ uniform int 		shadowQuality;
 uniform float 		far;
 
 const float 		bias = 0.01f;
-const float 		cubeBias = 0.03f;
+const float 		cubeBias = 0.24f;
 const float 		pFac = 6500.0f;
 
 const vec2 pD[16] = vec2[]( 
@@ -142,14 +141,15 @@ float computeVisibilityCube() {
 float computeVisibilityFlat() {
 
 	float visibility = 1.0f;
+
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
 	 
 	float t_bias = bias;
 	if(shadowQuality > 1) {
-		t_bias *= tan(acos(NL));	
-		t_bias  = clamp(t_bias, 0.00f, bias);
+		//t_bias *= tan(acos(NL));	
+		//t_bias  = clamp(t_bias, 0.00f, bias);
 	}
 	
 	if( vertPos_dmc.w <= 0 ) {
@@ -165,8 +165,10 @@ float computeVisibilityFlat() {
 		else {
 			for (int i = 0; i < PDSAMPLES; i++) {
 				vec2 coord = sc + pD[i] / pFac;
+				float unlitStep = (1 - UNLIT);
+				unlitStep /= PDSAMPLES;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    				visibility -= UNLIT_STEP;
+    				visibility -= unlitStep;
   				}
 			}
 		}
@@ -180,7 +182,7 @@ float computeVisibility() {
 		return 1.0f;
 	}
 	
-	if(lightType == 1) {
+	if(lightType == L_POINT) {
 		return computeVisibilityCube();
 	}
 	
@@ -196,7 +198,7 @@ vec4 CalcLightInternal(BaseLight Light,
     vec4 AmbientColor = vec4(Light.Color, 1.0f) * Light.AmbientIntensity;
     float DiffuseFactor = dot(Normal, -LightDirection);
 
-	NL = DiffuseFactor;
+	NL = max(0.0f, DiffuseFactor);
 
     vec4 dColor  = vec4(0, 0, 0, 0);
     vec4 sColor = vec4(0, 0, 0, 0);
@@ -283,5 +285,21 @@ void main(void) {
 	if(useShadows) {
 		vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
 		vFragColor *= computeVisibility();
+
+		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
+		vec2 sc  = sc4.xy;	
+
+		//vFragColor -= 0.99f * vFragColor;
+		float v = (vertPos_dmc.z - bias) /  vertPos_dmc.w ;
+		float v2 = texture(shadowMap, sc).z; 
+
+		if(v2 < v) {
+			//vFragColor += vec4(1.0f);
+		}
+	 
 	}
+	
+	//vFragColor.r = pow(vFragColor.r, 1 / 2.2f);
+	//vFragColor.g = pow(vFragColor.g, 1 / 2.2f);
+	//vFragColor.b = pow(vFragColor.b, 1 / 2.2f);
 }

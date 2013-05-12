@@ -57,7 +57,7 @@ public class NessieTestScene extends Scene {
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.33f;
+		dl.getDiffuse().a = 0.70f;
 		lights.add(dl);
 		//*/
 		
@@ -98,28 +98,28 @@ public class NessieTestScene extends Scene {
 			}
 		}// */
 
-		//*
+		/*
 		int lightLim = 3;
 		float lgs = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 12.0f;
+				c.a = 1.0f;
 				PointLight light = new PointLight(new Vector3(i * lgs, -6.0f, j * lgs), c);
-				light.setAttenuation(0.0f, 0.0f, 0.5f);
+				light.setAttenuation(0.0f, 0.0f, 1.5f);
 				lights.add(light);
 			}
 		}//*/
 
 		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.random());
-		plShadowTest.setAttenuation(0.0f, 0.0f, 0.001f);
+		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
 		plShadowTest.setCastsShadows(true);
-		lights.add(plShadowTest);
+		//lights.add(plShadowTest);
 		
 		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.WHITE.copy());
-		plShadowTest.setAttenuation(0.0f, 0.0f, 0.005f);
+		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
 		plShadowTest.setCastsShadows(true);
-		lights.add(plShadowTest);
+		//lights.add(plShadowTest);
 		
 		
 		/*
