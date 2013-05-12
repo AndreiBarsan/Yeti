@@ -32,7 +32,7 @@ public class GLHelp {
 		if (code == GL.GL_NO_ERROR) {
 			Yeti.debug("No error!");
 		} else {
-			Yeti.screwed("GL error found: #" + code);
+			Yeti.screwed("GL error found: #0x" + Integer.toHexString(code));
 		}
 	}
 
@@ -101,7 +101,7 @@ public class GLHelp {
 		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, handle);
 		
 		int sqi = dr.getAttribLocation(Shader.A_POSITION);
-		gl.glViewport(10, 10, 200, 200);
+		gl.glViewport(x, y, w, h);
 		screenQuad.getVertices().use(sqi);
 		
 		gl.glDisable(GL2.GL_DEPTH_TEST);
@@ -110,5 +110,8 @@ public class GLHelp {
 		
 		screenQuad.getVertices().cleanUp(sqi);
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+		
+		/* Remove this and the engine crashes with a dreaded 0x502 error */
+		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 0);  
 	}
 }

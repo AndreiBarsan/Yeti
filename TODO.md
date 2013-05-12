@@ -1,13 +1,18 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
+Immediate:
+ - Saturday, 11: Omnidirectional shadow mapping in Nessie
+ - Sunday/Monday, 12-13: SSAO in Nessie (occlusion component should be visible alone, like 
+ GBuffer currently is)
+ - Tuesday/Thursday 14-15: convert forward renderer to Techniques  
+
 Bugs:
- - shadow volumes still broken when cones are pointing down
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 
  crashes; (maybe the updated JOGL fixed it (17.03 - check it!)
- - view matrix straight down causes problems
- - multitexture material broken
+ - view matrix straight down causes problems (also breaks directional shadow mapping!!!)
+ - multitexture material broken (TODO: just convert to technique)
  - actually find and write down the (rather old) matrix multiplication BUG
  
 Architecture issues:
@@ -19,6 +24,7 @@ Architecture issues:
  - this also causes numerous undefined states when certain samplers are unbound
    and shouldn't be used, but they get sampled anyway due to how branching works
    (or, well, doesn't work) on graphics cards
+   
  - handling global paradigm shifts like forward/deferred rendering is ATM rather
    tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    

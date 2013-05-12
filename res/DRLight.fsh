@@ -1,6 +1,16 @@
 #version 400 core
+#define L_DIRECTIONAL 	0
+#define L_POINT 		1
+#define L_SPOT			2
 
-// Structure heavily inspired by Etay Meiri's examples.
+#define UNLIT			0.1f
+#define PDSAMPLES		16
+#define UNLIT_STEP		UNLIT / PDSAMPLES
+
+// Structure heavily inspired by Etay Meiri's examples (http://ogldev.atspace.co.uk/index.html)
+// Extending for multiple light type support, normal mapping and shadow mapping 
+// by Andrei Barsan
+
 // Valve-tier GLSL code cleanliness, man!
 // If you're somehow reading this, thank you a million times for all the tutorials!
 
@@ -64,6 +74,7 @@ uniform int 		shadowQuality;
 uniform float 		far;
 
 const float 		bias = 0.01f;
+const float 		cubeBias = 0.03f;
 const float 		pFac = 6500.0f;
 
 const vec2 pD[16] = vec2[]( 
@@ -87,7 +98,7 @@ const vec2 pD[16] = vec2[](
 
 out vec4 vFragColor;
 
-float NL;	/* atm not used */
+float NL;
 vec4 vertPos_dmc;
 vec3 WorldPos;
 vec3 Color;
@@ -113,14 +124,14 @@ float computeVisibilityCube() {
 	
 	d_l_closest_occluder *= far;
 	
-	float t_bias = bias;
+	float t_bias = cubeBias;
 	if(shadowQuality > 1) {
-	//	t_bias *= tan(acos(NL));	
-	//	t_bias  = clamp(t_bias, 0.00f, bias);
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, cubeBias);
 	}
 
 	if( d_l_closest_occluder  + t_bias < d_l_current_fragment ) {
-		visibility = 0.3f;
+		visibility = UNLIT;
 	}
 	
 	return visibility;
@@ -134,9 +145,12 @@ float computeVisibilityFlat() {
 	// This line should technically only be needed when dealing with spot lights
 	vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
 	vec2 sc  = sc4.xy;		
-	
-	// TODO: re-introduce NL-based check 
+	 
 	float t_bias = bias;
+	if(shadowQuality > 1) {
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, bias);
+	}
 	
 	if( vertPos_dmc.w <= 0 ) {
 		visibility = 1.0f;
@@ -145,14 +159,14 @@ float computeVisibilityFlat() {
 	} else {
 		if(shadowQuality <= 2) {
 			if(texture(shadowMap, sc).z < (vertPos_dmc.z - t_bias) /  vertPos_dmc.w ) {
-				visibility = 0.2f;
+				visibility = UNLIT;
 			}
 		}
 		else {
-			for (int i = 0; i < 16; i++) {
+			for (int i = 0; i < PDSAMPLES; i++) {
 				vec2 coord = sc + pD[i] / pFac;
 				if(texture(shadowMap, coord).z < (vertPos_dmc.z - t_bias) / vertPos_dmc.w) {
-    				visibility -= 0.05;
+    				visibility -= UNLIT_STEP;
   				}
 			}
 		}
@@ -181,6 +195,8 @@ vec4 CalcLightInternal(BaseLight Light,
 {
     vec4 AmbientColor = vec4(Light.Color, 1.0f) * Light.AmbientIntensity;
     float DiffuseFactor = dot(Normal, -LightDirection);
+
+	NL = DiffuseFactor;
 
     vec4 dColor  = vec4(0, 0, 0, 0);
     vec4 sColor = vec4(0, 0, 0, 0);
@@ -250,36 +266,22 @@ void main(void) {
    	Color = cdata.xyz;
    	Normal = normalize(ndata.xyz);
 
+	// Unpack misc data
 	float MSI = cdata.a;
 	float SP = ndata.a;
 
-	if(lightType == 0) {		// Directional
+	if(lightType == L_DIRECTIONAL) {		// Directional
 		vFragColor = vec4(Color, 1.0f) * calcDirLight(WorldPos, Normal, MSI, SP);
 	}
-	else if(lightType == 1) {	// Point
-   		vFragColor = vec4(Color, 1.0) * calcPointLight(pointLight, WorldPos, Normal, MSI, SP);
+	else if(lightType == L_POINT) {			// Point
+   		vFragColor = vec4(Color, 1.0f) * calcPointLight(pointLight, WorldPos, Normal, MSI, SP);
 	} 
-	else {						// Spot
-		vFragColor = vec4(Color, 1.0) * calcSpotLight(WorldPos, Normal, MSI, SP);
+	else {									// Spot
+		vFragColor = vec4(Color, 1.0f) * calcSpotLight(WorldPos, Normal, MSI, SP);
 	}
 
-	// Computation needs to be done in the light space
 	if(useShadows) {
 		vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
 		vFragColor *= computeVisibility();
-
-
-		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
-		vec2 sc  = sc4.xy;		
-	
-		float closestOcc = texture(shadowMap, sc).z; 
-		float me = (vertPos_dmc.z - 0.01) /  vertPos_dmc.w ;
-		//vFragColor -= 0.99 * vFragColor;
-		//if(me < closestOcc) {
-		//	vFragColor += vec4(1.0f, 0.33f, 0.33f, 1.0f); 
-		//}
-		
-		//vFragColor += vec4(vec3(vertPos_dmc.z), 1.0f);
-		//vFragColor += vec4(vec3(closestOcc) / 10, 1.0f);
 	}
 }

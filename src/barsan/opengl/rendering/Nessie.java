@@ -29,8 +29,6 @@ import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
 
-import com.jogamp.opengl.util.texture.Texture;
-
 /**
  * Nessie is our Deferred Renderer. The development process will involve several
  * stages before it gets on par with the forward renderer, in terms of features.
@@ -198,12 +196,13 @@ public class Nessie extends Renderer {
 	}
 	
 	// Shadow mapping
-	int shadowMapW = 2048;
-	int shadowMapH = 2048;
+	int shadowMapW = 1024;
+	int shadowMapH = 1024;
 	int cubeMapSide = 1024;
 	int fboShadowFlat = -1;
 	int fboShaodwCube = -1;
-	Texture texShadowCube;
+	
+	int texCube = -1;
 
 	public Mode mode;
 	private GBuffer gbuffer;
@@ -297,38 +296,33 @@ public class Nessie extends Renderer {
 		gl.glGenFramebuffers(1, intBuffer, 0);
 		fboShaodwCube = intBuffer[0];
 		
-		//*
-		texShadowCube = new Texture(GL.GL_TEXTURE_CUBE_MAP);
-		texShadowCube.bind(gl);
+		gl.glGenTextures(1, intBuffer, 0);
+		texCube = intBuffer[0];
 		
-		/*
-		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-		texShadowCube.setTexParameteri(gl, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
-		//*/
+		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, texCube);
+		
+		gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
 		
 		for(int face = 0; face < 6; face++) {
 			gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
 					cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
 					GL.GL_FLOAT, null);
 		 }
-		// */
-		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShaodwCube);
 		
-		//*
+		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShaodwCube);
 		gl.glFramebufferTexture(GL2.GL_FRAMEBUFFER,
 					GL2.GL_DEPTH_ATTACHMENT, 
-					texShadowCube.getTextureObject(gl),
+					texCube,
 					0);
-		//			*/
-			
-		// Don't bind any texture here
+		//*/
 		gl.glDrawBuffer(GL2.GL_NONE); 
 		gl.glReadBuffer(GL2.GL_NONE);
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);
 		
-		GLHelp.checkError(gl);
+		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 0);
 		
 		GLHelp.fboErr(gl);	
 	}
@@ -386,12 +380,14 @@ public class Nessie extends Renderer {
 		    gbuffer.blitComponent(gl, GBuffer.TEXCOORD_TEXTURE, halfW, 0, w, halfH);
 		break;
 		
-	    case DrawComposedScene:	    	
+	    case DrawComposedScene:
+	    	//*
 	       	gl.glEnable(GL2.GL_STENCIL_TEST);
 			for(Light l : scene.lights) {
 				renderLightVolume(l, true);
 			}
 			gl.glDisable(GL2.GL_STENCIL_TEST);
+			//*/
 	    	break;
 		
 	    case DrawLightVolumes:
@@ -416,8 +412,8 @@ public class Nessie extends Renderer {
 	    }
 		
 		
-		// GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
-		GLHelp.dumpDepthCubeBuffer(10, 10, 200, 200, 1.0f, texShadowCube.getTextureObject(gl));
+		GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
+		GLHelp.dumpDepthCubeBuffer(220, 10, 200, 200, 2.0f, texCube);
 		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
@@ -463,6 +459,9 @@ public class Nessie extends Renderer {
 		}
 		
 		if(computeLight) {
+			// TODO: check if needed
+			gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 0);
+			
 	       	gl.glCullFace(GL2.GL_BACK);
 	       	gl.glDisable(GL2.GL_BLEND);
 		}
@@ -511,6 +510,8 @@ public class Nessie extends Renderer {
 			flatTechnique.renderDude(plVolume, state, nullStack);
 		}
 	}
+	
+	// private StaticModel derp = ModelLoader.buildQuadXY(1.0f, 1.0f);
 	
 	private void renderSLVol(SpotLight l, boolean computeLight) {
 		float h = l.getBoundingRadius();
@@ -584,7 +585,6 @@ public class Nessie extends Renderer {
 				break;
 		}
 		
-		
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
 		state.setCamera(aux);
 	}
@@ -613,6 +613,7 @@ public class Nessie extends Renderer {
 	
 	private void preparePointSM(PointLight light) {
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboShaodwCube);
+		gl.glViewport(0, 0, cubeMapSide, cubeMapSide);
 		gl.glClear(GL2.GL_DEPTH_BUFFER_BIT);
 	}
 		
@@ -632,7 +633,7 @@ public class Nessie extends Renderer {
 		float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
 		pc.setFOV(angle);
 		pc.setFrustumNear(1f);
-		pc.setFrustumFar(240.0f);
+		pc.setFrustumFar(240.0f);	// TODO: no more hardcoded
 		
 		gl.glViewport(0, 0, shadowMapW, shadowMapH);
 		

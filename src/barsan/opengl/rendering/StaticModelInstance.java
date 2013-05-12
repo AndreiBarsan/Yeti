@@ -8,6 +8,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.techniques.Technique;
+import barsan.opengl.util.GLHelp;
 
 public class StaticModelInstance extends ModelInstance {
 
@@ -108,6 +109,7 @@ public class StaticModelInstance extends ModelInstance {
 		}
 		
 		GL2 gl = Yeti.get().gl;
+		
 		gl.glDrawArrays(model.getFaceMode(), 0, model.getArrayLength());
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		

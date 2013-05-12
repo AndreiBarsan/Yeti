@@ -33,8 +33,10 @@ public class NessieTestScene extends Scene {
 	ModelInstance box;
 	Nessie nessie;
 
+	PointLight plShadowTest;
+	
 	ArrayList<SpotLight> slights = new ArrayList<>();
-
+	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		nessie = new Nessie(Yeti.get().gl);
@@ -47,12 +49,12 @@ public class NessieTestScene extends Scene {
 
 		addInput(cameraInput = new CameraInput(camera));
 		gui = new DebugGUI(this, drawable.getAnimator());
-		gui.setPosition(220, 10);
+		gui.setPosition(10, 210);
 
 		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
 				-10.0f, 0.0f), Vector3.UP.copy());
 
-		/*
+		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
 		dl.setCastsShadows(true);
 		dl.getDiffuse().a = 0.33f;
@@ -83,7 +85,7 @@ public class NessieTestScene extends Scene {
 		// BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f,
 		// 0.9f));
 		// *
-		int mlim = 6;
+		int mlim = 2;
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
@@ -96,7 +98,7 @@ public class NessieTestScene extends Scene {
 			}
 		}// */
 
-		/*
+		//*
 		int lightLim = 3;
 		float lgs = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
@@ -109,10 +111,16 @@ public class NessieTestScene extends Scene {
 			}
 		}//*/
 
-		PointLight light = new PointLight(new Vector3(4, -2.0f, 15), Color.random());
-		light.setAttenuation(0.0f, 0.0f, 0.001f);
-		light.setCastsShadows(true);
-		lights.add(light);
+		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.random());
+		plShadowTest.setAttenuation(0.0f, 0.0f, 0.001f);
+		plShadowTest.setCastsShadows(true);
+		lights.add(plShadowTest);
+		
+		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.WHITE.copy());
+		plShadowTest.setAttenuation(0.0f, 0.0f, 0.005f);
+		plShadowTest.setCastsShadows(true);
+		lights.add(plShadowTest);
+		
 		
 		/*
 		int al = 6;
@@ -160,6 +168,7 @@ public class NessieTestScene extends Scene {
 		});
 
 		nessie.init();
+		//br.init();
 	}
 
 	float time;
@@ -175,6 +184,8 @@ public class NessieTestScene extends Scene {
 				+ "\n" + "Rendering: " + nessie.mode.toString();
 
 		time += Yeti.get().getDelta();
+		
+		plShadowTest.getPosition().x = (float)Math.sin(time) * 20.5f;
 
 		//*
 		for (SpotLight sl : slights) {

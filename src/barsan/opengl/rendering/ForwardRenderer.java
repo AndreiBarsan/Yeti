@@ -143,6 +143,9 @@ public class ForwardRenderer extends Renderer {
 		gl.glGenFramebuffers(1, name, 0);
 		fbo_pointShadows = name[0];
 		 
+		// gl.glEnable(GL2.GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		// useful for smooth shadow cube shadows
+		
 		state.cubeTexture = new Texture(GL.GL_TEXTURE_CUBE_MAP);
 		state.cubeTexture.bind(gl);
 		state.cubeTexture.setTexParameterf(gl, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);

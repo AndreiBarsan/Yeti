@@ -201,4 +201,8 @@ public class RendererState {
 		this.omniShadowFar = omniShadowFar;
 	}
 
+	public int getGipsyWagonCubeTex() {
+		return ((Nessie)renderer).texCube;
+	}
+
 }
