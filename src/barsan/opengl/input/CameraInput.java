@@ -24,6 +24,8 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	
 	private boolean mouseControlled = true;
 	
+	private boolean[] keyboardState = new boolean[255];
+	
 	void showHelp() {
 		Yeti.debug("============================================");
 		Yeti.debug("==        Initialized camera input.       ==");
@@ -52,7 +54,15 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	public void keyTyped(KeyEvent e) {	}
 	
 	@Override
-	public void keyReleased(KeyEvent e) { }
+	public void keyReleased(KeyEvent e) { 
+		if(e.isConsumed()) {
+			return;
+		}
+		
+		if(e.getKeyCode() < 255) {
+			keyboardState[e.getKeyCode()] = false;
+		}
+	}
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
@@ -61,6 +71,11 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 			return;
 		}
 		
+		if(e.getKeyCode() < 255) {
+			keyboardState[e.getKeyCode()] = true;
+		}
+		
+		/*
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_Q:
 				camera.strafeLeft();
@@ -120,9 +135,14 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 				
 			default:
 				break;
-		}
+		}*/
 	}
 		
+	public boolean check(int code) {
+		assert code < 255;
+		return keyboardState[code];
+	}
+	
 	int lastDragX, lastDragY;
 	int lastMoveX, lastMoveY;
 	

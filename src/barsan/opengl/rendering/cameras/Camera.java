@@ -29,8 +29,7 @@ public abstract class Camera {
 	static Vector3 aux_v3 = new Vector3();
 	float yawAccum = 0.0f;
 	float pitchAccum = 0.0f;
-	float speed = 0.9f;
-	float rotSpeed = 6.0f;
+
 	protected float frustumNear;
 	protected float frustumFar;
 	
@@ -56,57 +55,57 @@ public abstract class Camera {
 		viewDirty = true;
 	}
 
-	public void forward() {
+	public void forward(float speed) {
 		Vector3 d = new Vector3(direction).mul(speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}
 
-	public void backward() {
+	public void backward(float speed) {
 		Vector3 d = new Vector3(direction).mul(-speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}
 
-	public void strafeLeft() {
+	public void strafeLeft(float speed) {
 		Vector3 d = new Vector3(direction).cross(new Vector3(up)).normalize().mul(speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}
 
-	public void strafeRight() {
+	public void strafeRight(float speed) {
 		Vector3 d = new Vector3(up).cross(new Vector3(direction)).normalize().mul(speed);
 		eyePosition.add(d);
 		viewDirty = true;
 	}
 
-	public void strafeDown() {
+	public void strafeDown(float speed) {
 		eyePosition.add(new Vector3(up).mul(-speed));
 		viewDirty = true;
 	}
 
-	public void strafeUp() {
+	public void strafeUp(float speed) {
 		eyePosition.add(new Vector3(up).mul(speed));
 		viewDirty = true;
 	}
 
-	public void turnLeft() {
+	public void turnLeft(float rotSpeed) {
 		direction.mul(aux_matrix.setRotate(-rotSpeed, up.x, up.y, up.z));
 		viewDirty = true;
 	}
 
-	public void turnRight() {
+	public void turnRight(float rotSpeed) {
 		direction.mul(aux_matrix.setRotate(rotSpeed, up.x, up.y, up.z));
 		viewDirty = true;
 	}
 
-	public void turnUp() {
+	public void turnUp(float rotSpeed) {
 		Vector3 right = new Vector3(direction).cross(up).normalize();
 		direction.mul(aux_matrix.setRotate(rotSpeed, right.x, right.y, right.z));
 		viewDirty = true;
 	}
 
-	public void turnDown() {
+	public void turnDown(float rotSpeed) {
 		Vector3 left = new Vector3(up).cross(direction).normalize();
 		direction.mul(aux_matrix.setRotate(rotSpeed, left.x, left.y, left.z));
 		viewDirty = true;

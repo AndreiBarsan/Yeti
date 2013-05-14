@@ -7,6 +7,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.FreeflyCamera;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Vector2;
@@ -30,13 +31,13 @@ import barsan.opengl.util.DebugGUI;
 
 public class NessieTestScene extends Scene {
 
-	CameraInput cameraInput;
 	PointLight mainLight;
 	PointLight l2;
 	ModelInstance box;
 	Nessie nessie;
 
 	PointLight plShadowTest;
+	FreeflyCamera ffc;
 	
 	ArrayList<SpotLight> slights = new ArrayList<>();
 	
@@ -50,14 +51,13 @@ public class NessieTestScene extends Scene {
 		
 		Yeti.get().gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-		addInput(cameraInput = new CameraInput(camera));
+		camera = ffc = new FreeflyCamera(this, Yeti.get().settings.width, Yeti.get().settings.height);
+		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f, -10.0f, 0.0f), Vector3.UP.copy());		
+		
 		gui = new DebugGUI(this, drawable.getAnimator());
 		gui.setPosition(10, 210);
 		
 		nessie.setShadowQuality(ShadowQuality.High);
-
-		camera.lookAt(new Vector3(-45.0f, 30.0f, -45.0f), new Vector3(0.0f,
-				-10.0f, 0.0f), Vector3.UP.copy());
 
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(1.0f, -1.0f, 0.0f).normalize());
@@ -73,10 +73,11 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
+		
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
-		// addModelInstance(box);
+		addModelInstance(box);
 
 		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(
 				250.0f, 250.0f, 25, 25));
@@ -103,12 +104,9 @@ public class NessieTestScene extends Scene {
 		addModelInstance(wall);
 
 		
-		
-		// BasicMaterial monkeyMat = new BasicMaterial(new Color(0.05f, 0.05f,
-		// 0.9f));
 		// *
 		int mlim = 3;
-		float mGrid = 3f;
+		float mGrid = 4f;
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
@@ -197,7 +195,6 @@ public class NessieTestScene extends Scene {
 		});
 
 		nessie.init();
-		//br.init();
 	}
 
 	float time;
@@ -205,6 +202,8 @@ public class NessieTestScene extends Scene {
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		super.display(drawable);
+		
+		ffc.update(Yeti.get().getDelta());
 
 		box.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 3);
 
@@ -234,11 +233,11 @@ public class NessieTestScene extends Scene {
 
 	@Override
 	public void play() {
-		cameraInput.setMouseControlled(true);
+		ffc.setMouseControlled(true);
 	}
 
 	@Override
 	public void pause() {
-		cameraInput.setMouseControlled(false);
+		ffc.setMouseControlled(false);
 	}
 }
