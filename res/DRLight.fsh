@@ -73,7 +73,7 @@ uniform int 		shadowQuality;
 uniform float 		far;
 
 const float 		bias = 0.01f;
-const float 		cubeBias = 0.24f;
+const float 		cubeBias = 0.04f;
 const float 		pFac = 250.0f;
 
 const vec2 pD[16] = vec2[]( 
@@ -148,8 +148,8 @@ float computeVisibilityFlat() {
 	 
 	float t_bias = bias;
 	if(shadowQuality > 1) {
-		//t_bias *= tan(acos(NL));	
-		//t_bias  = clamp(t_bias, 0.00f, bias);
+		t_bias *= tan(acos(NL));	
+		t_bias  = clamp(t_bias, 0.00f, bias);
 	}
 	
 	if( vertPos_dmc.w <= 0 ) {

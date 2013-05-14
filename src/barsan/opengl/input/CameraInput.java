@@ -24,7 +24,11 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	
 	private boolean mouseControlled = true;
 	
-	private boolean[] keyboardState = new boolean[255];
+	static private final int KSIZE = 255;
+	static private final int LIMX = 10;
+	static private final int LIMY = 10;
+	
+	private boolean[] keyboardState = new boolean[KSIZE];
 	
 	void showHelp() {
 		Yeti.debug("============================================");
@@ -59,7 +63,7 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 			return;
 		}
 		
-		if(e.getKeyCode() < 255) {
+		if(e.getKeyCode() < KSIZE) {
 			keyboardState[e.getKeyCode()] = false;
 		}
 	}
@@ -71,75 +75,13 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 			return;
 		}
 		
-		if(e.getKeyCode() < 255) {
+		if(e.getKeyCode() < KSIZE) {
 			keyboardState[e.getKeyCode()] = true;
 		}
-		
-		/*
-		switch (e.getKeyCode()) {
-			case KeyEvent.VK_Q:
-				camera.strafeLeft();
-				break;
-				
-			case KeyEvent.VK_E:
-				camera.strafeRight();
-				break;
-		
-			case KeyEvent.VK_LEFT:
-				//camera.turnLeft();
-				break;
-				
-			case KeyEvent.VK_A:
-				if(mouseControlled) {
-					camera.strafeLeft();
-				} else {
-					camera.turnLeft();
-				}
-				break;
-			
-			case KeyEvent.VK_RIGHT:
-				//camera.turnRight();
-				break;
-				
-			case KeyEvent.VK_D:
-				if(mouseControlled) {
-					camera.strafeRight();
-				} else {
-					camera.turnRight();
-				}
-				break;
-				
-			case KeyEvent.VK_UP:
-				//camera.turnUp();
-				break;
-				
-			case KeyEvent.VK_W:
-				if( (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-					camera.strafeUp();
-				} else {
-					camera.forward();
-				}
-				break;
-				
-			case KeyEvent.VK_DOWN:
-				//camera.turnDown();
-				break;
-				
-			case KeyEvent.VK_S:		
-				if( (e.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
-					camera.strafeDown();
-				} else {
-					camera.backward();
-				}
-				break;
-				
-			default:
-				break;
-		}*/
 	}
 		
 	public boolean check(int code) {
-		assert code < 255;
+		assert code < KSIZE;
 		return keyboardState[code];
 	}
 	
@@ -162,13 +104,15 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 		
 		int xcenter = e.getComponent().getWidth() / 2;
 		int ycenter = e.getComponent().getHeight() / 2;
+		
 		auxPoint.setLocation(xcenter, ycenter);
 		SwingUtilities.convertPointToScreen(auxPoint, e.getComponent());
+		
 		int dx =  xcenter - e.getX();
 		int dy =  ycenter - e.getY(); 
 		
-		dx = MathUtil.clamp(dx, -20, 20);
-		dy = MathUtil.clamp(dy, -20, 20);
+		dx = MathUtil.clamp(dx, -LIMX, LIMX);
+		dy = MathUtil.clamp(dy, -LIMY, LIMY);
 		
 		camera.move3D(dx, dy);
 		

@@ -54,63 +54,7 @@ public abstract class Camera {
 		projectionDirty = true;
 		viewDirty = true;
 	}
-
-	public void forward(float speed) {
-		Vector3 d = new Vector3(direction).mul(speed);
-		eyePosition.add(d);
-		viewDirty = true;
-	}
-
-	public void backward(float speed) {
-		Vector3 d = new Vector3(direction).mul(-speed);
-		eyePosition.add(d);
-		viewDirty = true;
-	}
-
-	public void strafeLeft(float speed) {
-		Vector3 d = new Vector3(direction).cross(new Vector3(up)).normalize().mul(speed);
-		eyePosition.add(d);
-		viewDirty = true;
-	}
-
-	public void strafeRight(float speed) {
-		Vector3 d = new Vector3(up).cross(new Vector3(direction)).normalize().mul(speed);
-		eyePosition.add(d);
-		viewDirty = true;
-	}
-
-	public void strafeDown(float speed) {
-		eyePosition.add(new Vector3(up).mul(-speed));
-		viewDirty = true;
-	}
-
-	public void strafeUp(float speed) {
-		eyePosition.add(new Vector3(up).mul(speed));
-		viewDirty = true;
-	}
-
-	public void turnLeft(float rotSpeed) {
-		direction.mul(aux_matrix.setRotate(-rotSpeed, up.x, up.y, up.z));
-		viewDirty = true;
-	}
-
-	public void turnRight(float rotSpeed) {
-		direction.mul(aux_matrix.setRotate(rotSpeed, up.x, up.y, up.z));
-		viewDirty = true;
-	}
-
-	public void turnUp(float rotSpeed) {
-		Vector3 right = new Vector3(direction).cross(up).normalize();
-		direction.mul(aux_matrix.setRotate(rotSpeed, right.x, right.y, right.z));
-		viewDirty = true;
-	}
-
-	public void turnDown(float rotSpeed) {
-		Vector3 left = new Vector3(up).cross(direction).normalize();
-		direction.mul(aux_matrix.setRotate(rotSpeed, left.x, left.y, left.z));
-		viewDirty = true;
-	}
-
+	
 	public Vector3 getUp() {
 		return up;
 	}
