@@ -1,7 +1,6 @@
 package barsan.opengl.rendering;
 
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -19,6 +18,7 @@ import barsan.opengl.rendering.lights.Light;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.techniques.DRGeometryPass;
+import barsan.opengl.rendering.techniques.DRLightCompositionPass;
 import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
@@ -42,14 +42,14 @@ public class Nessie extends Renderer {
 		private static final int POSITION_TEXTURE 	= 0;
 		private static final int DIFFUSE_TEXTURE 	= 1;
 		private static final int NORMAL_TEXTURE 	= 2;
-		private static final int TEXCOORD_TEXTURE 	= 3;
+		private static final int LIGHT_ACCUMULATION_TEXTURE 	= 3;
 		private static final int FINAL_TEXTURE		= 4;
 		
 		private static final int COMPONENT_COUNT 	= 5; 
 		
 		private int fboHandle = -1;	
-		private int dtHandle = -1;
-		private int handles[] = new int[COMPONENT_COUNT - 1];
+		private int depthStencilTextureHandle = -1;
+		private int colorTextureHandles[] = new int[COMPONENT_COUNT - 1];
 		private int finalTexture = -1;
 				
 		private int width, height;
@@ -68,7 +68,7 @@ public class Nessie extends Renderer {
 			
 			// Note: use GL2.GL_FRAMEBUFFER instead of GL2.GL_DRAW_FRAMEBUFFER
 			gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, fboHandle);
-			gl.glGenTextures(handles.length, buff);
+			gl.glGenTextures(colorTextureHandles.length, buff);
 			
 			int k = 0;
 			while(buff.hasRemaining()) {
@@ -76,7 +76,7 @@ public class Nessie extends Renderer {
 				if(h < 0) {
 					fail("Color texture creation error.");
 				}
-				handles[k++] = h;
+				colorTextureHandles[k++] = h;
 				// Bind the texture so we can work on it
 				gl.glBindTexture(GL2.GL_TEXTURE_2D, h);
 				// Actually allocate the texture data
@@ -89,14 +89,14 @@ public class Nessie extends Renderer {
 			buff.clear();
 			
 			gl.glGenTextures(1, buff);
-			dtHandle = buff.get();
-			if(dtHandle < 0) {
+			depthStencilTextureHandle = buff.get();
+			if(depthStencilTextureHandle < 0) {
 				fail("Could not create depth & stencil texture!");
 			}
 			
-			gl.glBindTexture(GL2.GL_TEXTURE_2D, dtHandle);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, depthStencilTextureHandle);
 			gl.glTexImage2D(GL2.GL_TEXTURE_2D, 0, GL2.GL_DEPTH32F_STENCIL8, width, height, 0, GL2.GL_DEPTH_COMPONENT, GL2.GL_FLOAT, null);
-			gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_STENCIL_ATTACHMENT, GL2.GL_TEXTURE_2D, dtHandle, 0);
+			gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_STENCIL_ATTACHMENT, GL2.GL_TEXTURE_2D, depthStencilTextureHandle, 0);
 
 			buff.clear();
 			gl.glGenTextures(1, buff);
@@ -131,8 +131,7 @@ public class Nessie extends Renderer {
 			gl.glDrawBuffers(3, new int[] {
 					GL2.GL_COLOR_ATTACHMENT0 + POSITION_TEXTURE,
 					GL2.GL_COLOR_ATTACHMENT0 + DIFFUSE_TEXTURE,
-					GL2.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE,
-					//GL2.GL_COLOR_ATTACHMENT0 + TEXCOORD_TEXTURE
+					GL2.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE
 			}, 0);
 		}
 		
@@ -141,26 +140,39 @@ public class Nessie extends Renderer {
 			gl.glDrawBuffer(GL2.GL_NONE);
 		}
 		
+		/* Renders to the final target if debugging, and to the light accumulation
+		 * buffer otherwise. */
 		public void bindForLightPass() {
 			
 			// Need to bind the whole buffer, since it keeps getting un-bound
 			// by the shadow map FBO
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
 			
-			if(mode == Mode.DrawGBuffer) {
-				// Bind the FBO so we can blit from it
-				gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
-				gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
-			}
-			else {
-				gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
-				for(int i = 0; i < handles.length; ++i) {
-					gl.glActiveTexture(GL2.GL_TEXTURE0 + i);	
-					gl.glBindTexture(GL2.GL_TEXTURE_2D, handles[POSITION_TEXTURE + i]);
-				}
+			gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + LIGHT_ACCUMULATION_TEXTURE);
+			for(int i = 0; i < colorTextureHandles.length; ++i) {
+				gl.glActiveTexture(GL2.GL_TEXTURE0 + i);	
+				gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE + i]);
 			}
 		}
 		
+		public void bindForInspection() {
+			gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
+			gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
+		}
+		
+		/** Renders to the final target */
+		public void bindForLightComposition() {
+			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
+			
+			gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
+			gl.glActiveTexture(GL2.GL_TEXTURE0 + 0);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[DIFFUSE_TEXTURE]);
+			
+			gl.glActiveTexture(GL2.GL_TEXTURE0 + 1);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[LIGHT_ACCUMULATION_TEXTURE]);
+		}
+		
+		/** Renders to the screen */
 		public void bindForFinalPass() {
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, 0);
 			gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
@@ -179,8 +191,8 @@ public class Nessie extends Renderer {
 		}
 		
 		public void dispose(GL3 gl) {
-			gl.glDeleteTextures(4, handles, 0);
-			gl.glDeleteTextures(1, new int[] { dtHandle }, 0);
+			gl.glDeleteTextures(4, colorTextureHandles, 0);
+			gl.glDeleteTextures(1, new int[] { depthStencilTextureHandle }, 0);
 			gl.glDeleteFramebuffers(1, IntBuffer.wrap(new int[] { fboHandle }));
 		}
 		
@@ -212,12 +224,16 @@ public class Nessie extends Renderer {
 	private PointLightSM pointLightSMTechnique;
    	private DRLightPass lightPassTechnique;
 	private DRGeometryPass geomPassTechnique;
+	private DRLightCompositionPass lightCompositionPassTechnique;
 	
 	private Matrix4Stack nullStack = new Matrix4Stack();
-	ModelInstance plVolume;
-	ModelInstance slVolume;
-	ModelInstance dlVolume;
-
+	private ModelInstance plVolume;
+	private ModelInstance slVolume;
+	private ModelInstance dlVolume;
+	
+	private StaticModel screenQuad;
+	private ModelInstance sqi;
+	
 	public Nessie(GL3 gl) {
 		this(gl, Mode.DrawComposedScene);		
 	}
@@ -236,6 +252,10 @@ public class Nessie extends Renderer {
 		geomPassTechnique = new DRGeometryPass(GBuffer.COMPONENT_COUNT);
 		flatTechnique = new FlatTechnique();
 		pointLightSMTechnique = new PointLightSM();
+		lightCompositionPassTechnique = new DRLightCompositionPass();
+		
+		 screenQuad = ModelLoader.makeScreenQuad();
+		 sqi = new StaticModelInstance(screenQuad);
 		
 		shadowQuality = ShadowQuality.High;
 		
@@ -336,9 +356,8 @@ public class Nessie extends Renderer {
 		gbuffer.startFrame();
 		geometryPass(scene);
 		lightingPass(scene);
+		composeLight(scene);
 		finalizePass(scene);
-		
-		postProcessPass();
 	}
 
 	@Override
@@ -351,71 +370,54 @@ public class Nessie extends Renderer {
 		gbuffer.bindForGeometryPass();
 		
 		// Only the geometry pass updates the depth buffer
+	    gl.glEnable(GL2.GL_DEPTH_TEST);
 	    gl.glDepthMask(true);
 	    gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-	    gl.glEnable(GL2.GL_DEPTH_TEST);
 	    
 		geomPassTechnique.renderModelInstances(state, scene.modelInstances);
 	}	
 	
+	/** 
+	 * TODO: do normal light stuff anyway, and do the fork in the main render method;
+	 * when debugging, also show the light accumulation buffer, and maybe the depth 
+	 * buffer as well. A nice challenge would be maybe rendering the contents of the
+	 * stencil buffer as well.
+	 * 	
+	 * @param scene
+	 */
 	private void lightingPass(Scene scene) {		
 		gbuffer.bindForLightPass();
-		
-		switch(mode) {
-	    
-	    case DrawGBuffer:
-			int w = Yeti.get().settings.width;
-			int h = Yeti.get().settings.height;
-			int halfW = w / 2;
-		    int halfH = h / 2;
+		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+		gl.glEnable(GL2.GL_STENCIL_TEST);
+		for(Light l : scene.lights) {
+			renderLightVolume(l, true);
+		}
+		gl.glDisable(GL2.GL_STENCIL_TEST);
 
-		    // Just render the components of the GBuffer for testing
-		    // Bottom left: POSITION
-	    	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, halfW, halfH);
-		    // Top left: DIFFUSE
-	    	gbuffer.blitComponent(gl, GBuffer.DIFFUSE_TEXTURE, 0, halfH, halfW, h);
-		    // Top right: NORMAL
-		    gbuffer.blitComponent(gl, GBuffer.NORMAL_TEXTURE, halfW, halfH, w, h);	
-		    // Bottom right: TEXCOORD
-		    gbuffer.blitComponent(gl, GBuffer.TEXCOORD_TEXTURE, halfW, 0, w, halfH);
-		break;
-		
-	    case DrawComposedScene:
-	       	gl.glEnable(GL2.GL_STENCIL_TEST);
-			for(Light l : scene.lights) {
-				renderLightVolume(l, true);
-			}
-			gl.glDisable(GL2.GL_STENCIL_TEST);
-	    	break;
-		
-	    case DrawLightVolumes:
-	    	gl.glEnable(GL2.GL_STENCIL_TEST);
-			for(Light l : scene.lights) {
-				renderLightVolume(l, true);
-			}
-			gl.glDisable(GL2.GL_STENCIL_TEST);
-			
+		if(mode == Mode.DrawLightVolumes) {
 	       	gl.glDisable(GL2.GL_DEPTH_TEST);
 	    	gl.glEnable(GL2.GL_BLEND);
 	    	gl.glDisable(GL2.GL_CULL_FACE);
 	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
 	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
-	      	// gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, 300, 300);
+	      	
 	      	flatTechnique.setup(state);
 	       	for(Light l : scene.lights) {
 				renderLightVolume(l, false);
 			}
-	    	
-	    	break;
 	    }
+	}
+	
+	private void composeLight(Scene scene) {
+		gbuffer.bindForLightComposition();
+		// We are now reading the albedo and the light and mixing them together
+		// TODO: 	1. implement SSAO in this step
+		//			2. perform SSAO *before this*, writing AO data to its own
+		//				texture; blur that texture, then use it here to darken
+		//				the darker areas;
 		
-		
-		GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
-		GLHelp.dumpDepthCubeBuffer(220, 10, 200, 200, 2.0f, texCube);
-		
-		// Important to reset this, to allow font rendering and other stuff
-		// that expect the default texture unit to be active to work
-		gl.glActiveTexture(GL2.GL_TEXTURE0);
+		lightCompositionPassTechnique.setup(state);
+		lightCompositionPassTechnique.renderDude(sqi, state, new Matrix4Stack());
 	}
 	
 	private void renderLightVolume(Light light, boolean computeLight) {
@@ -555,10 +557,46 @@ public class Nessie extends Renderer {
 	}
 	
 	public void finalizePass(Scene scene) {
-		gbuffer.bindForFinalPass();
-		gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
-								0, 0, gbuffer.width, gbuffer.height,
-								GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
+		
+		switch (mode) {
+		case DrawLightVolumes:
+		case DrawComposedScene:
+			gbuffer.bindForFinalPass();
+			
+			gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
+					0, 0, gbuffer.width, gbuffer.height,
+					GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
+
+			/* Puke out some other debug data */
+			GLHelp.dumpDepthBuffer(10, 10, 200, 200, 15.0f, state.shadowTexture);
+			GLHelp.dumpDepthCubeBuffer(220, 10, 200, 200, 2.0f, texCube);
+			
+			break;
+		
+		case DrawGBuffer:
+			//gbuffer.bindForInspection();
+			gbuffer.bindForFinalPass();
+			
+			int w = Yeti.get().settings.width;
+			int h = Yeti.get().settings.height;
+			int halfW = w / 2;
+		    int halfH = h / 2;
+
+		    // Just render the components of the GBuffer for testing
+		    // Bottom left: POSITION
+	    	gbuffer.blitComponent(gl, GBuffer.POSITION_TEXTURE, 0, 0, halfW, halfH);
+		    // Top left: DIFFUSE
+	    	gbuffer.blitComponent(gl, GBuffer.DIFFUSE_TEXTURE, 0, halfH, halfW, h);
+		    // Top right: NORMAL
+		    gbuffer.blitComponent(gl, GBuffer.NORMAL_TEXTURE, halfW, halfH, w, h);	
+		    // Bottom right: TEXCOORD
+		    gbuffer.blitComponent(gl, GBuffer.LIGHT_ACCUMULATION_TEXTURE, halfW, 0, w, halfH);
+			break;
+		}
+		
+		// Important to reset this, to allow font rendering and other stuff
+		// that expect the default texture unit to be active to work
+		gl.glActiveTexture(GL2.GL_TEXTURE0);
 	}
 	
 	private void computeShadowMap(Light light) {
@@ -658,31 +696,5 @@ public class Nessie extends Renderer {
 		}
 	}
 	
-	class Effect {
-		private void apply(int srcHandle, int dstHandle) {
-			// Perform necessary computations from src to dst
-			// NOTE: should have n inputs and m outputs
-		}
-	}
-		
-	// Just blocking out what it's supposed to look like
-	ArrayList<Effect> fx = new ArrayList<>();
-	private void postProcessPass() {
-		int srcHandle = 0,
-			dstHandle = 0, 
-			aux;
-		
-		for(Effect effect : fx) {
-			effect.apply(srcHandle, dstHandle);
-			aux = srcHandle;
-			srcHandle = dstHandle;
-			dstHandle = aux;
-		}
-		
-		if(fx.size() % 2 == 0) {
-			// render src to screen
-		} else {
-			// render dst to screen
-		}
-	}
+	
 }

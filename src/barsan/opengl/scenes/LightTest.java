@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
-import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.FreeflyCamera;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;

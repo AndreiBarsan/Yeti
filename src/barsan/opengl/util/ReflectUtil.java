@@ -21,7 +21,5 @@ public class ReflectUtil {
 		else {
 			Yeti.debug("Type not currently supported: " + field.getType().getSimpleName());
 		}
-		
 	}
-
 }

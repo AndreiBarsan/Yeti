@@ -9,7 +9,6 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
-import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
 
 public class ModelLoader {
@@ -425,5 +424,9 @@ public class ModelLoader {
 		
 		result.buildVBOs();
 		return result;
+	}
+
+	public static StaticModel makeScreenQuad() {
+		return buildQuadXY(2.0f, 2.0f);
 	}
 }

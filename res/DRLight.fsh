@@ -261,16 +261,18 @@ void main(void) {
 	vec2 TexCoord = CalcTexCoord();
 
 	vec4 pdata = texture(positionMap, TexCoord);
-	vec4 cdata = texture(colorMap, TexCoord);
+//	vec4 cdata = texture(colorMap, TexCoord);
 	vec4 ndata = texture(normalMap, TexCoord);
 	
    	WorldPos = pdata.xyz;
-   	Color = cdata.xyz;
+  // 	Color = cdata.xyz;
    	Normal = normalize(ndata.xyz);
 
 	// Unpack misc data
-	float MSI = cdata.a;
+	float MSI = pdata.a;
 	float SP = ndata.a;
+
+	Color = vec3(1.0f, 1.0f, 1.0f);
 
 	if(lightType == L_DIRECTIONAL) {		// Directional
 		vFragColor = vec4(Color, 1.0f) * calcDirLight(WorldPos, Normal, MSI, SP);

@@ -2,7 +2,6 @@ package barsan.opengl.rendering.techniques;
 
 import javax.media.opengl.GL2;
 
-import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;

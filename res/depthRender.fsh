@@ -11,6 +11,7 @@ in vec2 UV;
 out vec4 color;
 
 void main(){
-	color = 1.0f - (1.0f - texture(colorMap, UV)) * factor;
+	vec4 data = texture(colorMap, UV);
+	color = 1.0f - (1.0f - data) * factor;
 	color.a = 1.0f;
 }

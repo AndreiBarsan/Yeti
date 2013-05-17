@@ -111,7 +111,7 @@ public class Yeti implements GLEventListener {
 			MenuScene.class,
 			NessieTestScene.class
 	};
-	static {
+	static {		
 		for(Class<?> c : availableScenes) {
 			assert Scene.class.isAssignableFrom(c) : "Only instances of Scene allowed!";
 		}
