@@ -58,10 +58,10 @@ public class FreeflyCamera extends PerspectiveCamera {
 		
 		if(camInput.check(KeyEvent.VK_LEFT) || camInput.check(KeyEvent.VK_A)) {
 			in = true;
-			newMotion.add(direction.copy().cross(up).mul(acc));
+			newMotion.add(direction.copy().cross(up).normalize().mul(acc));
 		} else if(camInput.check(KeyEvent.VK_RIGHT) || camInput.check(KeyEvent.VK_D)) {
 			in = true;
-			newMotion.sub(direction.copy().cross(up).mul(acc));
+			newMotion.sub(direction.copy().cross(up).normalize().mul(acc));
 		}
 				
 		float deltaSpd = newMotion.len();

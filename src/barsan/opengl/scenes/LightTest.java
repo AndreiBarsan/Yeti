@@ -9,6 +9,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
+import barsan.opengl.input.FreeflyCamera;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
@@ -58,7 +59,8 @@ public class LightTest extends Scene {
 
 	Vector3 tv = new Vector3();
 	float a = 0.0f;
-	protected CameraInput cameraInput;
+	
+	FreeflyCamera ffc;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -72,6 +74,8 @@ public class LightTest extends Scene {
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		ResourceLoader.loadCubeTexture("test", "png");
 		
+		camera = ffc = new FreeflyCamera(this, Yeti.get().settings.width, Yeti.get().settings.height);
+		
 		shadowsEnabled = true;
 		
 		StaticModel quad = ModelLoader.buildPlane(500.0f, 500.0f, 50, 50);
@@ -82,7 +86,6 @@ public class LightTest extends Scene {
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
 		camera.setPosition(new Vector3(0.0f, 20.0f, 0.0f));
-		addInput(cameraInput = new CameraInput(camera));
 		
 		gammaCorrection = new GammaCorrection(1.2f);
 		
@@ -228,15 +231,7 @@ public class LightTest extends Scene {
 		float sl_speedScale = 5.0f;
 		a += delta;
 		
-		/*
-		for(StaticModelInstance smi : monkeys) {
-			Vector3 oldPos = smi.getTransform().getTranslate();
-			smi.getTransform().updateTranslate(
-					oldPos.x,
-					20.0f,
-					oldPos.z);
-		}
-		//*/
+		ffc.update(Yeti.get().getDelta());
 		
 		test_sl.getDirection().x =  (float)Math.sin(a / sl_speedScale) * 20.0f;
 		test_sl.getDirection().z = -(float)Math.cos(a / sl_speedScale) * 20.0f;
@@ -267,11 +262,11 @@ public class LightTest extends Scene {
 	
 	@Override
 	public void play() {
-		cameraInput.setMouseControlled(true);
+		ffc.setMouseControlled(true);
 	}
 	
 	@Override
 	public void pause() {
-		cameraInput.setMouseControlled(false);
+		ffc.setMouseControlled(false);
 	}
 }

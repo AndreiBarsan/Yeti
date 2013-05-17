@@ -44,6 +44,7 @@ import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.GameScene;
 import barsan.opengl.scenes.LightTest;
 import barsan.opengl.scenes.MenuScene;
+import barsan.opengl.scenes.NessieTestScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.ConsoleRenderer;
 import barsan.opengl.util.ReflectUtil;
@@ -107,7 +108,8 @@ public class Yeti implements GLEventListener {
 			ProceduralScene.class,
 			LightTest.class,
 			GameScene.class,
-			MenuScene.class
+			MenuScene.class,
+			NessieTestScene.class
 	};
 	static {
 		for(Class<?> c : availableScenes) {
