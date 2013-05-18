@@ -143,7 +143,6 @@ public class Nessie extends Renderer {
 		/* Renders to the final target if debugging, and to the light accumulation
 		 * buffer otherwise. */
 		public void bindForLightPass() {
-			
 			// Need to bind the whole buffer, since it keeps getting un-bound
 			// by the shadow map FBO
 			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
@@ -170,6 +169,12 @@ public class Nessie extends Renderer {
 			
 			gl.glActiveTexture(GL2.GL_TEXTURE0 + 1);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[LIGHT_ACCUMULATION_TEXTURE]);
+			
+			gl.glActiveTexture(GL2.GL_TEXTURE0 + 2);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[NORMAL_TEXTURE]);
+			
+			gl.glActiveTexture(GL2.GL_TEXTURE0 + 3);
+			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE]);
 		}
 		
 		/** Renders to the screen */
@@ -377,14 +382,6 @@ public class Nessie extends Renderer {
 		geomPassTechnique.renderModelInstances(state, scene.modelInstances);
 	}	
 	
-	/** 
-	 * TODO: do normal light stuff anyway, and do the fork in the main render method;
-	 * when debugging, also show the light accumulation buffer, and maybe the depth 
-	 * buffer as well. A nice challenge would be maybe rendering the contents of the
-	 * stencil buffer as well.
-	 * 	
-	 * @param scene
-	 */
 	private void lightingPass(Scene scene) {		
 		gbuffer.bindForLightPass();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
@@ -393,19 +390,6 @@ public class Nessie extends Renderer {
 			renderLightVolume(l, true);
 		}
 		gl.glDisable(GL2.GL_STENCIL_TEST);
-
-		if(mode == Mode.DrawLightVolumes) {
-	       	gl.glDisable(GL2.GL_DEPTH_TEST);
-	    	gl.glEnable(GL2.GL_BLEND);
-	    	gl.glDisable(GL2.GL_CULL_FACE);
-	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
-	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
-	      	
-	      	flatTechnique.setup(state);
-	       	for(Light l : scene.lights) {
-				renderLightVolume(l, false);
-			}
-	    }
 	}
 	
 	private void composeLight(Scene scene) {
@@ -594,6 +578,22 @@ public class Nessie extends Renderer {
 			break;
 		}
 		
+		if(mode == Mode.DrawLightVolumes) {
+	       	gl.glDisable(GL2.GL_DEPTH_TEST);
+	    	gl.glEnable(GL2.GL_BLEND);
+	    	gl.glDisable(GL2.GL_CULL_FACE);
+	      	gl.glBlendEquation(GL2.GL_FUNC_ADD);
+	      	gl.glBlendFunc(GL2.GL_ONE, GL2.GL_ONE);
+	      	
+	      	flatTechnique.setup(state);
+	       	for(Light l : scene.lights) {
+				renderLightVolume(l, false);
+			}
+	       	
+	       	gl.glDisable(GL2.GL_BLEND);
+	       	gl.glEnable(GL2.GL_CULL_FACE);
+	    }
+		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
 		gl.glActiveTexture(GL2.GL_TEXTURE0);
@@ -668,8 +668,8 @@ public class Nessie extends Renderer {
 		float th = spotLight.getCosOuter();
 		float angle = (float) (2.0 * Math.acos(th) * MathUtil.RAD_TO_DEG);
 		pc.setFOV(angle);
-		pc.setFrustumNear(1f);
-		pc.setFrustumFar(240.0f);	// TODO: no more hardcoded
+		pc.setFrustumNear(0.5f);
+		pc.setFrustumFar(spotLight.getBoundingRadius());
 		
 		gl.glViewport(0, 0, shadowMapW, shadowMapH);
 		

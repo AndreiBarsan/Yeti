@@ -110,6 +110,10 @@ public class GLHelp {
 		
 		screenQuad.getVertices().cleanUp(sqi);
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
+	
+		// Note: blog post with openGL snipped;
+		// every line has a comment describing what happens when a particular
+		// line is commented out, possibly also with a screenshot
 		
 		/* Remove this and the engine crashes with a dreaded 0x502 error */
 		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 0);  

@@ -34,6 +34,7 @@ public class NessieTestScene extends Scene {
 	PointLight mainLight;
 	PointLight l2;
 	ModelInstance box;
+	ModelInstance floor;
 	Nessie nessie;
 
 	PointLight plShadowTest;
@@ -79,13 +80,13 @@ public class NessieTestScene extends Scene {
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
 		addModelInstance(box);
 
-		ModelInstance floor = new StaticModelInstance(ModelLoader.buildPlane(
+		floor = new StaticModelInstance(ModelLoader.buildPlane(
 				250.0f, 250.0f, 25, 25));
 		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
 		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
 		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
-		floor.getMaterial().setSpecularIntensity(0.8f);
-		floor.getMaterial().setSpecularPower(127);
+		floor.getMaterial().setSpecularIntensity(0.5f);
+		floor.getMaterial().setSpecularPower(32);
 		addModelInstance(floor);
 
 		StaticModel wm = ModelLoader.buildPlane(250.0f, 10.0f, 25, 1);
@@ -136,13 +137,7 @@ public class NessieTestScene extends Scene {
 			}
 		}//*/
 
-		plShadowTest = new PointLight(new Vector3(4, 2.0f, 5), Color.random());
-		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
-		plShadowTest.getDiffuse().a = 5.0f;
-		plShadowTest.setCastsShadows(true);
-		lights.add(plShadowTest);
-		
-		plShadowTest = new PointLight(new Vector3(4, -6.0f, -4.0f), Color.WHITE.copy());
+		plShadowTest = new PointLight(new Vector3(4, -6.0f, -18.0f), Color.WHITE.copy());
 		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
 		plShadowTest.getDiffuse().a = 5.0f;
 		plShadowTest.setCastsShadows(true);
@@ -215,6 +210,9 @@ public class NessieTestScene extends Scene {
 		
 		plShadowTest.getPosition().x = (float)Math.sin(time) * 20.5f;
 
+		floor.getMaterial().setSpecularIntensity(0.5f);
+		floor.getMaterial().setSpecularPower(16);
+		
 		//*
 		for (SpotLight sl : slights) {
 			//double angle = Math.atan2(sl.getDirection().z, sl.getDirection().x);
