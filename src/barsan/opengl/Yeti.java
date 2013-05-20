@@ -374,6 +374,7 @@ public class Yeti implements GLEventListener {
 	}
 	
 	public static void debug(String message) {
+		// TODO: filter debug output based on caller
 		if(get().debug) System.out.printf("[DEBUG] %s\n", message);
 	}
 	

@@ -14,6 +14,8 @@ import barsan.opengl.resources.ModelLoader.Group;
 
 /**
  * @author Andrei Barsan
+ * 
+ * FIXME: maybe repair the weird fors?
  */
 public class StaticModel extends Model {
 	
@@ -36,86 +38,90 @@ public class StaticModel extends Model {
 	public StaticModel(GL gl, String name) {
 		this.gl = gl;
 		this.name = name;
-		this.pointsPerFace = 3; // default
 		groups.put("default", new Group());
 	}
 	
 	static float uv[] = new float[2];
 	public void buildVBOs() {
 		assert master.faces.size() > 0 : "Empty model";
-		// Tried & tested - this is just the right buffer length
-		int size = master.faces.size() *  pointsPerFace;
+		
+		/* If no materials were loaded/specified, just create a basic one. */
+		if(null == defaultMaterialGroups) {
+			defaultMaterialGroups = new ArrayList<MaterialGroup>();
+		}
+		if(defaultMaterialGroups.isEmpty()) {
+			MaterialGroup defMG = new MaterialGroup(0, 
+					master.faces.size(), 
+					new Material());
+			defaultMaterialGroups.add(defMG);
+			
+		}
+		
+		int size = master.faces.size() * pointsPerFace;
 		
 		vertices = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		normals = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, TEX_COORDS_PER_POINT);
 		tangents = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		binormals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+
+		for(MaterialGroup mg : defaultMaterialGroups) {
 		
-		vertices.open();
-		for(Face f : master.faces) {
-			//for(int i = pointsPerFace - 1; i >= 0; i--) {
-			for(int i = 0; i < pointsPerFace; ++i) {
-				vertices.append(f.points[i]);
-			}
-		}
-		vertices.close();
-		
-		if(master.faces.get(0).normals != null) {
-			normals.open();
-			for(Face f : master.faces) {
-			//	for(int i = pointsPerFace - 1; i >= 0; i--) {
-				for(int i = 0; i < pointsPerFace; ++i) {
-					normals.append(f.normals[i]);
+			vertices.open();		
+			for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
+				Face f = master.faces.get(i);
+				for(int p = 0; p < pointsPerFace; ++p) {
+					vertices.append(f.points[p]);
 				}
 			}
-			normals.close();
+			vertices.close();
 			
-			for(Face f : master.faces) {
-				f.computeTangents();
+			if(master.faces.get(mg.beginIndex).normals != null) {
+				normals.open();
+				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
+					Face f = master.faces.get(i);
+					for(int p = 0; p < pointsPerFace; ++p) {
+						normals.append(f.normals[p]);
+					}
+				}
+				normals.close();
+				
+				for(Face f : master.faces) {
+					f.computeTangBinorm();
+				}
+				
+				tangents.open();
+				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
+					Face f = master.faces.get(i);
+					for(int p = 0; p < pointsPerFace; ++p) {
+						tangents.append(f.tangents[p]);
+					}
+				}
+				tangents.close();
+				
+				binormals.open();
+				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
+					Face f = master.faces.get(i);
+					for(int p = 0; p < pointsPerFace; ++p) {
+						binormals.append(f.binormals[p]);
+					}
+				}
+				binormals.close();
 			}
 			
-			tangents.open();
-			for(Face f : master.faces) {
-				//for(int i = pointsPerFace - 1; i >= 0; i--) {
-				for(int i = 0; i < pointsPerFace; ++i) {
-					tangents.append(f.tangents[i]);
+			if(master.faces.get(0).texCoords != null) {
+				texcoords.open();
+				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
+					Face f = master.faces.get(i);
+					for(int p = 0; p < pointsPerFace; ++p) {
+						uv[0] = f.texCoords[p].x;
+						uv[1] = f.texCoords[p].y;
+						texcoords.append(uv);
+					}
 				}
+				texcoords.close();
 			}
-			tangents.close();
-			
-			binormals.open();
-			for(Face f : master.faces) {
-				//for(int i = pointsPerFace - 1; i >= 0; i--) {
-				for(int i = 0; i < pointsPerFace; ++i) {
-					binormals.append(f.binormals[i]);
-				}
-			}
-			binormals.close();
-		}
 		
-		if(master.faces.get(0).texCoords != null) {
-			texcoords.open();
-			for(Face f : master.faces) {
-				//for(int i = pointsPerFace - 1; i >= 0; i--) {
-				for(int i = 0; i < pointsPerFace; ++i) {
-					uv[0] = f.texCoords[i].x;
-					uv[1] = f.texCoords[i].y;
-					texcoords.append(uv);
-				}
-			}
-			texcoords.close();
-		}
-		
-		/** If no materials were loaded/specified, just create a basic one. */
-		if(null == defaultMaterialGroups) {
-			defaultMaterialGroups = new ArrayList<MaterialGroup>();
-		}
-		if(defaultMaterialGroups.isEmpty()) {
-			defaultMaterialGroups.add(new MaterialGroup(0, 
-					master.faces.size() * getPointsPerFace(), 
-					new Material())
-			);
 		}
 		
 		if(Yeti.get().settings.debugModels) {

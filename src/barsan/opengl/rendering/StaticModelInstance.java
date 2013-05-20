@@ -123,10 +123,9 @@ public class StaticModelInstance extends ModelInstance {
 		
 		for(MaterialGroup sm : materialGroups) {
 			Technique.current.loadMaterial(sm.material);
-			gl.glDrawArrays(model.getFaceMode(), sm.beginIndex, sm.length);
+			gl.glDrawArrays(model.getFaceMode(), sm.beginIndex, sm.length * model.getPointsPerFace());
 		}
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
-		
 		
 		model.cleanUp(pindex, nindex, tindex, bindex, tcindex);
 	}

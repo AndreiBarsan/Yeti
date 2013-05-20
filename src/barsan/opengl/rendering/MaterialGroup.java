@@ -6,6 +6,7 @@ public class MaterialGroup {
 	public int beginIndex;
 	public int length;
 	public Material material;
+	
 	public MaterialGroup(int beginIndex, int length, Material material) {
 		this.beginIndex = beginIndex;
 		this.length = length;

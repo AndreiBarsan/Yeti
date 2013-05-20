@@ -24,9 +24,9 @@ public class MTLLoader {
 			while(s.hasNextLine()) {
 				String line = s.nextLine();
 				
-				if(line.startsWith("#")) continue;
+				if(line.startsWith("#") || line.trim().startsWith("#")) continue;
 				
-				String tokens[] = line.split("\\s+");
+				String tokens[] = line.trim().split("\\s+");
 				
 				if(tokens.length == 0 || tokens[0].length() == 0) {
 					if(current != null) {
@@ -45,7 +45,7 @@ public class MTLLoader {
 							textureName.substring(0, textureName.lastIndexOf('.'))
 							));
 				}
-				else if(tokens[0].equals("map_Bump")) {
+				else if(tokens[0].equals("map_Bump") || tokens[0].equals("map_bump")) {
 					String textureName = tokens[1];
 					ResourceLoader.loadTexture(textureName);
 					current.setNormalMap(ResourceLoader.texture(
@@ -53,6 +53,11 @@ public class MTLLoader {
 							));
 				}
 			}
+			
+			if(current != null) {
+				results.add(current);
+			}
+			
 		} catch (FileNotFoundException e) {
 			Yeti.screwed("Tried to load non-existent .mtl file: " + file.getAbsolutePath());
 		} finally {

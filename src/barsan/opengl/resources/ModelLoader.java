@@ -18,13 +18,10 @@ import barsan.opengl.rendering.materials.Material;
 public class ModelLoader {
 	
 	public static class Group {
-		// TODO: only use these things as temporary storage (or use them to optimize
-		// the rendering later)
 		public ArrayList<Vector3> geometry = new ArrayList<>();
 		public ArrayList<Vector3> texture = new ArrayList<>();
 		public ArrayList<Vector3> normals = new ArrayList<>();
-		// tangents not here since this class is only used as a helper building
-		// the object - tangents are all computed on the fly
+		
 		public ArrayList<Face> faces = new ArrayList<>();
 	}
 	
@@ -37,7 +34,7 @@ public class ModelLoader {
 		
 		public int[] pindex, tcindex, nindex, tindex;
 		
-		public void computeTangents() {
+		public void computeTangBinorm() {
 			tangents = new Vector3[normals.length];
 			binormals = new Vector3[normals.length];
 			
@@ -54,6 +51,58 @@ public class ModelLoader {
 				tangents[i] = t;
 				binormals[i] = new Vector3(t).cross(normal).normalize();
 			}
+		}
+		
+		public List<Face> split() {
+			assert points.length == 4 : "Can only split quads!";
+			ArrayList<Face> out = new ArrayList<Face>();
+			
+			Face f1 = new Face();
+			Face f2 = new Face();
+			f1.points = new Vector3[] {
+				points[0].copy(),
+				points[1].copy(),
+				points[2].copy()
+			};
+			
+			f2.points = new Vector3[] {
+				points[2].copy(),
+				points[1].copy(),
+				points[3].copy()
+			};
+			
+			if(null != normals) {
+				f1.normals = new Vector3[] {
+					normals[0].copy(),
+					normals[1].copy(),
+					normals[2].copy()
+				};
+				
+				f2.normals = new Vector3[] {
+					normals[2].copy(),
+					normals[1].copy(),
+					normals[3].copy()
+				};
+			}
+			
+			if(null != texCoords) {
+				f1.texCoords = new Vector3[] {
+					texCoords[0].copy(),
+					texCoords[1].copy(),
+					texCoords[2].copy()
+				};
+				
+				f2.texCoords = new Vector3[] {
+					texCoords[2].copy(),
+					texCoords[1].copy(),
+					texCoords[3].copy()
+				};
+			}
+			
+			out.add(f1);
+			out.add(f2);
+			
+			return out;
 		}
 		
 		@Override
@@ -75,17 +124,19 @@ public class ModelLoader {
 	 * @param input Input source.
 	 * @return		The newly loaded model, fresh from the oven!
 	 */
-	public static StaticModel fromObj(GL gl, Scanner input) {
+	public static StaticModel fromObj(GL gl, Scanner input, int explicitPointsPerFace) {
 		StaticModel model = new StaticModel(gl, "");
+		if(explicitPointsPerFace != 0) {
+			model.setPointsPerFace(explicitPointsPerFace);
+		}
 		
 		// Counters
 		int vc = 0, tc = 0, nc = 0, fc = 0;
 
-		ArrayList<String> openGroups = new ArrayList<>();
-		openGroups.add("default");
-		
 		HashMap<String, Material> materials = new HashMap<String, Material>();
 		ArrayList<MaterialGroup> matGroups = new ArrayList<MaterialGroup>();
+		
+		MaterialGroup currentMatGroup = null;
 		
 		while(input.hasNextLine()) {
 			String line = input.nextLine();
@@ -97,13 +148,7 @@ public class ModelLoader {
 					continue;
 					
 				case 'g':
-					openGroups.clear();
-					for(String gname : line.split("\\s")) {
-						openGroups.add(gname);
-						if(! model.getGroups().containsKey(gname)) {
-							model.getGroups().put(gname, new Group());
-						}
-					}
+					Yeti.debug("Groups currently disabled.");
 					break;
 					
 				case 'v':
@@ -115,13 +160,11 @@ public class ModelLoader {
 					switch(line.charAt(1)) {
 						case ' ':
 						{
-							// TODO: hack warning
-							Vector3 res = readVertex(line.substring(2));
+							// FIXME: hack warning
+							Vector3 res = readVertex(line.substring(1).trim());
 							res.z *= -1.0f;
 							model.master.geometry.add(res);
-							for(String gname : openGroups) {
-							//	model.getGroups().get(gname).geometry.add(res.copy());
-							}
+							
 							vc++;
 							break;
 						}
@@ -129,12 +172,7 @@ public class ModelLoader {
 						case 't':
 						{
 							Vector3 res = readTexCoords(line.substring(3));
-							// res.x = 1.0f - res.x;
-							// res.y = 1.0f - res.y;
 							model.master.texture.add(res);
-							for(String gname : openGroups) {
-							//	model.getGroups().get(gname).texture.add(res.copy());
-							}
 							tc++;
 							break;
 						}
@@ -144,9 +182,6 @@ public class ModelLoader {
 							Vector3 res = readVertex(line.substring(3));
 							res.z *= -1.0f;
 							model.master.normals.add(res);
-							for(String gname : openGroups) {
-							//	model.getGroups().get(gname).normals.add(res.copy());
-							}
 							nc++;
 							break;
 						}
@@ -154,12 +189,11 @@ public class ModelLoader {
 					
 					break;
 					
-				case 'f':
-					Face result = readFace(model, line.substring(2));
-					model.master.faces.add(result);
-					for(String gname : openGroups) {
-						model.getGroups().get(gname).faces.add(result);
-					}
+				case 'f': 
+					List<Face> result = readFace(currentMatGroup, model, 
+							line.substring(1).trim(),
+							vc, nc, tc);
+					model.master.faces.addAll(result);
 					fc++;
 					break;
 					
@@ -183,7 +217,6 @@ public class ModelLoader {
 							+ ", but no materials were actually defined.";
 						
 						for(Material m : lm) {
-							System.out.println("PUTTING " + m.getName());
 							materials.put(m.getName(), m);
 						}
 					}
@@ -192,15 +225,14 @@ public class ModelLoader {
 				case 'u':
 					if(line.startsWith("usemtl")) {
 						if(!matGroups.isEmpty()) {
-							MaterialGroup mg = matGroups.get(matGroups.size() - 1);
-							mg.length = fc * model.getPointsPerFace() - mg.beginIndex;
+							currentMatGroup.length = fc - currentMatGroup.beginIndex;
 						}
 						
 						String matName = line.split("\\s+")[1];
-						System.out.println("USING: " + matName);
 						Material material = materials.get(matName);
 						assert material != null : "Material not defined: " + matName;
-						matGroups.add(new MaterialGroup(fc * model.getPointsPerFace(), 0, material));
+						currentMatGroup = new MaterialGroup(fc, 0, material);
+						matGroups.add(currentMatGroup);
 					}
 					break;
 					
@@ -212,7 +244,7 @@ public class ModelLoader {
 		
 		if(!matGroups.isEmpty()) {
 			MaterialGroup mg = matGroups.get(matGroups.size() - 1);
-			mg.length = fc * model.getPointsPerFace() - mg.beginIndex;
+			mg.length = fc - mg.beginIndex;
 		}
 		
 		if(model.getName() == "") {
@@ -220,14 +252,6 @@ public class ModelLoader {
 		}
 		
 		model.setDefaultMaterialGroups(matGroups);	
-		
-		if(model.getPointsPerFace() == 3) {
-			model.setFaceMode(GL2.GL_TRIANGLES);
-		} else if(model.getPointsPerFace() == 4) {
-			model.setFaceMode(GL2.GL_QUADS);
-		} else {
-			Yeti.screwed("Models with non-quad or triangle faces are not supported.");
-		}
 		model.buildVBOs();
 		
 		//*
@@ -238,7 +262,7 @@ public class ModelLoader {
 	}
 	
 	private static Vector3 readVertex(String s) {
-		String[] res = s.split("\\s");
+		String[] res = s.split("\\s+");
 		return new Vector3(	Float.parseFloat(res[0]), 
 							Float.parseFloat(res[1]),
 							Float.parseFloat(res[2]));
@@ -259,32 +283,47 @@ public class ModelLoader {
 								0);
 	}
 	
-	// Prevents having to do a shitload of memory allocations
-	// FIXME: doesn't support arbitrary polygons
-	static int[] 	verts = new int[3], 
-					texs = new int[3],
-					norms = new int[3];
+	
+	static int[] 	verts = new int[64], 
+					texs = new int[64],
+					norms = new int[64];
 	static Vector3 aux_vector1 = new Vector3(), aux_vector2 = new Vector3();
-	private static Face readFace(StaticModel model, String s) {
+	
+	private static List<Face> readFace(MaterialGroup mg, StaticModel model, String s,
+			int currentVertex, int currentNormal, int currentTC) {
 		int subCount = 0;
 		Group master = model.master;
 		Face face = new Face();
 		String[] res = s.split("\\s");
 		
+		ArrayList<Face> out = new ArrayList<Face>();
+		
 		if(res.length < 3) {
 			throw new InputMismatchException(String.format("Bad number of geometry/texture/normal coordinates (%d)!", res.length));
 		}
+		boolean goingToSplit = false;
 		
-		if(model.getPointsPerFace() != 0 && model.getPointsPerFace() != res.length) {
-			throw new UnsupportedOperationException(String.format(
-				"Meshes with varying face sizes (quads and triangles mixsed together, for instance) not supported. " +
-				"(found %d points per face when expecting %d)", res.length, model.getPointsPerFace()));
-		} else {
-			if(model.getPointsPerFace() == 0) {
-				model.setPointsPerFace(res.length);
-			}
+				/*
+				throw new UnsupportedOperationException(String.format(
+					"Meshes with varying face sizes in the same material group (quads and triangles mixsed together, for instance) not supported. " +
+					"(found %d points per face when expecting %d)", res.length, mg.pointsPerFace));
+				*/
+		
+		if(model.getPointsPerFace() == 0) {
+			System.out.println("Model " + model.getName() + " now using " + res.length + " points per face.");
+			model.setPointsPerFace(res.length);
 		}
-		
+		else if(model.getPointsPerFace() != res.length) {
+			if(model.getPointsPerFace() == 3) {
+				Yeti.debug("Splitting a quad...");
+				goingToSplit = true;
+			} else {
+				throw new UnsupportedOperationException("Mesh with varying face sizes but" +
+						" no way of separating them.");
+			}
+			
+		}
+	
 		for(int i = 0; i < res.length; i++) {
 			if(res[i].contains("/")) {
 				String[] bits = res[i].split("/");
@@ -293,11 +332,20 @@ public class ModelLoader {
 				}
 				
 				verts[i] = Integer.parseInt(bits[0]);
+				if(verts[i] < 0) {
+					// verts[i] = -1 -> references right the last vertex we read
+					//System.out.println("Found negative index in face def: " + verts[i]);
+					verts[i] = currentVertex + verts[i] + 1;
+				}
+				
 				if(bits[1].length() > 0) {
 					if(subCount == 2) {
 						throw new InputMismatchException("Invalid combination of geometry/texture/normal coordinates.");
 					}
 					texs[i] = Integer.parseInt(bits[1]);
+					if(texs[i] < 0) {
+						texs[i] = currentTC + texs[i] + 1;
+					}
 					subCount = 3;
 				} else {
 					if(subCount == 3) {
@@ -306,26 +354,33 @@ public class ModelLoader {
 					subCount = 2;
 				}
 				norms[i] = Integer.parseInt(bits[2]);
+				if(norms[i] < 0) {
+					norms[i] = currentNormal + norms[i] + 1;
+				}
 				
 			} else {
 				if(subCount != 1 && subCount != 0) {
 					throw new InputMismatchException("Invalid combination of geometry/texture/normal coordinates.");
 				}
 				verts[i] = Integer.parseInt(res[i]);
+				if(verts[i] < 0) {
+					verts[i] = currentVertex - verts[i] + 1;
+				}
 				subCount = 1;
 			}
 		}
 		
 		// Cache all the vertex data in the faces
-		face.points = new Vector3[model.getPointsPerFace()];
-		for(int i = 0; i < model.getPointsPerFace(); i++) {
-			face.points[i] = master.geometry.get(verts[i] - 1).copy();
+		face.points = new Vector3[res.length];
+		for(int i = 0; i < res.length; i++) {
+			int index = verts[i] - 1;
+			face.points[i] = master.geometry.get(index).copy();
 		}
 		
 		if(master.texture.size() > 0) {
-			face.texCoords = new Vector3[model.getPointsPerFace()];
+			face.texCoords = new Vector3[res.length];
 			if(texs[0] != 0) {
-				for(int i = 0; i < model.getPointsPerFace(); i++) {
+				for(int i = 0; i < res.length; i++) {
 					face.texCoords[i] = master.texture.get(texs[i] - 1).copy();
 				}
 			}
@@ -333,9 +388,9 @@ public class ModelLoader {
 		
 		if(master.normals.size() > 0) {
 			if(norms[0] != 0) {
-				face.normals = new Vector3[model.getPointsPerFace()];
+				face.normals = new Vector3[res.length];
 				//face.autoNormal = false;
-				for(int i = 0; i < model.getPointsPerFace(); i++)  {
+				for(int i = 0; i < res.length; i++)  {
 					face.normals[i] = master.normals.get(norms[i] - 1).copy();
 				}
 			} else {
@@ -349,17 +404,25 @@ public class ModelLoader {
 				Vector3 normal = aux_vector1.set(face.points[1]).sub(face.points[0])
 						.cross(aux_vector2.set(face.points[2]).sub(face.points[0]));
 				
-				for(int i = 0; i < model.getPointsPerFace(); i++) {
+				for(int i = 0; i < res.length; i++) {
 					face.normals[i] = new Vector3(normal);
 				}
 			}
+		}
+		
+		if(goingToSplit) {
+			Yeti.debug("Splitting face...");
+			out.addAll(face.split());
+		}
+		else {
+			out.add(face);
 		}
 		
 		// Save the original inidices for debugging purposes
 		face.pindex = verts;
 		face.tcindex = texs;
 		face.nindex = norms;
-		return face;
+		return out;
 	}
 	
 	public static StaticModel buildPlane(float width, float height, int sdivw, int sdivh) {

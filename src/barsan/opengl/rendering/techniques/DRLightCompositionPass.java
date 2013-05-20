@@ -1,7 +1,6 @@
 package barsan.opengl.rendering.techniques;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;
@@ -15,10 +14,10 @@ import com.jogamp.opengl.util.texture.Texture;
 public class DRLightCompositionPass extends Technique {
 
 	public class AOSettings {
-		public float scale = 1.0f;
+		public float scale = 0.25f;
 		public float bias = 0.25f;
-		public float sampleRad = 2.0f;	
-		public float intensity = 2.0f;
+		public float sampleRad = 0.08f;	
+		public float intensity = 0.75f;
 	}
 	
 	public AOSettings ao = new AOSettings();
@@ -31,9 +30,6 @@ public class DRLightCompositionPass extends Technique {
 	
 	private void AOInit() {
 		ResourceLoader.loadTexture("randomNormal", "randomNormal.jpg");
-		Texture t = ResourceLoader.texture("randomNormal");
-		GL2 gl = Yeti.get().gl;
-		// t.setTexParameterf(gl, 
 	}
 	
 	@Override

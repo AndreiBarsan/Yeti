@@ -6,10 +6,7 @@ import java.util.ArrayList;
 
 import javax.media.opengl.GLAutoDrawable;
 
-import com.jogamp.opengl.util.texture.Texture;
-
 import barsan.opengl.Yeti;
-import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.FreeflyCamera;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
@@ -44,6 +41,7 @@ public class NessieTestScene extends Scene {
 	FreeflyCamera ffc;
 	
 	ArrayList<SpotLight> slights = new ArrayList<>();
+	StaticModelInstance h;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -73,29 +71,26 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("box", "texcube.obj");
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("DR_sphere", "dr_icosphere.obj");
+		ResourceLoader.loadObj("sphere", "sphere.obj");
 		ResourceLoader.loadObj("DR_cone", "cone.obj");
-		ResourceLoader.loadObj("handyman", "The_Handyman.obj");
+		ResourceLoader.loadObj("LS", "LS.obj", 3);
+		
+		ResourceLoader.loadObj("hm", "The_Handyman.obj");
 		
 		ResourceLoader.loadTexture("cubetex", "cubetex.png");
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		
-		ResourceLoader.loadTexture("Handyman_body_D", "Handyman_body_D.jpg");
-		ResourceLoader.loadTexture("Handyman_body_N", "Handyman_body_N.jpg");
-		
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
-		addModelInstance(box);
+		//addModelInstance(box);
 		
-		StaticModelInstance h = new StaticModelInstance(ResourceLoader.model("handyman"));
+		h = new StaticModelInstance(ResourceLoader.model("hm"));
 		h.getTransform().updateTranslate(-15.0f, -10.0f, -18.0f);
 		h.getTransform().updateRotation(0.0f, 1.0f, 0.0f, -90.0f);
-		h.getTransform().updateScale(1.5f);
-		//h.getMaterial().setDiffuseMap(ResourceLoader.texture("Handyman_body_D"));
-		//h.getMaterial().setNormalMap(ResourceLoader.texture("Handyman_body_N"));
+		//	h.getTransform().updateScale(0.1f);
 		
-		//h.
 		addModelInstance(h);
 
 		floor = new StaticModelInstance(ModelLoader.buildPlane(
@@ -106,26 +101,25 @@ public class NessieTestScene extends Scene {
 		floor.getMaterial().setSpecularIntensity(0.005f);
 		floor.getMaterial().setSpecularPower(256);
 		addModelInstance(floor);
-
+		
+		float wallZ = 6.0f;
 		StaticModel wm = ModelLoader.buildPlane(250.0f, 10.0f, 25, 1);
 		ModelInstance wall = new StaticModelInstance(wm);
-		wall.getTransform().updateTranslate(0.0f, -10.0f, 15.0f)
+		wall.getTransform().updateTranslate(0.0f, -10.0f, wallZ - 0.5f)
 							.updateRotation(1.0f, 0.0f, 0.0f, -90.0f);
 		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		wall.getMaterial().setSpecularIntensity(0.0f);
 		addModelInstance(wall);
 		
 		wall = new StaticModelInstance(wm);
-		wall.getTransform().updateTranslate(0.0f, 0.0f, 16.0f)
+		wall.getTransform().updateTranslate(0.0f, 0.0f, wallZ + 0.5f)
 							.updateRotation(1.0f, 0.0f, 0.0f, 90.0f);
 		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		wall.getMaterial().setSpecularIntensity(0.0f);
 		addModelInstance(wall);
-
-		
 		
 		int mlim = 3;
-		float mGrid = 4f;
+		float mGrid = 2f;
 		//*
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
@@ -133,7 +127,7 @@ public class NessieTestScene extends Scene {
 				mat.setSpecularIntensity(4.0f);
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
-						ResourceLoader.model("monkey"), mat);
+						ResourceLoader.model("sphere"), mat);
 				monkey.getTransform().updateTranslate(i * mGrid, -8.5f, j * mGrid);
 				addModelInstance(monkey);
 			}
@@ -193,7 +187,7 @@ public class NessieTestScene extends Scene {
 				(float) Math.cos(MathUtil.DEG_TO_RAD * 25.0f),
 				(float) Math.cos(MathUtil.DEG_TO_RAD * 30.0f), 1.0f);
 		spot.setAttenuation(1.0f, 0.0f, 0.0005f);
-		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+		spot.setDiffuse(new Color(1.0f, 1.0f, 1.0f, 3.0f));
 		lights.add(spot);
 		spot.setCastsShadows(true);
 
@@ -209,14 +203,21 @@ public class NessieTestScene extends Scene {
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				int step = e.getWheelRotation();
 				if(e.isShiftDown()) {
-					nessie.AO().sampleRad += step * 0.1f;
+					nessie.AO().sampleRad -= step * 0.005f;
 					if(nessie.AO().sampleRad < 0.0f) {
 						nessie.AO().sampleRad = 0.0f;
 					}
 					System.out.println("Sample radius: " + nessie.AO().sampleRad);
 					
+				} else if(e.isControlDown()) {
+					nessie.AO().scale -= step * 0.033f;
+					if(nessie.AO().scale < 0.0f) {
+						nessie.AO().scale = 0.0f;
+					}
+					System.out.println("AO Scale: " + nessie.AO().scale);
+					
 				} else {
-					nessie.AO().intensity += step * 0.033f;
+					nessie.AO().intensity -= step * 0.033f;
 					if(nessie.AO().intensity < 0.0f)  {
 						nessie.AO().intensity = 0.0f;
 					}
@@ -248,6 +249,9 @@ public class NessieTestScene extends Scene {
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		
+		h.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 10);
+		
 		super.display(drawable);
 		
 		ffc.update(Yeti.get().getDelta());

@@ -31,7 +31,7 @@ public class PointLight extends Light {
 		this.setPosition(position);
 	}
 	
-	float threshold = 255.0f;
+	float threshold = 512.0f;
 	@Override
 	public float getBoundingRadius() {
 		Color d = getDiffuse();

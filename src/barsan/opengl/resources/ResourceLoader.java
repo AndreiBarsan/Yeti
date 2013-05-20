@@ -63,10 +63,14 @@ public class ResourceLoader {
 		Yeti.debug("Resource loader initialized.");
 		initialized = true;
 	}
-
+	
 	public static void loadObj(String name, String fileName) {
+		loadObj(name, fileName, 0);
+	}
+
+	public static void loadObj(String name, String fileName, int eppf) {
 		try(Scanner s = new Scanner(new File(RESBASE + MODELBASE + fileName))) {
-			models.put(name, ModelLoader.fromObj(Yeti.get().gl, s));
+			models.put(name, ModelLoader.fromObj(Yeti.get().gl, s, eppf));
 		} catch (FileNotFoundException e) {
 			Yeti.screwed("Failed to load static Wavefront model.", e);
 		}
@@ -95,7 +99,7 @@ public class ResourceLoader {
 				// TODO: maybe only load every X frame (not every single one is needed
 				// for a good animation; not a priority in our small game nevertheless)
 				File entry = files[i];
-				frames.add(new Frame(ModelLoader.fromObj(gl, new Scanner(entry)), 0.1f));
+				frames.add(new Frame(ModelLoader.fromObj(gl, new Scanner(entry), 3), 0.1f));
 			}
 			
 			animatedModels.put(name, new AnimatedModel(name, frames));
