@@ -1,5 +1,6 @@
 package barsan.opengl.rendering;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader.Face;
 import barsan.opengl.resources.ModelLoader.Group;
 
@@ -52,7 +54,8 @@ public class StaticModel extends Model {
 		
 		vertices.open();
 		for(Face f : master.faces) {
-			for(int i = pointsPerFace - 1; i >= 0; i--) {
+			//for(int i = pointsPerFace - 1; i >= 0; i--) {
+			for(int i = 0; i < pointsPerFace; ++i) {
 				vertices.append(f.points[i]);
 			}
 		}
@@ -61,7 +64,8 @@ public class StaticModel extends Model {
 		if(master.faces.get(0).normals != null) {
 			normals.open();
 			for(Face f : master.faces) {
-				for(int i = pointsPerFace - 1; i >= 0; i--) {
+			//	for(int i = pointsPerFace - 1; i >= 0; i--) {
+				for(int i = 0; i < pointsPerFace; ++i) {
 					normals.append(f.normals[i]);
 				}
 			}
@@ -73,7 +77,8 @@ public class StaticModel extends Model {
 			
 			tangents.open();
 			for(Face f : master.faces) {
-				for(int i = pointsPerFace - 1; i >= 0; i--) {
+				//for(int i = pointsPerFace - 1; i >= 0; i--) {
+				for(int i = 0; i < pointsPerFace; ++i) {
 					tangents.append(f.tangents[i]);
 				}
 			}
@@ -81,7 +86,8 @@ public class StaticModel extends Model {
 			
 			binormals.open();
 			for(Face f : master.faces) {
-				for(int i = pointsPerFace - 1; i >= 0; i--) {
+				//for(int i = pointsPerFace - 1; i >= 0; i--) {
+				for(int i = 0; i < pointsPerFace; ++i) {
 					binormals.append(f.binormals[i]);
 				}
 			}
@@ -91,13 +97,25 @@ public class StaticModel extends Model {
 		if(master.faces.get(0).texCoords != null) {
 			texcoords.open();
 			for(Face f : master.faces) {
-				for(int i = pointsPerFace - 1; i >= 0; i--) {
+				//for(int i = pointsPerFace - 1; i >= 0; i--) {
+				for(int i = 0; i < pointsPerFace; ++i) {
 					uv[0] = f.texCoords[i].x;
 					uv[1] = f.texCoords[i].y;
 					texcoords.append(uv);
 				}
 			}
 			texcoords.close();
+		}
+		
+		/** If no materials were loaded/specified, just create a basic one. */
+		if(null == defaultMaterialGroups) {
+			defaultMaterialGroups = new ArrayList<MaterialGroup>();
+		}
+		if(defaultMaterialGroups.isEmpty()) {
+			defaultMaterialGroups.add(new MaterialGroup(0, 
+					master.faces.size() * getPointsPerFace(), 
+					new Material())
+			);
 		}
 		
 		if(Yeti.get().settings.debugModels) {

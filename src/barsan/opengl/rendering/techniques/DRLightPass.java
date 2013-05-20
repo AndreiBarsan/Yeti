@@ -12,6 +12,7 @@ import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 /** 
@@ -43,6 +44,11 @@ public class DRLightPass extends Technique {
 		// prevent these extra pointless calls
 		program.setUVector2f("screenSize", Yeti.get().settings.width, Yeti.get().settings.height);
 		program.setUVector3f("eyeWorldPos", rs.getCamera().getPosition());
+	}
+	
+	@Override
+	public void loadMaterial(Material material) {
+		// nop, abstract technique
 	}
 	
 	public void drawDirectionalLight(ModelInstance quad, DirectionalLight light, RendererState rs) {

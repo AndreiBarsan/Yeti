@@ -1,0 +1,36 @@
+# 
+# 
+newmtl Handyman_clothes
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Handyman_clothes_D.png
+map_Bump Handyman_clothes_N.png
+
+
+newmtl Handyman_body
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd Handyman_body_D.png
+map_Bump Handyman_body_N.png
+
+newmtl Handyman_heart
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd Handyman_heart_D.png
+map_Bump Handyman_body_N.png
+

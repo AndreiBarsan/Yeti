@@ -6,6 +6,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Settings;
 
@@ -13,12 +14,14 @@ import com.jogamp.opengl.util.texture.Texture;
 
 public class DRLightCompositionPass extends Technique {
 
-	/** TODO: fancier way of setting these */
-	public float aoScale = 1.0f;
-	public float aoBias = 0.25f;
-	public float asSampleRad = 2.0f;	
-	public float aoIntensity = 5.33f;
+	public class AOSettings {
+		public float scale = 1.0f;
+		public float bias = 0.25f;
+		public float sampleRad = 2.0f;	
+		public float intensity = 2.0f;
+	}
 	
+	public AOSettings ao = new AOSettings();
 
 	public DRLightCompositionPass() {
 		super(ResourceLoader.shader("DRLightCompose"));
@@ -30,7 +33,7 @@ public class DRLightCompositionPass extends Technique {
 		ResourceLoader.loadTexture("randomNormal", "randomNormal.jpg");
 		Texture t = ResourceLoader.texture("randomNormal");
 		GL2 gl = Yeti.get().gl;
-		t.setTexParameterf(gl, parameterName, value)
+		// t.setTexParameterf(gl, 
 	}
 	
 	@Override
@@ -41,12 +44,13 @@ public class DRLightCompositionPass extends Technique {
 		program.setU1i("diffuseMap", 0);
 		program.setU1i("lightMap", 1);
 		
-		aoScale = 0.5f;
-		aoBias = 0.33f;
-		asSampleRad = 0.5f;	
-		aoIntensity = 2.0f;
-		
 		AOSetup(rs);
+	}
+	
+	@Override
+	public void loadMaterial(Material material) {
+		// Nop, this is a pass that doesn't involve materials
+		// TODO: normal techniques and abstract techniques or something?
 	}
 	
 	private void AOSetup(RendererState rs) {
@@ -63,9 +67,9 @@ public class DRLightCompositionPass extends Technique {
 		program.setUVector2f("screenSize", new Vector2(s.width, s.height));
 		program.setU1f("randomSize", randomTexture.getWidth());
 		
-		program.setU1f("aoScale", aoScale);
-		program.setU1f("aoBias", aoBias);
-		program.setU1f("aoSampleRad", asSampleRad);
-		program.setU1f("aoIntensity", aoIntensity);
+		program.setU1f("aoScale", ao.scale);
+		program.setU1f("aoBias", ao.bias);
+		program.setU1f("aoSampleRad", ao.sampleRad);
+		program.setU1f("aoIntensity", ao.intensity);
 	}
 }

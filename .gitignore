@@ -38,6 +38,9 @@ local.properties
 # External tool builders
 .externalToolBuilders/
 
+# Maya stuff
+res/models/.mayaSwatches/
+
 # Locally stored "Eclipse launch configurations"
 *.launch
 

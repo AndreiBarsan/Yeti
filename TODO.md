@@ -1,11 +1,5 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
-Immediate:
- - Saturday, 11: Omnidirectional shadow mapping in Nessie
- - Sunday/Monday, 12-13: SSAO in Nessie (occlusion component should be visible alone, like 
- GBuffer currently is)
- - Tuesday/Thursday 14-15: convert forward renderer to Techniques  
-
 Bugs:
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven

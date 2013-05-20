@@ -19,6 +19,8 @@ in vec2 vVaryingTexCoords;
 
 out vec4 composedColor;
 
+vec2 nuv;
+
 /** SSAO as explained by José María Méndez */
 
 vec2 getRandom(in vec2 uv) {
@@ -30,20 +32,20 @@ vec3 getPosition(in vec2 uv) {
 }
 
 vec3 getNormal(in vec2 uv) {
-	return normalize(texture(normalMap, uv).xyz * 2.0f - 1.0f);
+	return normalize(texture(normalMap, uv).xyz);
 }
 
 float computeAOSample(in vec2 tcoord, in vec2 uv, in vec3 p, in vec3 cnorm) {
 	vec3 diff = getPosition(tcoord + uv) - p;
 	vec3 v = normalize(diff);
 	float d = length(diff) * aoScale;
-	return max(0.0, dot(cnorm, v) - aoBias) * ( 1.0f / (1.0f + d) )* aoIntensity;
+	return max(0.0, dot(cnorm, v) - aoBias) * ( 1.0f / (1.0f + d) ) * aoIntensity;
 }
 
-float computeAO() {
-	vec3 p = getPosition(vVaryingTexCoords);
-	vec3 n = getNormal(vVaryingTexCoords);
-	vec2 rand = getRandom(vVaryingTexCoords);
+float computeAO(in vec2 uv) {
+	vec3 p = getPosition(uv);
+	vec3 n = getNormal(uv);
+	vec2 rand = getRandom(uv);
 
 	vec2 dirs[4];
 	dirs[0] = vec2( 1,  0);
@@ -60,10 +62,10 @@ float computeAO() {
 		vec2 coord2 = vec2(	coord1.x * 0.707 - coord1.y * 0.707,
 							coord1.x * 0.707 + coord1.y * 0.707 );
 
-		ao += computeAOSample(vVaryingTexCoords, coord1 * 0.25, p, n);
-		ao += computeAOSample(vVaryingTexCoords, coord1 * 0.5, p, n);
-		ao += computeAOSample(vVaryingTexCoords, coord1 * 0.75, p, n);
-		ao += computeAOSample(vVaryingTexCoords, coord2, p, n);
+		ao += computeAOSample(uv, coord1 * 0.25, p, n);
+		ao += computeAOSample(uv, coord1 * 0.5, p, n);
+		ao += computeAOSample(uv, coord1 * 0.75, p, n);
+		ao += computeAOSample(uv, coord2, p, n);
 	} 
 	
 	ao /= float(iterations) * 4.0f;
@@ -71,20 +73,22 @@ float computeAO() {
 }
 
 void main(void) {
-	// Compose the albedo and the lighting
-	vec4 light = texture(lightMap, vVaryingTexCoords);
+	nuv = vVaryingTexCoords;
 
-	float ao = computeAO();
-	/*
+	// Compose the albedo and the lighting
+	vec4 light = texture(lightMap, nuv);
+
+	float ao = computeAO(nuv);
+	//*
 	light = vec4(
 		max(0.0f, light.r - ao),
 		max(0.0f, light.g - ao),
 		max(0.0f, light.b - ao),
 		light.a
 		);
-	*/
-	//composedColor = texture(diffuseMap, vVaryingTexCoords) *  light; 
-	//composedColor.rgb = max(vec3(0), composedColor.rgb - vec3(ao));
+	//*/
+	composedColor = texture(diffuseMap, nuv) *  light; 
+	
 
-	composedColor = vec4(vec3(1 - ao), 1);
+	// composedColor = vec4(vec3(1 - ao), 1);
 }

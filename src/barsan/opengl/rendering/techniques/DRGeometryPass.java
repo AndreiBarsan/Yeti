@@ -16,6 +16,8 @@ public class DRGeometryPass extends Technique {
 	private int diffuseMapSlot;
 	private int normalMapSlot;
 	
+	private RendererState rs;
+	
 	public DRGeometryPass(int textureSlotStart) {
 		super(ResourceLoader.shader("DRGeometry"));
 		
@@ -29,9 +31,11 @@ public class DRGeometryPass extends Technique {
 		
 		view.set(rs.getCamera().getView());
 		projection.set(rs.getCamera().getProjection());
+		
+		this.rs = rs;
 	}
 	
-	private void bindTexture(RendererState rs, Texture t, String name, int slot) {
+	private void bindTexture(Texture t, String name, int slot) {
 		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + slot);
 		t.bind(rs.gl);
 		int aiso = rs.getAnisotropySamples();
@@ -40,14 +44,13 @@ public class DRGeometryPass extends Technique {
 	}
 	
 	@Override
-	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
-		Material material = mi.getMaterial();
+	public void loadMaterial(Material material) {
 		Texture normalMap = material.getNormalMap();
 		if(normalMap != null) {
 			program.setU1i("useBump", true);
 			// Note: having this disabled means no non-uniform scaling is allowed
 			// program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
-			bindTexture(rs, normalMap, "normalMap", normalMapSlot);
+			bindTexture(normalMap, "normalMap", normalMapSlot);
 		} else {
 			program.setU1i("useBump", false);
 		}
@@ -55,7 +58,7 @@ public class DRGeometryPass extends Technique {
 		Texture diffuseMap = material.getDiffuseMap();
 		if(diffuseMap != null) {
 			program.setU1i("useTexture", true);
-			bindTexture(rs, diffuseMap, "diffuseMap", diffuseMapSlot);
+			bindTexture(diffuseMap, "diffuseMap", diffuseMapSlot);
 		} else {
 			program.setU1i("useTexture", false);
 		}
@@ -63,5 +66,10 @@ public class DRGeometryPass extends Technique {
 		program.setUVector4f("matDiffuse", material.getDiffuse().getData());
 		program.setU1f("matSpecularIntensity", (float) material.getSpecularIntensity());
 		program.setU1f("matSpecularPower", (float) material.getSpecularPower());
+	}
+	
+	@Override
+	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
+		
 	}
 }

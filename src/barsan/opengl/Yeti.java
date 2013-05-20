@@ -338,15 +338,17 @@ public class Yeti implements GLEventListener {
 			}
 		});
 		
+		
 		focusMouse();
 	}
 	
-	public void focusMouse() {
+	public void focusMouse() {		
 		canvasHost.requestFocus();
 		canvasHost.setCursor(blankCursor);
 		settings.playing = true;
-		if(currentScene != null)
+		if(currentScene != null) {
 			currentScene.play();
+		}
 	}
 	
 	public float getDelta() {

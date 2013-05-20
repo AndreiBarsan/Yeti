@@ -1,11 +1,11 @@
 package barsan.opengl.rendering.techniques;
 
-import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.CubeSMAux;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 public class PointLightSM extends Technique {
@@ -18,6 +18,11 @@ public class PointLightSM extends Technique {
 	
 	public void setLightPosition(Vector3 lightPosition) {
 		this.lightPosition = lightPosition;
+	}
+	
+	@Override
+	public void loadMaterial(Material material) {
+		// nop, also an abstract technique
 	}
 	
 	@Override

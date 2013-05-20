@@ -174,6 +174,12 @@ public class ResourceLoader {
 		}
 	}
 
+	public static void loadTexture(String fileName) {
+		String resName = fileName.substring(0, fileName.lastIndexOf('.'));
+		System.out.println(resName);
+		loadTexture(resName, fileName);
+	}
+	
 	public static void loadTexture(String name, String fileName) {
 		try {
 		TextureData tdata = TextureIO.newTextureData(

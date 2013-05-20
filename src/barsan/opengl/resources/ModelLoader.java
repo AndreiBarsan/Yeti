@@ -1,7 +1,9 @@
 package barsan.opengl.resources;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.media.opengl.GL;
@@ -9,7 +11,9 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
+import barsan.opengl.rendering.MaterialGroup;
 import barsan.opengl.rendering.StaticModel;
+import barsan.opengl.rendering.materials.Material;
 
 public class ModelLoader {
 	
@@ -62,6 +66,8 @@ public class ModelLoader {
 		}
 	}
 	
+	public static boolean loadingFronLHCoords = true;
+	
 	/**
 	 * Note: only loads triangle faces! The model class *can* however render
 	 * quads and polygon faces.
@@ -77,6 +83,9 @@ public class ModelLoader {
 
 		ArrayList<String> openGroups = new ArrayList<>();
 		openGroups.add("default");
+		
+		HashMap<String, Material> materials = new HashMap<String, Material>();
+		ArrayList<MaterialGroup> matGroups = new ArrayList<MaterialGroup>();
 		
 		while(input.hasNextLine()) {
 			String line = input.nextLine();
@@ -108,10 +117,10 @@ public class ModelLoader {
 						{
 							// TODO: hack warning
 							Vector3 res = readVertex(line.substring(2));
+							res.z *= -1.0f;
 							model.master.geometry.add(res);
 							for(String gname : openGroups) {
-								model.getGroups().get(gname).geometry
-									.add(res);
+							//	model.getGroups().get(gname).geometry.add(res.copy());
 							}
 							vc++;
 							break;
@@ -120,10 +129,11 @@ public class ModelLoader {
 						case 't':
 						{
 							Vector3 res = readTexCoords(line.substring(3));
+							// res.x = 1.0f - res.x;
+							// res.y = 1.0f - res.y;
 							model.master.texture.add(res);
 							for(String gname : openGroups) {
-								model.getGroups().get(gname).texture
-									.add(readTexCoords(line.substring(3)));
+							//	model.getGroups().get(gname).texture.add(res.copy());
 							}
 							tc++;
 							break;
@@ -132,10 +142,10 @@ public class ModelLoader {
 						case 'n': 
 						{
 							Vector3 res = readVertex(line.substring(3));
+							res.z *= -1.0f;
 							model.master.normals.add(res);
 							for(String gname : openGroups) {
-								model.getGroups().get(gname).normals
-									.add(readVertex(line.substring(3)));
+							//	model.getGroups().get(gname).normals.add(res.copy());
 							}
 							nc++;
 							break;
@@ -167,24 +177,49 @@ public class ModelLoader {
 			
 				case 'm':
 					if(line.startsWith("mtllib")) {
-						Yeti.warn("Skipping material definition.");
+						List<Material> lm = MTLLoader.load(line.split("\\s")[1]);
+						assert ! lm.isEmpty() 
+							: "Loaded MTL file: " + line.split("\\s")[1]
+							+ ", but no materials were actually defined.";
+						
+						for(Material m : lm) {
+							System.out.println("PUTTING " + m.getName());
+							materials.put(m.getName(), m);
+						}
 					}
 					break;
 					
 				case 'u':
 					if(line.startsWith("usemtl")) {
-						// see above
+						if(!matGroups.isEmpty()) {
+							MaterialGroup mg = matGroups.get(matGroups.size() - 1);
+							mg.length = fc * model.getPointsPerFace() - mg.beginIndex;
+						}
+						
+						String matName = line.split("\\s+")[1];
+						System.out.println("USING: " + matName);
+						Material material = materials.get(matName);
+						assert material != null : "Material not defined: " + matName;
+						matGroups.add(new MaterialGroup(fc * model.getPointsPerFace(), 0, material));
 					}
 					break;
+					
 				default:
 					Yeti.screwed("Unrecognized identifier: " + lead);
 					continue;
 			}
 		}
 		
+		if(!matGroups.isEmpty()) {
+			MaterialGroup mg = matGroups.get(matGroups.size() - 1);
+			mg.length = fc * model.getPointsPerFace() - mg.beginIndex;
+		}
+		
 		if(model.getName() == "") {
 			model.setName("unnamed_model");
 		}
+		
+		model.setDefaultMaterialGroups(matGroups);	
 		
 		if(model.getPointsPerFace() == 3) {
 			model.setFaceMode(GL2.GL_TRIANGLES);
@@ -195,10 +230,10 @@ public class ModelLoader {
 		}
 		model.buildVBOs();
 		
-		/*
+		//*
 		Yeti.debug(String.format("Finished loading model %s! Vertices: %d, Texture coords: %d, Normal coords: %d, Faces: %d, Groups: %d",
 				model.getName(), vc, tc, nc, fc, model.getGroups().size()));
-				*/
+				//*/
 		return model;
 	}
 	
@@ -283,22 +318,26 @@ public class ModelLoader {
 		
 		// Cache all the vertex data in the faces
 		face.points = new Vector3[model.getPointsPerFace()];
-		for(int i = 0; i < model.getPointsPerFace(); i++)
-			face.points[i] = master.geometry.get(verts[i] - 1);
+		for(int i = 0; i < model.getPointsPerFace(); i++) {
+			face.points[i] = master.geometry.get(verts[i] - 1).copy();
+		}
 		
 		if(master.texture.size() > 0) {
 			face.texCoords = new Vector3[model.getPointsPerFace()];
-			if(texs[0] != 0)
-			for(int i = 0; i < model.getPointsPerFace(); i++)
-				face.texCoords[i] = master.texture.get(texs[i] - 1);
+			if(texs[0] != 0) {
+				for(int i = 0; i < model.getPointsPerFace(); i++) {
+					face.texCoords[i] = master.texture.get(texs[i] - 1).copy();
+				}
+			}
 		}
 		
 		if(master.normals.size() > 0) {
 			if(norms[0] != 0) {
 				face.normals = new Vector3[model.getPointsPerFace()];
 				//face.autoNormal = false;
-				for(int i = 0; i < model.getPointsPerFace(); i++) 
-					face.normals[i] = master.normals.get(norms[i] - 1);
+				for(int i = 0; i < model.getPointsPerFace(); i++)  {
+					face.normals[i] = master.normals.get(norms[i] - 1).copy();
+				}
 			} else {
 				//face.autoNormal = true;
 				// Just compute the face's normal
@@ -336,16 +375,16 @@ public class ModelLoader {
 			for(int y = -sdivh / 2; y <= th; y++) {
 				Face f = new Face();
 				f.points = new Vector3[] {
-					new Vector3(x * uw, 0, y * uh),
-					new Vector3(x * uw, 0, (y + 1) * uh),
+					new Vector3((x + 1) * uw, 0, y * uh),
 					new Vector3((x + 1) * uw, 0, (y + 1) * uh),
-					new Vector3((x + 1) * uw, 0, y * uh)
+					new Vector3(x * uw, 0, (y + 1) * uh),
+					new Vector3(x * uw, 0, y * uh)
 				};
 				f.texCoords = new Vector3[] {
-					new Vector3(0, 0, 0),
-					new Vector3(0, 1, 0),
+					new Vector3(1, 0, 0),
 					new Vector3(1, 1, 0),
-					new Vector3(1, 0, 0)
+					new Vector3(0, 1, 0),
+					new Vector3(0, 0, 0)
 				};
 				f.normals = new Vector3[] {
 					new Vector3(0, 1, 0),
@@ -388,30 +427,30 @@ public class ModelLoader {
 		
 		Face face = new Face();
 		face.texCoords = new Vector3[] {
-				new Vector3(0, 0, 0),
-				new Vector3(0, 1, 0),
+				new Vector3(1, 0, 0),
 				new Vector3(1, 1, 0),
-				new Vector3(1, 0, 0)
+				new Vector3(0, 1, 0),
+				new Vector3(0, 0, 0)
 			};
 		if(xz) {
 			face.points = new Vector3[] {
-				new Vector3(-hw, 0, -hh),
-				new Vector3(-hw, 0,  hh),
+				new Vector3( hw, 0, -hh),
 				new Vector3( hw, 0,  hh),
-				new Vector3( hw, 0, -hh)
+				new Vector3(-hw, 0,  hh),
+				new Vector3(-hw, 0, -hh),
 			};
 			face.normals = new Vector3[] {
 				new Vector3(0, 1, 0),
 				new Vector3(0, 1, 0),
 				new Vector3(0, 1, 0),
-				new Vector3(0, 1, 0)
+				new Vector3(0, 1, 0),
 			};
 		} else {
 			face.points = new Vector3[] {
-				new Vector3(-hw, -hh, 0),
-				new Vector3(-hw,  hh, 0),
+				new Vector3( hw, -hh, 0),
 				new Vector3( hw,  hh, 0),
-				new Vector3( hw, -hh, 0)
+				new Vector3(-hw,  hh, 0),
+				new Vector3(-hw, -hh, 0)
 			};
 			face.normals = new Vector3[] {
 				new Vector3(0, 0, 1),

@@ -19,11 +19,14 @@ import com.jogamp.opengl.util.texture.Texture;
  * Contains material data that's to be rendered with a certain technique.
  *  
  * @author Andrei Barsan
- *
  */
 public class Material {
 	
+	private String name = "";
+	
+	@Deprecated
 	protected int positionIndex, normalIndex, texcoordIndex, tangentIndex, binormalIndex;
+	@Deprecated
 	protected Shader shader;
 	protected Color ambient, diffuse, specular;
 	
@@ -37,15 +40,22 @@ public class Material {
 	protected Texture diffuseMap = null;
 	protected Texture normalMap = null;
 	
+	@Deprecated
 	protected List<MaterialComponent> components = new ArrayList<MaterialComponent>();
 	
+	public Material() {
+		this.ambient = Color.WHITE;
+		this.diffuse = Color.WHITE;
+		this.specular = Color.WHITE;
+	}
+	
+	@Deprecated
 	public Material(Shader shader) {
 		this(shader, Color.WHITE, Color.WHITE, Color.WHITE);
 	}
 	
+	@Deprecated
 	public Material(Shader shader, Color ambient, Color diffuse, Color specular) {
-		assert shader != null;
-		
 		this.shader = shader;
 		
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);
@@ -102,6 +112,7 @@ public class Material {
 		}
 	}
 	
+	@Deprecated
 	public void render(RendererState rendererState, Model model) {
 		GL gl = rendererState.gl;
 		
@@ -115,10 +126,12 @@ public class Material {
 		model.render(model.getArrayLength());
 	}
 
+	@Deprecated
 	protected void enableShader(RendererState rendererState) {
 		rendererState.gl.glUseProgram(shader.getHandle());
 	}
 	
+	@Deprecated
 	public void bindTextureCoodrinates(Model model) {
 		if(diffuseMap != null) {
 			model.getTexCoords().use(texcoordIndex);
@@ -225,20 +238,24 @@ public class Material {
 		this.ambient = ambient;
 	}
 
+	@Deprecated
 	public void addComponent(MaterialComponent component) {
 		components.add(component);
 	}
 
+	@Deprecated
 	public void removeComponent(MaterialComponent component) {
 		if(!components.remove(component)) {
 			Yeti.screwed("Tried to remove non-existing material component!");
 		}
 	}
-
+	
+	@Deprecated
 	public boolean containsComponent(MaterialComponent component) {
 		return components.contains(component);
 	}
 	
+	@Deprecated
 	public Shader getShader() {
 		return shader;
 	}
@@ -249,5 +266,13 @@ public class Material {
 
 	public void setSpecularIntensity(float specularIntensity) {
 		this.specularIntensity = specularIntensity;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

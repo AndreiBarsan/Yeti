@@ -19,6 +19,7 @@ import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.rendering.techniques.DRGeometryPass;
 import barsan.opengl.rendering.techniques.DRLightCompositionPass;
+import barsan.opengl.rendering.techniques.DRLightCompositionPass.AOSettings;
 import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
@@ -694,6 +695,10 @@ public class Nessie extends Renderer {
 		for(ModelInstance mi : state.getScene().modelInstances) {
 			pointLightSMTechnique.renderDude(mi, state, ms);
 		}
+	}
+	
+	public AOSettings AO() {
+		return lightCompositionPassTechnique.ao;
 	}
 	
 	

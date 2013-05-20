@@ -8,6 +8,7 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.materials.Material;
 
 /**
  * TODO: the light pass technique violates the current Technique contract, in that
@@ -86,6 +87,9 @@ public abstract class Technique {
 	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) 
 	{
 	}
+	
+	/** Loads a material to be used by the technique's shader. */
+	public abstract void loadMaterial(Material material);
 	
 	/**
 	 * Standard method that allows hierarchies of model instances to be rendered.

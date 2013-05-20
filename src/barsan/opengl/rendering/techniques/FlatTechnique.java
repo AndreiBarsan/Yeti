@@ -1,8 +1,7 @@
 package barsan.opengl.rendering.techniques;
 
-import barsan.opengl.math.Matrix4Stack;
-import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 public class FlatTechnique extends Technique {
@@ -25,11 +24,8 @@ public class FlatTechnique extends Technique {
 	}
 	
 	@Override
-	protected void instanceRenderSetup(ModelInstance mi, RendererState rs,
-			Matrix4Stack matrixStack) {
-		super.instanceRenderSetup(mi, rs, matrixStack);
-		
-		program.setUVector4f("matColor", mi.getMaterial().getDiffuse().getData());
+	public void loadMaterial(Material material) {
+		program.setUVector4f("matColor", material.getDiffuse().getData());
 	}
 
 }

@@ -1,5 +1,8 @@
 package barsan.opengl.rendering;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
@@ -8,15 +11,15 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.rendering.techniques.Technique;
-import barsan.opengl.util.GLHelp;
 
 public class StaticModelInstance extends ModelInstance {
 
 	/* pp */ StaticModel model;
-	/* pp */ Material material;
+	
+	List<MaterialGroup> materialGroups = new ArrayList<MaterialGroup>();
 	
 	public StaticModelInstance(StaticModel model) {
-		this(model, new BasicMaterial(), new Transform());
+		this(model, new Transform());
 	}
 	
 	public StaticModelInstance(StaticModel model, Material material) {
@@ -24,15 +27,23 @@ public class StaticModelInstance extends ModelInstance {
 	}
 	
 	public StaticModelInstance(StaticModel model, Transform transform) {
-		this(model, new BasicMaterial(), transform);
+		this.model = model;
+		this.localTransform = transform;
+
+		castsShadows = true;
+		
+		for(MaterialGroup mg : model.getDefaultMaterialGroups()) {
+			materialGroups.add(mg.copy());
+		}
 	}
 		
 	public StaticModelInstance(StaticModel model, Material material, Transform localTransform) {
 		this.model = model;
-		this.material = material;
 		this.localTransform = localTransform;
 
 		castsShadows = true;
+		
+		materialGroups.add(new MaterialGroup(0, model.getArrayLength(), material));
 	}
 	
 	@Override
@@ -43,7 +54,7 @@ public class StaticModelInstance extends ModelInstance {
 		if(rendererState.hasForcedMaterial()) {
 			activeMaterial = rendererState.getForcedMaterial();
 		} else {
-			activeMaterial = material;
+			activeMaterial = materialGroups.get(0).material;
 		}
 		
 		activeMaterial.setup(rendererState, transformStack.result());
@@ -110,20 +121,24 @@ public class StaticModelInstance extends ModelInstance {
 		
 		GL2 gl = Yeti.get().gl;
 		
-		gl.glDrawArrays(model.getFaceMode(), 0, model.getArrayLength());
+		for(MaterialGroup sm : materialGroups) {
+			Technique.current.loadMaterial(sm.material);
+			gl.glDrawArrays(model.getFaceMode(), sm.beginIndex, sm.length);
+		}
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		
 		
 		model.cleanUp(pindex, nindex, tindex, bindex, tcindex);
 	}
 
 	@Override
 	public Material getMaterial() {
-		return material;
+		return materialGroups.get(0).material;
 	}
 
 	@Override
 	public void setMaterial(Material material) {
-		this.material = material;
+		assert false : "Currently not working. Don't remove this assert thinking it magically will. Please.";
 	}
 
 	@Override

@@ -72,7 +72,7 @@ uniform int 		shadowQuality;
 
 uniform float 		far;
 
-const float 		bias = 0.01f;
+const float 		bias = 0.025f;
 const float 		cubeBias = 0.04f;
 const float 		pFac = 250.0f;
 
@@ -286,6 +286,7 @@ void main(void) {
 
 	if(useShadows) {
 		vertPos_dmc = biasMatrix * vpMatrixShadows * vec4( vec4(WorldPos, 1.0f) );
+		vFragColor = clamp(vFragColor, vec4(0), vec4(1));
 		vFragColor *= computeVisibility();
 
 		vec4 sc4 = vertPos_dmc / vertPos_dmc.w;
