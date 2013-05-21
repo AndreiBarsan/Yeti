@@ -8,6 +8,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader.Face;
 import barsan.opengl.resources.ModelLoader.Group;
@@ -15,7 +16,6 @@ import barsan.opengl.resources.ModelLoader.Group;
 /**
  * @author Andrei Barsan
  * 
- * FIXME: maybe repair the weird fors?
  */
 public class StaticModel extends Model {
 	
@@ -65,6 +65,33 @@ public class StaticModel extends Model {
 		tangents = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		binormals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 
+		//*
+		for(Face f : master.faces) {
+			vertices.quickAppend(f.points);
+			
+			if(null != master.faces.get(0).normals) {
+				normals.quickAppend(f.normals);
+				
+				f.computeTangBinorm();
+				
+				tangents.quickAppend(f.tangents);
+				binormals.quickAppend(f.binormals);
+			}
+			
+			if(master.faces.get(0).texCoords != null) {
+				texcoords.open();
+				for(Vector3 tc : f.texCoords) {
+					uv[0] = tc.x;
+					uv[1] = tc.y;
+					texcoords.append(uv);
+				}
+				texcoords.close();
+			}
+		}
+		//*/
+		
+		
+		/*
 		for(MaterialGroup mg : defaultMaterialGroups) {
 		
 			vertices.open();		
@@ -86,6 +113,7 @@ public class StaticModel extends Model {
 				}
 				normals.close();
 				
+				// Wtf
 				for(Face f : master.faces) {
 					f.computeTangBinorm();
 				}
@@ -121,8 +149,8 @@ public class StaticModel extends Model {
 				}
 				texcoords.close();
 			}
-		
 		}
+		*/
 		
 		if(Yeti.get().settings.debugModels) {
 			Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d;" +
@@ -151,9 +179,11 @@ public class StaticModel extends Model {
 	}
 	
 	public void dispose() {
-		gl.glDeleteBuffers(3, new int[] { 	vertices.getHandle(), 
+		gl.glDeleteBuffers(5, new int[] { 	vertices.getHandle(), 
 											normals.getHandle(),
-											texcoords.getHandle(),
+											tangents.getHandle(),
+											binormals.getHandle(),
+											texcoords.getHandle()
 										}, 0);
 	}
 	

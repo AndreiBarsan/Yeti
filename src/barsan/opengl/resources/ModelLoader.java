@@ -41,7 +41,7 @@ public class ModelLoader {
 			for(int i = 0; i < normals.length; ++i) {
 				Vector3 normal = normals[i];
 				if(normal == null) {
-					assert false : "NOPE";
+					assert false : "Cannot compute tangents and binormals since the normals aren't set.";
 				}
 				Vector3 t = new Vector3(-normal.z, 0, normal.x).normalize();
 				if(normal.z == normal.x) {
@@ -115,17 +115,23 @@ public class ModelLoader {
 		}
 	}
 	
+	/**
+	 * Whether the models we're importing are using a left-handed coordinate system,
+	 * meaning they need to get z-flipped for our OpenGL right-handed one.
+	 */
 	public static boolean loadingFronLHCoords = true;
 	
+	/** Counter helping provide unambiguous names for unnamed models. */
+	private static int umCount = 0;
+	
 	/**
-	 * Note: only loads triangle faces! The model class *can* however render
-	 * quads and polygon faces.
-	 * @param gl	The gl context.
-	 * @param input Input source.
-	 * @return		The newly loaded model, fresh from the oven!
+	 * Read a Wavefront object file and return a model. Automatically loads requred
+	 * textures defined in detected .mtl files <b>from the default texture folder</b>
+	 * and not from the same folder as the models and .mtl files.
 	 */
 	public static StaticModel fromObj(GL gl, Scanner input, int explicitPointsPerFace) {
 		StaticModel model = new StaticModel(gl, "");
+		
 		if(explicitPointsPerFace != 0) {
 			model.setPointsPerFace(explicitPointsPerFace);
 		}
@@ -160,9 +166,10 @@ public class ModelLoader {
 					switch(line.charAt(1)) {
 						case ' ':
 						{
-							// FIXME: hack warning
 							Vector3 res = readVertex(line.substring(1).trim());
-							res.z *= -1.0f;
+							if(loadingFronLHCoords) {
+								res.z *= -1.0f;
+							}
 							model.master.geometry.add(res);
 							
 							vc++;
@@ -180,8 +187,11 @@ public class ModelLoader {
 						case 'n': 
 						{
 							Vector3 res = readVertex(line.substring(3));
-							res.z *= -1.0f;
+							if(loadingFronLHCoords) {
+								res.z *= -1.0f;
+							}
 							model.master.normals.add(res);
+							
 							nc++;
 							break;
 						}
@@ -201,8 +211,8 @@ public class ModelLoader {
 					if(! model.getName().equals("")) {
 						Yeti.screwed("Warning: object name defined twice!");
 					}
-					// TODO: not hack
-					model.setName(line.substring(2));
+					
+					model.setName(line.substring(1).trim());
 					break;
 					
 				case 's':
@@ -234,11 +244,7 @@ public class ModelLoader {
 						currentMatGroup = new MaterialGroup(fc, 0, material);
 						matGroups.add(currentMatGroup);
 					}
-					break;
-					
-				default:
-					Yeti.screwed("Unrecognized identifier: " + lead);
-					continue;
+					break;					
 			}
 		}
 		
@@ -248,7 +254,7 @@ public class ModelLoader {
 		}
 		
 		if(model.getName() == "") {
-			model.setName("unnamed_model");
+			model.setName("unnamed_model_" + umCount++);
 		}
 		
 		model.setDefaultMaterialGroups(matGroups);	
@@ -291,6 +297,7 @@ public class ModelLoader {
 	
 	private static List<Face> readFace(MaterialGroup mg, StaticModel model, String s,
 			int currentVertex, int currentNormal, int currentTC) {
+		
 		int subCount = 0;
 		Group master = model.master;
 		Face face = new Face();
@@ -310,12 +317,12 @@ public class ModelLoader {
 				*/
 		
 		if(model.getPointsPerFace() == 0) {
-			System.out.println("Model " + model.getName() + " now using " + res.length + " points per face.");
+			Yeti.debug("Model " + model.getName() + " now using " + res.length + " points per face.");
 			model.setPointsPerFace(res.length);
 		}
 		else if(model.getPointsPerFace() != res.length) {
 			if(model.getPointsPerFace() == 3) {
-				Yeti.debug("Splitting a quad...");
+				// Yeti.debug("Splitting a quad...");
 				goingToSplit = true;
 			} else {
 				throw new UnsupportedOperationException("Mesh with varying face sizes but" +
@@ -332,9 +339,9 @@ public class ModelLoader {
 				}
 				
 				verts[i] = Integer.parseInt(bits[0]);
+				
+				// Negative inices provide relative references
 				if(verts[i] < 0) {
-					// verts[i] = -1 -> references right the last vertex we read
-					//System.out.println("Found negative index in face def: " + verts[i]);
 					verts[i] = currentVertex + verts[i] + 1;
 				}
 				
@@ -398,8 +405,6 @@ public class ModelLoader {
 				// Just compute the face's normal
 				if(face.points.length > 3) {
 					throw new Error("Cannot compute face normal!");
-					// TODO: maybe compute quad normals if possible
-					// TODO: is auto-splitting of bad quads considered sensible behavior?
 				}
 				Vector3 normal = aux_vector1.set(face.points[1]).sub(face.points[0])
 						.cross(aux_vector2.set(face.points[2]).sub(face.points[0]));
@@ -411,7 +416,6 @@ public class ModelLoader {
 		}
 		
 		if(goingToSplit) {
-			Yeti.debug("Splitting face...");
 			out.addAll(face.split());
 		}
 		else {

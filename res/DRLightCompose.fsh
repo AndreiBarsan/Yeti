@@ -1,5 +1,8 @@
 #version 400
 
+subroutine void applyAO_t( void );
+subroutine uniform applyAO_t applyAO;
+
 uniform sampler2D diffuseMap;
 uniform sampler2D lightMap;
 
@@ -72,23 +75,22 @@ float computeAO(in vec2 uv) {
 	return ao;
 }
 
-void main(void) {
-	nuv = vVaryingTexCoords;
-
-	// Compose the albedo and the lighting
+subroutine(applyAO_t)
+void normalAO( void ) {
 	vec4 light = texture(lightMap, nuv);
-
 	float ao = computeAO(nuv);
-	//*
+
 	light = vec4(
 		max(0.0f, light.r - ao),
 		max(0.0f, light.g - ao),
 		max(0.0f, light.b - ao),
 		light.a
-		);
-	//*/
-	composedColor = texture(diffuseMap, nuv) *  light; 
-	
+	);
 
-	// composedColor = vec4(vec3(1 - ao), 1);
+	composedColor = texture(diffuseMap, nuv) *  light;
+}
+
+void main(void) {
+	nuv = vVaryingTexCoords;
+	applyAO( );
 }

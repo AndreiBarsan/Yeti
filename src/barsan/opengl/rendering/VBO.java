@@ -2,7 +2,7 @@ package barsan.opengl.rendering;
 
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -131,8 +131,9 @@ public class VBO {
 	}
 	
 	public VBO append(Vector3 elements[]) {
-		if(elementGroupSize != 3) 
-			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
+		if(elementGroupSize != 3) {
+			warnSizeMismatch();
+		}
 		
 		for(Vector3 v : elements) {
 			localBuffer.put(v.x);
@@ -142,14 +143,55 @@ public class VBO {
 		return this;
 	}
 	
-	public VBO append(ArrayList<Vector3> elements) {
-		if(elementGroupSize != 3) 
-			Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
+	public VBO append(List<Vector3> elements) {
+		if(elementGroupSize != 3) { 
+			warnSizeMismatch();
+		}
 			
 		for(Vector3 v : elements) {
 			localBuffer.put(v.x);
 			localBuffer.put(v.y);
 			localBuffer.put(v.z);
+		}
+		return this;
+	}
+	
+	public VBO quickAppend(List<Vector3> elements) {
+		open();
+		append(elements);
+		close();
+		return this;
+	}
+	
+	public VBO quickAppend(Vector3[] elements) {
+		open();
+		append(elements);
+		close();
+		return this;
+	}
+	
+	public VBO appendReverse(Vector3 elements[]) {
+		if(elementGroupSize != 3) {
+			warnSizeMismatch();
+		}
+		
+		for(int i = elements.length - 1; i >=0; --i) {
+			localBuffer.put(elements[i].x);
+			localBuffer.put(elements[i].y);
+			localBuffer.put(elements[i].z);
+		}		
+		return this;
+	}
+	
+	public VBO appendReverse(List<Vector3> elements) {
+		if(elementGroupSize != 3) { 
+			warnSizeMismatch();
+		}
+			
+		for(int i = elements.size() - 1; i >= 0; --i) {
+			localBuffer.put(elements.get(i).x);
+			localBuffer.put(elements.get(i).y);
+			localBuffer.put(elements.get(i).z);
 		}
 		return this;
 	}
@@ -192,5 +234,9 @@ public class VBO {
 		GL2 gl = Yeti.get().gl.getGL2();
 		gl.glBindBuffer(type, 0);
 		gl.glDisableVertexAttribArray(indexUsed);
+	}
+	
+	private void warnSizeMismatch() {
+		Yeti.warn("Putting vector3s in a VBO that has a group size of " + elementGroupSize + " !");
 	}
 }

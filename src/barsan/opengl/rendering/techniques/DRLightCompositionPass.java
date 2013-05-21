@@ -1,6 +1,7 @@
 package barsan.opengl.rendering.techniques;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;
@@ -67,5 +68,14 @@ public class DRLightCompositionPass extends Technique {
 		program.setU1f("aoBias", ao.bias);
 		program.setU1f("aoSampleRad", ao.sampleRad);
 		program.setU1f("aoIntensity", ao.intensity);
+		
+		int ph = program.getHandle();
+		int sr = rs.gl.glGetSubroutineIndex(ph, GL2.GL_FRAGMENT_SHADER, "normalAO");
+		
+		rs.gl.glUniformSubroutinesuiv(GL2.GL_FRAGMENT_SHADER,
+				1,
+				new int[] { sr },
+				0
+				);
 	}
 }
