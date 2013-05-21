@@ -18,7 +18,7 @@ import com.jogamp.common.nio.Buffers;
  * @author Andrei Barsan
  */
 public class VBO {
-
+	
 	private final int nativeHandle;
 	public final int type;
 	private boolean open;
@@ -61,8 +61,6 @@ public class VBO {
 		GL2GL3 gl = Yeti.get().gl;
 		
 		int buff[] = new int[] { -1 };
-		// TODO: request multiple buffers at once (good optimization when we
-		// need dozens or even hundreds of meshes in one scene) 
 		gl.glGenBuffers(1, buff, 0);
 		nativeHandle = buff[0];
 		
@@ -193,6 +191,20 @@ public class VBO {
 			localBuffer.put(elements.get(i).y);
 			localBuffer.put(elements.get(i).z);
 		}
+		return this;
+	}
+	
+	public VBO quickAppendReverse(Vector3 elements[]) {
+		open();
+		appendReverse(elements);
+		close();
+		return this;
+	}
+	
+	public VBO quickAppendReverse(List<Vector3> elements) {
+		open();
+		appendReverse(elements);
+		close();
 		return this;
 	}
 	

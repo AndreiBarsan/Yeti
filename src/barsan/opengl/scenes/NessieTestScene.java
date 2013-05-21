@@ -73,7 +73,7 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("DR_sphere", "dr_icosphere.obj");
 		ResourceLoader.loadObj("sphere", "sphere.obj");
 		ResourceLoader.loadObj("DR_cone", "cone.obj");
-		ResourceLoader.loadObj("LS", "LS.obj", 3);
+	//	ResourceLoader.loadObj("LS", "LS.obj", 3);
 		
 		ResourceLoader.loadObj("hm", "The_Handyman.obj");
 		
@@ -119,7 +119,7 @@ public class NessieTestScene extends Scene {
 		addModelInstance(wall);
 		
 		int mlim = 3;
-		float mGrid = 2f;
+		float mGrid = 4f;
 		//*
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
@@ -127,7 +127,7 @@ public class NessieTestScene extends Scene {
 				mat.setSpecularIntensity(4.0f);
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
-						ResourceLoader.model("sphere"), mat);
+						ResourceLoader.model("monkey"), mat);
 				monkey.getTransform().updateTranslate(i * mGrid, -8.5f, j * mGrid);
 				addModelInstance(monkey);
 			}

@@ -10,6 +10,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ModelLoader.Face;
 import barsan.opengl.resources.ModelLoader.Group;
 
@@ -67,23 +68,42 @@ public class StaticModel extends Model {
 
 		//*
 		for(Face f : master.faces) {
-			vertices.quickAppend(f.points);
+			if(ModelLoader.loadingFronLHCoords) {
+				vertices.quickAppend(f.points);
+			} else {
+				vertices.quickAppendReverse(f.points);
+			}
 			
 			if(null != master.faces.get(0).normals) {
-				normals.quickAppend(f.normals);
-				
 				f.computeTangBinorm();
 				
-				tangents.quickAppend(f.tangents);
-				binormals.quickAppend(f.binormals);
+				if(ModelLoader.loadingFronLHCoords) {
+					normals.quickAppend(f.normals);
+					tangents.quickAppend(f.tangents);
+					binormals.quickAppend(f.binormals);
+				} else {
+					normals.quickAppendReverse(f.normals);
+					tangents.quickAppendReverse(f.tangents);
+					binormals.quickAppendReverse(f.binormals);
+				}
 			}
 			
 			if(master.faces.get(0).texCoords != null) {
 				texcoords.open();
-				for(Vector3 tc : f.texCoords) {
-					uv[0] = tc.x;
-					uv[1] = tc.y;
-					texcoords.append(uv);
+				if(ModelLoader.loadingFronLHCoords) {
+					for(Vector3 tc : f.texCoords) {
+						uv[0] = tc.x;
+						uv[1] = tc.y;
+						texcoords.append(uv);
+					}
+				} else {
+					
+					for(int i = f.texCoords.length - 1; i >=0; --i) {
+						Vector3 tc = f.texCoords[i];
+						uv[0] = tc.x;
+						uv[1] = tc.y;
+						texcoords.append(uv);
+					}
 				}
 				texcoords.close();
 			}

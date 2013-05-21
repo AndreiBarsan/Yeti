@@ -14,10 +14,10 @@ public class FreeflyCamera extends PerspectiveCamera {
 	float speed = 0.0f;
 	float rotSpeed = 0.0f;
 	
-	final float MAXSPEED = 100.0f;
+	final float MAXSPEED = 60.0f;
 	final float FRICTION = 20.0f;
 	final float ACCELERATION = 15.0f;
-	final float ACCMUL = 5f;
+	final float ACCMUL = 8f;
 	
 	Vector3 motionVector = new Vector3();
 	
