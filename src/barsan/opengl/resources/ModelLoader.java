@@ -25,96 +25,6 @@ public class ModelLoader {
 		public ArrayList<Face> faces = new ArrayList<>();
 	}
 	
-	public static class Face {
-		public Vector3[] points;
-		public Vector3[] texCoords;
-		public Vector3[] normals;
-		public Vector3[] tangents;
-		public Vector3[] binormals;
-		
-		public int[] pindex, tcindex, nindex, tindex;
-		
-		public void computeTangBinorm() {
-			tangents = new Vector3[normals.length];
-			binormals = new Vector3[normals.length];
-			
-			for(int i = 0; i < normals.length; ++i) {
-				Vector3 normal = normals[i];
-				if(normal == null) {
-					assert false : "Cannot compute tangents and binormals since the normals aren't set.";
-				}
-				Vector3 t = new Vector3(-normal.z, 0, normal.x).normalize();
-				if(normal.z == normal.x) {
-					t.set(1.0f, 0.0f, 0.0f);
-				}
-								
-				tangents[i] = t;
-				binormals[i] = new Vector3(t).cross(normal).normalize();
-			}
-		}
-		
-		public List<Face> split() {
-			assert points.length == 4 : "Can only split quads!";
-			ArrayList<Face> out = new ArrayList<Face>();
-			
-			Face f1 = new Face();
-			Face f2 = new Face();
-			f1.points = new Vector3[] {
-				points[0].copy(),
-				points[1].copy(),
-				points[2].copy()
-			};
-			
-			f2.points = new Vector3[] {
-				points[2].copy(),
-				points[1].copy(),
-				points[3].copy()
-			};
-			
-			if(null != normals) {
-				f1.normals = new Vector3[] {
-					normals[0].copy(),
-					normals[1].copy(),
-					normals[2].copy()
-				};
-				
-				f2.normals = new Vector3[] {
-					normals[2].copy(),
-					normals[1].copy(),
-					normals[3].copy()
-				};
-			}
-			
-			if(null != texCoords) {
-				f1.texCoords = new Vector3[] {
-					texCoords[0].copy(),
-					texCoords[1].copy(),
-					texCoords[2].copy()
-				};
-				
-				f2.texCoords = new Vector3[] {
-					texCoords[2].copy(),
-					texCoords[1].copy(),
-					texCoords[3].copy()
-				};
-			}
-			
-			out.add(f1);
-			out.add(f2);
-			
-			return out;
-		}
-		
-		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			for(int i = 0; i < 3; i++) {
-				sb.append(String.format("%d/%d/%d ", pindex[i], tcindex[i], nindex[i]));
-			}
-			return sb.toString();
-		}
-	}
-	
 	/**
 	 * Whether the models we're importing are using a left-handed coordinate system,
 	 * meaning they need to get z-flipped for our OpenGL right-handed one.
@@ -251,6 +161,7 @@ public class ModelLoader {
 		}
 		
 		if(!matGroups.isEmpty()) {
+			// Finish off the last material group
 			MaterialGroup mg = matGroups.get(matGroups.size() - 1);
 			mg.length = fc - mg.beginIndex;
 		}
@@ -262,10 +173,11 @@ public class ModelLoader {
 		model.setDefaultMaterialGroups(matGroups);	
 		model.buildVBOs();
 		
-		//*
-		Yeti.debug(String.format("Finished loading model %s! Vertices: %d, Texture coords: %d, Normal coords: %d, Faces: %d, Groups: %d",
+		if(Yeti.get().settings.debugModels) {
+			Yeti.debug(String.format("Finished loading model %s! Vertices: %d, Texture coords: %d, Normal coords: %d, Faces: %d, Groups: %d",
 				model.getName(), vc, tc, nc, fc, model.getGroups().size()));
-				//*/
+		}
+		
 		return model;
 	}
 	
@@ -276,19 +188,19 @@ public class ModelLoader {
 							Float.parseFloat(res[2]));
 	}
 	
-	/**
-	 * Reads some texture coords, in either X/Y/Z or U/V coords
-	 * @param s
-	 * @return
-	 */
+	/** Reads a set texture coords, in either X/Y/Z or U/V coords */
 	private static Vector3 readTexCoords(String s) {
 		String[] res = s.split("\\s");
-		if(res.length == 3)	return new Vector3(	Float.parseFloat(res[0]), 
-							Float.parseFloat(res[1]),
-							Float.parseFloat(res[2]));
-		else return new Vector3(Float.parseFloat(res[0]), 
+		if(res.length == 3) {	
+			return new Vector3(	Float.parseFloat(res[0]), 
+								Float.parseFloat(res[1]),
+								Float.parseFloat(res[2]));
+		}
+		else {
+			return new Vector3(	Float.parseFloat(res[0]), 
 								Float.parseFloat(res[1]),
 								0);
+		}
 	}
 	
 	
@@ -297,6 +209,10 @@ public class ModelLoader {
 					norms = new int[64];
 	static Vector3 aux_vector1 = new Vector3(), aux_vector2 = new Vector3();
 	
+	/**
+	 * Reads a face and returns it, splitting quads if needed (e.g. if the model
+	 * is set to only use triangles).
+	 */
 	private static List<Face> readFace(MaterialGroup mg, StaticModel model, String s,
 			int currentVertex, int currentNormal, int currentTC) {
 		
@@ -304,27 +220,20 @@ public class ModelLoader {
 		Group master = model.master;
 		Face face = new Face();
 		String[] res = s.split("\\s");
-		
+		boolean goingToSplit = false;
 		ArrayList<Face> out = new ArrayList<Face>();
 		
 		if(res.length < 3) {
 			throw new InputMismatchException(String.format("Bad number of geometry/texture/normal coordinates (%d)!", res.length));
 		}
-		boolean goingToSplit = false;
 		
-				/*
-				throw new UnsupportedOperationException(String.format(
-					"Meshes with varying face sizes in the same material group (quads and triangles mixsed together, for instance) not supported. " +
-					"(found %d points per face when expecting %d)", res.length, mg.pointsPerFace));
-				*/
-		
+				
 		if(model.getPointsPerFace() == 0) {
 			Yeti.debug("Model " + model.getName() + " now using " + res.length + " points per face.");
 			model.setPointsPerFace(res.length);
 		}
 		else if(model.getPointsPerFace() != res.length) {
 			if(model.getPointsPerFace() == 3) {
-				// Yeti.debug("Splitting a quad...");
 				goingToSplit = true;
 			} else {
 				throw new UnsupportedOperationException("Mesh with varying face sizes but" +
@@ -398,18 +307,17 @@ public class ModelLoader {
 		if(master.normals.size() > 0) {
 			if(norms[0] != 0) {
 				face.normals = new Vector3[res.length];
-				//face.autoNormal = false;
 				for(int i = 0; i < res.length; i++)  {
 					face.normals[i] = master.normals.get(norms[i] - 1).copy();
 				}
 			} else {
-				//face.autoNormal = true;
 				// Just compute the face's normal
 				if(face.points.length > 3) {
 					throw new Error("Cannot compute face normal!");
 				}
+				
 				Vector3 normal = aux_vector1.set(face.points[1]).sub(face.points[0])
-						.cross(aux_vector2.set(face.points[2]).sub(face.points[0]));
+									.cross(aux_vector2.set(face.points[2]).sub(face.points[0]));
 				
 				for(int i = 0; i < res.length; i++) {
 					face.normals[i] = new Vector3(normal);
@@ -471,13 +379,20 @@ public class ModelLoader {
 		return result;
 	}
 	
+	/** Creates a simple 2x2 XY-aligned quad. */
+	public static StaticModel makeScreenQuad() {
+		return buildQuadXY(2.0f, 2.0f);
+	}
+	
 	/** Builds a Quad over the plane defined by X and Z. Useful for floors. */
 	public static StaticModel buildQuadXZ(float width, float height) {
 		return buildQuad(width, height, true);
 	}
 	
-	/** Builds a Quad over the plane defined by X and Y. Useful for screen-oriented
-	 * stuff, like billboards and post-process stuff. */
+	/** 
+	 * Builds a Quad over the plane defined by X and Y. Useful for screen-oriented
+	 * stuff, like billboards and post-process stuff. 
+	 */
 	public static StaticModel buildQuadXY(float width, float height) {
 		return buildQuad(width, height, false);
 	}
@@ -532,9 +447,5 @@ public class ModelLoader {
 		
 		result.buildVBOs();
 		return result;
-	}
-
-	public static StaticModel makeScreenQuad() {
-		return buildQuadXY(2.0f, 2.0f);
 	}
 }

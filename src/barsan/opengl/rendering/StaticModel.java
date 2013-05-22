@@ -10,8 +10,8 @@ import javax.media.opengl.GL2;
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.resources.Face;
 import barsan.opengl.resources.ModelLoader;
-import barsan.opengl.resources.ModelLoader.Face;
 import barsan.opengl.resources.ModelLoader.Group;
 
 /**

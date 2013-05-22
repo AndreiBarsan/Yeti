@@ -210,4 +210,26 @@ public class Vector3 {
 			&&	Math.abs(ov.y - y) < EPSILON
 			&&	Math.abs(ov.z - z) < EPSILON;
 	}
+	
+	/***************************************************************************
+	 * Static utilities
+	 */
+	
+	public static Vector3[] copyOf(Vector3[] array) {
+		Vector3 out[] = new Vector3[array.length];
+		for(int i = 0; i < array.length; ++i) {
+			out[i] = array[i].copy();
+		}
+		
+		return out;
+	}
+	
+	public static Vector3[] copyOfIndices(Vector3[] array, int... indices) {
+		Vector3 out[] = new Vector3[indices.length];
+		int koff = 0;
+		for(int i : indices) {
+			out[koff++] = array[i]; 
+		}
+		return out;
+	}
 }
