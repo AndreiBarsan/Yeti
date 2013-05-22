@@ -73,7 +73,7 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadObj("DR_sphere", "dr_icosphere.obj");
 		ResourceLoader.loadObj("sphere", "sphere.obj");
 		ResourceLoader.loadObj("DR_cone", "cone.obj");
-	//	ResourceLoader.loadObj("LS", "LS.obj", 3);
+		ResourceLoader.loadObj("LS", "LS.obj", 3);
 		
 		ResourceLoader.loadObj("hm", "The_Handyman.obj");
 		
@@ -92,6 +92,10 @@ public class NessieTestScene extends Scene {
 		//	h.getTransform().updateScale(0.1f);
 		
 		addModelInstance(h);
+		
+		StaticModelInstance littleSister = new StaticModelInstance(ResourceLoader.model("LS"));
+		littleSister.getTransform().updateScale(0.06f);
+		addModelInstance(littleSister);
 
 		floor = new StaticModelInstance(ModelLoader.buildPlane(
 				100.0f, 100.0f, 10, 10));

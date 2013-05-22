@@ -36,7 +36,7 @@ public class MTLLoader {
 					}
 				}
 				String cmd = tokens[0];
-				String[] params = Arrays.copyOfRange(tokens, 1, tokens.length - 1);
+				String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 				
 				if(cmd.equals("newmtl")) {
 					current = new Material();
@@ -56,6 +56,8 @@ public class MTLLoader {
 				}
 				else if(tokens[0].equals("map_Kd")) {
 					String textureName = tokens[1];
+					Yeti.debug(String.format("Loading texture dependency of material %s: %s",
+							current.getName(), textureName));
 					ResourceLoader.loadTexture(textureName);
 					current.setDiffuseMap(ResourceLoader.texture(
 							textureName.substring(0, textureName.lastIndexOf('.'))
@@ -63,6 +65,8 @@ public class MTLLoader {
 				}
 				else if(tokens[0].equals("map_Bump") || tokens[0].equals("map_bump")) {
 					String textureName = tokens[1];
+					Yeti.debug(String.format("Loading texture dependency of material %s: %s",
+							current.getName(), textureName));
 					ResourceLoader.loadTexture(textureName);
 					current.setNormalMap(ResourceLoader.texture(
 							textureName.substring(0, textureName.lastIndexOf('.'))

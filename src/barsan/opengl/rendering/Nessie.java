@@ -491,6 +491,7 @@ public class Nessie extends Renderer {
 	       	lightPassTechnique.drawPointLight(plVolume, l, state);
 		}
 		else {
+			plVolume.getMaterial().setDiffuse(l.getDiffuse());
 			flatTechnique.renderDude(plVolume, state, nullStack);
 		}
 	}
@@ -534,6 +535,7 @@ public class Nessie extends Renderer {
 			prepareLightPass(state);
 			lightPassTechnique.drawSpotLight(slVolume, l, state);
 		} else {
+			slVolume.getMaterial().setDiffuse(l.getDiffuse());
 			flatTechnique.renderDude(slVolume, state, nullStack);
 		}
 	}
@@ -556,7 +558,6 @@ public class Nessie extends Renderer {
 			break;
 		
 		case DrawGBuffer:
-			//gbuffer.bindForInspection();
 			gbuffer.bindForFinalPass();
 			
 			int w = Yeti.get().settings.width;
