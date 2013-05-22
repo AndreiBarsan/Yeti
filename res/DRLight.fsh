@@ -74,7 +74,7 @@ uniform float 		far;
 
 const float 		bias = 0.025f;
 const float 		cubeBias = 0.04f;
-const float 		pFac = 250.0f;
+const float 		pFac =700.0f;
 
 const vec2 pD[16] = vec2[]( 
    vec2( -0.94201624, -0.39906216 ), 

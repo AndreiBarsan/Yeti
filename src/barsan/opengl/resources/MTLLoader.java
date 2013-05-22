@@ -3,11 +3,13 @@ package barsan.opengl.resources;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.util.Color;
 
 public class MTLLoader {
 
@@ -33,10 +35,24 @@ public class MTLLoader {
 						results.add(current);
 					}
 				}
+				String cmd = tokens[0];
+				String[] params = Arrays.copyOfRange(tokens, 1, tokens.length - 1);
 				
-				if(tokens[0].equals("newmtl")) {
+				if(cmd.equals("newmtl")) {
 					current = new Material();
 					current.setName(tokens[1]);
+				}
+				else if(cmd.equals("Ka")) {
+					current.setAmbient(parseColor(params));
+				}
+				else if(cmd.equals("Kd")) {
+					current.setDiffuse(parseColor(params));
+				}
+				else if(cmd.equals("Ks")) {
+					current.setSpecular(parseColor(params));
+				}
+				else if(cmd.equals("Ns")) {
+					current.setSpecularIntensity(Float.parseFloat(params[0]));
 				}
 				else if(tokens[0].equals("map_Kd")) {
 					String textureName = tokens[1];
@@ -67,5 +83,11 @@ public class MTLLoader {
 		}
 		
 		return results;
+	}
+	
+	private static Color parseColor(String[] in) {
+		return new Color(	Float.parseFloat(in[0]),
+							Float.parseFloat(in[1]),
+							Float.parseFloat(in[2]) );
 	}
 }

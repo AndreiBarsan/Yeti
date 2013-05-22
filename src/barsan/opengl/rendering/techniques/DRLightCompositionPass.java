@@ -15,10 +15,10 @@ import com.jogamp.opengl.util.texture.Texture;
 public class DRLightCompositionPass extends Technique {
 
 	public class AOSettings {
-		public float scale = 0.25f;
+		public float scale = 1.0f;
 		public float bias = 0.25f;
-		public float sampleRad = 0.08f;	
-		public float intensity = 0.75f;
+		public float sampleRad = 0.075f;	
+		public float intensity = 1.25f;
 	}
 	
 	public AOSettings ao = new AOSettings();

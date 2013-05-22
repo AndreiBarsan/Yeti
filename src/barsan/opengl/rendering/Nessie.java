@@ -396,10 +396,9 @@ public class Nessie extends Renderer {
 	private void composeLight(Scene scene) {
 		gbuffer.bindForLightComposition();
 		// We are now reading the albedo and the light and mixing them together
-		// TODO: 	1. implement SSAO in this step
-		//			2. perform SSAO *before this*, writing AO data to its own
-		//				texture; blur that texture, then use it here to darken
-		//				the darker areas;
+		// TODO: perform SSAO *before this*, writing AO data to its own
+		//		 texture; blur that texture, then use it here to darken
+		//		 the darker areas;
 		
 		lightCompositionPassTechnique.setup(state);
 		lightCompositionPassTechnique.renderDude(sqi, state, new Matrix4Stack());
@@ -495,8 +494,6 @@ public class Nessie extends Renderer {
 			flatTechnique.renderDude(plVolume, state, nullStack);
 		}
 	}
-	
-	// private StaticModel derp = ModelLoader.buildQuadXY(1.0f, 1.0f);
 	
 	private void renderSLVol(SpotLight l, boolean computeLight) {
 		float h = l.getBoundingRadius();
@@ -646,6 +643,8 @@ public class Nessie extends Renderer {
 		state.setCamera(oc);
 		state.depthProjection = oc.getProjection().cpy();
 		state.depthView = oc.getView().cpy();
+		
+		gl.glCullFace(GL2.GL_FRONT);
 	}
 	
 	private void preparePointSM(PointLight light) {

@@ -62,9 +62,9 @@ public class NessieTestScene extends Scene {
 		nessie.setShadowQuality(ShadowQuality.High);
 
 		//*
-		DirectionalLight dl = new DirectionalLight(new Vector3(-2.0f, -1.0f, 0.0f).normalize());
+		DirectionalLight dl = new DirectionalLight(new Vector3(-2.0f, -1.0f, -1.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.10f;
+		dl.getDiffuse().a = 0.50f;
 		lights.add(dl);
 		//*/
 		
@@ -94,8 +94,8 @@ public class NessieTestScene extends Scene {
 		addModelInstance(h);
 
 		floor = new StaticModelInstance(ModelLoader.buildPlane(
-				250.0f, 250.0f, 25, 25));
-		floor.getTransform().updateTranslate(0.0f, -10.0f, 0.0f);
+				100.0f, 100.0f, 10, 10));
+		floor.getTransform().updateTranslate(0.0f, -12.0f, 0.0f);
 		floor.getMaterial().setDiffuseMap(ResourceLoader.texture("floor"));
 		floor.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		floor.getMaterial().setSpecularIntensity(0.005f);
@@ -103,23 +103,23 @@ public class NessieTestScene extends Scene {
 		addModelInstance(floor);
 		
 		float wallZ = 6.0f;
-		StaticModel wm = ModelLoader.buildPlane(250.0f, 10.0f, 25, 1);
+		StaticModel wm = ModelLoader.buildPlane(100.0f, 10.0f, 10, 1);
 		ModelInstance wall = new StaticModelInstance(wm);
-		wall.getTransform().updateTranslate(0.0f, -10.0f, wallZ - 0.5f)
+		wall.getTransform().updateTranslate(0.0f, -12.0f, wallZ - 1.15f)
 							.updateRotation(1.0f, 0.0f, 0.0f, -90.0f);
 		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		wall.getMaterial().setSpecularIntensity(0.0f);
 		addModelInstance(wall);
 		
 		wall = new StaticModelInstance(wm);
-		wall.getTransform().updateTranslate(0.0f, 0.0f, wallZ + 0.5f)
+		wall.getTransform().updateTranslate(0.0f, -2.0f, wallZ + 1.15f)
 							.updateRotation(1.0f, 0.0f, 0.0f, 90.0f);
 		wall.getMaterial().setNormalMap(ResourceLoader.texture("floor.bump"));
 		wall.getMaterial().setSpecularIntensity(0.0f);
 		addModelInstance(wall);
 		
-		int mlim = 3;
-		float mGrid = 4f;
+		int mlim = 2;
+		float mGrid = 2.5f;
 		//*
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
@@ -127,7 +127,7 @@ public class NessieTestScene extends Scene {
 				mat.setSpecularIntensity(4.0f);
 				mat.setSpecularPower(64);
 				StaticModelInstance monkey = new StaticModelInstance(
-						ResourceLoader.model("monkey"), mat);
+						ResourceLoader.model("sphere"), mat);
 				monkey.getTransform().updateTranslate(i * mGrid, -8.5f, j * mGrid);
 				addModelInstance(monkey);
 			}
@@ -139,7 +139,8 @@ public class NessieTestScene extends Scene {
 		nessie.setDirectionalShadowCenter(new Vector3(-sz / 2, 0, 0));
 		*/
 		
-		nessie.setDirectionalShadowSize(new Vector2(250, 250));
+		nessie.setDirectionalShadowSize(new Vector2(120, 120));
+		nessie.setDirectionalShadowDepth(new Vector2(-80, 150));
 		
 		//*
 		int lightLim = 3;
@@ -158,7 +159,7 @@ public class NessieTestScene extends Scene {
 		plShadowTest.setAttenuation(0.0f, 0.0f, 0.1f);
 		plShadowTest.getDiffuse().a = 2.0f;
 		plShadowTest.setCastsShadows(true);
-		lights.add(plShadowTest);
+		//lights.add(plShadowTest);
 		
 		
 		/*

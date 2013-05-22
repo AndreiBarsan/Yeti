@@ -45,21 +45,35 @@ float computeAOSample(in vec2 tcoord, in vec2 uv, in vec3 p, in vec3 cnorm) {
 	return max(0.0, dot(cnorm, v) - aoBias) * ( 1.0f / (1.0f + d) ) * aoIntensity;
 }
 
+const int numSamples = 4;
+
 float computeAO(in vec2 uv) {
 	vec3 p = getPosition(uv);
 	vec3 n = getNormal(uv);
 	vec2 rand = getRandom(uv);
 
-	vec2 dirs[4];
+	vec2 dirs[numSamples];
 	dirs[0] = vec2( 1,  0);
 	dirs[1] = vec2(-1,  0);
 	dirs[2] = vec2( 0,  1);
 	dirs[3] = vec2( 0, -1);
 
+	/*
+	dirs[4] = vec2( 2,  0);
+	dirs[5] = vec2(-2,  0);
+	dirs[6] = vec2( 0,  2);
+	dirs[7] = vec2( 0, -2);
+
+	dirs[8] = vec2( 1,  1);
+	dirs[9] = vec2(-1,  -1);
+	dirs[10] = vec2(-1,  1);
+	dirs[11] = vec2( 1, -1);
+	//*/
+
 	float ao = 0.0f;
 	float rad = aoSampleRad / p.z;
 
-	int iterations = 4;
+	int iterations = numSamples;
 	for(int j = 0; j < iterations; ++j) {
 		vec2 coord1 = reflect(dirs[j], rand) * rad;
 		vec2 coord2 = vec2(	coord1.x * 0.707 - coord1.y * 0.707,
@@ -79,15 +93,23 @@ subroutine(applyAO_t)
 void normalAO( void ) {
 	vec4 light = texture(lightMap, nuv);
 	float ao = computeAO(nuv);
-
+/*
 	light = vec4(
 		max(0.0f, light.r - ao),
 		max(0.0f, light.g - ao),
 		max(0.0f, light.b - ao),
 		light.a
 	);
-
+*/
 	composedColor = texture(diffuseMap, nuv) *  light;
+
+
+	composedColor = vec4(
+		max(0.0f, composedColor.r - ao),
+		max(0.0f, composedColor.g - ao),
+		max(0.0f, composedColor.b - ao),
+		1.0f
+	);
 }
 
 void main(void) {
