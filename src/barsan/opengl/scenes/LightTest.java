@@ -152,6 +152,10 @@ public class LightTest extends Scene {
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
+				if(e.isConsumed()) {
+					return;
+				}
+				
 				if(e.getKeyCode() == KeyEvent.VK_SPACE) {
 					if(floorMat.containsComponent(bc)) {
 						floorMat.removeComponent(bc);

@@ -66,7 +66,10 @@ public class ModelLoader {
 					continue;
 					
 				case 'g':
-					Yeti.debug("Groups currently disabled.");
+					String mn = model.getName() == null ? model.getName() : "unnamed";
+					if(Yeti.get().settings.debugModels) {
+						Yeti.debug("Model [" + mn + "]: groups currently disabled.");
+					}
 					break;
 					
 				case 'v':
@@ -228,7 +231,9 @@ public class ModelLoader {
 		}
 				
 		if(model.getPointsPerFace() == 0) {
-			Yeti.debug("Model " + model.getName() + " now using " + res.length + " points per face.");
+			if(Yeti.get().settings.debugModels) {
+				Yeti.debug("Model [" + model.getName() + "]: now using " + res.length + " points per face.");
+			}
 			model.setPointsPerFace(res.length);
 		}
 		else if(model.getPointsPerFace() != res.length) {

@@ -32,13 +32,13 @@ public class ConsoleRenderer {
 				
 				int begin = Math.max(0, history.size() - consoleRows);
 				for(int i = begin; i < history.size(); i++) {
-					TextHelper.drawText(0, ys.height - rh - topBorder
-							- rh * consoleRows +
-							(consoleRows - (i - begin)) * rh, history.get(i));
+					TextHelper.drawText(0,
+							ys.height - rh * 2 - topBorder - ( (i - begin) * rh),
+							history.get(i));
 				}
 				
 				String cmd = console.getCurrentCommand(); 
-				TextHelper.drawText(0, ys.height - rh * consoleRows - rh - topBorder, prompt + cmd);
+				TextHelper.drawText(0, ys.height - rh * (consoleRows + 2) - topBorder, prompt + cmd);
 			}
 			TextHelper.endRendering();
 		}

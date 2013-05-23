@@ -3,8 +3,6 @@ package barsan.opengl.scenes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +14,9 @@ import barsan.opengl.flat.Sprite;
 import barsan.opengl.input.CameraInput;
 import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
-import barsan.opengl.math.Transform;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.Renderer;
 import barsan.opengl.rendering.Scene;
-import barsan.opengl.rendering.StaticModelInstance;
-import barsan.opengl.rendering.materials.BasicMaterial;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.SceneHelper;
 import barsan.opengl.util.TextHelper;
@@ -165,6 +160,10 @@ public class MenuScene extends Scene {
 		addInput(new InputAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
+				if(e.isConsumed()) {
+					return;
+				}
+				
 				if(e.getKeyCode() == KeyEvent.VK_UP) {
 					menu.goUp();
 				} else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
