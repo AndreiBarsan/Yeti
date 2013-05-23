@@ -342,6 +342,9 @@ public class ModelLoader {
 		GL2 gl = Yeti.get().gl.getGL2();
 		StaticModel result = new StaticModel(gl, "plane");
 		
+		boolean old = loadingFronLHCoords;
+		loadingFronLHCoords = false;
+		
 		float uw = width / sdivw;
 		float uh = height / sdivh;
 		
@@ -351,16 +354,16 @@ public class ModelLoader {
 			for(int y = -sdivh / 2; y <= th; y++) {
 				Face f = new Face();
 				f.points = new Vector3[] {
-					new Vector3((x + 1) * uw, 0, y * uh),
-					new Vector3((x + 1) * uw, 0, (y + 1) * uh),
+					new Vector3(x * uw, 0, y * uh),
 					new Vector3(x * uw, 0, (y + 1) * uh),
-					new Vector3(x * uw, 0, y * uh)
+					new Vector3((x + 1) * uw, 0, (y + 1) * uh),
+					new Vector3((x + 1) * uw, 0, y * uh)
 				};
 				f.texCoords = new Vector3[] {
-					new Vector3(1, 0, 0),
-					new Vector3(1, 1, 0),
+					new Vector3(0, 0, 0),
 					new Vector3(0, 1, 0),
-					new Vector3(0, 0, 0)
+					new Vector3(1, 1, 0),
+					new Vector3(1, 0, 0)
 				};
 				f.normals = new Vector3[] {
 					new Vector3(0, 1, 0),
@@ -375,6 +378,9 @@ public class ModelLoader {
 		
 		result.setPointsPerFace(4);
 		result.buildVBOs();
+		
+		loadingFronLHCoords = old;
+		
 		return result;
 	}
 	
@@ -405,22 +411,26 @@ public class ModelLoader {
 		StaticModel result = new StaticModel(gl, "quad");
 		result.setPointsPerFace(4);
 		
+		boolean old = loadingFronLHCoords;
+		loadingFronLHCoords = false;
+		
 		float hw = width / 2.0f;
 		float hh = height / 2.0f;
 		
 		Face face = new Face();
 		face.texCoords = new Vector3[] {
-				new Vector3(1, 0, 0),
-				new Vector3(1, 1, 0),
+				new Vector3(0, 0, 0),
 				new Vector3(0, 1, 0),
-				new Vector3(0, 0, 0)
+				new Vector3(1, 1, 0),
+				new Vector3(1, 0, 0)
 			};
 		if(xz) {
 			face.points = new Vector3[] {
-				new Vector3( hw, 0, -hh),
-				new Vector3( hw, 0,  hh),
-				new Vector3(-hw, 0,  hh),
 				new Vector3(-hw, 0, -hh),
+				new Vector3(-hw, 0,  hh),
+				new Vector3( hw, 0,  hh),
+				new Vector3( hw, 0, -hh),
+				
 			};
 			face.normals = new Vector3[] {
 				new Vector3(0, 1, 0),
@@ -430,10 +440,10 @@ public class ModelLoader {
 			};
 		} else {
 			face.points = new Vector3[] {
-				new Vector3( hw, -hh, 0),
-				new Vector3( hw,  hh, 0),
+				new Vector3(-hw, -hh, 0),
 				new Vector3(-hw,  hh, 0),
-				new Vector3(-hw, -hh, 0)
+				new Vector3( hw,  hh, 0),
+				new Vector3( hw, -hh, 0)
 			};
 			face.normals = new Vector3[] {
 				new Vector3(0, 0, 1),
@@ -445,6 +455,8 @@ public class ModelLoader {
 		result.addFace(face);
 		
 		result.buildVBOs();
+		
+		loadingFronLHCoords = old;
 		return result;
 	}
 }

@@ -64,7 +64,7 @@ public class LightTest extends Scene {
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
-		
+				
 		ResourceLoader.loadObj("monkey", "monkey.obj");
 		ResourceLoader.loadObj("sphere", "sphere.obj");
 		ResourceLoader.loadObj("texcube", "texcube.obj");
@@ -98,6 +98,7 @@ public class LightTest extends Scene {
 		SkyBox sb = new SkyBox(ResourceLoader.cubeTexture("test"), getCamera());
 		skyMat = sb.getMaterial();
 		modelInstances.add(sb);
+		
 		modelInstances.add(plane = new StaticModelInstance(quad, floorMat));
 			
 		BasicMaterial cmat = new BasicMaterial();
@@ -118,6 +119,7 @@ public class LightTest extends Scene {
 				this.monkeys.add(smi);
 			}
 		}//*/
+		
 		modelInstances.add(chosenOne = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
 			
 		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), monkeyMat,

@@ -4,6 +4,7 @@ import javax.media.opengl.GL2;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.Face;
+import barsan.opengl.resources.ModelLoader;
 
 public class Cube extends StaticModel {
 	
@@ -150,7 +151,13 @@ public class Cube extends StaticModel {
 		// Build faces as quads
 		setPointsPerFace(4);
 		
+
+		boolean old = ModelLoader.loadingFronLHCoords;
+		ModelLoader.loadingFronLHCoords = false;
+		
 		buildVBOs();
+		
+		ModelLoader.loadingFronLHCoords = old;
 	}
 
 }
