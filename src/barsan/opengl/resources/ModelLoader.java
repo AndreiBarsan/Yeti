@@ -116,7 +116,7 @@ public class ModelLoader {
 							line.substring(1).trim(),
 							vc, nc, tc);
 					model.master.faces.addAll(result);
-					fc++;
+					fc += result.size();
 					break;
 					
 				case 'o':
@@ -226,7 +226,6 @@ public class ModelLoader {
 		if(res.length < 3) {
 			throw new InputMismatchException(String.format("Bad number of geometry/texture/normal coordinates (%d)!", res.length));
 		}
-		
 				
 		if(model.getPointsPerFace() == 0) {
 			Yeti.debug("Model " + model.getName() + " now using " + res.length + " points per face.");
@@ -239,19 +238,19 @@ public class ModelLoader {
 				throw new UnsupportedOperationException("Mesh with varying face sizes but" +
 						" no way of separating them.");
 			}
-			
 		}
 	
 		for(int i = 0; i < res.length; i++) {
 			if(res[i].contains("/")) {
 				String[] bits = res[i].split("/");
+				
 				if(subCount == 1) {
 					throw new InputMismatchException("Invalid combination of geometry/texture/normal coordinates.");
 				}
 				
 				verts[i] = Integer.parseInt(bits[0]);
 				
-				// Negative inices provide relative references
+				// Negative indices provide relative references
 				if(verts[i] < 0) {
 					verts[i] = currentVertex + verts[i] + 1;
 				}

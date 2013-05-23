@@ -65,8 +65,7 @@ public class StaticModel extends Model {
 		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, TEX_COORDS_PER_POINT);
 		tangents = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		binormals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-
-		//*
+		
 		for(Face f : master.faces) {
 			if(ModelLoader.loadingFronLHCoords) {
 				vertices.quickAppend(f.points);
@@ -88,7 +87,7 @@ public class StaticModel extends Model {
 				}
 			}
 			
-			if(master.faces.get(0).texCoords != null) {
+			if(f.texCoords != null) {
 				texcoords.open();
 				if(ModelLoader.loadingFronLHCoords) {
 					for(Vector3 tc : f.texCoords) {
@@ -97,7 +96,6 @@ public class StaticModel extends Model {
 						texcoords.append(uv);
 					}
 				} else {
-					
 					for(int i = f.texCoords.length - 1; i >=0; --i) {
 						Vector3 tc = f.texCoords[i];
 						uv[0] = tc.x;
@@ -107,70 +105,14 @@ public class StaticModel extends Model {
 				}
 				texcoords.close();
 			}
-		}
-		//*/
-		
-		
-		/*
-		for(MaterialGroup mg : defaultMaterialGroups) {
-		
-			vertices.open();		
-			for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
-				Face f = master.faces.get(i);
-				for(int p = 0; p < pointsPerFace; ++p) {
-					vertices.append(f.points[p]);
-				}
-			}
-			vertices.close();
-			
-			if(master.faces.get(mg.beginIndex).normals != null) {
-				normals.open();
-				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
-					Face f = master.faces.get(i);
-					for(int p = 0; p < pointsPerFace; ++p) {
-						normals.append(f.normals[p]);
-					}
-				}
-				normals.close();
-				
-				// Wtf
-				for(Face f : master.faces) {
-					f.computeTangBinorm();
-				}
-				
-				tangents.open();
-				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
-					Face f = master.faces.get(i);
-					for(int p = 0; p < pointsPerFace; ++p) {
-						tangents.append(f.tangents[p]);
-					}
-				}
-				tangents.close();
-				
-				binormals.open();
-				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
-					Face f = master.faces.get(i);
-					for(int p = 0; p < pointsPerFace; ++p) {
-						binormals.append(f.binormals[p]);
-					}
-				}
-				binormals.close();
-			}
-			
-			if(master.faces.get(0).texCoords != null) {
+			else {
 				texcoords.open();
-				for(int i = mg.beginIndex; i < mg.beginIndex + mg.length; ++i) {
-					Face f = master.faces.get(i);
-					for(int p = 0; p < pointsPerFace; ++p) {
-						uv[0] = f.texCoords[p].x;
-						uv[1] = f.texCoords[p].y;
-						texcoords.append(uv);
-					}
-				}
+				texcoords.append(new float[]{ 0, 0 });
+				texcoords.append(new float[]{ 0, 0 });
+				texcoords.append(new float[]{ 0, 0 });
 				texcoords.close();
 			}
 		}
-		*/
 		
 		if(Yeti.get().settings.debugModels) {
 			Yeti.debug(String.format("VBOs for \"%s\" built. Normal element count: %d;" +

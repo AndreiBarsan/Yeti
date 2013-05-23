@@ -24,4 +24,4 @@ newmtl LS_Shader_Base
 	Ke 0.000000 0.000000 0.000000
 	map_Kd LS_Diffuse_A.png
 	#map_Ks LS_Rim_A.png
-	#map_bump LS_NormalMap.png
+	map_bump LS_NormalMap.png

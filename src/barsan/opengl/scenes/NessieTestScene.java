@@ -22,8 +22,6 @@ import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
 import barsan.opengl.rendering.lights.PointLight;
 import barsan.opengl.rendering.lights.SpotLight;
-import barsan.opengl.rendering.materials.BasicMaterial;
-import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.Color;
@@ -64,7 +62,7 @@ public class NessieTestScene extends Scene {
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(-2.0f, -1.0f, -1.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.50f;
+		dl.getDiffuse().a = 0.25f;
 		lights.add(dl);
 		//*/
 		
@@ -87,15 +85,31 @@ public class NessieTestScene extends Scene {
 		//addModelInstance(box);
 		
 		h = new StaticModelInstance(ResourceLoader.model("hm"));
-		h.getTransform().updateTranslate(-15.0f, -10.0f, -18.0f);
+		h.getTransform().updateTranslate(-15.0f, -12.0f, -18.0f);
 		h.getTransform().updateRotation(0.0f, 1.0f, 0.0f, -90.0f);
 		//	h.getTransform().updateScale(0.1f);
 		
 		addModelInstance(h);
 		
-		StaticModelInstance littleSister = new StaticModelInstance(ResourceLoader.model("LS"));
-		littleSister.getTransform().updateScale(0.06f);
-		addModelInstance(littleSister);
+		//*
+		int lsc = 4;
+		float lsr = 12.0f;
+		Vector3 ht = h.getTransform().getTranslate();
+		Vector2 lsCenter = new Vector2(ht.x, ht.z);
+		float ls_angle = (float) Math.PI * 2.0f / lsc;
+		for(int i = 0; i < lsc; ++i) {
+			StaticModelInstance ladySmith = new StaticModelInstance(ResourceLoader.model("LS"));
+			ladySmith.getTransform().updateScale(0.037f);
+			ladySmith.getTransform().updateTranslate(
+					(float) -Math.cos(i * ls_angle) * lsr + lsCenter.x,
+					-12.0f,
+					(float)  Math.sin(i * ls_angle) * lsr + lsCenter.y);
+			
+			ladySmith.getTransform().updateRotation(0.0f, 1.0f, 0.0f, (float) Math.random() * 360);
+			
+			addModelInstance(ladySmith);
+		}
+		//*/
 
 		floor = new StaticModelInstance(ModelLoader.buildPlane(
 				100.0f, 100.0f, 10, 10));
@@ -124,7 +138,7 @@ public class NessieTestScene extends Scene {
 		
 		int mlim = 2;
 		float mGrid = 2.5f;
-		//*
+		/*
 		for (int i = -mlim; i < mlim; ++i) {
 			for (int j = -mlim; j < mlim; ++j) {
 				Material mat = new BasicMaterial(Color.random());
@@ -147,13 +161,13 @@ public class NessieTestScene extends Scene {
 		nessie.setDirectionalShadowDepth(new Vector2(-80, 150));
 		
 		//*
-		int lightLim = 3;
-		float lgs = 18.0f;
+		int lightLim = 2;
+		float lightGridSize = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
 				c.a = 16.0f;
-				PointLight light = new PointLight(new Vector3(i * lgs, -6.0f, j * lgs), c);
+				PointLight light = new PointLight(new Vector3(i * lightGridSize, -6.0f, j * lightGridSize), c);
 				light.setAttenuation(0.0f, 0.0f, 1.5f);
 				lights.add(light);
 			}
