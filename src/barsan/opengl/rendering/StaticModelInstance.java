@@ -96,7 +96,7 @@ public class StaticModelInstance extends ModelInstance {
 		transformStack.pop();
 	}
 	
-	public void techniqueRender() {
+	public void techniqueRender(RendererState rs) {
 		int pindex = Technique.current.getVertexIndex();
 		model.getVertices().use(pindex);
 		
@@ -119,14 +119,12 @@ public class StaticModelInstance extends ModelInstance {
 			model.getTexcoords().use(tcindex);
 		}
 		
-		GL2 gl = Yeti.get().gl;
-		
 		for(MaterialGroup sm : materialGroups) {
-			Technique.current.loadMaterial(sm.material);
+			Technique.current.loadMaterial(rs, sm.material);
 			int ppf = model.getPointsPerFace();
-			gl.glDrawArrays(model.getFaceMode(), sm.beginIndex * ppf, sm.length * ppf);
+			rs.gl.glDrawArrays(model.getFaceMode(), sm.beginIndex * ppf, sm.length * ppf);
 		}
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		rs.gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		
 		model.cleanUp(pindex, nindex, tindex, bindex, tcindex);
 	}

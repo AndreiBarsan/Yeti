@@ -24,7 +24,7 @@ public class FlatTechnique extends Technique {
 	}
 	
 	@Override
-	public void loadMaterial(Material material) {
+	public void loadMaterial(RendererState rs, Material material) {
 		program.setUVector4f("matColor", material.getDiffuse().getData());
 	}
 

@@ -8,7 +8,9 @@ import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.materials.Material;
+import barsan.opengl.resources.ResourceLoader;
 
 /**
  * TODO: the light pass technique violates the current Technique contract, in that
@@ -89,7 +91,7 @@ public abstract class Technique {
 	}
 	
 	/** Loads a material to be used by the technique's shader. */
-	public abstract void loadMaterial(Material material);
+	public abstract void loadMaterial(RendererState rs, Material material);
 	
 	/**
 	 * Standard method that allows hierarchies of model instances to be rendered.
@@ -97,6 +99,7 @@ public abstract class Technique {
 	 */
 	public void renderDude(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
 		Matrix4 modelMatrix = mi.getTransform().get().cpy();
+		
 		matrixStack.push(modelMatrix);
 		viewModel.set(view).mul(modelMatrix);
 		MVP.set(projection).mul(view).mul(modelMatrix);
@@ -106,7 +109,7 @@ public abstract class Technique {
 		program.setUMatrix4("mMatrix", modelMatrix);
 		
 		instanceRenderSetup(mi, rs, matrixStack);
-		mi.techniqueRender();
+		mi.techniqueRender(rs);
 		
 		for(ModelInstance child : mi.getChildren()) {
 			renderDude(child, rs, matrixStack);

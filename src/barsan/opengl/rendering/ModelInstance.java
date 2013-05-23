@@ -17,13 +17,14 @@ public abstract class ModelInstance implements Renderable {
 	protected ArrayList<ModelInstance> children = new ArrayList<>();
 
 	@Override
+	@Deprecated
 	public abstract void render(RendererState rendererState, Matrix4Stack transformStack);
 
 	// TODO: figure out if it's a good idea to set the local transforms (and work
 	// with the transform stack) from within the technique
 	// Cleaner approach to rendering - the plan is to transition to a method with
 	// less code smell by using techniques.
-	public abstract void techniqueRender();
+	public abstract void techniqueRender(RendererState rendererState);
 	
 	public abstract Model getModel();
 	

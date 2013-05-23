@@ -45,7 +45,7 @@ public class DRLightCompositionPass extends Technique {
 	}
 	
 	@Override
-	public void loadMaterial(Material material) {
+	public void loadMaterial(RendererState rs, Material material) {
 		// Nop, this is a pass that doesn't involve materials
 		// TODO: normal techniques and abstract techniques or something?
 	}

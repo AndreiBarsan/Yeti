@@ -106,7 +106,7 @@ public class LightTest extends Scene {
 		cmat.addComponent(new TextureComponent());
 		StaticModelInstance cube = new StaticModelInstance(ResourceLoader.model("texcube"), cmat);
 		cube.getTransform().updateTranslate(2.0f, 2.5f, 0.0f);
-		addModelInstance(cube);
+		//addModelInstance(cube);
 		
 		float step = 6.0f;
 		int nrMonkeys = 5;

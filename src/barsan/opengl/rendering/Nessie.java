@@ -24,8 +24,10 @@ import barsan.opengl.rendering.techniques.DRLightPass;
 import barsan.opengl.rendering.techniques.FlatTechnique;
 import barsan.opengl.rendering.techniques.NullTechnique;
 import barsan.opengl.rendering.techniques.PointLightSM;
+import barsan.opengl.rendering.techniques.SkyboxTechnique;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.scenes.NessieTestScene;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
@@ -260,8 +262,8 @@ public class Nessie extends Renderer {
 		pointLightSMTechnique = new PointLightSM();
 		lightCompositionPassTechnique = new DRLightCompositionPass();
 		
-		 screenQuad = ModelLoader.makeScreenQuad();
-		 sqi = new StaticModelInstance(screenQuad);
+		screenQuad = ModelLoader.makeScreenQuad();
+		sqi = new StaticModelInstance(screenQuad);
 		
 		shadowQuality = ShadowQuality.High;
 		
@@ -372,14 +374,23 @@ public class Nessie extends Renderer {
 	}
 	
 	private void geometryPass(Scene scene) {
-		geomPassTechnique.setup(state);
+		
 		gbuffer.bindForGeometryPass();
 		
 		// Only the geometry pass updates the depth buffer
 	    gl.glEnable(GL2.GL_DEPTH_TEST);
 	    gl.glDepthMask(true);
-	    gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-	    
+
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		
+		/*
+		SkyboxTechnique st = new SkyboxTechnique();
+		NessieTestScene hack = (NessieTestScene)scene;
+		st.setup(state);
+		st.renderDude(hack.sb, state, new Matrix4Stack());
+		*/
+		
+		geomPassTechnique.setup(state);
 		geomPassTechnique.renderModelInstances(state, scene.modelInstances);
 	}	
 	

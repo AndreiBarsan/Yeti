@@ -21,7 +21,7 @@ public class PointLightSM extends Technique {
 	}
 	
 	@Override
-	public void loadMaterial(Material material) {
+	public void loadMaterial(RendererState rs, Material material) {
 		// nop, also an abstract technique
 	}
 	

@@ -17,6 +17,7 @@ import barsan.opengl.rendering.Nessie;
 import barsan.opengl.rendering.Nessie.Mode;
 import barsan.opengl.rendering.Renderer.ShadowQuality;
 import barsan.opengl.rendering.Scene;
+import barsan.opengl.rendering.SkyBox;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.lights.DirectionalLight;
@@ -40,6 +41,8 @@ public class NessieTestScene extends Scene {
 	
 	ArrayList<SpotLight> slights = new ArrayList<>();
 	StaticModelInstance h;
+	
+	public SkyBox sb;
 	
 	@Override
 	public void init(GLAutoDrawable drawable) {
@@ -79,15 +82,18 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		
+		ResourceLoader.loadCubeTexture("test", "png");
+		
+		sb = new SkyBox(ResourceLoader.cubeTexture("test"), ffc);
+		
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
-		//addModelInstance(box);
+		addModelInstance(box);
 		
 		h = new StaticModelInstance(ResourceLoader.model("hm"));
-		h.getTransform().updateTranslate(-15.0f, -12.0f, -18.0f);
+		h.getTransform().updateTranslate(-10.0f, -12.0f, -18.0f);
 		h.getTransform().updateRotation(0.0f, 1.0f, 0.0f, -90.0f);
-		//	h.getTransform().updateScale(0.1f);
 		
 		addModelInstance(h);
 		

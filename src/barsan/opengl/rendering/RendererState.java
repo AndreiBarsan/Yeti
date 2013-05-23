@@ -201,6 +201,7 @@ public class RendererState {
 		this.omniShadowFar = omniShadowFar;
 	}
 
+	// FIXME: dude, come on!
 	public int getGipsyWagonCubeTex() {
 		return ((Nessie)renderer).texCube;
 	}

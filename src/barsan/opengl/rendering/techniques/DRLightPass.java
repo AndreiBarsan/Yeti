@@ -47,7 +47,7 @@ public class DRLightPass extends Technique {
 	}
 	
 	@Override
-	public void loadMaterial(Material material) {
+	public void loadMaterial(RendererState rs, Material material) {
 		// nop, abstract technique
 	}
 	
@@ -68,7 +68,7 @@ public class DRLightPass extends Technique {
 			program.setU1i("useShadows", false);
 		}
 		
-		quad.techniqueRender();
+		quad.techniqueRender(rs);
 	}
 	
 
@@ -101,7 +101,7 @@ public class DRLightPass extends Technique {
 			program.setU1i("useShadows", false);
 		}
 		
-		volume.techniqueRender();
+		volume.techniqueRender(rs);
 	}
 	
 	public void drawSpotLight(ModelInstance volume, SpotLight spotLight, RendererState rs) {
@@ -134,7 +134,7 @@ public class DRLightPass extends Technique {
 			program.setU1i("useShadows", false);
 		}
 		
-		volume.techniqueRender();
+		volume.techniqueRender(rs);
 	}
 	
 	private void bindFlatMap(RendererState rs) {

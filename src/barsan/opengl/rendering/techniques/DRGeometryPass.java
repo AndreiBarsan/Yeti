@@ -5,6 +5,7 @@ import javax.media.opengl.GL2;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.RendererState;
+import barsan.opengl.rendering.StaticModelInstance;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
@@ -15,8 +16,6 @@ public class DRGeometryPass extends Technique {
 	// Where we start mount the items' texture (diffuse/bump/ etc.)
 	private int diffuseMapSlot;
 	private int normalMapSlot;
-	
-	private RendererState rs;
 	
 	public DRGeometryPass(int textureSlotStart) {
 		super(ResourceLoader.shader("DRGeometry"));
@@ -31,11 +30,9 @@ public class DRGeometryPass extends Technique {
 		
 		view.set(rs.getCamera().getView());
 		projection.set(rs.getCamera().getProjection());
-		
-		this.rs = rs;
 	}
 	
-	private void bindTexture(Texture t, String name, int slot) {
+	private void bindTexture(RendererState rs, Texture t, String name, int slot) {
 		rs.gl.glActiveTexture(GL2.GL_TEXTURE0 + slot);
 		t.bind(rs.gl);
 		int aiso = rs.getAnisotropySamples();
@@ -44,13 +41,13 @@ public class DRGeometryPass extends Technique {
 	}
 	
 	@Override
-	public void loadMaterial(Material material) {
+	public void loadMaterial(RendererState rs, Material material) {
 		Texture normalMap = material.getNormalMap();
 		if(normalMap != null) {
 			program.setU1i("useBump", true);
 			// Note: having this disabled means no non-uniform scaling is allowed
 			// program.setUMatrix3("normalMatrix", MathUtil.getNormalTransform(viewModel));
-			bindTexture(normalMap, "normalMap", normalMapSlot);
+			bindTexture(rs, normalMap, "normalMap", normalMapSlot);
 		} else {
 			program.setU1i("useBump", false);
 		}
@@ -58,7 +55,7 @@ public class DRGeometryPass extends Technique {
 		Texture diffuseMap = material.getDiffuseMap();
 		if(diffuseMap != null) {
 			program.setU1i("useTexture", true);
-			bindTexture(diffuseMap, "diffuseMap", diffuseMapSlot);
+			bindTexture(rs, diffuseMap, "diffuseMap", diffuseMapSlot);
 		} else {
 			program.setU1i("useTexture", false);
 		}
@@ -72,4 +69,5 @@ public class DRGeometryPass extends Technique {
 	protected void instanceRenderSetup(ModelInstance mi, RendererState rs, Matrix4Stack matrixStack) {
 		
 	}
+	
 }
