@@ -23,12 +23,20 @@ public class AnimatedMaterial extends Material {
 				normalStartIndex,
 				normalEndIndex;
 	
-	public AnimatedMaterial() {
-		this(ResourceLoader.shader("animatedPhong"));
+	public AnimatedMaterial(String name) {
+		this(name, ResourceLoader.shader("animatedPhong"));
 	}
-		
+	
+	public AnimatedMaterial() {
+		this("unnamed animatedd material");
+	}
+	
 	public AnimatedMaterial(Shader shader) {
-		super(shader);
+		this("unnamed animated material", shader);
+	}
+	
+	public AnimatedMaterial(String name, Shader shader) {
+		super(name, shader);
 		
 		positionStartIndex = shader.getAttribLocation(A_POSITION_START);
 		positionEndIndex = shader.getAttribLocation(A_POSITION_END);

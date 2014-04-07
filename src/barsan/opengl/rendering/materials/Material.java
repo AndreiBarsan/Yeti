@@ -12,6 +12,7 @@ import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.RendererState;
 import barsan.opengl.rendering.Shader;
 import barsan.opengl.util.Color;
+import barsan.opengl.util.Log;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -51,12 +52,18 @@ public class Material {
 	
 	@Deprecated
 	public Material(Shader shader) {
-		this(shader, Color.WHITE, Color.WHITE, Color.WHITE);
+		this("unnamed material", shader);
 	}
 	
 	@Deprecated
-	public Material(Shader shader, Color ambient, Color diffuse, Color specular) {
+	public Material(String name, Shader shader) {
+		this(shader, name, Color.WHITE, Color.WHITE, Color.WHITE);
+	}
+	
+	@Deprecated
+	public Material(Shader shader, String name, Color ambient, Color diffuse, Color specular) {
 		this.shader = shader;
+		this.name = name;
 		
 		this.positionIndex = shader.getAttribLocation(Shader.A_POSITION);
 		this.normalIndex = shader.getAttribLocation(Shader.A_NORMAL);
@@ -128,6 +135,9 @@ public class Material {
 
 	@Deprecated
 	protected void enableShader(RendererState rendererState) {
+		if(null == shader) {
+			Yeti.screwed("Tried to enable null shader in material: " + getName());
+		}
 		rendererState.gl.glUseProgram(shader.getHandle());
 	}
 	

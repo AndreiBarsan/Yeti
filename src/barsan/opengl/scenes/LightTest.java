@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import javax.media.opengl.GLAutoDrawable;
 
@@ -48,7 +50,8 @@ public class LightTest extends Scene {
 	BumpComponent bc;
 	GammaCorrection gammaCorrection;
 	
-	Material monkeyMat;
+	List<BasicMaterial> monkeyMat;
+	Material sphereMat;
 	Material skyMat;
 	
 	float lightX = 0.0f;
@@ -77,10 +80,9 @@ public class LightTest extends Scene {
 		
 		shadowsEnabled = true;
 		
+		sphereMat = makeMonkeyMat();
+		monkeyMat = new ArrayList<BasicMaterial>();
 		StaticModel quad = ModelLoader.buildPlane(500.0f, 500.0f, 50, 50);
-		monkeyMat = new BasicMaterial(new Color(0.0f, 0.0f, 1.0f));
-		monkeyMat.setAmbient(new Color(0.05f, 0.05f, 0.10f));
-		monkeyMat.setSpecularPower(128);
 		
 		fog = new Fog(Color.TRANSPARENTBLACK);
 		fog.fadeCamera(camera);
@@ -114,18 +116,20 @@ public class LightTest extends Scene {
 			for(int j = -nrMonkeys; j < nrMonkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
 				pm.refresh();
-				StaticModelInstance smi = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, pm);
+				BasicMaterial mat = makeMonkeyMat();
+				monkeyMat.add(mat);
+				StaticModelInstance smi = new StaticModelInstance(ResourceLoader.model("monkey"), mat, pm);
 				modelInstances.add(smi);
 				this.monkeys.add(smi);
 			}
 		}//*/
 		
-		modelInstances.add(chosenOne = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat, new Transform().updateScale(0.33f)));		
+		modelInstances.add(chosenOne = new StaticModelInstance(ResourceLoader.model("monkey"), monkeyMat.get(0), new Transform().updateScale(0.33f)));		
 			
-		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), sphereMat,
 			new Transform().updateTranslate(28.0f, 30.0f, -4.0f).updateScale(4.0f)));
 		
-		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), monkeyMat,
+		modelInstances.add(new StaticModelInstance(ResourceLoader.model("sphere"), sphereMat,
 				new Transform().updateTranslate(35.0f, 25.0f, -10.0f).updateScale(6.0f)));
 			
 		
@@ -166,11 +170,15 @@ public class LightTest extends Scene {
 				else if(e.getKeyCode() == KeyEvent.VK_G) {
 					if(floorMat.containsComponent(gammaCorrection)) {
 						floorMat.removeComponent(gammaCorrection);
-						monkeyMat.removeComponent(gammaCorrection);
+						for(Material m : monkeyMat) {
+							m.removeComponent(gammaCorrection);
+						}
 						skyMat.removeComponent(gammaCorrection);
 					} else {
 						floorMat.addComponent(gammaCorrection);
-						monkeyMat.addComponent(gammaCorrection);
+						for(Material m : monkeyMat) {
+							m.addComponent(gammaCorrection);
+						}
 						skyMat.addComponent(gammaCorrection);
 					}
 				} else if(e.getKeyCode() == KeyEvent.VK_Q) {
@@ -273,5 +281,16 @@ public class LightTest extends Scene {
 	@Override
 	public void pause() {
 		ffc.setMouseControlled(false);
+	}
+	
+	private static BasicMaterial makeMonkeyMat() {
+		Random r = new Random();
+		BasicMaterial mm = new BasicMaterial(new Color(
+				r.nextFloat(), 
+				r.nextFloat(),
+				r.nextFloat()));
+		mm.setAmbient(new Color(0.05f, 0.05f, 0.10f));
+		mm.setSpecularPower(128);
+		return mm;
 	}
 }

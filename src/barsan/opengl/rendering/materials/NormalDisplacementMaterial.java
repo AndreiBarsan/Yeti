@@ -10,7 +10,7 @@ import barsan.opengl.util.Color;
 public class NormalDisplacementMaterial extends Material {
 
 	public NormalDisplacementMaterial(Color color) {
-		super(ResourceLoader.shader("normalDisplacement"), Color.WHITE, color, Color.WHITE);
+		super(ResourceLoader.shader("normalDisplacement"), "normal displacement material", Color.WHITE, color, Color.WHITE);
 	}
 
 	@Override

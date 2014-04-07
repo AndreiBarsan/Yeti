@@ -93,23 +93,31 @@ subroutine(applyAO_t)
 void normalAO( void ) {
 	vec4 light = texture(lightMap, nuv);
 	float ao = computeAO(nuv);
-/*
-	light = vec4(
-		max(0.0f, light.r - ao),
-		max(0.0f, light.g - ao),
-		max(0.0f, light.b - ao),
-		light.a
-	);
-*/
+
 	composedColor = texture(diffuseMap, nuv) *  light;
 
+	bool gammaCorrect = true;
 
-	composedColor = vec4(
-		max(0.0f, composedColor.r - ao),
-		max(0.0f, composedColor.g - ao),
-		max(0.0f, composedColor.b - ao),
-		1.0f
-	);
+	if(gammaCorrect) {
+		composedColor = vec4(
+			pow( max(0.0f, composedColor.r - ao), 1 / 2.2f),
+			pow( max(0.0f, composedColor.g - ao), 1 / 2.2f), 
+			pow( max(0.0f, composedColor.b - ao), 1 / 2.2f),
+			1.0f
+		);
+	}
+	else {
+		composedColor = vec4(
+			max(0.0f, composedColor.r - ao),
+			max(0.0f, composedColor.g - ao), 
+			max(0.0f, composedColor.b - ao),
+			1.0f
+		);
+	}
+
+//*
+			
+//*/
 }
 
 void main(void) {

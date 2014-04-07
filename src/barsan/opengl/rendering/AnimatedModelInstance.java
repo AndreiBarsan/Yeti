@@ -15,7 +15,7 @@ public class AnimatedModelInstance extends ModelInstance {
 	public boolean playing;
 	
 	public AnimatedModelInstance(AnimatedModel model)  {
-		this(model, new AnimatedMaterial(), new Transform());
+		this(model, new AnimatedMaterial(model.getName() + "'s auto-generated animated material"), new Transform());
 	}
 	
 	public AnimatedModelInstance(AnimatedModel model, AnimatedMaterial material) {

@@ -28,7 +28,7 @@ public class Entity2D {
 		if(model instanceof StaticModel) {
 			graphics = new StaticModelInstance((StaticModel)model);
 		} else {
-			graphics = new AnimatedModelInstance((AnimatedModel)model, new AnimatedMaterial());
+			graphics = new AnimatedModelInstance((AnimatedModel)model, new AnimatedMaterial("animated material"));
 		}
 	}
 	

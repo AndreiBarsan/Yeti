@@ -15,7 +15,7 @@ import barsan.opengl.util.Color;
 public class FlatMaterial extends Material {
 
 	public FlatMaterial(Color diffuse) {
-		super(ResourceLoader.shader("flat"), Color.WHITE, diffuse, Color.WHITE);
+		super(ResourceLoader.shader("flat"), "flat material", Color.WHITE, diffuse, Color.WHITE);
 	}
 
 	@Override

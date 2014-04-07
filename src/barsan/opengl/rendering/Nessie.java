@@ -87,7 +87,11 @@ public class Nessie extends Renderer {
 				gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 		        gl.glTexParameterf(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
 				// Bind the texture to the FBO
-				gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0 + k - 1, GL2.GL_TEXTURE_2D, h, 0);
+				gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER,
+						GL2.GL_COLOR_ATTACHMENT0 + k - 1, 
+						GL2.GL_TEXTURE_2D,
+						h,
+						0);
 			}
 			buff.clear();
 			
