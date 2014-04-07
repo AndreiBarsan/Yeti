@@ -9,6 +9,7 @@ import barsan.opengl.math.Transform;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.resources.ResourceLoader;
+import barsan.opengl.util.Color;
 
 import com.jogamp.opengl.util.texture.Texture;
 
@@ -29,8 +30,8 @@ public class Billboard extends StaticModelInstance {
 		static final String SHADER_NAME = "billboard";
 		private AxisClamp axisClamp;
 		
-		public BillboardMaterial(AxisClamp axisClamp) {
-			super(ResourceLoader.shader(SHADER_NAME));
+		public BillboardMaterial(AxisClamp axisClamp, String name) {
+			super(ResourceLoader.shader(SHADER_NAME), name, Color.WHITE, Color.WHITE, Color.WHITE);
 			ignoreLights = true;
 			this.axisClamp = axisClamp;
 		}
@@ -84,13 +85,13 @@ public class Billboard extends StaticModelInstance {
 	// The user should be able to have (actual) models as kids of billboards
 	// and vice-versa. Wait, do poly kids of 2d billboards make sense? Kind of,
 	// their parent transform would be flattened - so they would look right.
-	public Billboard(GL2 gl, Texture texture) {
-		this(gl, texture, new Transform());
+	public Billboard(GL2 gl, Texture texture, String name) {
+		this(gl, texture, new Transform(), name);
 	}
 	
 	// TODO: use point sprites!
-	public Billboard(GL2 gl, Texture texture, Transform transform) {
-		super(ModelLoader.buildQuadXY(texture.getAspectRatio(), 1.0f), new BillboardMaterial(AxisClamp.None), transform);
+	public Billboard(GL2 gl, Texture texture, Transform transform, String name) {
+		super(ModelLoader.buildQuadXY(texture.getAspectRatio(), 1.0f), new BillboardMaterial(AxisClamp.None, name + " billboard material"), transform);
 		
 		getMaterial().setDiffuseMap(texture);
 		

@@ -25,10 +25,23 @@ public class MenuScene extends Scene {
 
 	protected CameraInput cameraInput;
 
+	private Menu menu = new Menu();
+	private Sprite logo;
+	Font authorFont = new Font("serif", Font.PLAIN, 24);
+	
+	float start = 500.0f;
+	float end = 150.0f;
+	float initialDelay = 1.0f;
+	float time = 1.2f;
+	float a = 0.0f;
+	Sprite background;	
+
+	/** Something that happens when you select a menu item. */
 	public interface MenuAction {
 		public void performAction();
 	}
 	
+	/** A specific action that simply takes you to another scene when invoked */
 	public static class TransitionAction implements MenuAction {
 		private Scene target;
 		
@@ -42,10 +55,6 @@ public class MenuScene extends Scene {
 		}
 	}
 	
-	public static class DummyAction implements MenuAction {
-		public void performAction() { }
-	}
-	
 	public static class ExitAction implements MenuAction {
 		@Override
 		public void performAction() {
@@ -57,7 +66,7 @@ public class MenuScene extends Scene {
 		private List<MenuEntry> entries = new ArrayList<>();
 		private Font font = new Font("serif", Font.BOLD, 48);
 		private int index = 0;
-		
+
 		public class MenuEntry {
 			private String text;
 			private MenuAction action;
@@ -135,10 +144,6 @@ public class MenuScene extends Scene {
 		}
 	}
 	
-	private Menu menu = new Menu();
-	private Sprite logo;
-	Sprite s;
-	
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
@@ -146,9 +151,9 @@ public class MenuScene extends Scene {
 		SceneHelper.quickSetup2D(this);
 		ResourceLoader.loadTexture("background", "menuBackground.png");
 		ResourceLoader.loadTexture("logo", "logo.png");
-		
-		addBillboard(s = new Sprite(Yeti.get().gl, ResourceLoader.texture("background")));
-		addBillboard(logo = new Sprite(Yeti.get().gl, ResourceLoader.texture("logo")));
+	
+		addBillboard(background = new Sprite(Yeti.get().gl, ResourceLoader.texture("background"), "background"), 0);
+		addBillboard(logo = new Sprite(Yeti.get().gl, ResourceLoader.texture("logo"), "logo"), 200);	
 		
 		menu.addEntry(menu.new MenuEntry("Begin!", new TransitionAction(new GameScene())));
 		menu.addEntry(menu.new MenuEntry("Light test", new TransitionAction(new LightTest())));
@@ -176,14 +181,6 @@ public class MenuScene extends Scene {
 		});
 	}
 	
-	Font authorFont = new Font("serif", Font.PLAIN, 20);
-	
-	float start = 500.0f;
-	float end = 150.0f;
-	float initialDelay = 1.0f;
-	float time = 1.2f;
-	float a = 0.0f;
-	
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		// Ideally, using a designated 2D text & sprite renderer would be the best idea.
@@ -191,7 +188,7 @@ public class MenuScene extends Scene {
 			exit();
 			return;
 		}
-		
+				
 		renderer.setSortBillboards(false);
 		float delta = Yeti.get().getDelta();
 		float logoY = start;
@@ -217,7 +214,7 @@ public class MenuScene extends Scene {
 		{
 			menu.draw();
 			TextHelper.setFont(authorFont);
-			TextHelper.drawTextCentered(Yeti.get().settings.width / 2, 15, "Andrei Bârsan, WS 2012/2013 (OpenGL mit Java)");
+			TextHelper.drawTextCentered(Yeti.get().settings.width / 2, 15, "Andrei Bârsan, Universitatea Transilvania din Brașov, 2012 - 2014");
 		}
 		TextHelper.endRendering();
 	}

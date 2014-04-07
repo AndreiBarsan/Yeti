@@ -21,9 +21,13 @@ public class SceneHelper {
 		scene.getLights().add(new DirectionalLight(new Vector3(0.0f, 0.0f, -1.0f)));
 		Settings s = Yeti.get().settings;
 		OrthographicCamera oc = new OrthographicCamera(s.width, s.height);
-		oc.lookAt(new Vector3(0.0f, 0.0f, -1000.0f), new Vector3(), new Vector3(0.0f, 1.0f, 0.0f));
+		
+		// Look towards the origin from (0, 0, 1000), so that items with higher
+		// Z values are closer to the camera and end up getting drawn on top
+		// of items with lower Z values.
+		oc.lookAt(new Vector3(0, 0, 1000.0f), new Vector3(), new Vector3(0.0f, 1.0f, 0.0f));
 		oc.setFrustumFar(2000.0f);
-		oc.setFrustumNear(0.0f);
+		oc.setFrustumNear(0.1f);
 		oc.refreshProjection();
 		scene.setCamera(oc);		
 	}

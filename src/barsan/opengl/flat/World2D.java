@@ -74,7 +74,6 @@ public class World2D {
 	public void reset() {
 		clearAllEntities();
 		// Left wall
-		/*
 		addBlock(-10, -20, 5, 40);
 		// Walkway A
 		addBlock(-5, -14, 40, 4);
@@ -95,10 +94,8 @@ public class World2D {
 			addEntity(new Coin(new Vector2(5 * i, -4.5f)));
 		}
 		
+		addEntity(new HeavenBeam(195f, 70f));
 		addEntity(player);
-		
-		addEntity(new HeavenBeam(195f, 70f));	
-		*/	
 	}
 	
 	public void addEntity(Entity2D entity) {

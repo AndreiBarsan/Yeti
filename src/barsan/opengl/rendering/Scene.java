@@ -9,6 +9,7 @@ import javax.media.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.InputProvider;
+import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.cameras.Camera;
 import barsan.opengl.rendering.cameras.PerspectiveCamera;
 import barsan.opengl.rendering.lights.AmbientLight;
@@ -127,8 +128,18 @@ public class Scene {
 	public void removeModelInstance(ModelInstance modelInstance) {
 		modelInstances.remove(modelInstance);
 	}
-
+	
 	public void addBillboard(Billboard billboard) {
+		billboards.add(billboard);
+	}
+	
+	/**
+	 * Adds a billboard and sets its z position. Useful in 2D scenes for positioning
+	 * sprites "on top" of each other.
+	 */
+	public void addBillboard(Billboard billboard, float z) {
+		Vector3 p = billboard.getTransform().getTranslate();
+		billboard.getTransform().updateTranslate(p.x, p.y, z);
 		billboards.add(billboard);
 	}
 

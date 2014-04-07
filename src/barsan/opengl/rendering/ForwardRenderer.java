@@ -47,6 +47,7 @@ public class ForwardRenderer extends Renderer {
 	private int	fbo_pointShadows;	// FBObject doesn't support cubemaps boo
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
+	
 	public ForwardRenderer(GL3 gl) {	
 		super(gl);
 		
@@ -187,7 +188,7 @@ public class ForwardRenderer extends Renderer {
 	public void render(final Scene scene) {
 		GL3 gl = state.gl;
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
-		
+				
 		// Get the original viewport size; We cannot rely on Yeti's dimensions
 		// since the GLJPanel is doing witchcraft which results in a viewport
 		// with a greater height than it's supposed to
@@ -199,6 +200,7 @@ public class ForwardRenderer extends Renderer {
 			sortBillboards(scene);
 		}
 		
+		// Update animations based on delta time
 		float delta = Yeti.get().getDelta();
 		for(ModelInstance mi : scene.getModelInstances()) {
 			if(mi instanceof AnimatedModelInstance) {
@@ -207,7 +209,7 @@ public class ForwardRenderer extends Renderer {
 		}
 		
 		if(scene.shadowsEnabled) {
-			//gl.glCullFace(GL2.GL_FRONT);
+			// Compute the shadows
 			Camera aux = state.getCamera();
 			
 			if(light.getType() == LightType.Directional) {
@@ -293,8 +295,14 @@ public class ForwardRenderer extends Renderer {
 		 *  CURRENT STATE: everything works, but super-shaders are a no-no since
 		 *  different sampler types try to sample from samplers they're not
 		 *  supposed to;
+		 *  
+		 *  EXPLANATION: SIMD shader execution (warps) 
 		 */
 		
+		// This disables the forced material that might have been set when computing
+		// the shadow maps, so that each object can now be rendered using its actual
+		// shiny, textured, pretty material, instead of the plain flat one used to
+		// compute the shadow map.
 		state.forceMaterial(null);
 		
 		// Render to our framebuffer
@@ -341,9 +349,8 @@ public class ForwardRenderer extends Renderer {
 		screenQuad.getTexcoords().cleanUp(tindex);
 		
 		// Tiny debug renders
-		// TODO: maybe used glBlitFramebuffer?
+		// TODO: maybe used glBlitFramebuffer? (nessie does that (see blitComponent)
 		if(scene.shadowsEnabled && renderDebug) {
-			
 			if(light.getType() != LightType.Point) {
 				GLHelp.dumpDepthBuffer(10, 10, 200, 200, 1.0f, state.shadowTexture);
 			}
@@ -380,7 +387,7 @@ public class ForwardRenderer extends Renderer {
 			assert matrixstack.getSize() == 1 : "Matrix stack should be back to 1, instead was " + matrixstack.getSize();
 		}
 		
-		// Billboards cannot cast shadows
+		// Billboards cannot cast shadows. Do not render them here.
 	}
 	
 	private void renderScene(GL3 gl, final Scene scene) {
@@ -477,7 +484,5 @@ public class ForwardRenderer extends Renderer {
 			} 
 		}
 		gl.glPopMatrix();
-
 	}
-
 }

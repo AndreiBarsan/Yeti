@@ -15,7 +15,7 @@ public class Coin extends Entity2D {
 		super(position, ResourceLoader.model("coin"));
 		graphics.getMaterial().addComponent(new TextureComponent());
 		graphics.getMaterial().setDiffuseMap(ResourceLoader.texture("coin"));
-		graphics.getTransform().updateScale(0.25f, 0.25f, -0.25f);
+		graphics.getTransform().updateScale(0.5f, 0.5f, 0.5f);
 	}
 	
 	@Override

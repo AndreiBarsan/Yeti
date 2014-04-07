@@ -32,6 +32,11 @@ public class StaticModelInstance extends ModelInstance {
 
 		castsShadows = true;
 		
+		if(model.getDefaultMaterialGroups().size() == 0) {
+			Yeti.screwed("The model [" + model.getName() + "] doesn't have "
+					+ "any default materials. I can't render it!");
+		}
+		
 		for(MaterialGroup mg : model.getDefaultMaterialGroups()) {
 			materialGroups.add(mg.copy());
 		}

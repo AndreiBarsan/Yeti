@@ -84,7 +84,10 @@ public class GameScene extends Scene {
 		ResourceLoader.loadObj("cube", "texcube.obj");
 		ResourceLoader.loadTexture("coin", "coinTex.png");
 		ResourceLoader.loadTexture("block01", "stone03.jpg");
+		
+		Yeti.debug("Finished loading misc. assets. Loading player!");
 		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
+		Yeti.debug("Finished loading player.");
 		
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		
@@ -96,6 +99,7 @@ public class GameScene extends Scene {
 		world.reset();
 		
 		addInput(poller);
+		
 		
 		gui = new GameGUI(world.getPlayer());
 		gui.setPosition(new Vector2(220.0f, 10.0f));

@@ -10,6 +10,7 @@ import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.StaticModel;
 import barsan.opengl.rendering.ModelInstance;
 import barsan.opengl.rendering.StaticModelInstance;
+import barsan.opengl.rendering.materials.BasicMaterial;
 
 public class Entity2D {
 	// has graphics & position components
@@ -26,7 +27,7 @@ public class Entity2D {
 	public Entity2D(Rectangle bounds, boolean solid, boolean hasWeight, Model model) {
 		physics = new Physics2D(this, bounds, solid, hasWeight);
 		if(model instanceof StaticModel) {
-			graphics = new StaticModelInstance((StaticModel)model);
+			graphics = new StaticModelInstance((StaticModel)model, new BasicMaterial());
 		} else {
 			graphics = new AnimatedModelInstance((AnimatedModel)model, new AnimatedMaterial("animated material"));
 		}

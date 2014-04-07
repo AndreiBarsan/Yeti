@@ -86,7 +86,7 @@ public abstract class Renderer {
 	}
 	
 	/**
-	 * The heart of the renderer. Gathers any required data, sets the gl state\
+	 * The heart of the renderer. Gathers any required data, sets the GL state 
 	 * and performs the draw call(s).
 	 */
 	public abstract void render(Scene scene);
