@@ -61,7 +61,7 @@ public class ForwardRenderer extends Renderer {
 		fbo_tex.attachTexture2D(gl, 0, true);
 		
 		if(MSAAEnabled) {
-			texType = GL2.GL_TEXTURE_2D_MULTISAMPLE;
+			texType = GL3.GL_TEXTURE_2D_MULTISAMPLE;
 		} else {
 			texType = GL2.GL_TEXTURE_2D;
 		}

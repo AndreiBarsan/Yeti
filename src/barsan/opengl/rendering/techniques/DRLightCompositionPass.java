@@ -2,6 +2,7 @@ package barsan.opengl.rendering.techniques;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;
@@ -70,12 +71,17 @@ public class DRLightCompositionPass extends Technique {
 		program.setU1f("aoIntensity", ao.intensity);
 		
 		int ph = program.getHandle();
-		int sr = rs.gl.glGetSubroutineIndex(ph, GL2.GL_FRAGMENT_SHADER, "normalAO");
 		
-		rs.gl.glUniformSubroutinesuiv(GL2.GL_FRAGMENT_SHADER,
+		GL4 gl4 = (GL4) rs.gl;
+		if(null == gl4) {
+			Yeti.screwed("GLSL subroutine fetching and manipulation requires GL4.");
+		}
+		
+		int sr = gl4.glGetSubroutineIndex(ph, GL2.GL_FRAGMENT_SHADER, "normalAO");
+		gl4.glUniformSubroutinesuiv(GL2.GL_FRAGMENT_SHADER,
 				1,
 				new int[] { sr },
 				0
-				);
+			);
 	}
 }
