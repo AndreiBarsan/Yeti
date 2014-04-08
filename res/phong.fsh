@@ -221,7 +221,6 @@ void main() {
 		nLightDir = normalize(lightPosition - vertPos_wc);
 	}
 	
-	
 	if(useBump) {
 		vec3 vBump = 2.0f * texture(normalMap, texCoords).rgb - 1.0f;
 		vBump = normalize(mNTB * vBump);

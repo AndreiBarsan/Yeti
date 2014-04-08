@@ -65,7 +65,7 @@ public class NessieTestScene extends Scene {
 		//*
 		DirectionalLight dl = new DirectionalLight(new Vector3(-2.0f, -1.0f, -1.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.15f;
+		dl.getDiffuse().a = 0.05f;
 		lights.add(dl);
 		//*/
 		

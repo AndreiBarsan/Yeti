@@ -87,6 +87,8 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	
 	int lastDragX, lastDragY;
 	int lastMoveX, lastMoveY;
+
+	private boolean pauseOnCtrl = true;
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
@@ -101,6 +103,9 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		if(!mouseControlled) return;
+		if(pauseOnCtrl && (e.getModifiers() & MouseEvent.CTRL_MASK) != 0) {
+			return;
+		}
 		
 		int xcenter = e.getComponent().getWidth() / 2;
 		int ycenter = e.getComponent().getHeight() / 2;
@@ -145,5 +150,14 @@ public class CameraInput implements InputProvider, KeyListener, MouseListener, M
 				}
 			}
 		}
+	}
+	
+	/** Whether the camera ignores the mouse when CTRL is pressed */
+	public boolean isPauseOnCtrl() {
+		return pauseOnCtrl;
+	}
+
+	public void setPauseOnCtrl(boolean pauseOnCtrl) {
+		this.pauseOnCtrl = pauseOnCtrl;
 	}
 }

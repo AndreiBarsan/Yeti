@@ -49,7 +49,7 @@ void main() {
 		mNTB[0] = vTang;
 		mNTB[1] = vBinorm;
 		mNTB[2] = normalize(vNormal);
-		mNTB = mat3(mMatrix) * mNTB;	// seems to work without the normal matrix
+		mNTB = mat3(mMatrix) * mNTB;
 	}
 	
 	if(useShadows) {

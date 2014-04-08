@@ -78,7 +78,6 @@ public class GameScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 
-		ResourceLoader.loadCubeTexture("skybox01", "jpg");
 		ResourceLoader.loadObj("coin", "coin.obj");
 		ResourceLoader.loadObj("end", "heavenBeam.obj");
 		ResourceLoader.loadObj("cube", "texcube.obj");
@@ -88,7 +87,8 @@ public class GameScene extends Scene {
 		Yeti.debug("Finished loading misc. assets. Loading player!");
 		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
 		Yeti.debug("Finished loading player.");
-		
+
+		ResourceLoader.loadCubeTexture("skybox01", "jpg");
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		
 		Renderer.renderDebug = false;
@@ -99,7 +99,6 @@ public class GameScene extends Scene {
 		world.reset();
 		
 		addInput(poller);
-		
 		
 		gui = new GameGUI(world.getPlayer());
 		gui.setPosition(new Vector2(220.0f, 10.0f));

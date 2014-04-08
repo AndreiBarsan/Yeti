@@ -19,14 +19,13 @@ public class DRLightCompositionPass extends Technique {
 		public float scale = 1.0f;
 		public float bias = 0.25f;
 		public float sampleRad = 0.075f;	
-		public float intensity = 1.25f;
+		public float intensity = 0.25f;
 	}
 	
 	public AOSettings ao = new AOSettings();
 
 	public DRLightCompositionPass() {
 		super(ResourceLoader.shader("DRLightCompose"));
-		
 		AOInit();
 	}
 	

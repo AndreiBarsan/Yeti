@@ -18,6 +18,7 @@ import javax.media.opengl.GLProfile;
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.AnimatedModel;
 import barsan.opengl.rendering.AnimatedModel.Frame;
+import barsan.opengl.rendering.materials.CubeMapMaterial;
 import barsan.opengl.rendering.CubeTexture;
 import barsan.opengl.rendering.Model;
 import barsan.opengl.rendering.Shader;
@@ -55,7 +56,7 @@ public class ResourceLoader {
 	static {
 		// Custom linking rules (e.g. in the case of the animated phong, there
 		// are only a few differences in the vertex shader but both *share* the
-		// same fragment shader.
+		// same fragment shader).
 		linkRules.put("animatedPhong.vsh", "phong.fsh");
 	}
 	
@@ -118,7 +119,7 @@ public class ResourceLoader {
 				TextureData data = TextureIO.newTextureData(
 						glp,
 						new File(fname),
-						true, null);
+						true, ext);
 				tex.getTexture().updateImage(Yeti.get().gl, data, CubeTexture.cubeSlots[i]);
 			}
 		} catch (GLException | IOException e) {
@@ -185,17 +186,17 @@ public class ResourceLoader {
 	
 	public static void loadTexture(String name, String fileName) {
 		try {
-		TextureData tdata = TextureIO.newTextureData(
-				Yeti.get().gl.getGLProfile(),
-				new File(RESBASE + TEXTUREBASE + fileName),
-				true, 
-				null);
-		textureData.put(name, tdata);
-		
-		// Blocking call; could be improved; but that's something we'll do
-		// in the Future<T> :D
-		Texture tex = TextureIO.newTexture(tdata);
-		textures.put(name, tex);
+			TextureData tdata = TextureIO.newTextureData(
+					Yeti.get().gl.getGLProfile(),
+					new File(RESBASE + TEXTUREBASE + fileName),
+					true, 
+					null);
+			textureData.put(name, tdata);
+			
+			// Blocking call; could be improved; but that's something we'll do
+			// in the Future<T> :D
+			Texture tex = TextureIO.newTexture(tdata);
+			textures.put(name, tex);
 		
 		} catch(Exception e) {
 			Yeti.screwed("Error loading texture!", e);

@@ -197,6 +197,8 @@ public class LightTest extends Scene {
 		Yeti.get().addInputProvider(new InputAdapter() {
 			
 			float dist = 50.0f;
+			int lastx = -1;
+			int lasty = -1;
 			
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
@@ -210,8 +212,35 @@ public class LightTest extends Scene {
 						linearAtt = 1.0f / dist;
 					}
 				} else {
-					pointLightY -= (e.getWheelRotation() / 12.0f);
-					test_pl.getPosition().setY(pointLightY);
+					synchronized(test_pl) {
+						pointLightY -= (e.getWheelRotation() / 12.0f);
+						test_pl.getPosition().setY(pointLightY);
+					}
+				}
+			}
+			
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				if((e.getModifiers() & MouseWheelEvent.CTRL_MASK) != 0) {
+					int x = e.getX();
+					int y = e.getY();
+					
+					if(lastx != -1) {
+						synchronized(test_pl) {
+							Vector3 lightPos = test_pl.getPosition();
+							int dx = x - lastx;
+							int dy = y - lasty;
+							lightPos.x += dx * 0.05f;
+							lightPos.z += dy * 0.05f;
+						}
+					}
+					
+					lastx = x;
+					lasty = y;					
+				}
+				else {
+					lastx = -1;
+					lasty = -1;
 				}
 			}
 		});
@@ -253,7 +282,7 @@ public class LightTest extends Scene {
 		
 		test_sl.getPosition().setX((float)Math.cos(a / sl_speedScale) * 40f);
 		
-		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
+		// test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);
 		
 		tv.set(4.0f, 4.0f, (float)Math.sin(a / 4.0f) * 1.5f);
@@ -290,7 +319,7 @@ public class LightTest extends Scene {
 				r.nextFloat(),
 				r.nextFloat()));
 		mm.setAmbient(new Color(0.05f, 0.05f, 0.10f));
-		mm.setSpecularPower(128);
+		mm.setSpecularPower(64 + (int)(r.nextFloat() * 512));
 		return mm;
 	}
 }

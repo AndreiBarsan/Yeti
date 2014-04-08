@@ -8,7 +8,7 @@ import barsan.opengl.math.Vector3;
 /**
  * Signifies a model's face. Noteworthy is the fact that this object only bears
  * real significance as a mesh is being built or loaded. After the VBOs are baked,
- * they're the ones used for the actual rendering logic.
+ * the VBOs are the ones used for the actual rendering logic, NOT the face objects.
  * 
  * @author Andrei Bârsan
  */
@@ -37,7 +37,11 @@ public class Face {
 			}
 							
 			tangents[i] = t;
-			binormals[i] = new Vector3(t).cross(normal).normalize();
+			/**
+			 * 8 Apr 2014 - switched the operator order because bump mapping was
+			 * broken after updating to JOGL 2.0.2 from 2.0.0.
+			 */
+			binormals[i] = new Vector3(normal).cross(t).normalize();
 		}
 	}
 	

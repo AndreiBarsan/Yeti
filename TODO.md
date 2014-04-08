@@ -1,13 +1,13 @@
 TO-DO LIST OF THINGS TO DO
 ===============================================================================
 Bugs:
+ - MAJOR bump-map bugs when switching to newer JOGL (2.0.2 from 2.0)
  - collision checking fails at low fps (due to it being a hacky implementation)
  - JVM Crash - condition: game scene, last thing added is player, no heaven
  beam, attempt to leave scene; at the first render call in the menu the JVM 
  crashes; (maybe the updated JOGL fixed it (17.03 - check it!)
  - view matrix straight down causes problems (also breaks directional shadow mapping!!!)
  - multitexture material broken (TODO: just convert to technique)
- - actually find and write down the (rather old) matrix multiplication BUG
  
 Architecture issues:
  - figure out what to with textures - if I'm going to move them to the

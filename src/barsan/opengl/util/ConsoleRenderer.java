@@ -16,7 +16,6 @@ public class ConsoleRenderer {
 	
 	public ConsoleRenderer(GlobalConsole gci) {
 		this.console = gci;
-		
 		consoleFont = new Font(Font.MONOSPACED, Font.PLAIN, 16);
 	}
 
