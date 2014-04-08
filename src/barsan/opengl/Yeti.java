@@ -18,9 +18,10 @@ import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.media.opengl.DebugGL3bc;
 import javax.media.opengl.GL3bc;
@@ -29,16 +30,21 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 
+import barsan.opengl.commands.DerpCommand;
+import barsan.opengl.commands.ExitCommand;
+import barsan.opengl.commands.LCommand;
+import barsan.opengl.commands.LightCommand;
+import barsan.opengl.commands.LoadCommand;
+import barsan.opengl.commands.LsCommand;
+import barsan.opengl.commands.QuitCommand;
+import barsan.opengl.commands.ScenesCommand;
+import barsan.opengl.commands.SetCommand;
+import barsan.opengl.commands.YetiCommand;
 import barsan.opengl.editor.App;
 import barsan.opengl.input.GlobalConsole;
 import barsan.opengl.input.InputProvider;
 import barsan.opengl.platform.CanvasFactory;
 import barsan.opengl.rendering.Scene;
-import barsan.opengl.rendering.lights.DirectionalLight;
-import barsan.opengl.rendering.lights.Light;
-import barsan.opengl.rendering.lights.Light.LightType;
-import barsan.opengl.rendering.lights.PointLight;
-import barsan.opengl.rendering.lights.SpotLight;
 import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.scenes.DemoScene;
 import barsan.opengl.scenes.GameScene;
@@ -47,7 +53,6 @@ import barsan.opengl.scenes.MenuScene;
 import barsan.opengl.scenes.NessieTestScene;
 import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.ConsoleRenderer;
-import barsan.opengl.util.ReflectUtil;
 import barsan.opengl.util.Settings;
 
 import com.jogamp.opengl.util.Animator;
@@ -58,6 +63,53 @@ import com.jogamp.opengl.util.Animator;
  */
 public class Yeti implements GLEventListener {
 	
+	static List<Class<?>> commands = Arrays.asList(new Class<?>[] {
+		DerpCommand.class,
+		ExitCommand.class,
+		LCommand.class,
+		LightCommand.class,
+		LoadCommand.class,
+		LsCommand.class,
+		QuitCommand.class,
+		ScenesCommand.class,
+		SetCommand.class
+	});
+		
+	static Map<String, YetiCommand> commandMap = new HashMap<>();
+	static {
+		for(Class<?> c : commands) {
+			int ei = c.getSimpleName().length() - "command".length();
+			String cmd = c.getSimpleName().substring(0, ei);
+			try {
+				commandMap.put(cmd.toLowerCase(), (YetiCommand) c.newInstance());
+			} catch(Exception e) {
+				System.err.println("Error initializing console commands!");
+			}
+		}
+	}
+	
+	/**
+	 * Iterating through a package to find its classes is not as trivial
+	 * as it might seem, so this will do. It's just tempanent anyway.
+	 */
+	static Class<?>[] availableScenes = new Class[] {
+			DemoScene.class,
+			ProceduralScene.class,
+			LightTest.class,
+			GameScene.class,
+			MenuScene.class,
+			NessieTestScene.class
+	};
+	static {		
+		for(Class<?> c : availableScenes) {
+			assert Scene.class.isAssignableFrom(c) : "Only instances of Scene allowed!";
+		}
+	}
+	
+	public static Class<?>[] getAvailableScenes() {
+		return availableScenes;
+	}
+
 	// Miscellaneous settings
 	public Settings settings;
 	
@@ -66,7 +118,7 @@ public class Yeti implements GLEventListener {
 	public boolean debug = true;
 	
 	// TODO: scene manager with a stack / graph of scenes
-	private Scene currentScene;
+	Scene currentScene;
 	private Scene defaultScene;
 	private Frame frame;
 	private Cursor blankCursor;
@@ -99,54 +151,8 @@ public class Yeti implements GLEventListener {
 	private long thisFrameStart;
 	private float delta;
 	
-	/**
-	 * Iterating through a package to find its classes is not as trivial
-	 * as it might seem, so this will do. It's just tempanent anyway.
-	 */
-	static Class<?>[] availableScenes = new Class[] {
-			DemoScene.class,
-			ProceduralScene.class,
-			LightTest.class,
-			GameScene.class,
-			MenuScene.class,
-			NessieTestScene.class
-	};
-	static {		
-		for(Class<?> c : availableScenes) {
-			assert Scene.class.isAssignableFrom(c) : "Only instances of Scene allowed!";
-		}
-	}
-	
-	public static Class<?>[] getAvailableScenes() {
-		return availableScenes;
-	}
-	
-	private Yeti() {
-		animator = new Animator();
-	}
-	
-	private void startup() {
-		settings = Settings.load();
-		debug("Starting up Yeti...");
-		
-		// Setup transient fields
-		if(settings.width == 0) {
-			settings.width = 1024;
-		}
-		
-		if(settings.height == 0) {
-			settings.height = 768;
-		}
-		
-		settings.playing = false;
-		
-		// Create blank cursor (used for hidin the mouse)
-		// Transparent 16 x 16 pixel cursor image.
-		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-		blankCursor = Toolkit.getDefaultToolkit()
-				.createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
-
-	}
+	boolean fullscreen = false;
+	private static Yeti instance;
 	
 	public void transitionFinished() {
 		currentScene = pendingScene;
@@ -168,111 +174,19 @@ public class Yeti implements GLEventListener {
 		String[] parts = input.split("\\s");
 		
 		if(parts.length == 0) {
+			// The user just pressed enter while entering no input
 			return "";
 		}
 		
 		String cmd = parts[0];
 		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
 		
-		switch(cmd) {
-		case "derp":
-			return "HERP";
-			
-		case "exit":
-		case "quit":
-			Yeti.quit();
-			return "Shutting down Yeti...";
-			
-		case "ls":
-		case "scenes":
-			String out = "Available scenes: ";
-			for(Class<?> c : availableScenes) {
-				out += c.getSimpleName() + "\n";
-			}
-			return out;
-			
-		case "l":
-			Scene s = Yeti.get().currentScene;
-			try {
-				if(args.length <= 2) {
-					return "At least 3 parameters needed.";
-				}
-				
-				int id = Integer.parseInt(args[0]);
-				List<Light> la = s.getLights();
-				if(la.size() <= id) {
-					return "Only " + la.size() + " lights available."; 
-				}
-				
-				Light currentLight = la.get(id);
-				Class<?> LC = 
-					currentLight.getType() == LightType.Directional ? DirectionalLight.class
-					: currentLight.getType() == LightType.Point ?	PointLight.class
-					: SpotLight.class;
-				
-				Field lightFields[] = LC.getDeclaredFields();
-				Field target = null;
-				for(Field f : lightFields) {
-					if(f.getName().toUpperCase().equals(args[1].toUpperCase())) {
-						target = f;
-						break;
-					}
-				}
-				
-				if(target == null) {
-					return "Field " + args[1] + " not found.";
-				}
-				
-				try {
-					String parseParams[] = Arrays.copyOfRange(args, 2, args.length);
-					ReflectUtil.setParameter(currentLight, target, parseParams);
-					return "Set field " + target.getName() + " to " + Arrays.toString(parseParams);
-					
-				} catch(IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
-					return "Bad parameter value(s)";
-				}
-			
-			} catch(NumberFormatException e) {
-				return "The first parameter must be a number.";
-			}
-			
-		case "rs":
-			// refresh shaders
-			// Note: this can also be made into an utility that monitors file 
-			// changes and recompiles shaders on the fly
-			break;
-			
-		case "load":
-			if(args.length > 0) {
-				boolean found = false;
-				for(Class<?> c : availableScenes)
-				{
-					if(c.getSimpleName().toUpperCase().equals(args[0].toUpperCase()))
-					{
-						found = true;
-						try {
-							loadScene((Scene) c.newInstance());
-						} catch (InstantiationException e) {
-							e.printStackTrace();
-						} catch (IllegalAccessException e) {
-							e.printStackTrace();
-						}
-						return "Loading scene: " + c.getSimpleName();
-					}
-				}
-				if( ! found) {
-					return "Scene " + args[0] + " not found.";
-				}
-			}
-			else 
-			{
-				return "Please specify a scene name";
-			}
-			break;
+		if(commandMap.containsKey(cmd)) {
+			return commandMap.get(cmd).invoke(args);
 		}
-		
-		return "Unknown command: " + cmd;		
+		else {
+			return "Unknown command: " + cmd;
+		}
 	}
 	
 	/**
@@ -293,6 +207,7 @@ public class Yeti implements GLEventListener {
 	public void startApplicationLoop(App app, Frame frame, Container hostContainer,
 			CanvasFactory canvasFactory) {
 		
+		debug("Starting game loop.");
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				new Thread(new Runnable() {
@@ -330,6 +245,7 @@ public class Yeti implements GLEventListener {
 		
 		animator.setUpdateFPSFrames(5, null);
 		animator.start();
+		debug("Finished game loop setup.");
 		
 		glpanel.addMouseListener(new MouseAdapter() {
 			@Override
@@ -337,7 +253,6 @@ public class Yeti implements GLEventListener {
 				focusMouse();
 			}
 		});
-		
 		
 		focusMouse();
 	}
@@ -364,7 +279,6 @@ public class Yeti implements GLEventListener {
 		currentScene.pause();		
 	}
 	
-	private static Yeti instance;
 	public static Yeti get() {
 		if(instance == null) {
 			instance = new Yeti();
@@ -419,6 +333,7 @@ public class Yeti implements GLEventListener {
 		System.exit(0);		
 	}
 	
+	/** The first method that gets called when the GL context is up and running. */
 	@Override
 	public void init(GLAutoDrawable drawable) {
 
@@ -429,7 +344,7 @@ public class Yeti implements GLEventListener {
 		gl = drawable.getGL().getGL3bc();
 			
 		if(engineInitialized) {
-			Yeti.screwed("GL Context was reset. Yeti cannot handle that yet. :(");
+			screwed("GL Context was reset. Yeti cannot handle that yet. :(");
 			return;
 		}
 		
@@ -439,7 +354,8 @@ public class Yeti implements GLEventListener {
 		}
 		
 		// Only displays when actually in debug mode
-		Yeti.debug("Running in debug GL mode"); 
+		debug("Running in debug GL mode"); 
+		debug("Using OpenGL profile [" + gl.getClass().getSimpleName() + "].");
 		
 		final int lastLoadedScene = settings.lastSceneIndex;
 		ResourceLoader.init();	
@@ -589,7 +505,6 @@ public class Yeti implements GLEventListener {
 	
 	public int getCanvasHeight() {
 		return canvasHost.getHeight();
-		
 	}
 	
 	public Scene getDefaultScene() {
@@ -600,10 +515,42 @@ public class Yeti implements GLEventListener {
 		this.defaultScene = defaultScene;
 	}
 	
-	boolean fullscreen = false;
 	public void toggleFullscreen() {
 		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice gd = ge.getDefaultScreenDevice();
 		gd.setFullScreenWindow(frame);
+	}
+
+	public Scene getCurrentScene() {
+		return currentScene;
+	}
+	
+	/** Private singleton constructor. */
+	private Yeti() {
+		animator = new Animator();
+	}
+	
+	private void startup() {
+		debug("Starting up Yeti.");
+		debug("Loading settings.");
+		settings = Settings.load();
+		debug("Loaded settings.");
+		
+		// Setup transient fields
+		if(settings.width == 0) {
+			settings.width = 1024;
+		}
+		
+		if(settings.height == 0) {
+			settings.height = 768;
+		}
+		
+		settings.playing = false;
+		
+		// Create blank cursor (used for hidin the mouse)
+		// Transparent 16 x 16 pixel cursor image.
+		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+		blankCursor = Toolkit.getDefaultToolkit()
+				.createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 	}
 }

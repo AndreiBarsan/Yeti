@@ -198,7 +198,7 @@ public class MenuScene extends Scene {
 		} else {
 			a += delta;
 			if(a <= time) {
-				logoY = MathUtil.smoothStep(start, end, a / time);
+				logoY = MathUtil.exp(start, end, a / time);
 			} else {
 				logoY = end;
 			}

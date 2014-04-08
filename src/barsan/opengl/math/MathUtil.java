@@ -36,4 +36,17 @@ public class MathUtil {
 		float coef = 3 * amount * amount - 2 * amount * amount * amount;
 		return start + (end - start) * coef;
 	}
+	
+	public static float exp(float start, float end, float amount) {
+		float val = computeExp(amount, 2, 5);
+		return start + val * (end - start);
+	}
+	
+	private static float computeExp(float a, float value, float power) {
+		float min = (float)Math.pow(value, -power);
+		float scale = 1 / (1 - min);
+		
+		if (a <= 0.5f) return ((float)Math.pow(value, power * (a * 2 - 1)) - min) * scale / 2;
+		return (2 - ((float)Math.pow(value, -power * (a * 2 - 1)) - min) * scale) / 2;
+	}
 }

@@ -23,6 +23,9 @@ Architecture issues:
    tricky; using TECHNIQUES instead of FORCED MATERIALS could potentially help
    
 General TODOs:
+ - clean up unused resources
+ - remove old material component usage by bringing the forward renderer up-to-date
+ - make scenes always hold a reference to Yeti
  - note: don't render lights on the skybox! make sure that skyboxes don't count
  in the stencil test
  - no longer send position - compute from screen coords & z; maybe better? though
