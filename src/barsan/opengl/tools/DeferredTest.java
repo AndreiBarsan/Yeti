@@ -10,8 +10,8 @@ public class DeferredTest {
 	public static void main(String[] args) {
 		Yeti yeti = Yeti.get();
 		Frame frame = new Frame("Nessie test");
-		yeti.settings.width = 1280;
-		yeti.settings.height = 720;
+		yeti.settings.width = 1024;
+		yeti.settings.height = 768;
 		frame.setResizable(false);
 		yeti.setDefaultScene(new NessieTestScene());
 		yeti.startApplicationLoop(null, frame, frame, new AWTFactory());

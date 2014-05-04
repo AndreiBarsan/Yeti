@@ -1,8 +1,11 @@
 package barsan.opengl.rendering;
 
+import java.util.List;
+
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.math.Transform;
+import barsan.opengl.rendering.AnimatedModel.Frame;
 import barsan.opengl.rendering.materials.Material;
 
 public class AnimatedModelInstance extends ModelInstance {
@@ -29,14 +32,15 @@ public class AnimatedModelInstance extends ModelInstance {
 	}
 	
 	public void updateAnimation(float delta) {
-		int n = model.getFrames().size();
+		List<Frame> frames = model.getFrames();
+		int n = frames.size();
 		
 		tweenIndex += delta;
-		float step = 1 / 45.0f;
+		float step = frames.get(cf).duration;
 		if(tweenIndex >= step) {
 			while(tweenIndex > step) tweenIndex -= step;
 			
-			if( ! ( (cf <= 2 || cf >= 30 || Math.abs(cf - 16) <= 2 ) && !playing) ) {
+			if( ! ( (cf <= 2 || cf >= n - 2 || Math.abs(cf - n / 2) <= 2) && !playing) ) {
 				cf = (cf + 1) % n;
 			} else {
 				cf = 0;
@@ -86,7 +90,10 @@ public class AnimatedModelInstance extends ModelInstance {
 		
 		// Make sure that both bound frames get unbound
 		f1model.cleanUp(pIndexStart, nIndexStart);
-		f2model.cleanUp(nIndexStart, nIndexEnd);
+		f2model.cleanUp(pIndexEnd, nIndexEnd);
+		// pIndexEnd used to not be cleaned up. You know what that lead to?
+		// A JVM crash. Yep. Java 7, JOGL 2.1.4, no exception - JVM crash.
+		// RIP IN PEACE BUG
 		
 		activeMaterial.cleanUp(rendererState);
 		

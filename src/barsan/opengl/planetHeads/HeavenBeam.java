@@ -9,6 +9,8 @@ import barsan.opengl.util.Color;
 
 public class HeavenBeam extends Entity2D {
 
+	float angle = 0;
+	
 	public HeavenBeam(float x, float y) {
 		super(new Rectangle(x, y, 2f, 100f), false, false, ResourceLoader.model("end"));
 		
@@ -23,7 +25,7 @@ public class HeavenBeam extends Entity2D {
 		beamMat.setCheckDepthBuffer(false);
 		beamMat.setWriteDepthBuffer(false);
 	}
-	float angle = 0;
+	
 	@Override
 	public void update(float delta) {
 		angle += delta * 10.0f;

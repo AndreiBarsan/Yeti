@@ -62,6 +62,7 @@ public class MTLLoader {
 					current.setDiffuseMap(ResourceLoader.texture(
 							textureName.substring(0, textureName.lastIndexOf('.'))
 							));
+					Yeti.debug("Done loading texture.");
 				}
 				else if(tokens[0].equals("map_Bump") || tokens[0].equals("map_bump")) {
 					String textureName = tokens[1];

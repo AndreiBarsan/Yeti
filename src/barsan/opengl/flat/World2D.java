@@ -84,7 +84,14 @@ public class World2D {
 		
 		Random rand = new Random();
 		for(int i = 0; i < 20; i++) {
-			addBlock(i * 10, -0.6f + i * 3.5f, 8, 2);
+			float bx = i * 10;
+			float by = -0.6f + i * 3.5f;
+			addBlock(bx, by, 8, 2);
+			
+			if(i > 3 && rand.nextFloat() > 0.3f) {
+				addEntity(new Coin(new Vector2(bx + 4, by + 6)));
+			}
+			
 			if(i % 5 == 0) {
 				addBlock(i * 10 - 2 + rand.nextFloat() * 4, 20f + i * 3.5f, 2 + rand.nextFloat() * 6, 4);
 			}

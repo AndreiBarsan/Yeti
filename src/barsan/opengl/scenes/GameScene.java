@@ -87,7 +87,7 @@ public class GameScene extends Scene {
 		Yeti.debug("Finished loading misc. assets. Loading player!");
 		ResourceLoader.loadKeyFrameAnimatedObj("planetHeadAnimated", "planetHead");
 		Yeti.debug("Finished loading player.");
-
+		
 		ResourceLoader.loadCubeTexture("skybox01", "jpg");
 		addModelInstance(new SkyBox(ResourceLoader.cubeTexture("skybox01"), camera));
 		
@@ -98,12 +98,11 @@ public class GameScene extends Scene {
 		world = new World2D(this);
 		world.reset();
 		
+		//gui = new GameGUI(world.getPlayer());
+		// gui.setPosition(new Vector2(220.0f, 10.0f));
+		
 		addInput(poller);
-		
-		gui = new GameGUI(world.getPlayer());
-		gui.setPosition(new Vector2(220.0f, 10.0f));
-		
-		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));
+		lights.add(new DirectionalLight(new Vector3(1f, 3.0f, 0.0f).normalize()));		
 	}
 	
 	
@@ -118,36 +117,39 @@ public class GameScene extends Scene {
 	public void display(GLAutoDrawable drawable) {
 		// Compensate for MAXIMUM 2.5-ish frames
 		world.update(Math.min(Yeti.get().getDelta(), 0.05f));
+		
 		super.display(drawable);
 		
-		// Handles "smart" camera that doesn't spazz out and follow each jump
-		// of the player
-		Rectangle pr = world.getPlayer().getPhysics2d().getBounds();
-		
-		if(pr.y > currentSector * sectorHeight + sectorHeight * spc) {
-			// Passed into the upper sector
-			currentSector++;
-		} else if(pr.y < currentSector * sectorHeight - sectorHeight * spc) {
-			currentSector--;
+		if(!exiting) {
+			// Handles "smart" camera that doesn't spazz out and follow each jump
+			// of the player
+			Rectangle pr = world.getPlayer().getPhysics2d().getBounds();
+			
+			if(pr.y > currentSector * sectorHeight + sectorHeight * spc) {
+				// Passed into the upper sector
+				currentSector++;
+			} else if(pr.y < currentSector * sectorHeight - sectorHeight * spc) {
+				currentSector--;
+			}
+	
+			float delta = Yeti.get().getDelta();
+			float goal = currentSector * sectorHeight + 5;
+			if(goal < -10) goal = -10;
+			if(currentY < goal) {
+				currentY = Math.min(goal, currentY + cSpeed * delta);
+			} else if(currentY > goal) {
+				currentY = Math.max(goal, currentY - cSpeed * delta);
+			}
+			
+			Vector3 pp = new Vector3(pr.x + pr.width / 2, currentY, 0.0f);
+			Vector3 vs = new Vector3(pp.x, pp.y + 15.0f, -45.0f);
+			camera.lookAt(vs, pp, Vector3.UP.copy());
+			
+			// Handle controls (rudimentarily)
+			world.getPlayer().handleInput(poller);
+			
+			renderer.setDirectionalShadowCenter(new Vector3(pp.x, pp.y, 0.0f));
 		}
-
-		float delta = Yeti.get().getDelta();
-		float goal = currentSector * sectorHeight + 5;
-		if(goal < -10) goal = -10;
-		if(currentY < goal) {
-			currentY = Math.min(goal, currentY + cSpeed * delta);
-		} else if(currentY > goal) {
-			currentY = Math.max(goal, currentY - cSpeed * delta);
-		}
-		
-		Vector3 pp = new Vector3(pr.x + pr.width / 2, currentY, 0.0f);
-		Vector3 vs = new Vector3(pp.x, pp.y + 15.0f, -45.0f);
-		camera.lookAt(vs, pp, Vector3.UP.copy());
-		
-		// Handle controls (rudimentarily)
-		world.getPlayer().handleInput(poller);
-		
-		renderer.setDirectionalShadowCenter(new Vector3(pp.x, pp.y, 0.0f));
 	}
 	
 	@Override

@@ -168,9 +168,14 @@ public class Nessie extends Renderer {
 		
 		/** Renders to the final target */
 		public void bindForLightComposition() {
-			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
+			// This code makes the writes go onto the final texture...
+			// gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, fboHandle);
+			// gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 			
-			gl.glDrawBuffer(GL2.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
+			// ...but right now we're ok with the data going directly onto the screen
+			gl.glBindFramebuffer(GL2.GL_DRAW_FRAMEBUFFER, 0);
+			gl.glBindFramebuffer(GL2.GL_READ_FRAMEBUFFER, fboHandle);
+			
 			gl.glActiveTexture(GL2.GL_TEXTURE0 + 0);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, colorTextureHandles[DIFFUSE_TEXTURE]);
 			
@@ -356,13 +361,13 @@ public class Nessie extends Renderer {
 		
 		gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 0);
 		
-		GLHelp.fboErr(gl);	
+		GLHelp.fboErr(gl);
 	}
 	
 	@Override
 	public void render(Scene scene) {
 		state.setAnisotropySamples(Yeti.get().settings.anisotropySamples);
-		scene.getCamera().setFrustumFar(10e6f);
+		scene.getCamera().setFrustumFar(1000.0f);
 		state.setCamera(scene.getCamera());
 		
 		gbuffer.startFrame();
@@ -560,11 +565,14 @@ public class Nessie extends Renderer {
 		switch (mode) {
 		case DrawLightVolumes:
 		case DrawComposedScene:
+			/*
+			No longer needed: the light composition simply skips the final buffer and just draws to the screen
 			gbuffer.bindForFinalPass();
 			
 			gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
 					0, 0, gbuffer.width, gbuffer.height,
 					GL2.GL_COLOR_BUFFER_BIT, GL2.GL_LINEAR);
+					*/
 
 			/* Puke out some other debug data */
 			GLHelp.dumpDepthBuffer(10, 10, 200, 200, 15.0f, state.shadowTexture);

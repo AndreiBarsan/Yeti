@@ -149,7 +149,7 @@ public class MenuScene extends Scene {
 		super.init(drawable);
 		
 		SceneHelper.quickSetup2D(this);
-		ResourceLoader.loadTexture("background", "menuBackground.png");
+		ResourceLoader.loadTexture("background", "menuBackground-43.jpg");
 		ResourceLoader.loadTexture("logo", "logo.png");
 	
 		addBillboard(background = new Sprite(Yeti.get().gl, ResourceLoader.texture("background"), "background"), 0);

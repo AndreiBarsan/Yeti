@@ -70,9 +70,10 @@ public class ResourceLoader {
 	}
 
 	public static void loadObj(String name, String fileName, int eppf) {
-		try(Scanner s = new Scanner(new File(RESBASE + MODELBASE + fileName))) {
-			models.put(name, ModelLoader.fromObj(Yeti.get().gl, s, eppf));
-		} catch (FileNotFoundException e) {
+		File file = new File(RESBASE + MODELBASE + fileName);
+		try {
+			models.put(name, ModelLoader.fromObj(Yeti.get().gl, file, eppf));
+		} catch (IOException e) {
 			Yeti.screwed("Failed to load static Wavefront model.", e);
 		}
 	}
@@ -96,12 +97,19 @@ public class ResourceLoader {
 				}
 			});
 			
+			int everyNth = 2;
+			long start = System.currentTimeMillis();
 			for(int i = 0; i < files.length; i++) {
 				// TODO: maybe only load every X frame (not every single one is needed
 				// for a good animation; not a priority in our small game nevertheless)
 				File entry = files[i];
-				frames.add(new Frame(ModelLoader.fromObj(gl, new Scanner(entry), 3), 0.1f));
+				if(i % everyNth == 0) {
+					Yeti.debug("Loading frame %d.", i);
+					frames.add(new Frame(ModelLoader.fromObj(gl, entry, 3), 0.025f * everyNth));
+					Yeti.debug("Done.");
+				}
 			}
+			Yeti.debug("Finished loading animation in %dms.", System.currentTimeMillis() - start);
 			
 			animatedModels.put(name, new AnimatedModel(name, frames));
 		} catch (IOException e) {

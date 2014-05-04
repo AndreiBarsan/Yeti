@@ -1,5 +1,10 @@
 package barsan.opengl.resources;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
@@ -40,8 +45,9 @@ public class ModelLoader {
 	 * Read a Wavefront object file and return a model. Automatically loads requred
 	 * textures defined in detected .mtl files <b>from the default texture folder</b>
 	 * and not from the same folder as the models and .mtl files.
+	 * @throws IOException 
 	 */
-	public static StaticModel fromObj(GL gl, Scanner input, int explicitPointsPerFace) {
+	public static StaticModel fromObj(GL gl, File input, int explicitPointsPerFace) throws IOException {
 		StaticModel model = new StaticModel(gl, "");
 		
 		if(explicitPointsPerFace != 0) {
@@ -56,112 +62,119 @@ public class ModelLoader {
 		
 		MaterialGroup currentMatGroup = null;
 		
-		while(input.hasNextLine()) {
-			String line = input.nextLine();
-			if(line.length() == 0) continue;
-			
-			char lead = line.charAt(0);
-			switch(lead) {
-				case '#':
-					continue;
-					
-				case 'g':
-					String mn = model.getName() == null ? model.getName() : "unnamed";
-					if(Yeti.get().settings.debugModels) {
-						Yeti.debug("Model [" + mn + "]: groups currently disabled.");
-					}
-					break;
-					
-				case 'v':
-					if(line.length() == 1) {
-						Yeti.screwed("Error: blank vertex data");
-						throw new InputMismatchException();
-					}
-					
-					switch(line.charAt(1)) {
-						case ' ':
-						{
-							Vector3 res = readVertex(line.substring(1).trim());
-							if(loadingFronLHCoords) {
-								res.z *= -1.0f;
-							}
-							model.master.geometry.add(res);
-							
-							vc++;
-							break;
-						}
-						
-						case 't':
-						{
-							Vector3 res = readTexCoords(line.substring(3));
-							model.master.texture.add(res);
-							tc++;
-							break;
-						}
-							
-						case 'n': 
-						{
-							Vector3 res = readVertex(line.substring(3));
-							if(loadingFronLHCoords) {
-								res.z *= -1.0f;
-							}
-							model.master.normals.add(res);
-							
-							nc++;
-							break;
-						}
-					}
-					
-					break;
-					
-				case 'f': 
-					List<Face> result = readFace(currentMatGroup, model, 
-							line.substring(1).trim(),
-							vc, nc, tc);
-					model.master.faces.addAll(result);
-					fc += result.size();
-					break;
-					
-				case 'o':
-					if(! model.getName().equals("")) {
-						Yeti.screwed("Warning: object name defined twice!");
-					}
-					
-					model.setName(line.substring(1).trim());
-					break;
-					
-				case 's':
-					// TODO: shading groups
-					break;
-			
-				case 'm':
-					if(line.startsWith("mtllib")) {
-						List<Material> lm = MTLLoader.load(line.split("\\s")[1]);
-						assert ! lm.isEmpty() 
-							: "Loaded MTL file: " + line.split("\\s")[1]
-							+ ", but no materials were actually defined.";
-						
-						for(Material m : lm) {
-							materials.put(m.getName(), m);
-						}
-					}
-					break;
-					
-				case 'u':
-					if(line.startsWith("usemtl")) {
-						if(!matGroups.isEmpty()) {
-							currentMatGroup.length = fc - currentMatGroup.beginIndex;
-						}
-						
-						String matName = line.split("\\s+")[1];
-						Material material = materials.get(matName);
-						assert material != null : "Material not defined: " + matName;
-						currentMatGroup = new MaterialGroup(fc, 0, material);
-						matGroups.add(currentMatGroup);
-					}
-					break;					
+		ArrayList<String> lines = new ArrayList<String>();
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(input)))) {
+			String lineBuffer = null;
+			while(null != (lineBuffer = br.readLine())) {
+				lines.add(lineBuffer);
 			}
 		}
+
+			for(String line : lines) {
+				if(line.length() == 0) continue;
+				char lead = line.charAt(0);
+				switch(lead) {
+					case '#':
+						continue;
+						
+					case 'g':
+						String mn = model.getName() == null ? model.getName() : "unnamed";
+						if(Yeti.get().settings.debugModels) {
+							Yeti.debug("Model [" + mn + "]: groups currently disabled.");
+						}
+						break;
+						
+					case 'v':
+						if(line.length() == 1) {
+							Yeti.screwed("Error: blank vertex data");
+							throw new InputMismatchException();
+						}
+						
+						switch(line.charAt(1)) {
+							case ' ':
+							{
+								Vector3 res = readVertex(line.substring(1).trim());
+								if(loadingFronLHCoords) {
+									res.z *= -1.0f;
+								}
+								model.master.geometry.add(res);
+								
+								vc++;
+								break;
+							}
+							
+							case 't':
+							{
+								Vector3 res = readTexCoords(line.substring(3));
+								model.master.texture.add(res);
+								tc++;
+								break;
+							}
+								
+							case 'n': 
+							{
+								Vector3 res = readVertex(line.substring(3));
+								if(loadingFronLHCoords) {
+									res.z *= -1.0f;
+								}
+								model.master.normals.add(res);
+								
+								nc++;
+								break;
+							}
+						}
+						
+						break;
+						
+					case 'f': 
+						List<Face> result = readFace(currentMatGroup, model, 
+								line.substring(1).trim(),
+								vc, nc, tc);
+						model.master.faces.addAll(result);
+						fc += result.size();
+						break;
+						
+					case 'o':
+						if(! model.getName().equals("")) {
+							Yeti.screwed("Warning: object name defined twice!");
+						}
+						
+						model.setName(line.substring(1).trim());
+						break;
+						
+					case 's':
+						// TODO: shading groups
+						break;
+				
+					case 'm':
+						if(line.startsWith("mtllib")) {
+							List<Material> lm = MTLLoader.load(line.split("\\s")[1]);
+							assert ! lm.isEmpty() 
+								: "Loaded MTL file: " + line.split("\\s")[1]
+								+ ", but no materials were actually defined.";
+							
+							for(Material m : lm) {
+								materials.put(m.getName(), m);
+							}
+						}
+						break;
+						
+					case 'u':
+						if(line.startsWith("usemtl")) {
+							if(!matGroups.isEmpty()) {
+								currentMatGroup.length = fc - currentMatGroup.beginIndex;
+							}
+							
+							String matName = line.split("\\s+")[1];
+							Material material = materials.get(matName);
+							assert material != null : "Material not defined: " + matName;
+							currentMatGroup = new MaterialGroup(fc, 0, material);
+							matGroups.add(currentMatGroup);
+						}
+						break;					
+				}
+			}
+		
 		
 		if(!matGroups.isEmpty()) {
 			// Finish off the last material group

@@ -62,10 +62,10 @@ public class NessieTestScene extends Scene {
 		
 		nessie.setShadowQuality(ShadowQuality.High);
 
-		//*
+		/*
 		DirectionalLight dl = new DirectionalLight(new Vector3(-2.0f, -1.0f, -1.0f).normalize());
 		dl.setCastsShadows(true);
-		dl.getDiffuse().a = 0.05f;
+		dl.getDiffuse().a = 0.02f;
 		lights.add(dl);
 		//*/
 		
@@ -82,14 +82,12 @@ public class NessieTestScene extends Scene {
 		ResourceLoader.loadTexture("floor", "floor.jpg");
 		ResourceLoader.loadTexture("floor.bump", "floor.bump.jpg");
 		
-		ResourceLoader.loadCubeTexture("test", "png");
-		
-		sb = new SkyBox(ResourceLoader.cubeTexture("test"), ffc);
-		
+		/*
 		box = new StaticModelInstance(ResourceLoader.model("box"));
 		box.getMaterial().setDiffuseMap(ResourceLoader.texture("cubetex"));
 		box.getTransform().updateScale(4.0f).updateTranslate(2.0f, 10.5f, 0.0f);
 		addModelInstance(box);
+		*/
 		
 		h = new StaticModelInstance(ResourceLoader.model("hm"));
 		h.getTransform().updateTranslate(-10.0f, -12.0f, -18.0f);
@@ -167,14 +165,14 @@ public class NessieTestScene extends Scene {
 		nessie.setDirectionalShadowDepth(new Vector2(-80, 150));
 		
 		//*
-		int lightLim = 2;
+		int lightLim = 3;
 		float lightGridSize = 18.0f;
 		for(int i = -lightLim; i < lightLim; ++i) {
 			for(int j = -lightLim; j < lightLim; ++j) {
 				Color c = Color.random();
-				c.a = 14.0f;
+				c.a = 1.0f;
 				PointLight light = new PointLight(new Vector3(i * lightGridSize, -6.0f, j * lightGridSize), c);
-				light.setAttenuation(0.0f, 0.0f, 1.5f);
+				light.setAttenuation(0.0f, 0.0f, 0.2f);
 				lights.add(light);
 			}
 		}//*/
@@ -280,8 +278,6 @@ public class NessieTestScene extends Scene {
 		super.display(drawable);
 		
 		ffc.update(Yeti.get().getDelta());
-
-		box.getTransform().updateRotation(0.0f, 1.0f, 0.0f, time * 3);
 
 		((DebugGUI) gui).info = "Testing deferred rendering. "
 				+ String.format("%d lights in the scene.", lights.size())

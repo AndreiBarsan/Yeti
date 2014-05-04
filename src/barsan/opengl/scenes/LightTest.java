@@ -15,6 +15,7 @@ import barsan.opengl.input.InputAdapter;
 import barsan.opengl.math.MathUtil;
 import barsan.opengl.math.Quaternion;
 import barsan.opengl.math.Transform;
+import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Fog;
 import barsan.opengl.rendering.Renderer.ShadowQuality;
@@ -54,9 +55,9 @@ public class LightTest extends Scene {
 	Material sphereMat;
 	Material skyMat;
 	
-	float lightX = 0.0f;
+	float lightX = 4.0f;
 	float lightZ = 0.0f;
-	float pointLightY = 4.0f;
+	float pointLightY = 8.0f;
 	float linearAtt = 0.0f;
 
 	Vector3 tv = new Vector3();
@@ -110,8 +111,8 @@ public class LightTest extends Scene {
 		cube.getTransform().updateTranslate(2.0f, 2.5f, 0.0f);
 		//addModelInstance(cube);
 		
-		float step = 6.0f;
-		int nrMonkeys = 5;
+		float step = 8.0f;
+		int nrMonkeys = 4;
 		for(int i = -nrMonkeys; i < nrMonkeys; i++) {
 			for(int j = -nrMonkeys; j < nrMonkeys; j++) {
 				Transform pm = new Transform().setTranslate(i * step, 1.2f, j * step);
@@ -282,7 +283,7 @@ public class LightTest extends Scene {
 		
 		test_sl.getPosition().setX((float)Math.cos(a / sl_speedScale) * 40f);
 		
-		// test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
+		test_pl.getPosition().z = lightZ + (float)Math.cos(a) * 20.0f;
 		test_pl.setAttenuation(1.0f, 0.0f, 0.005f);
 		
 		tv.set(4.0f, 4.0f, (float)Math.sin(a / 4.0f) * 1.5f);
@@ -290,6 +291,17 @@ public class LightTest extends Scene {
 
 		float lx = (float)Math.cos(a) * 30.0f;
 		chosenOne.getTransform().updateTranslate(lx, 2.5f, 0.0f).updateRotation(new Quaternion(new Vector3(0.0f, 1.0f, 0.0f), a * MathUtil.RAD_TO_DEG)).updateScale(0.75f);
+		
+		if(lights.contains(test_pl)) {
+			for(StaticModelInstance m : monkeys) {
+				Quaternion mr = m.getTransform().getRotation();
+				Vector3 mt = m.getTransform().getTranslate();
+				Vector3 lp = test_pl.getPosition();
+				Vector2 vectorToPLight = new Vector2(mt.x - lp.x, mt.z - lp.z);
+				mr.set(new Vector3(0, 1, 0), -90.0f + (float) Math.atan2(vectorToPLight.x, vectorToPLight.y) * MathUtil.RAD_TO_DEG);
+				m.getTransform().updateRotation(mr);
+			}
+		}
 		
 		ShadowQuality sq = renderer.getShadowQuality();
 		((DebugGUI)gui).info = String.format("Press [RMB] to cycle through light types\n" +

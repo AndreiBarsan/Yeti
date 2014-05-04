@@ -23,12 +23,12 @@ public class AnimatedMaterial extends Material {
 				normalStartIndex,
 				normalEndIndex;
 	
-	public AnimatedMaterial(String name) {
-		this(name, ResourceLoader.shader("animatedPhong"));
+	public AnimatedMaterial() {
+		this("unnamed animated material");
 	}
 	
-	public AnimatedMaterial() {
-		this("unnamed animatedd material");
+	public AnimatedMaterial(String name) {
+		this(name, ResourceLoader.shader("animatedPhong"));
 	}
 	
 	public AnimatedMaterial(Shader shader) {
