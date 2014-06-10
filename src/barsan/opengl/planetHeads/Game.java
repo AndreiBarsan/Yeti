@@ -15,6 +15,5 @@ public class Game {
 		yeti.settings.width = 1024;
 		yeti.settings.height = 748;
 		yeti.startApplicationLoop(null, frame, frame, new AWTFactory());
-		
 	}
 }
