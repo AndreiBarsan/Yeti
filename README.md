@@ -18,16 +18,16 @@ Running the thing
 The project used to be quite easy to build.
 Now it's even easier, since it uses Maven.
 
-1. Clone repo
+1. Clone repo.
 2. Load the project in Eclipse. It should figure out which jars to use thanks to
 pom.xml.
 3. Run either barsan.opengl.tools.DeferredTest or barsan.opengl.planetHeads.Game
 4. Note that Java 7 and OpenGL 3 are needed (the GL3bc profile, actually - which is why
 the project doesn't work on most Macs due to them only supporting either GL2 or GL3)
 5. If the game crashes, it's very likely because:
-	a) your video card doesn't support a certain feature
-	b) your video card has stricter shader compilation rules and chokes on something 
-	In both cases, it would really help to open a ticket on the issue tracker here on GitHub.
+  * your video card doesn't support a certain feature;
+  * your video card has stricter shader compilation rules and chokes on something;
+  * in both cases, it would really help to open a ticket on the issue tracker here on GitHub!
 6. If it's runnig, congratulations, you got it going! Remember, pull requests are always welcome! :)
 
 Of course, Eclipse isn't *required* to build the engine. You can `javac` it, no 
