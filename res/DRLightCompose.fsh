@@ -24,7 +24,7 @@ out vec4 composedColor;
 
 vec2 nuv;
 
-/** SSAO as explained by José María Méndez */
+/** SSAO as explained by Jose Maria Mendez */
 
 vec2 getRandom(in vec2 uv) {
 	return normalize(texture(randomNormalMap, screenSize * uv / randomSize).xy * 2.0f - 1.0f);

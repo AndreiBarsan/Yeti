@@ -93,12 +93,12 @@ public class Yeti implements GLEventListener {
 	 * as it might seem, so this will do. It's just tempanent anyway.
 	 */
 	static Class<?>[] availableScenes = new Class[] {
+			MenuScene.class,
+			LightTest.class,
+			NessieTestScene.class,
 			DemoScene.class,
 			ProceduralScene.class,
-			LightTest.class,
 			GameScene.class,
-			MenuScene.class,
-			NessieTestScene.class
 	};
 	static {		
 		for(Class<?> c : availableScenes) {
