@@ -3,7 +3,7 @@ package barsan.opengl.rendering;
 import java.nio.IntBuffer;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
@@ -31,7 +31,7 @@ import barsan.opengl.scenes.NessieTestScene;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 /**
  * Nessie is our Deferred Renderer. The development process will involve several
@@ -71,7 +71,7 @@ public class Nessie extends Renderer {
 			buff.clear();
 			
 			// Note: use GL2.GL_FRAMEBUFFER instead of GL2.GL_DRAW_FRAMEBUFFER
-			gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, fboHandle);
+			gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, fboHandle);
 			gl.glGenTextures(colorTextureHandles.length, buff);
 			
 			int k = 0;
@@ -82,15 +82,15 @@ public class Nessie extends Renderer {
 				}
 				colorTextureHandles[k++] = h;
 				// Bind the texture so we can work on it
-				gl.glBindTexture(GL4.GL_TEXTURE_2D, h);
+				gl.glBindTexture(GL3.GL_TEXTURE_2D, h);
 				// Actually allocate the texture data
-				gl.glTexImage2D(GL4.GL_TEXTURE_2D, 0, GL4.GL_RGBA32F, width, height, 0, GL4.GL_RGBA, GL4.GL_FLOAT, null);
-				gl.glTexParameterf(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_NEAREST);
-		        gl.glTexParameterf(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_NEAREST);
+				gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA32F, width, height, 0, GL3.GL_RGBA, GL3.GL_FLOAT, null);
+				gl.glTexParameterf(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_NEAREST);
+		        gl.glTexParameterf(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_NEAREST);
 				// Bind the texture to the FBO
-				gl.glFramebufferTexture2D(GL4.GL_FRAMEBUFFER,
-						GL4.GL_COLOR_ATTACHMENT0 + k - 1,
-						GL4.GL_TEXTURE_2D,
+				gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER,
+						GL3.GL_COLOR_ATTACHMENT0 + k - 1,
+						GL3.GL_TEXTURE_2D,
 						h,
 						0);
 			}
@@ -102,9 +102,9 @@ public class Nessie extends Renderer {
 				fail("Could not create depth & stencil texture!");
 			}
 			
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, depthStencilTextureHandle);
-			gl.glTexImage2D(GL4.GL_TEXTURE_2D, 0, GL4.GL_DEPTH32F_STENCIL8, width, height, 0, GL4.GL_DEPTH_COMPONENT, GL4.GL_FLOAT, null);
-			gl.glFramebufferTexture2D(GL4.GL_FRAMEBUFFER, GL4.GL_DEPTH_STENCIL_ATTACHMENT, GL4.GL_TEXTURE_2D, depthStencilTextureHandle, 0);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, depthStencilTextureHandle);
+			gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_DEPTH32F_STENCIL8, width, height, 0, GL3.GL_DEPTH_COMPONENT, GL3.GL_FLOAT, null);
+			gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_DEPTH_STENCIL_ATTACHMENT, GL3.GL_TEXTURE_2D, depthStencilTextureHandle, 0);
 
 			buff.clear();
 			gl.glGenTextures(1, buff);
@@ -112,40 +112,40 @@ public class Nessie extends Renderer {
 			if(finalTexture < 0) {
 				fail("Could not create final texture!");
 			}
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, finalTexture);
-			gl.glTexImage2D(GL4.GL_TEXTURE_2D, 0, GL4.GL_RGBA, width, height, 0, GL4.GL_RGB, GL4.GL_FLOAT, null);
-			gl.glFramebufferTexture2D(GL4.GL_DRAW_FRAMEBUFFER, GL4.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE, GL4.GL_TEXTURE_2D, finalTexture, 0);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, finalTexture);
+			gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, width, height, 0, GL3.GL_RGB, GL3.GL_FLOAT, null);
+			gl.glFramebufferTexture2D(GL3.GL_DRAW_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE, GL3.GL_TEXTURE_2D, finalTexture, 0);
 			
 			IntBuffer colorBuffers = IntBuffer.wrap(new int[] { 
-					GL4.GL_COLOR_ATTACHMENT0,
-					GL4.GL_COLOR_ATTACHMENT1,
-					GL4.GL_COLOR_ATTACHMENT2,
-					GL4.GL_COLOR_ATTACHMENT3
+					GL3.GL_COLOR_ATTACHMENT0,
+					GL3.GL_COLOR_ATTACHMENT1,
+					GL3.GL_COLOR_ATTACHMENT2,
+					GL3.GL_COLOR_ATTACHMENT3
 			});
 			// Actually enables Multiple Render Targets, which we need for deferred rendering
 			gl.glDrawBuffers(colorBuffers.remaining(), colorBuffers);
 			GLHelp.fboErr(gl);
-			gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
+			gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 		}
 		
 		public void startFrame() {
-			gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, fboHandle);
-			gl.glDrawBuffer(GL4.GL_COLOR_ATTACHMENT4);
-			gl.glClear(GL4.GL_COLOR_BUFFER_BIT);
+			gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fboHandle);
+			gl.glDrawBuffer(GL3.GL_COLOR_ATTACHMENT4);
+			gl.glClear(GL3.GL_COLOR_BUFFER_BIT);
 		}
 		
 		public void bindForGeometryPass() {
-			gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, fboHandle);
+			gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fboHandle);
 			gl.glDrawBuffers(3, new int[] {
-					GL4.GL_COLOR_ATTACHMENT0 + POSITION_TEXTURE,
-					GL4.GL_COLOR_ATTACHMENT0 + DIFFUSE_TEXTURE,
-					GL4.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE
+					GL3.GL_COLOR_ATTACHMENT0 + POSITION_TEXTURE,
+					GL3.GL_COLOR_ATTACHMENT0 + DIFFUSE_TEXTURE,
+					GL3.GL_COLOR_ATTACHMENT0 + NORMAL_TEXTURE
 			}, 0);
 		}
 		
 		public void bindForStencilPass() {
 			// No actual rendering during the stencil pass
-			gl.glDrawBuffer(GL4.GL_NONE);
+			gl.glDrawBuffer(GL3.GL_NONE);
 		}
 		
 		/* Renders to the final target if debugging, and to the light accumulation
@@ -153,59 +153,59 @@ public class Nessie extends Renderer {
 		public void bindForLightPass() {
 			// Need to bind the whole buffer, since it keeps getting un-bound
 			// by the shadow map FBO
-			gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, fboHandle);
+			gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fboHandle);
 			
-			gl.glDrawBuffer(GL4.GL_COLOR_ATTACHMENT0 + LIGHT_ACCUMULATION_TEXTURE);
+			gl.glDrawBuffer(GL3.GL_COLOR_ATTACHMENT0 + LIGHT_ACCUMULATION_TEXTURE);
 			for(int i = 0; i < colorTextureHandles.length; ++i) {
-				gl.glActiveTexture(GL4.GL_TEXTURE0 + i);
-				gl.glBindTexture(GL4.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE + i]);
+				gl.glActiveTexture(GL3.GL_TEXTURE0 + i);
+				gl.glBindTexture(GL3.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE + i]);
 			}
 		}
 		
 		public void bindForInspection() {
-			gl.glBindFramebuffer(GL4.GL_READ_FRAMEBUFFER, fboHandle);
-			gl.glDrawBuffer(GL4.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
+			gl.glBindFramebuffer(GL3.GL_READ_FRAMEBUFFER, fboHandle);
+			gl.glDrawBuffer(GL3.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 		}
 		
 		/** Renders to the final target */
 		public void bindForLightComposition() {
 			// This code makes the writes go onto the final texture...
-			// gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, fboHandle);
-			// gl.glDrawBuffer(GL4.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
+			// gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, fboHandle);
+			// gl.glDrawBuffer(GL3.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 			
 			// ...but right now we're ok with the data going directly onto the screen
-			gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, 0);
-			gl.glBindFramebuffer(GL4.GL_READ_FRAMEBUFFER, fboHandle);
+			gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, 0);
+			gl.glBindFramebuffer(GL3.GL_READ_FRAMEBUFFER, fboHandle);
 			
-			gl.glActiveTexture(GL4.GL_TEXTURE0 + 0);
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, colorTextureHandles[DIFFUSE_TEXTURE]);
+			gl.glActiveTexture(GL3.GL_TEXTURE0 + 0);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, colorTextureHandles[DIFFUSE_TEXTURE]);
 			
-			gl.glActiveTexture(GL4.GL_TEXTURE0 + 1);
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, colorTextureHandles[LIGHT_ACCUMULATION_TEXTURE]);
+			gl.glActiveTexture(GL3.GL_TEXTURE0 + 1);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, colorTextureHandles[LIGHT_ACCUMULATION_TEXTURE]);
 			
-			gl.glActiveTexture(GL4.GL_TEXTURE0 + 2);
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, colorTextureHandles[NORMAL_TEXTURE]);
+			gl.glActiveTexture(GL3.GL_TEXTURE0 + 2);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, colorTextureHandles[NORMAL_TEXTURE]);
 			
-			gl.glActiveTexture(GL4.GL_TEXTURE0 + 3);
-			gl.glBindTexture(GL4.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE]);
+			gl.glActiveTexture(GL3.GL_TEXTURE0 + 3);
+			gl.glBindTexture(GL3.GL_TEXTURE_2D, colorTextureHandles[POSITION_TEXTURE]);
 		}
 		
 		/** Renders to the screen */
 		public void bindForFinalPass() {
-			gl.glBindFramebuffer(GL4.GL_DRAW_FRAMEBUFFER, 0);
-			gl.glBindFramebuffer(GL4.GL_READ_FRAMEBUFFER, fboHandle);
+			gl.glBindFramebuffer(GL3.GL_DRAW_FRAMEBUFFER, 0);
+			gl.glBindFramebuffer(GL3.GL_READ_FRAMEBUFFER, fboHandle);
 			gl.glReadBuffer(GL3.GL_COLOR_ATTACHMENT0 + FINAL_TEXTURE);
 		}
 		
 		public void setReadBuffer(GL3 gl, int textureIndex) {
-			gl.glReadBuffer(GL4.GL_COLOR_ATTACHMENT0 + textureIndex);
+			gl.glReadBuffer(GL3.GL_COLOR_ATTACHMENT0 + textureIndex);
 		}
 		
 		public void blitComponent(GL3 gl, int component, int x1, int y1, int x2, int y2) {
 			setReadBuffer(gl, component);
 		    gl.glBlitFramebuffer(0, 0, width, height,					// src
 		                    x1, y1, x2, y2,								// dst
-		                    GL4.GL_COLOR_BUFFER_BIT, GL4.GL_LINEAR);	// params
+		                    GL3.GL_COLOR_BUFFER_BIT, GL3.GL_LINEAR);	// params
 		}
 		
 		public void dispose(GL3 gl) {
@@ -252,11 +252,11 @@ public class Nessie extends Renderer {
 	private StaticModel screenQuad;
 	private ModelInstance sqi;
 	
-	public Nessie(GL4 gl) {
+	public Nessie(GL3 gl) {
 		this(gl, Mode.DrawComposedScene);		
 	}
 	
-	public Nessie(GL4 gl, Mode mode) {
+	public Nessie(GL3 gl, Mode mode) {
 		super(gl);
 		this.mode = mode;
 	}
@@ -305,25 +305,25 @@ public class Nessie extends Renderer {
 		gl.glGenTextures(1, intBuffer, 0);
 		state.shadowTexture = intBuffer[0];
 		
-		gl.glBindTexture(GL4.GL_TEXTURE_2D, state.shadowTexture);
-		gl.glTexImage2D(GL4.GL_TEXTURE_2D,
+		gl.glBindTexture(GL3.GL_TEXTURE_2D, state.shadowTexture);
+		gl.glTexImage2D(GL3.GL_TEXTURE_2D,
 						0,
-						GL4.GL_DEPTH_COMPONENT16,
+						GL3.GL_DEPTH_COMPONENT16,
 						shadowMapW, shadowMapH,
 						0,
-						GL4.GL_DEPTH_COMPONENT,
-						GL4.GL_UNSIGNED_BYTE,
+						GL3.GL_DEPTH_COMPONENT,
+						GL3.GL_UNSIGNED_BYTE,
 						null);
 		
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_NEAREST);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_NEAREST);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_NEAREST);
+		gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_NEAREST);
+		gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
 		
-		gl.glFramebufferTexture2D(GL4.GL_FRAMEBUFFER, GL4.GL_DEPTH_ATTACHMENT,
-				GL4.GL_TEXTURE_2D, state.shadowTexture, 0);
+		gl.glFramebufferTexture2D(GL3.GL_FRAMEBUFFER, GL3.GL_DEPTH_ATTACHMENT,
+				GL3.GL_TEXTURE_2D, state.shadowTexture, 0);
 		
-		gl.glDrawBuffer(GL4.GL_NONE);
+		gl.glDrawBuffer(GL3.GL_NONE);
 		
 		gl.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
 		GLHelp.fboErr(gl);
@@ -337,30 +337,30 @@ public class Nessie extends Renderer {
 		gl.glGenTextures(1, intBuffer, 0);
 		texCube = intBuffer[0];
 		
-		gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, texCube);
+		gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, texCube);
 		
-		gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
-		gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-		gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL4.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+		gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+		gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE);
 		
 		for(int face = 0; face < 6; face++) {
 			gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
-					cubeMapSide, cubeMapSide, 0, GL4.GL_DEPTH_COMPONENT,
+					cubeMapSide, cubeMapSide, 0, GL3.GL_DEPTH_COMPONENT,
 					GL.GL_FLOAT, null);
 		 }
 		
-		gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, fboShaodwCube);
-		gl.glFramebufferTexture(GL4.GL_FRAMEBUFFER,
-					GL4.GL_DEPTH_ATTACHMENT,
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, fboShaodwCube);
+		gl.glFramebufferTexture(GL3.GL_FRAMEBUFFER,
+					GL3.GL_DEPTH_ATTACHMENT,
 					texCube,
 					0);
 		//*/
-		gl.glDrawBuffer(GL4.GL_NONE);
-		gl.glReadBuffer(GL4.GL_NONE);
-		gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, 0);
+		gl.glDrawBuffer(GL3.GL_NONE);
+		gl.glReadBuffer(GL3.GL_NONE);
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, 0);
 		
-		gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);
+		gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, 0);
 		
 		GLHelp.fboErr(gl);
 	}
@@ -388,10 +388,10 @@ public class Nessie extends Renderer {
 		gbuffer.bindForGeometryPass();
 		
 		// Only the geometry pass updates the depth buffer
-	    gl.glEnable(GL4.GL_DEPTH_TEST);
+	    gl.glEnable(GL3.GL_DEPTH_TEST);
 	    gl.glDepthMask(true);
 
-		gl.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
 		
 		/*
 		SkyboxTechnique st = new SkyboxTechnique();
@@ -407,11 +407,11 @@ public class Nessie extends Renderer {
 	private void lightingPass(Scene scene) {		
 		gbuffer.bindForLightPass();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		gl.glEnable(GL4.GL_STENCIL_TEST);
+		gl.glEnable(GL3.GL_STENCIL_TEST);
 		for(Light l : scene.lights) {
 			renderLightVolume(l, true);
 		}
-		gl.glDisable(GL4.GL_STENCIL_TEST);
+		gl.glDisable(GL3.GL_STENCIL_TEST);
 	}
 	
 	private void composeLight(Scene scene) {
@@ -428,7 +428,7 @@ public class Nessie extends Renderer {
 	private void renderLightVolume(Light light, boolean computeLight) {
 		if(computeLight) {
 			// Compute shadow map, if needed
-			gl.glEnable(GL4.GL_DEPTH_TEST);
+			gl.glEnable(GL3.GL_DEPTH_TEST);
 			
 			if(light.castsShadows()) {
 				gl.glDepthMask(true);	
@@ -442,11 +442,11 @@ public class Nessie extends Renderer {
 			nullTechnique.setup(state);
 			gl.glDepthMask(false);
 			gbuffer.bindForStencilPass();
-			gl.glDisable(GL4.GL_CULL_FACE);
-			gl.glClear(GL4.GL_STENCIL_BUFFER_BIT);
+			gl.glDisable(GL3.GL_CULL_FACE);
+			gl.glClear(GL3.GL_STENCIL_BUFFER_BIT);
 			
 			// Note: stencil operations are simply set once, in the init() method
-			gl.glStencilFunc(GL4.GL_ALWAYS, 0, 0);
+			gl.glStencilFunc(GL3.GL_ALWAYS, 0, 0);
 		}
 		
 		switch(light.getType()) {
@@ -465,10 +465,10 @@ public class Nessie extends Renderer {
 		
 		if(computeLight) {
 			// TODO: check if needed
-			gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);
+			gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, 0);
 			
-	       	gl.glCullFace(GL4.GL_BACK);
-	       	gl.glDisable(GL4.GL_BLEND);
+	       	gl.glCullFace(GL3.GL_BACK);
+	       	gl.glDisable(GL3.GL_BLEND);
 		}
 	}
 
@@ -476,15 +476,15 @@ public class Nessie extends Renderer {
 		// Render the actual light volume
 		gbuffer.bindForLightPass();
        	lightPassTechnique.setup(state);
-       	gl.glStencilFunc(GL4.GL_NOTEQUAL, 0, 0xFF);
-       	gl.glDisable(GL4.GL_DEPTH_TEST);	// finally done with the depth test!
+       	gl.glStencilFunc(GL3.GL_NOTEQUAL, 0, 0xFF);
+       	gl.glDisable(GL3.GL_DEPTH_TEST);	// finally done with the depth test!
        	
-    	gl.glEnable(GL4.GL_BLEND);
-      	gl.glBlendEquation(GL4.GL_FUNC_ADD);
-      	gl.glBlendFunc(GL4.GL_ONE, GL4.GL_ONE);
+    	gl.glEnable(GL3.GL_BLEND);
+      	gl.glBlendEquation(GL3.GL_FUNC_ADD);
+      	gl.glBlendFunc(GL3.GL_ONE, GL3.GL_ONE);
       	
-      	gl.glEnable(GL4.GL_CULL_FACE);
-      	gl.glCullFace(GL4.GL_FRONT);
+      	gl.glEnable(GL3.GL_CULL_FACE);
+      	gl.glCullFace(GL3.GL_FRONT);
 	}
 	
 	private void renderDLVol(DirectionalLight l, boolean computeLight) {
@@ -492,8 +492,8 @@ public class Nessie extends Renderer {
 		// compute dir lights on stuff like the skybox)
 		if(computeLight) {
 			prepareLightPass(state);
-			gl.glDisable(GL4.GL_STENCIL_TEST);
-			gl.glDisable(GL4.GL_CULL_FACE);
+			gl.glDisable(GL3.GL_STENCIL_TEST);
+			gl.glDisable(GL3.GL_CULL_FACE);
 			lightPassTechnique.drawDirectionalLight(dlVolume, l, state);
 		}
 	}
@@ -572,7 +572,7 @@ public class Nessie extends Renderer {
 			
 			gl.glBlitFramebuffer(	0, 0, gbuffer.width, gbuffer.height,
 					0, 0, gbuffer.width, gbuffer.height,
-					GL2.GL_COLOR_BUFFER_BIT, GL4.GL_LINEAR);
+					GL2.GL_COLOR_BUFFER_BIT, GL3.GL_LINEAR);
 					*/
 
 			/* Puke out some other debug data */
@@ -602,30 +602,30 @@ public class Nessie extends Renderer {
 		}
 		
 		if(mode == Mode.DrawLightVolumes) {
-	       	gl.glDisable(GL4.GL_DEPTH_TEST);
-	    	gl.glEnable(GL4.GL_BLEND);
-	    	gl.glDisable(GL4.GL_CULL_FACE);
-	      	gl.glBlendEquation(GL4.GL_FUNC_ADD);
-	      	gl.glBlendFunc(GL4.GL_ONE, GL4.GL_ONE);
+	       	gl.glDisable(GL3.GL_DEPTH_TEST);
+	    	gl.glEnable(GL3.GL_BLEND);
+	    	gl.glDisable(GL3.GL_CULL_FACE);
+	      	gl.glBlendEquation(GL3.GL_FUNC_ADD);
+	      	gl.glBlendFunc(GL3.GL_ONE, GL3.GL_ONE);
 	      	
 	      	flatTechnique.setup(state);
 	       	for(Light l : scene.lights) {
 				renderLightVolume(l, false);
 			}
 	       	
-	       	gl.glDisable(GL4.GL_BLEND);
-	       	gl.glEnable(GL4.GL_CULL_FACE);
+	       	gl.glDisable(GL3.GL_BLEND);
+	       	gl.glEnable(GL3.GL_CULL_FACE);
 	    }
 		
 		// Important to reset this, to allow font rendering and other stuff
 		// that expect the default texture unit to be active to work
-		gl.glActiveTexture(GL4.GL_TEXTURE0);
+		gl.glActiveTexture(GL3.GL_TEXTURE0);
 	}
 	
 	private void computeShadowMap(Light light) {
 		Camera aux = state.getCamera();
 		int oldDim[] = new int[4];
-		gl.glGetIntegerv(GL4.GL_VIEWPORT, oldDim, 0);
+		gl.glGetIntegerv(GL3.GL_VIEWPORT, oldDim, 0);
 		
 		switch(light.getType()) {
 			case Directional:
@@ -649,8 +649,8 @@ public class Nessie extends Renderer {
 	}
 	
 	private void prepareDirectionalSM(DirectionalLight light) {
-		gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, fboShadowFlat);
-		gl.glClear(GL4.GL_DEPTH_BUFFER_BIT);
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, fboShadowFlat);
+		gl.glClear(GL3.GL_DEPTH_BUFFER_BIT);
 		
 		OrthographicCamera oc = new OrthographicCamera(
 				(int) directionalShadowSize.x,
@@ -669,18 +669,18 @@ public class Nessie extends Renderer {
 		state.depthProjection = oc.getProjection().cpy();
 		state.depthView = oc.getView().cpy();
 		
-		gl.glCullFace(GL4.GL_FRONT);
+		gl.glCullFace(GL3.GL_FRONT);
 	}
 	
 	private void preparePointSM(PointLight light) {
-		gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, fboShaodwCube);
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, fboShaodwCube);
 		gl.glViewport(0, 0, cubeMapSide, cubeMapSide);
-		gl.glClear(GL4.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL3.GL_DEPTH_BUFFER_BIT);
 	}
 		
 	private void prepareSpotSM(SpotLight spotLight) {
-		gl.glBindFramebuffer(GL4.GL_FRAMEBUFFER, fboShadowFlat);
-		gl.glClear(GL4.GL_DEPTH_BUFFER_BIT);
+		gl.glBindFramebuffer(GL3.GL_FRAMEBUFFER, fboShadowFlat);
+		gl.glClear(GL3.GL_DEPTH_BUFFER_BIT);
 		
 		Vector3 camDir = spotLight.getDirection().copy();
 		

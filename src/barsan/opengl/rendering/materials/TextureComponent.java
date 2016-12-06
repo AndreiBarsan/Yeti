@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.materials;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.RendererState;
@@ -18,7 +18,7 @@ public class TextureComponent implements MaterialComponent {
 		m.shader.setU1i("useTexture", true);
 		m.shader.setU1i("diffuseMap", slot);
 		m.diffuseMap.bind(rs.gl);
-		m.diffuseMap.setTexParameterf(rs.gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+		m.diffuseMap.setTexParameterf(rs.gl, GL3.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 		
 		return 1;
 	}

@@ -28,8 +28,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.jogamp.opengl.GL4;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
@@ -38,7 +38,7 @@ import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.util.Color;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 /**
  * Shader wrapper class that facilitates material interactions with the underlying
@@ -63,7 +63,7 @@ public class Shader {
 	static final ByteBuffer b_buff = ByteBuffer.allocate(1024);
 	static final int[] result = new int[1];
 	
-	public static HashMap<String, Shader> compileBulk(GL4 gl, String[] vertexData, String[]
+	public static HashMap<String, Shader> compileBulk(GL3 gl, String[] vertexData, String[]
 		fragmentData) {
 		assert vertexData.length == fragmentData.length;
 		
@@ -78,14 +78,14 @@ public class Shader {
 	/* pp */ String name = "";
 	private HashMap<String, Integer> uLocCache = new HashMap<>(); 
 	
-	public Shader(GL4 gl, String name, String vertexSrc, String fragmentSrc) {
+	public Shader(GL3 gl, String name, String vertexSrc, String fragmentSrc) {
 		this(gl, name, vertexSrc, fragmentSrc, null, new String[] {
 			A_POSITION,
 			A_NORMAL
 		});
 	}
 	
-	public Shader(GL4 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc) {
+	public Shader(GL3 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc) {
 		this(gl, name, vertexSrc, fragmentSrc, geometrySrc, new String[] {
 			A_POSITION,
 			A_NORMAL
@@ -96,10 +96,10 @@ public class Shader {
 		return handle;
 	}
 	
-	public Shader(GL4 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc, String[] args) {
+	public Shader(GL3 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc, String[] args) {
 		
-		int vertex = gl.glCreateShader(GL4.GL_VERTEX_SHADER);
-		int fragment = gl.glCreateShader(GL4.GL_FRAGMENT_SHADER);
+		int vertex = gl.glCreateShader(GL3.GL_VERTEX_SHADER);
+		int fragment = gl.glCreateShader(GL3.GL_FRAGMENT_SHADER);
 		int geometry = 0;
 		boolean hasGeometry = (geometrySrc != null);
 		
@@ -144,12 +144,12 @@ public class Shader {
 	}
 
 	public int getAttribLocation(String name) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		return gl.glGetAttribLocation(handle, name);
 	}
 	
 	public boolean setUMatrix4(String uniformName, Matrix4 matrix) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -158,7 +158,7 @@ public class Shader {
 	}
 	
 	public boolean setUMatrix4a(String uniformName, Matrix4[] matrix) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -177,7 +177,7 @@ public class Shader {
 	}
 	
 	public boolean setUVector2f(String uniformName, float x, float y) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		gl.glUniform2f(pos, x, y);
@@ -185,7 +185,7 @@ public class Shader {
 	}
 	
 	public boolean setUVector3f(String uniformName, Vector3 value) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -194,7 +194,7 @@ public class Shader {
 	}
 	
 	public boolean setUVector3f(String uniformName, Color value) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -203,7 +203,7 @@ public class Shader {
 	}
 	
 	public boolean setUVector4f(String uniformName, float[] value) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -212,7 +212,7 @@ public class Shader {
 	}
 
 	public boolean setUMatrix3(String uniformName, Matrix3 matrix) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 		
@@ -226,14 +226,14 @@ public class Shader {
 	}
 	
 	public boolean setU1i(String uniformName, int value) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		gl.glUniform1i(pos, value);
 		return true;
 	}
 
 	public boolean setU1f(String uniformName, float value) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		int pos = grabUniform(uniformName);
 		if(pos == -1) return false;
 
@@ -245,7 +245,7 @@ public class Shader {
 	 * Called to release the native resource.
 	 */
 	public void dispose() {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		gl.glDeleteShader(handle);
 	}
 	
@@ -256,7 +256,7 @@ public class Shader {
 	 * performing a native call, avoiding the associated overhead.
 	 */
 	private int grabUniform(String uniformName) {
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		
 		int pos;
 		if(uLocCache.containsKey(uniformName)) {
@@ -295,9 +295,9 @@ public class Shader {
 		boolean logEmpty = true;
 		
 		if(isProgram) {
-			gl.glGetProgramiv(handle, GL4.GL_INFO_LOG_LENGTH, buff);
+			gl.glGetProgramiv(handle, GL3.GL_INFO_LOG_LENGTH, buff);
 		} else {
-			gl.glGetShaderiv(handle, GL4.GL_INFO_LOG_LENGTH, buff);
+			gl.glGetShaderiv(handle, GL3.GL_INFO_LOG_LENGTH, buff);
 		}
 		
 		int l = buff.get();
@@ -320,14 +320,14 @@ public class Shader {
 		}
 		
 		if(isProgram) {
-			gl.glGetProgramiv(handle, GL4.GL_LINK_STATUS, result, 0);
+			gl.glGetProgramiv(handle, GL3.GL_LINK_STATUS, result, 0);
 		} else {
-			gl.glGetShaderiv(handle, GL4.GL_COMPILE_STATUS, result, 0);
+			gl.glGetShaderiv(handle, GL3.GL_COMPILE_STATUS, result, 0);
 		}
 		
 		String action = isProgram ? "link" : "compile";
 		String actionPT = isProgram ? "linked" : "compiled";
-		if(result[0] == GL4.GL_FALSE) {
+		if(result[0] == GL3.GL_FALSE) {
 			Yeti.screwed(message + " failed to " + action + "!\n\t" + logContents);
 			return;
 		}

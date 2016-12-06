@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.techniques;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
@@ -33,10 +33,10 @@ public class DRGeometryPass extends Technique {
 	}
 	
 	private void bindTexture(RendererState rs, Texture t, String name, int slot) {
-		rs.gl.glActiveTexture(GL4.GL_TEXTURE0 + slot);
+		rs.gl.glActiveTexture(GL3.GL_TEXTURE0 + slot);
 		t.bind(rs.gl);
 		int aiso = rs.getAnisotropySamples();
-		t.setTexParameterf(rs.gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT, aiso);
+		t.setTexParameterf(rs.gl, GL3.GL_TEXTURE_MAX_ANISOTROPY_EXT, aiso);
 		program.setU1i(name, slot);
 	}
 	

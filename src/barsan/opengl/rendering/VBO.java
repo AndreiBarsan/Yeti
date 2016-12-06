@@ -70,18 +70,25 @@ public class VBO {
 			Yeti.screwed("Only 1, 2, 3 and 4-byte elements allowed!");
 		}
 
-		if((type & (GL2.GL_ARRAY_BUFFER | GL4.GL_ELEMENT_ARRAY_BUFFER)) == 0) {
-			// TODO(andrei): Ensure this is sane. The last two ones are no longer in GL4, so I just
+		if((type & (GL2.GL_ARRAY_BUFFER | GL3.GL_ELEMENT_ARRAY_BUFFER)) == 0) {
+			// TODO(andrei): Ensure this is sane. The last two ones are no longer in GL3, so I just
 			// removed the checks...
-//				| GL4.GL_NORMAL_ARRAY | GL4.GL_TEXTURE_COORD_ARRAY)) == 0 ) {
+//				| GL3.GL_NORMAL_ARRAY | GL3.GL_TEXTURE_COORD_ARRAY)) == 0 ) {
 			Yeti.screwed("Bad buffer type!");
 		}
+
+		// TODO(andrei): Ensure proper GL3 compatibility here!
+		// Sample C code:
+		// GLuint vao = 0;
+		// glGenVertexArrays(1, &vao);
+		// glBindVertexArray(vao);
+
 		
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glBufferData(type, elementGroupCount * elementGroupSize * elementSizeOf,
-				null, GL4.GL_DYNAMIC_DRAW);
+				null, GL3.GL_DYNAMIC_DRAW);
 		
-		localBuffer = gl.glMapBuffer(type, GL4.GL_WRITE_ONLY)
+		localBuffer = gl.glMapBuffer(type, GL3.GL_WRITE_ONLY)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
 		gl.glUnmapBuffer(type);
@@ -96,9 +103,9 @@ public class VBO {
 		if(open) {
 			Yeti.screwed("VBO already opened!");
 		}
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL4.GL_WRITE_ONLY);
+		gl.glMapBuffer(type, GL3.GL_WRITE_ONLY);
 		open = true;
 	}
 	

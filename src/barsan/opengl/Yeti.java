@@ -133,7 +133,7 @@ public class Yeti implements GLEventListener {
 	// TODO(andrei): Clean this up.
 	// Fixed pipeline stuff currently left out, since OS X does not support
 	// backwards-compatibility profiles, i.e., amongo other things, fixed pipeline rendering.
-	public GL4 gl;
+	public GL3 gl;
 	
 	// Keeps everything in sync.
 	private final Animator animator;
@@ -228,7 +228,7 @@ public class Yeti implements GLEventListener {
 
 		GLProfile.initSingleton();
 //		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
-		GLProfile glp = GLProfile.get(GLProfile.GL4);
+		GLProfile glp = GLProfile.get(GLProfile.GL3);
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		
 		final Component glpanel = canvasFactory.createCanvas(capabilities);
@@ -343,10 +343,10 @@ public class Yeti implements GLEventListener {
 		if(debug) {
 			// TODO(andrei): Do this in a nicer, switchable, way.
 //			drawable.setGL(new DebugGL3bc(drawable.getGL().getGL3bc()));
-			drawable.setGL(new DebugGL3(drawable.getGL().getGL4()));
+			drawable.setGL(new DebugGL3(drawable.getGL().getGL3()));
 		}
 //			gl = drawable.getGL().getGL3bc();
-		gl = drawable.getGL().getGL4();
+		gl = drawable.getGL().getGL3();
 
 		if(engineInitialized) {
 			screwed("GL Context was reset. Yeti cannot handle that yet. :(");

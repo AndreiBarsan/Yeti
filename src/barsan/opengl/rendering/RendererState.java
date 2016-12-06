@@ -2,7 +2,7 @@ package barsan.opengl.rendering;
 
 import java.util.ArrayList;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
@@ -15,7 +15,7 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.util.GLHelp;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
@@ -24,7 +24,7 @@ import com.jogamp.opengl.util.texture.Texture;
  */
 public class RendererState {
 
-	public final GL4              gl;
+	public final GL3              gl;
 	private      ArrayList<Light> lights;
 	private      Renderer         renderer;
 
@@ -49,7 +49,7 @@ public class RendererState {
 	protected float omniShadowNear = 0.1f;
 	protected float omniShadowFar  = 100.0f;
 
-	public RendererState(Renderer renderer, GL4 gl) {
+	public RendererState(Renderer renderer, GL3 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
 	}
@@ -98,7 +98,7 @@ public class RendererState {
 			
 		gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
 		program.setU1i("shadowMap", slot + 1);
-		gl.glBindTexture(GL4.GL_TEXTURE_2D, shadowTexture);
+		gl.glBindTexture(GL3.GL_TEXTURE_2D, shadowTexture);
 		return 2;
 	}
 	

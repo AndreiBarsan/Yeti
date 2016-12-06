@@ -1,7 +1,7 @@
 package barsan.opengl.flat;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.Billboard;

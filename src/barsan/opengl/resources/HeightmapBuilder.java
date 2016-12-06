@@ -2,7 +2,7 @@ package barsan.opengl.resources;
 
 import java.nio.ByteBuffer;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -22,7 +22,7 @@ public class HeightmapBuilder {
 	static float defaultMinHeight = -10.0f;
 	static float defaultMaxHeight =  25.0f;
 	
-	public static StaticModel modelFromMap(GL4 gl, Texture map, TextureData data) {
+	public static StaticModel modelFromMap(GL3 gl, Texture map, TextureData data) {
 		return modelFromMap(gl, map, data, defaultGridSizeX, defaultGridSizeY, defaultMinHeight, defaultMaxHeight);
 	}
 	
@@ -42,7 +42,7 @@ public class HeightmapBuilder {
 		return result.set(Cz - Az, 0.6f * scale, Dz - Bz).normalize();
 	}
 	
-	public static StaticModel modelFromMap(GL4 gl, Texture map, TextureData data,
+	public static StaticModel modelFromMap(GL3 gl, Texture map, TextureData data,
 			float gridSizeX, float gridSizeY,
 			float minHeight, float maxHeight) {
 		// process pixelz and generate geometry
@@ -57,7 +57,7 @@ public class HeightmapBuilder {
 	  // TODO(andrei): fbo.reset possible weirdness.
 		fbo.reset(gl, data.getWidth(), data.getHeight(), fbo.getNumSamples());
 		fbo.bind(gl);
-		gl.glFramebufferTexture2D(GL4.GL_DRAW_FRAMEBUFFER, GL4.GL_COLOR_ATTACHMENT0,
+		gl.glFramebufferTexture2D(GL3.GL_DRAW_FRAMEBUFFER, GL3.GL_COLOR_ATTACHMENT0,
 				map.getTarget(), map.getTextureObject(gl), 0);
 		
 		int w = map.getWidth(), h = map.getHeight();
@@ -71,7 +71,7 @@ public class HeightmapBuilder {
 		
 		// TODO: try and use glGetTexImage instead, avoiding the creation of
 		// an unnecessary FBO
-		gl.glReadPixels(0, 0, w, h, data.getPixelFormat(), GL4.GL_BYTE, buff);
+		gl.glReadPixels(0, 0, w, h, data.getPixelFormat(), GL3.GL_BYTE, buff);
 		
 		int hw = w / 2;
 		int hh = h / 2;

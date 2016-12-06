@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;

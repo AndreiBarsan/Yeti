@@ -2,7 +2,7 @@ package barsan.opengl.util;
 
 import barsan.opengl.resources.Face;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
@@ -65,7 +65,7 @@ public class GLHelp {
 	public static void dumpDepthBuffer(int x, int y, int w, int h, float depthRenFactor, int handle) {
 		int oldDim[] = new int[4];
 		GL3 gl = Yeti.get().gl;
-		gl.glGetIntegerv(GL4.GL_VIEWPORT, oldDim, 0);
+		gl.glGetIntegerv(GL3.GL_VIEWPORT, oldDim, 0);
 		
 		Shader dr = ResourceLoader.shader("depthRender");
 		gl.glUseProgram(dr.getHandle());
@@ -74,15 +74,15 @@ public class GLHelp {
 		dr.setU1f("factor", depthRenFactor);
 		
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
-		gl.glBindTexture(GL4.GL_TEXTURE_2D, handle);
+		gl.glBindTexture(GL3.GL_TEXTURE_2D, handle);
 		
 		int sqi = dr.getAttribLocation(Shader.A_POSITION);
 		gl.glViewport(x, y, w, h);
 		screenQuad.getVertices().use(sqi);
 		
-		gl.glDisable(GL4.GL_DEPTH_TEST);
-		gl.glDrawArrays(GL4.GL_QUADS, 0, screenQuad.getVertices().getSize());
-		gl.glEnable(GL4.GL_DEPTH_TEST);
+		gl.glDisable(GL3.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL3.GL_QUADS, 0, screenQuad.getVertices().getSize());
+		gl.glEnable(GL3.GL_DEPTH_TEST);
 		
 		screenQuad.getVertices().cleanUp(sqi);
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
@@ -91,7 +91,7 @@ public class GLHelp {
 	public static void dumpDepthCubeBuffer(int x, int y, int w, int h, float depthRenFactor, int handle) {
 		int oldDim[] = new int[4];
 		GL3 gl = Yeti.get().gl;
-		gl.glGetIntegerv(GL4.GL_VIEWPORT, oldDim, 0);
+		gl.glGetIntegerv(GL3.GL_VIEWPORT, oldDim, 0);
 		
 		Shader dr = ResourceLoader.shader("depthCubeRender");
 		gl.glUseProgram(dr.getHandle());
@@ -99,15 +99,15 @@ public class GLHelp {
 		dr.setU1f("factor", depthRenFactor);
 	
 		gl.glActiveTexture(GLHelp.textureSlot[0]);
-		gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, handle);
+		gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, handle);
 		
 		int sqi = dr.getAttribLocation(Shader.A_POSITION);
 		gl.glViewport(x, y, w, h);
 		screenQuad.getVertices().use(sqi);
 		
-		gl.glDisable(GL4.GL_DEPTH_TEST);
-		gl.glDrawArrays(GL4.GL_QUADS, 0, screenQuad.getVertices().getSize());
-		gl.glEnable(GL4.GL_DEPTH_TEST);
+		gl.glDisable(GL3.GL_DEPTH_TEST);
+		gl.glDrawArrays(GL3.GL_QUADS, 0, screenQuad.getVertices().getSize());
+		gl.glEnable(GL3.GL_DEPTH_TEST);
 		
 		screenQuad.getVertices().cleanUp(sqi);
 		gl.glViewport(0, 0, oldDim[2], oldDim[3]);
@@ -117,6 +117,6 @@ public class GLHelp {
 		// line is commented out, possibly also with a screenshot
 		
 		/* Remove this and the engine crashes with a dreaded 0x502 error */
-		gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, 0);
+		gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, 0);
 	}
 }

@@ -1,6 +1,6 @@
 package barsan.opengl.scenes;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -34,7 +34,7 @@ public class ModelGraphScene extends Scene {
 		Material blue = new BasicMaterial(new Color(0.4f, 0.3f, 0.9f, 1.0f));
 		Material yellow = new BasicMaterial(new Color(0.8f, 0.9f, 0.2f, 1.0f));
 		
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		
 		ResourceLoader.loadObj("bunny", "bunny.obj");
 		

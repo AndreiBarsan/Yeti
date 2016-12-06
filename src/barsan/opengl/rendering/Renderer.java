@@ -3,7 +3,7 @@ package barsan.opengl.rendering;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Matrix4;
@@ -12,7 +12,7 @@ import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.util.GLHelp;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 /**
  * Functionality every renderer type has to implement.
@@ -61,23 +61,23 @@ public abstract class Renderer {
 	protected Vector2 directionalShadowDepth  = new Vector2(-100, 100);
 
 	protected boolean sortBillboards = true;
-	protected GL4           gl;
+	protected GL3           gl;
 	protected RendererState state;
 
 	protected StaticModel screenQuad;
 
-	public Renderer(GL4 gl) {
+	public Renderer(GL3 gl) {
 		state = new RendererState(this, gl);
-		state.maxAnisotropySamples = (int) GLHelp.get1f(gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT);
+		state.maxAnisotropySamples = (int) GLHelp.get1f(gl, GL3.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 
 		this.gl = gl;
 
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
-		gl.glEnable(GL4.GL_DEPTH_TEST);
-		gl.glEnable(GL4.GL_CULL_FACE);
-		gl.glCullFace(GL4.GL_BACK);
+		gl.glEnable(GL3.GL_DEPTH_TEST);
+		gl.glEnable(GL3.GL_CULL_FACE);
+		gl.glCullFace(GL3.GL_BACK);
 
 		// Used in post-processing and debug rendering
 		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);

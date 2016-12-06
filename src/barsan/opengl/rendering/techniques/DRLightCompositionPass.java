@@ -1,8 +1,8 @@
 package barsan.opengl.rendering.techniques;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;
@@ -71,13 +71,13 @@ public class DRLightCompositionPass extends Technique {
 		
 		int ph = program.getHandle();
 		
-		GL4 gl4 = (GL4) rs.gl;
-		if(null == gl4) {
-			Yeti.screwed("GLSL subroutine fetching and manipulation requires GL4.");
+		GL3 GL3 = (GL3) rs.gl;
+		if(null == GL3) {
+			Yeti.screwed("GLSL subroutine fetching and manipulation requires GL3.");
 		}
 		
-		int sr = gl4.glGetSubroutineIndex(ph, GL4.GL_FRAGMENT_SHADER, "normalAO");
-		gl4.glUniformSubroutinesuiv(GL4.GL_FRAGMENT_SHADER,
+		int sr = GL3.glGetSubroutineIndex(ph, GL3.GL_FRAGMENT_SHADER, "normalAO");
+		GL3.glUniformSubroutinesuiv(GL3.GL_FRAGMENT_SHADER,
 				1,
 				new int[] { sr },
 				0

@@ -1,7 +1,7 @@
 package barsan.opengl.rendering.materials;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;

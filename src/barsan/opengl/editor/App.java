@@ -8,7 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -122,7 +122,7 @@ public class App {
 	public void generateGLKnobs(final Yeti yeti) {
 		GL gl = yeti.gl;
 		
-		anisotropicSlider.setMaximum( (int) GLHelp.get1f(gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT));
+		anisotropicSlider.setMaximum( (int) GLHelp.get1f(gl, GL3.GL_TEXTURE_MAX_ANISOTROPY_EXT));
 		anisotropicSlider.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {

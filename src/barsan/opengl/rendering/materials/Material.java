@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -125,9 +125,9 @@ public class Material {
 		
 		gl.glDepthMask(writesDepthBuffer);
 		if(checksDepthBuffer) {
-			gl.glEnable(GL4.GL_DEPTH_TEST);
+			gl.glEnable(GL3.GL_DEPTH_TEST);
 		} else {
-			gl.glDisable(GL4.GL_DEPTH_TEST);
+			gl.glDisable(GL3.GL_DEPTH_TEST);
 		}
 		
 		model.render(model.getArrayLength());

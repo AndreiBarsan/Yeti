@@ -1,7 +1,7 @@
 package barsan.opengl.rendering.materials;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -33,7 +33,7 @@ public class MultiTextureMaterial extends BasicMaterial {
 	@Override
 	public void setup(RendererState rendererState, Matrix4 modelMatrix) {
 		super.setup(rendererState, modelMatrix);
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		
 		shader.setU1f("minHeight", minHeight);
 		shader.setU1f("maxHeight", maxHeight);

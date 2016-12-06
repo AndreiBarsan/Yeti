@@ -3,7 +3,7 @@
  */
 package barsan.opengl.rendering.materials;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -88,23 +88,23 @@ public class ToonMaterial extends BasicMaterial {
 	}
 	
 	void doFlatAndLines(RendererState rs, Model model) {
-		GL4 gl = Yeti.get().gl;
-		gl.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_LINE);
+		GL3 gl = Yeti.get().gl;
+		gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_LINE);
 		gl.glLineWidth(2.5f);
 		//gl.glPolygonOffset(2.5f, 2.5f);
-		gl.glFrontFace(GL4.GL_CW);
+		gl.glFrontFace(GL3.GL_CW);
 		
 		// Apparently smooth lines are *really* expensive as they are almost
 		// always done through software fallback, since only a handful of
 		// CAD-specific cards actually natively support them. :(
 		//gl.glEnable(GL2.GL_LINE_SMOOTH);
-		//gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL4.GL_NICEST);
+		//gl.glHint(GL2.GL_LINE_SMOOTH_HINT, GL3.GL_NICEST);
 		fm.render(rs, model);
 		//gl.glDisable(GL2.GL_BLEND);
 		
 		// Reset state
-		gl.glFrontFace(GL4.GL_CCW);
-		gl.glPolygonMode(GL4.GL_FRONT_AND_BACK, GL4.GL_FILL);
+		gl.glFrontFace(GL3.GL_CCW);
+		gl.glPolygonMode(GL3.GL_FRONT_AND_BACK, GL3.GL_FILL);
 	}
 	
 	@Override

@@ -3,7 +3,7 @@ package barsan.opengl.scenes;
 import java.io.File;
 import java.io.IOException;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -35,8 +35,8 @@ public class TextureScene extends Scene {
 
 		shader = ResourceLoader.shader("basicTex");
 		
-		geometry = new VBO(GL4.GL_ARRAY_BUFFER, 3);
-		textureCoords = new VBO(GL4.GL_ARRAY_BUFFER, 3, 2);
+		geometry = new VBO(GL3.GL_ARRAY_BUFFER, 3);
+		textureCoords = new VBO(GL3.GL_ARRAY_BUFFER, 3, 2);
 		geometry.open();
 		geometry.append(new float[] {
 			0.0f, 0.0f, 0.0f,
@@ -74,11 +74,11 @@ public class TextureScene extends Scene {
 		super.display(drawable);
 		
 		shader.setU1i("colorMap", 0);
-		GL4 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		texture.bind(gl);
 		
 		geometry.use(gindex);
 		textureCoords.use(tindex);
-		gl.glDrawArrays(GL4.GL_TRIANGLES, 0, 3);
+		gl.glDrawArrays(GL3.GL_TRIANGLES, 0, 3);
 	}
 }

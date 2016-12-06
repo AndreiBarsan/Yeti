@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.techniques;
 
-import com.jogamp.opengl.GL4;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -139,8 +139,8 @@ public class DRLightPass extends Technique {
 	
 	private void bindFlatMap(RendererState rs) {
 		program.setU1i("shadowMap", 4);
-		rs.gl.glActiveTexture(GL4.GL_TEXTURE0 + 4);
-		rs.gl.glBindTexture(GL4.GL_TEXTURE_2D, rs.shadowTexture);
+		rs.gl.glActiveTexture(GL3.GL_TEXTURE0 + 4);
+		rs.gl.glBindTexture(GL3.GL_TEXTURE_2D, rs.shadowTexture);
 		
 		Matrix4 projection = rs.depthProjection;
 		Matrix4 view = rs.depthView;
@@ -156,8 +156,8 @@ public class DRLightPass extends Technique {
 	
 	private void bindCubeMap(RendererState rs) {
 		program.setU1i("cubeShadowMap", 5);
-		rs.gl.glActiveTexture(GL4.GL_TEXTURE0 + 5);
-		rs.gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP, rs.getGipsyWagonCubeTex());
+		rs.gl.glActiveTexture(GL3.GL_TEXTURE0 + 5);
+		rs.gl.glBindTexture(GL3.GL_TEXTURE_CUBE_MAP, rs.getGipsyWagonCubeTex());
 		
 		program.setU1i("useShadows", true);
 		program.setU1f("far", rs.getOmniShadowFar());
