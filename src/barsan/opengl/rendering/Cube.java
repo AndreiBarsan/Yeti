@@ -1,6 +1,6 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.Face;
@@ -8,11 +8,11 @@ import barsan.opengl.resources.ModelLoader;
 
 public class Cube extends StaticModel {
 	
-	public Cube(GL2 gl, float f) {
+	public Cube(GL gl, float f) {
 		this(gl, f, false);
 	}
 
-	public Cube(GL2 gl, float f, boolean insideOut) {
+	public Cube(GL gl, float f, boolean insideOut) {
 		super(gl, "procedural cube");
 		
 		float hs = f / 2;

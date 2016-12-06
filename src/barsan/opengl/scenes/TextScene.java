@@ -2,10 +2,11 @@ package barsan.opengl.scenes;
 
 import java.awt.Font;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3bc;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.glu.GLU;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3bc;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.glu.GLU;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;
@@ -22,9 +23,12 @@ public class TextScene extends Scene{
 	}
 	
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
-		GL3bc gl = Yeti.get().gl;
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+
+		// TODO(andrei): Clean this code up and upgrade it to current standards.
+		// Lots of this code relies on fixed pipeline rendering, which is unavailable in modern,
+		// non-backwards-compatible profile, so I disabled it.
+		GL gl = Yeti.get().gl;
 		GLU glu = new GLU();
 
 		if (height == 0) {
@@ -33,41 +37,42 @@ public class TextScene extends Scene{
 		
 		float aspect = (float) width / (float) height;
 
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		
-		glu.gluPerspective(45.0f, aspect, 0.1f, 100.0f);
-
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
+//		gl.glMatrixMode(GL2.GL_PROJECTION);
+//		gl.glLoadIdentity();
+//
+//		glu.gluPerspective(45.0f, aspect, 0.1f, 100.0f);
+//
+//		gl.glMatrixMode(GL2.GL_MODELVIEW);
+//		gl.glLoadIdentity();
 	}
 		
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = Yeti.get().gl.getGL2();
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-		
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-		
-		gl.glPushMatrix();
-		gl.glTranslatef(0.0f, 0.0f, 1.0f);
-		
-		gl.glColor3f(1.0f, 0.5f, 0.33f);
-			gl.glBegin(GL2.GL_TRIANGLES);
-			gl.glVertex3f(0.0f, 0.0f, -1.0f);
-			gl.glVertex3f(0.33f, 0.0f, -1.0f);
-			gl.glVertex3f(0.0f, 0.5f, -1.0f);
-		gl.glEnd();
-		
-		gl.glPopMatrix();
-		
-		gl.glUseProgram(0);
-		TextHelper.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
-		TextHelper.beginRendering(drawable.getWidth(), drawable.getHeight());
-			TextHelper.drawText(20, 20, "Testing hud text!");
-		TextHelper.endRendering();
-		
+//		GL2 gl = Yeti.get().gl.getGL2();
+//		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+//
+//		gl.glMatrixMode(GL2.GL_MODELVIEW);
+//		gl.glLoadIdentity();
+//
+//		gl.glPushMatrix();
+//		gl.glTranslatef(0.0f, 0.0f, 1.0f);
+//
+//		gl.glColor3f(1.0f, 0.5f, 0.33f);
+//			gl.glBegin(GL2.GL_TRIANGLES);
+//			gl.glVertex3f(0.0f, 0.0f, -1.0f);
+//			gl.glVertex3f(0.33f, 0.0f, -1.0f);
+//			gl.glVertex3f(0.0f, 0.5f, -1.0f);
+//		gl.glEnd();
+//
+//		gl.glPopMatrix();
+//
+//		gl.glUseProgram(0);
+//		TextHelper.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+////		TextHelper.beginRendering(drawable.getWidth(), drawable.getHeight());
+//		TextHelper.beginRendering(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
+//			TextHelper.drawText(20, 20, "Testing hud text!");
+//		TextHelper.endRendering();
+//
 	}
 	
 }

@@ -1,14 +1,14 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2GL3;
 
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
  * TODO: refactor this horror!
  * 
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  *
  */
 public class CubeTexture {

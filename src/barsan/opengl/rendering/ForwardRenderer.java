@@ -1,9 +1,6 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.*;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -23,7 +20,6 @@ import barsan.opengl.resources.ResourceLoader;
 import barsan.opengl.util.FPCameraAdapter;
 import barsan.opengl.util.GLHelp;
 
-import com.jogamp.opengl.FBObject;
 import com.jogamp.opengl.FBObject.Attachment;
 import com.jogamp.opengl.FBObject.Attachment.Type;
 import com.jogamp.opengl.FBObject.RenderAttachment;
@@ -48,14 +44,16 @@ public class ForwardRenderer extends Renderer {
 	boolean MSAAEnabled = true;
 	private int MSAASamples = 4;
 	
-	public ForwardRenderer(GL3 gl) {	
+	public ForwardRenderer(GL4 gl) {
 		super(gl);
 		
 		int fboWidth = Yeti.get().settings.width;
 		int fboHeight = Yeti.get().settings.height;
 		//*
 		fbo_tex = new FBObject();
-		fbo_tex.reset(gl, fboWidth, fboHeight);
+		// TODO(andrei): See if this breaks, since the 'numSamples' final arg was not required in the
+		// old JOGL.
+		fbo_tex.reset(gl, fboWidth, fboHeight, fbo_tex.getNumSamples());
 		fbo_tex.bind(gl);
 		
 		fbo_tex.attachTexture2D(gl, 0, true);
@@ -116,7 +114,8 @@ public class ForwardRenderer extends Renderer {
 		
 		// Prepare shadow mapping
 		fbo_shadows = new FBObject();
-		fbo_shadows.reset(gl, shadowMapW, shadowMapH);
+    // TODO(andrei): See previous TODO.
+		fbo_shadows.reset(gl, shadowMapW, shadowMapH, fbo_shadows.getNumSamples());
 		fbo_shadows.bind(gl);
 		
 		gl.glGenTextures(1, name, 0);

@@ -1,6 +1,7 @@
 package barsan.opengl.flat;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.math.Vector2;
 import barsan.opengl.rendering.Billboard;
@@ -11,11 +12,11 @@ import com.jogamp.opengl.util.texture.Texture;
  * Incredibly primitive (OOGA-BOOGA-Tier) sprite class. Doesn't support batching
  * or any fancy stuff.
  *  
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  */
 public class Sprite extends Billboard {
 	
-	public Sprite(GL2 gl, Texture texture, String name) {
+	public Sprite(GL gl, Texture texture, String name) {
 		this(gl, texture, name, true);
 	}
 	
@@ -28,7 +29,7 @@ public class Sprite extends Billboard {
 	 * to true because of SceneHelper sets up 2D cameras in such a way that larger
 	 * Z values are on top. 
 	 */
-	public Sprite(GL2 gl, Texture texture, String name, boolean flipAroundY) {
+	public Sprite(GL gl, Texture texture, String name, boolean flipAroundY) {
 		super(gl, texture, name);
 		getTransform().updateScale(texture.getHeight());
 		setAxisClamp(AxisClamp.ClampAll);

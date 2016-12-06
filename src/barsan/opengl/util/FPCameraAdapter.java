@@ -1,6 +1,6 @@
 package barsan.opengl.util;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.rendering.cameras.Camera;
 

@@ -6,8 +6,9 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.flat.Sprite;
@@ -205,7 +206,7 @@ public class MenuScene extends Scene {
 		}
 		logo.setPosition(new Vector2(0.0f, logoY));
 		
-		GL2 gl = Yeti.get().gl;
+		GL gl = Yeti.get().gl;
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		
 		super.display(drawable);

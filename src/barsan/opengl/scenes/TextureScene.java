@@ -3,9 +3,9 @@ package barsan.opengl.scenes;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;

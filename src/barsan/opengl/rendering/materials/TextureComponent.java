@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.materials;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.RendererState;

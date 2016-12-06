@@ -1,6 +1,7 @@
 package barsan.opengl.rendering;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -14,7 +15,7 @@ import barsan.opengl.util.Color;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  *
  */
 public class Billboard extends StaticModelInstance {
@@ -67,8 +68,8 @@ public class Billboard extends StaticModelInstance {
 	
 			enableShader(rendererState);
 			shader.setUMatrix4("mvpMatrix", mvp);
-			GL2 gl = Yeti.get().gl;
-			gl.glActiveTexture(GL2.GL_TEXTURE0);
+			GL gl = Yeti.get().gl;
+			gl.glActiveTexture(GL.GL_TEXTURE0);
 			shader.setU1i("colorMap", 0);
 			diffuseMap.bind(rendererState.gl);
 		}
@@ -85,12 +86,12 @@ public class Billboard extends StaticModelInstance {
 	// The user should be able to have (actual) models as kids of billboards
 	// and vice-versa. Wait, do poly kids of 2d billboards make sense? Kind of,
 	// their parent transform would be flattened - so they would look right.
-	public Billboard(GL2 gl, Texture texture, String name) {
+	public Billboard(GL gl, Texture texture, String name) {
 		this(gl, texture, new Transform(), name);
 	}
 	
 	// TODO: use point sprites!
-	public Billboard(GL2 gl, Texture texture, Transform transform, String name) {
+	public Billboard(GL gl, Texture texture, Transform transform, String name) {
 		super(ModelLoader.buildQuadXY(texture.getAspectRatio(), 1.0f), new BillboardMaterial(AxisClamp.None, name + " billboard material"), transform);
 		
 		getMaterial().setDiffuseMap(texture);

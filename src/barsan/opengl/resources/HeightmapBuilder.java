@@ -2,7 +2,7 @@ package barsan.opengl.resources;
 
 import java.nio.ByteBuffer;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -54,7 +54,8 @@ public class HeightmapBuilder {
 		
 		//TextureAttachment ta = fbo.attachTexture2D(gl, 0, false);
 		Face face = new Face();
-		fbo.reset(gl, data.getWidth(), data.getHeight());
+	  // TODO(andrei): fbo.reset possible weirdness.
+		fbo.reset(gl, data.getWidth(), data.getHeight(), fbo.getNumSamples());
 		fbo.bind(gl);
 		gl.glFramebufferTexture2D(GL2.GL_DRAW_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0,
 				map.getTarget(), map.getTextureObject(gl), 0);

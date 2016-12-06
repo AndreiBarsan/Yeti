@@ -11,8 +11,8 @@ import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
@@ -357,7 +357,7 @@ public class ModelLoader {
 	}
 	
 	public static StaticModel buildPlane(float width, float height, int sdivw, int sdivh) {
-		GL2 gl = Yeti.get().gl.getGL2();
+		GL gl = Yeti.get().gl.getGL();
 		StaticModel result = new StaticModel(gl, "plane");
 		
 		boolean old = loadingFronLHCoords;
@@ -425,7 +425,7 @@ public class ModelLoader {
 	 * @param xz whether to build the quad in the xz plane. xy otherwise.
 	 */
 	private static StaticModel buildQuad(float width, float height, boolean xz) {
-		GL2 gl = Yeti.get().gl.getGL2();
+		GL gl = Yeti.get().gl;
 		StaticModel result = new StaticModel(gl, "quad");
 		result.setPointsPerFace(4);
 		

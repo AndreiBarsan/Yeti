@@ -7,8 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -78,7 +78,6 @@ public class App {
 				Yeti.quit();
 			}
 		});
-		
 		
 		frmYeti.getContentPane().setLayout(new BoxLayout(frmYeti.getContentPane(), BoxLayout.Y_AXIS));
 		

@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.techniques;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -16,7 +16,7 @@ import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.resources.ResourceLoader;
 
 /** 
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  */
 public class DRLightPass extends Technique {
 

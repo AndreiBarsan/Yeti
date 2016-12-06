@@ -4,7 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.FreeflyCamera;

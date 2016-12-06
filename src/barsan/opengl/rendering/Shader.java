@@ -1,5 +1,5 @@
 /**
- *  YETI Engine Copyright (c) 2012-2013, Andrei Bârsan All rights reserved.
+ *  YETI Engine Copyright (c) 2012-2013, Andrei Bï¿½rsan All rights reserved.
  *  Redistribution and use in source and binary forms, with or without modification,
  *  are permitted provided that the following conditions are met:
  *    - Redistributions of source code must retain the above copyright notice, 
@@ -28,9 +28,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL2GL3;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix3;
@@ -47,7 +47,7 @@ import barsan.opengl.util.Color;
  * HashMap to limit the number of native calls being performed (VisualVM showed
  * this as one of the top 10 time consumers).
  * 
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  */
 public class Shader {
 	public static final String A_POSITION = "vVertex";

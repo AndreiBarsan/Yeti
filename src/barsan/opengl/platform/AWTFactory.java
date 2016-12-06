@@ -2,8 +2,8 @@ package barsan.opengl.platform;
 
 import java.awt.Component;
 
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.awt.GLCanvas;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.awt.GLCanvas;
 
 public class AWTFactory implements CanvasFactory {
 

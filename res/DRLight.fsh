@@ -227,13 +227,17 @@ vec4 calcPointLight(PointLight pl, vec3 WorldPos, vec3 Normal, float MSI, float 
 									WorldPos, Normal,
 									MSI, SP);
 
+	return Color;
+	/*
+	TODO(andrei): Undo this disabling.
     float Attenuation =  pl.Atten.Constant +
                          pl.Atten.Linear * Distance +
                          pl.Atten.Quadratic * Distance * Distance;
 
-    Attenuation = max(1.0, Attenuation);
+    Attenuation = max(Attenuation, 1.0f);
 
     return Color / Attenuation;
+    */
 }
 
 vec4 calcSpotLight(vec3 WorldPos, vec3 Normal, float MSI, float SP) {

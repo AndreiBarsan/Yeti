@@ -1,8 +1,8 @@
 package barsan.opengl.rendering.techniques;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL4;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector2;

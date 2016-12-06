@@ -2,7 +2,7 @@ package barsan.opengl.util;
 
 import java.awt.Font;
 
-import javax.media.opengl.GLAnimatorControl;
+import com.jogamp.opengl.GLAnimatorControl;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.rendering.Scene;

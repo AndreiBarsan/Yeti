@@ -10,10 +10,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Scanner;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2GL3;
-import javax.media.opengl.GLException;
-import javax.media.opengl.GLProfile;
+import com.jogamp.opengl.*;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.rendering.AnimatedModel;
@@ -83,7 +80,7 @@ public class ResourceLoader {
 			File folder = new File(RESBASE + MODELBASE + folderName);
 			if(!folder.isDirectory()) throw new IOException("Must specify a directory");
 			
-			GL2 gl = Yeti.get().gl;
+			GL gl = Yeti.get().gl;
 			ArrayList<Frame> frames = new ArrayList<>();
 			
 			File[] files = folder.listFiles();
@@ -170,11 +167,13 @@ public class ResourceLoader {
 		}
 		
 		Scanner vinput = null, finput = null, ginput = null;
-		try{
+		try {
 			vinput = new Scanner(vFile);
 			finput = new Scanner(fFile);
 			if(gFile.exists()) ginput = new Scanner(gFile);
-			
+
+			Yeti.debug("Will process shader: %s (files: %s, %s, %s)", name, vFile.getName(),
+								 gFile.getName(), fFile.getName());
 			shaders.put(name, new Shader(Yeti.get().gl, name,
 					vinput.useDelimiter("\\Z").next(),
 					finput.useDelimiter("\\Z").next(),

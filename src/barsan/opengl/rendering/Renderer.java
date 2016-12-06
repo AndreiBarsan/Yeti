@@ -3,8 +3,8 @@ package barsan.opengl.rendering;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.math.Matrix4Stack;
@@ -12,11 +12,12 @@ import barsan.opengl.math.Vector2;
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.ModelLoader;
 import barsan.opengl.util.GLHelp;
+import com.jogamp.opengl.GL4;
 
 /**
  * Functionality every renderer type has to implement.
  * 
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  */
 public abstract class Renderer {
 
@@ -52,64 +53,66 @@ public abstract class Renderer {
 			return description;
 		}
 	}
+
 	protected ShadowQuality shadowQuality = ShadowQuality.Medium;
-		
+
 	protected Vector3 directionalShadowCenter = new Vector3();
-	protected Vector2 directionalShadowSize = new Vector2(100, 100);
-	protected Vector2 directionalShadowDepth = new Vector2(-100, 100);
-	
+	protected Vector2 directionalShadowSize   = new Vector2(100, 100);
+	protected Vector2 directionalShadowDepth  = new Vector2(-100, 100);
+
 	protected boolean sortBillboards = true;
-	protected GL3 gl;
+	protected GL4           gl;
 	protected RendererState state;
 
 	protected StaticModel screenQuad;
-	
-	public Renderer(GL3 gl) {
+
+	public Renderer(GL4 gl) {
 		state = new RendererState(this, gl);
-		state.maxAnisotropySamples = (int)GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
-		
+		state.maxAnisotropySamples = (int) GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
+
 		this.gl = gl;
-		
+
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glEnable(GL2.GL_CULL_FACE);
 		gl.glCullFace(GL2.GL_BACK);
-		
+
 		// Used in post-processing and debug rendering
 		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);
 	}
-	
+
 	public RendererState getState() {
 		return state;
 	}
-	
+
 	/**
 	 * The heart of the renderer. Gathers any required data, sets the GL state 
 	 * and performs the draw call(s).
 	 */
 	public abstract void render(Scene scene);
-	
+
 	/**
 	 * Helper to sort a scene's billboards based on their distance to the camera.
 	 */
 	protected void sortBillboards(final Scene scene) {
-		Collections.sort(scene.billboards, new Comparator<Billboard>() {
-			@Override
-			public int compare(Billboard o1, Billboard o2) {
-				Vector3 cpos = scene.getCamera().getPosition();
-				Float d1 = o1.getTransform().getTranslate().dist(cpos);
-				Float d2 = o2.getTransform().getTranslate().dist(cpos);
-				return d2.compareTo(d1);
-			}
-		});
+		Collections.sort(
+			scene.billboards, new Comparator<Billboard>() {
+				@Override
+				public int compare(Billboard o1, Billboard o2) {
+					Vector3 cpos = scene.getCamera().getPosition();
+					Float   d1   = o1.getTransform().getTranslate().dist(cpos);
+					Float   d2   = o2.getTransform().getTranslate().dist(cpos);
+					return d2.compareTo(d1);
+				}
+			});
 	}
-	
+
 	public void dispose() {
 		state.cubeTexture.destroy(gl);
 	}
-	
+
 	public ShadowQuality getShadowQuality() {
 		return shadowQuality;
 	}

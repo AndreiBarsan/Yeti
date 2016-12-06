@@ -2,9 +2,9 @@ package barsan.opengl.rendering;
 
 import java.nio.IntBuffer;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.MathUtil;
@@ -31,13 +31,14 @@ import barsan.opengl.scenes.NessieTestScene;
 import barsan.opengl.util.Color;
 import barsan.opengl.util.GLHelp;
 import barsan.opengl.util.Settings;
+import com.jogamp.opengl.GL4;
 
 /**
  * Nessie is our Deferred Renderer. The development process will involve several
  * stages before it gets on par with the forward renderer, in terms of features.
  * In terms of speed it will already be blazingly fast!
  * 
- * @author Andrei Bârsan
+ * @author Andrei Bï¿½rsan
  */
 public class Nessie extends Renderer {
 
@@ -251,11 +252,11 @@ public class Nessie extends Renderer {
 	private StaticModel screenQuad;
 	private ModelInstance sqi;
 	
-	public Nessie(GL3 gl) {
+	public Nessie(GL4 gl) {
 		this(gl, Mode.DrawComposedScene);		
 	}
 	
-	public Nessie(GL3 gl, Mode mode) {
+	public Nessie(GL4 gl, Mode mode) {
 		super(gl);
 		this.mode = mode;
 	}

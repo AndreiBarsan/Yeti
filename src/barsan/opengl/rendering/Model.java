@@ -2,9 +2,11 @@ package barsan.opengl.rendering;
 
 import java.util.List;
 
-import javax.media.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
+import com.jogamp.opengl.GL4;
 
 public abstract class Model {
 	
@@ -28,7 +30,7 @@ public abstract class Model {
 	 */
 	@Deprecated
 	public void render(int arrayLength) {
-		GL2 gl = Yeti.get().gl;
+		GL gl = Yeti.get().gl;
 		gl.glDrawArrays(faceMode, 0, arrayLength);
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 	}
@@ -49,7 +51,7 @@ public abstract class Model {
 	
 	/** Resets the OpenGL state set by the model's usage. */
 	public void cleanUp(int... indices) {
-		GL2 gl = Yeti.get().gl;
+		GL4 gl = Yeti.get().gl;
 		for(int el : indices) {
 			if(el >= 0) {
 				gl.glDisableVertexAttribArray(el);

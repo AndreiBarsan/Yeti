@@ -1,7 +1,7 @@
 package barsan.opengl.scenes;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.CameraInput;

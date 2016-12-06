@@ -3,7 +3,7 @@ package barsan.opengl.scenes;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.flat.Block;

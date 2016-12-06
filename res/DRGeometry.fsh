@@ -49,4 +49,4 @@ void main() {
 	outWorldPos.a = matSpecularIntensity;
 	// Write specular exponent to out-normal-alpha
 	outNormal.a  = matSpecularPower;
-};
+}

@@ -23,12 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.media.opengl.DebugGL3bc;
-import javax.media.opengl.GL3bc;
-import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLCapabilities;
-import javax.media.opengl.GLEventListener;
-import javax.media.opengl.GLProfile;
+import com.jogamp.opengl.*;
 
 import barsan.opengl.commands.DerpCommand;
 import barsan.opengl.commands.ExitCommand;
@@ -55,6 +50,7 @@ import barsan.opengl.scenes.ProceduralScene;
 import barsan.opengl.util.ConsoleRenderer;
 import barsan.opengl.util.Settings;
 
+import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.Animator;
 
 /**
@@ -132,7 +128,12 @@ public class Yeti implements GLEventListener {
 	
 	// Active OpenGL context. Use GL3.0 by default, with backwards compatibility
 	// for the fixed pipeline to allow debug drawing.
-	public GL3bc gl;
+//	public GL3bc gl;
+
+	// TODO(andrei): Clean this up.
+	// Fixed pipeline stuff currently left out, since OS X does not support
+	// backwards-compatibility profiles, i.e., amongo other things, fixed pipeline rendering.
+	public GL4 gl;
 	
 	// Keeps everything in sync.
 	private final Animator animator;
@@ -224,9 +225,10 @@ public class Yeti implements GLEventListener {
 		if(app != null) {
 			this.hostApp = app;
 		}
-		
+
 		GLProfile.initSingleton();
-		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
+//		GLProfile glp = GLProfile.get(GLProfile.GL3bc);
+		GLProfile glp = GLProfile.get(GLProfile.GL4);
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		
 		final Component glpanel = canvasFactory.createCanvas(capabilities);
@@ -339,10 +341,13 @@ public class Yeti implements GLEventListener {
 
 		// Get the new context
 		if(debug) {
-			drawable.setGL(new DebugGL3bc(drawable.getGL().getGL3bc()));
+			// TODO(andrei): Do this in a nicer, switchable, way.
+//			drawable.setGL(new DebugGL3bc(drawable.getGL().getGL3bc()));
+			drawable.setGL(new DebugGL3(drawable.getGL().getGL4()));
 		}
-		gl = drawable.getGL().getGL3bc();
-			
+//			gl = drawable.getGL().getGL3bc();
+		gl = drawable.getGL().getGL4();
+
 		if(engineInitialized) {
 			screwed("GL Context was reset. Yeti cannot handle that yet. :(");
 			return;
@@ -414,12 +419,19 @@ public class Yeti implements GLEventListener {
 			currentScene.init(drawable);
 			pendingInit = false;
 		}
-		// TODO: if hosted in an application - make sure the sizes stay right
-		// FIXME: currently makes the panel higher, although the originally 
-		// requested size is 1024 x 768 (->1024x801)
-		// Increasing toolbar height doesn't increase the height of the gray 
-		// band. Then it has to be the window decorations.
-		currentScene.reshape(drawable, x, y, width, height);
+
+		if(null == currentScene) {
+			Yeti.warn("No scene initialized. Make sure 'reshape' is not called at a weird time on " +
+							  "your system.");
+		}
+		else {
+			// TODO: if hosted in an application - make sure the sizes stay right
+			// FIXME: currently makes the panel higher, although the originally
+			// requested size is 1024 x 768 (->1024x801)
+			// Increasing toolbar height doesn't increase the height of the gray
+			// band. Then it has to be the window decorations.
+			currentScene.reshape(drawable, x, y, width, height);
+		}
 	}
 	
 	@Override

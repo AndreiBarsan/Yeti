@@ -2,8 +2,8 @@ package barsan.opengl.rendering;
 
 import java.util.ArrayList;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL3;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4;
@@ -15,6 +15,7 @@ import barsan.opengl.rendering.lights.Light.LightType;
 import barsan.opengl.rendering.materials.Material;
 import barsan.opengl.util.GLHelp;
 
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
@@ -22,54 +23,55 @@ import com.jogamp.opengl.util.texture.Texture;
  * the rendering process. Pending refactoring.
  */
 public class RendererState {
-	
-	public final GL3 gl;
-	private ArrayList<Light> lights;
-	private Renderer renderer;
+
+	public final GL4              gl;
+	private      ArrayList<Light> lights;
+	private      Renderer         renderer;
 
 	private AmbientLight ambientLight;
-	private Fog fog; 
-	
-	private Material forcedMaterial = null;
+	private Fog          fog;
+
+	private Material         forcedMaterial         = null;
 	private AnimatedMaterial forcedAnimatedMaterial = null;
-	
+
 	private Camera camera;
 
 	int maxAnisotropySamples = -1;
-	int anisotropySamples = 1;
-	
+	int anisotropySamples    = 1;
+
 	public Matrix4 depthView;
 	public Matrix4 depthProjection;
-	public int shadowTexture;
+	public int     shadowTexture;
 	/* pp */ Texture cubeTexture;
-	
+
 	private Scene scene;
-	
+
 	protected float omniShadowNear = 0.1f;
-	protected float omniShadowFar = 100.0f;
-	
-	public RendererState(Renderer renderer, GL3 gl) {
+	protected float omniShadowFar  = 100.0f;
+
+	public RendererState(Renderer renderer, GL4 gl) {
 		this.renderer = renderer;
 		this.gl = gl;
 	}
-	
+
 	/**
 	 * Binds the proper shadow map to the active material. 
 	 */
 	public void shadowMapBindings(Shader program, Matrix4 modelMatrix) {
-		if(scene.shadowsEnabled) {
-			if(lights.get(0).getType() != LightType.Point) {
+		if (scene.shadowsEnabled) {
+			if (lights.get(0).getType() != LightType.Point) {
 				// We don't need this matrix if we're working with point lights and cube maps.
 				Matrix4 projection = depthProjection;
 				Matrix4 view = depthView;
-				
+
 				Matrix4 MVP = new Matrix4(projection).mul(view).mul(modelMatrix);
-				
+
 				// Really important! Converts the z-values from [-1, 1] to [0, 1]
 				Matrix4 biasMVP = new Matrix4(Renderer.shadowBiasMatrix).mul(MVP);
 				program.setUMatrix4("mvpMatrixShadows", biasMVP);
-				
-			} else {
+
+			}
+			else {
 				program.setU1f("far", getOmniShadowFar());
 			}
 			

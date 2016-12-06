@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.media.opengl.GL2;
-import javax.media.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.input.InputProvider;
@@ -59,7 +59,7 @@ public class Scene {
 		// TODO: a more elegat way to specify a renderer
 		// Prepare the renderer; use the default renderer
 		if(renderer == null) {
-			renderer = new ForwardRenderer(Yeti.get().gl.getGL3());
+			throw new IllegalArgumentException("Renderer cannot be null.");
 		}
 		
 		Renderer.renderDebug = Yeti.get().debug;
