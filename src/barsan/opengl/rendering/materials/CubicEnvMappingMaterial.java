@@ -1,5 +1,6 @@
 package barsan.opengl.rendering.materials;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
 import barsan.opengl.Yeti;
@@ -32,7 +33,7 @@ public class CubicEnvMappingMaterial extends Material {
 	
 	@Override
 	public void setup(RendererState rendererState, Matrix4 transform) {
-		GL2 gl = Yeti.get().gl.getGL2();
+		GL gl = Yeti.get().gl;
 		
 		enableShader(rendererState);
 		

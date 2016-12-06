@@ -1,8 +1,9 @@
 package barsan.opengl.rendering;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GL2GL3;
 
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.texture.Texture;
 
 /**
@@ -36,11 +37,11 @@ public class CubeTexture {
 		return texture;
 	}
 	
-	public void bind(GL2GL3 gl) {
+	public void bind(GL gl) {
 		texture.bind(gl);
 	}
 	
-	public void dispose(GL2GL3 gl) {
+	public void dispose(GL gl) {
 		texture.destroy(gl);
 	}
 }

@@ -4,9 +4,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.List;
 
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GL2GL3;
+import com.jogamp.opengl.*;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
@@ -39,7 +37,6 @@ public class VBO {
 	
 	/**
 	 * Default use case - just assumes we're storing floats in groups of 3 (Vector3s).
-	 * @param gl	The GL contex used.
 	 * @param type	The type of buffer to create (e.g. GL_ARRAY_BUFFER).
 	 * @param size	How many element groups should the buffer be able to hold (assumes each group has three float elements).
 	 */
@@ -48,7 +45,6 @@ public class VBO {
 	}
 	
 	/**
-	 * @param gl	The GL contex used.
 	 * @param type	The type of buffer to create (e.g. GL_ARRAY_BUFFER).
 	 * @param size	How many element groups should the buffer be able to hold (assumes each group has three float elements).
 	 * @param elementGroupSize How many elements in a group (e.g. 3 for 3D coordinates such as vertices, 2 for 2D texture coords).
@@ -58,7 +54,7 @@ public class VBO {
 	}
 	
 	public VBO(int type, int elementGroupCount, int elementGroupSize, int elementSizeOf, int elementType) {
-		GL2GL3 gl = Yeti.get().gl;
+		GL gl = Yeti.get().gl;
 		
 		int buff[] = new int[] { -1 };
 		gl.glGenBuffers(1, buff, 0);
@@ -98,7 +94,7 @@ public class VBO {
 		if(open) {
 			Yeti.screwed("VBO already opened!");
 		}
-		GL2GL3 gl = Yeti.get().gl;
+		GL4 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
 		open = true;
@@ -111,7 +107,7 @@ public class VBO {
 		if(!open) {
 			Yeti.screwed("Closing unopened VBO!");
 		}
-		GL2GL3 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		gl.glUnmapBuffer(type);	
 		open = false;
 	}
@@ -221,7 +217,7 @@ public class VBO {
 	
 	private VBO useImpl(int attributeIndex, int groupSize, int dataType, 
 			boolean normalized, int stride, long offset) {
-		GL2GL3 gl = Yeti.get().gl;
+		GL3 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glEnableVertexAttribArray(attributeIndex);
 		gl.glVertexAttribPointer(	attributeIndex, 

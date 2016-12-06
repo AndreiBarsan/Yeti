@@ -245,7 +245,7 @@ public class ResourceLoader {
 	}
 	
 	public static void cleanUp() {
-		GL2GL3 gl = Yeti.get().gl;
+		GL4 gl = Yeti.get().gl;
 		
 		for(Shader s : shaders.values()) {
 			gl.glDeleteProgram(s.getHandle());
