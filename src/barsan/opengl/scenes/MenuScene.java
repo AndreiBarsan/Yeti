@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -207,7 +207,7 @@ public class MenuScene extends Scene {
 		logo.setPosition(new Vector2(0.0f, logoY));
 		
 		GL gl = Yeti.get().gl;
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		
 		super.display(drawable);
 		

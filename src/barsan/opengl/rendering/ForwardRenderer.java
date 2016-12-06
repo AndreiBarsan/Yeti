@@ -61,7 +61,7 @@ public class ForwardRenderer extends Renderer {
 		if(MSAAEnabled) {
 			texType = GL3.GL_TEXTURE_2D_MULTISAMPLE;
 		} else {
-			texType = GL2.GL_TEXTURE_2D;
+			texType = GL4.GL_TEXTURE_2D;
 		}
 		
 		final int[] name = new int[] { -1 };
@@ -72,7 +72,7 @@ public class ForwardRenderer extends Renderer {
         if(MSAAEnabled) {
         	gl.glTexImage2DMultisample(texType, MSAASamples, GL.GL_RGBA8, fboWidth, fboHeight, true);
         } else {
-        	gl.glTexImage2D(texType, 0, GL.GL_RGBA8, fboWidth, fboHeight, 0, GL2.GL_BGRA, GL4.GL_UNSIGNED_INT_8_8_8_8_REV, null);
+        	gl.glTexImage2D(texType, 0, GL.GL_RGBA8, fboWidth, fboHeight, 0, GL4.GL_BGRA, GL4.GL_UNSIGNED_INT_8_8_8_8_REV, null);
         	gl.glTexParameteri(texType, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
             gl.glTexParameteri(texType, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
             gl.glTexParameteri(texType, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE);
@@ -129,13 +129,13 @@ public class ForwardRenderer extends Renderer {
 				GL2.GL_DEPTH_COMPONENT,
 				GL2.GL_UNSIGNED_BYTE, //GL2.GL_FLOAT, 
 				null);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_S, GL2.GL_CLAMP_TO_EDGE);
-		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T, GL2.GL_CLAMP_TO_EDGE);
-		gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_NEAREST);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_CLAMP_TO_EDGE);
+		gl.glTexParameterfv(GL2.GL_TEXTURE_2D, GL4.GL_TEXTURE_BORDER_COLOR, new float[] {0.0f, 0.0f, 0.0f, 0.0f }, 0);
 		 
-		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_DEPTH_ATTACHMENT, GL2.GL_TEXTURE_2D, state.shadowTexture, 0);	
+		gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL4.GL_DEPTH_ATTACHMENT, GL4.GL_TEXTURE_2D, state.shadowTexture, 0);
 		gl.glDrawBuffer(GL2.GL_NONE);
 		fbo_shadows.unbind(gl);
 		 
@@ -164,7 +164,7 @@ public class ForwardRenderer extends Renderer {
 			  * unless you're willing to hack the system a little.
 			  */
 			gl.glTexImage2D(CubeTexture.cubeSlots[face], 0, GL.GL_DEPTH_COMPONENT16,
-					cubeMapSide, cubeMapSide, 0, GL2.GL_DEPTH_COMPONENT, 
+					cubeMapSide, cubeMapSide, 0, GL4.GL_DEPTH_COMPONENT,
 					GL.GL_FLOAT, null);
 		 }
 		 
@@ -313,7 +313,7 @@ public class ForwardRenderer extends Renderer {
 		
 		//Render to the screen
 		gl.glBindFramebuffer(GL2.GL_FRAMEBUFFER, 0);	// Unbind
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		
 		// Begin post-processing
 		Shader pps;
@@ -406,11 +406,11 @@ public class ForwardRenderer extends Renderer {
 		// one, forcing the depth and color bits that I drew the 3D geometry on
 		// to never actually get cleared!
 		// Nice one. 26.12.2012
-		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 		
 		// The transparent fog needs this, among other things
 		gl.glEnable(GL2.GL_BLEND);
-		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);		
+		gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL4.GL_ONE_MINUS_SRC_ALPHA);
 		
 		for(ModelInstance modelInstance : scene.modelInstances) {
 			modelInstance.render(state, matrixstack);

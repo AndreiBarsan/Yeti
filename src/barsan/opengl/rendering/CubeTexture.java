@@ -1,7 +1,7 @@
 package barsan.opengl.rendering;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.util.texture.Texture;
@@ -21,16 +21,16 @@ public class CubeTexture {
 	};
 	
 	public static int[] cubeSlots = new int[] {
-		GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-		GL2.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-		GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-		GL2.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-		GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-		GL2.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+		GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_X,
+		GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+		GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
+		GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+		GL4.GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
+		GL4.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	};
 	
 	public CubeTexture() {
-		texture = new Texture(GL2.GL_TEXTURE_CUBE_MAP);
+		texture = new Texture(GL4.GL_TEXTURE_CUBE_MAP);
 	}
 	
 	public Texture getTexture() {

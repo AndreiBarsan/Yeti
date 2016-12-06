@@ -1,6 +1,6 @@
 package barsan.opengl.rendering.materials;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.math.Matrix4;
 import barsan.opengl.rendering.RendererState;
@@ -26,7 +26,7 @@ public class BumpComponent implements MaterialComponent {
 		rs.gl.glActiveTexture(GLHelp.textureSlot[slot]);
 		m.shader.setU1i("normalMap", slot);	
 		normalMap.bind(rs.gl);
-		normalMap.setTexParameterf(rs.gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
+		normalMap.setTexParameterf(rs.gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT, rs.getAnisotropySamples());
 		
 		// We only used one slot
 		return 1;

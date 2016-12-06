@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -89,9 +89,9 @@ public class Scene {
 		renderer.render(this);
 		
 		if(gui != null) {
-			Yeti.get().gl.glDisable(GL2.GL_DEPTH_TEST);
+			Yeti.get().gl.glDisable(GL4.GL_DEPTH_TEST);
 			gui.render();
-			Yeti.get().gl.glEnable(GL2.GL_DEPTH_TEST);
+			Yeti.get().gl.glEnable(GL4.GL_DEPTH_TEST);
 		}
 		
 		lastTime = System.nanoTime();

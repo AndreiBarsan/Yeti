@@ -4,7 +4,8 @@ import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
 import barsan.opengl.Yeti;
@@ -35,7 +36,7 @@ public class ProceduralScene extends Scene {
 	public void init(GLAutoDrawable drawable) {
 		super.init(drawable);
 		
-		GL2 gl = Yeti.get().gl.getGL2();
+		GL4 gl = Yeti.get().gl;
 		
 		cylinder = new StaticModelInstance(new Cylinder(gl, precision, diameter, height));
 		modelInstances.add(cylinder);
@@ -95,7 +96,7 @@ public class ProceduralScene extends Scene {
 	
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		GL2 gl = Yeti.get().gl.getGL2();
+		GL4 gl = Yeti.get().gl;
 		long time = System.currentTimeMillis() - start;
 		float factor = (float)time / 400.0f;
 		mainLight.setPosition(new Vector3(

@@ -69,17 +69,19 @@ public class VBO {
 		if(elementSizeOf < 1 || elementSizeOf > 4) {
 			Yeti.screwed("Only 1, 2, 3 and 4-byte elements allowed!");
 		}
-		
-		if((type & (GL2.GL_ARRAY_BUFFER | GL2.GL_ELEMENT_ARRAY_BUFFER
-				| GL2.GL_NORMAL_ARRAY | GL2.GL_TEXTURE_COORD_ARRAY)) == 0 ) {
+
+		if((type & (GL2.GL_ARRAY_BUFFER | GL4.GL_ELEMENT_ARRAY_BUFFER)) == 0) {
+			// TODO(andrei): Ensure this is sane. The last two ones are no longer in GL4, so I just
+			// removed the checks...
+//				| GL4.GL_NORMAL_ARRAY | GL4.GL_TEXTURE_COORD_ARRAY)) == 0 ) {
 			Yeti.screwed("Bad buffer type!");
 		}
 		
 		gl.glBindBuffer(type, nativeHandle);
 		gl.glBufferData(type, elementGroupCount * elementGroupSize * elementSizeOf,
-				null, GL2.GL_DYNAMIC_DRAW);
+				null, GL4.GL_DYNAMIC_DRAW);
 		
-		localBuffer = gl.glMapBuffer(type, GL2.GL_WRITE_ONLY)
+		localBuffer = gl.glMapBuffer(type, GL4.GL_WRITE_ONLY)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		
 		gl.glUnmapBuffer(type);
@@ -96,7 +98,7 @@ public class VBO {
 		}
 		GL4 gl = Yeti.get().gl;
 		gl.glBindBuffer(type, nativeHandle);
-		gl.glMapBuffer(type, GL2.GL_WRITE_ONLY);
+		gl.glMapBuffer(type, GL4.GL_WRITE_ONLY);
 		open = true;
 	}
 	

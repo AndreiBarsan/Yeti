@@ -1,7 +1,7 @@
 package barsan.opengl.rendering.techniques;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.math.Matrix4Stack;
 import barsan.opengl.rendering.ModelInstance;
@@ -36,8 +36,8 @@ public class SkyboxTechnique extends Technique {
 		program.setU1i("useGammaCorrection", false);
 		
 		rs.gl.glActiveTexture(GL.GL_TEXTURE0 + 10);
-		rs.gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
-		rs.gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, 
+		rs.gl.glBindTexture(GL4.GL_TEXTURE_2D, 0);
+		rs.gl.glBindTexture(GL4.GL_TEXTURE_CUBE_MAP,
 				material.getDiffuseMap().getTextureObject(rs.gl));
 	}
 }

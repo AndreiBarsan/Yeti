@@ -1,7 +1,7 @@
 package barsan.opengl.rendering.techniques;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
@@ -76,8 +76,8 @@ public class DRLightCompositionPass extends Technique {
 			Yeti.screwed("GLSL subroutine fetching and manipulation requires GL4.");
 		}
 		
-		int sr = gl4.glGetSubroutineIndex(ph, GL2.GL_FRAGMENT_SHADER, "normalAO");
-		gl4.glUniformSubroutinesuiv(GL2.GL_FRAGMENT_SHADER,
+		int sr = gl4.glGetSubroutineIndex(ph, GL4.GL_FRAGMENT_SHADER, "normalAO");
+		gl4.glUniformSubroutinesuiv(GL4.GL_FRAGMENT_SHADER,
 				1,
 				new int[] { sr },
 				0

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
@@ -60,11 +60,11 @@ public class StaticModel extends Model {
 		
 		int size = master.faces.size() * pointsPerFace;
 		
-		vertices = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		normals = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		texcoords = new VBO(GL2.GL_ARRAY_BUFFER, size, TEX_COORDS_PER_POINT);
-		tangents = 	new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
-		binormals = new VBO(GL2.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		vertices = 	new VBO(GL4.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		normals = 	new VBO(GL4.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		texcoords = new VBO(GL4.GL_ARRAY_BUFFER, size, TEX_COORDS_PER_POINT);
+		tangents = 	new VBO(GL4.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
+		binormals = new VBO(GL4.GL_ARRAY_BUFFER, size, COORDS_PER_POINT);
 		
 		for(Face f : master.faces) {
 			if(ModelLoader.loadingFronLHCoords) {

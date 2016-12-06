@@ -2,7 +2,7 @@ package barsan.opengl.rendering;
 
 import java.util.ArrayList;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.Yeti;
@@ -98,7 +98,7 @@ public class RendererState {
 			
 		gl.glActiveTexture(GLHelp.textureSlot[slot + 1]);
 		program.setU1i("shadowMap", slot + 1);
-		gl.glBindTexture(GL2.GL_TEXTURE_2D, shadowTexture);
+		gl.glBindTexture(GL4.GL_TEXTURE_2D, shadowTexture);
 		return 2;
 	}
 	

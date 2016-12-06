@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Vector3;
@@ -182,7 +182,7 @@ public class ModelLoader {
 			mg.length = fc - mg.beginIndex;
 		}
 		
-		if(model.getName() == "") {
+		if(model.getName().equals("")) {
 			model.setName("unnamed_model_" + umCount++);
 		}
 		
@@ -389,20 +389,61 @@ public class ModelLoader {
 					new Vector3(0, 1, 0),
 					new Vector3(0, 1, 0)
 				};
-				
-				result.addFace(f);
+
+        Face[] split = quadToTriangles(f);
+				result.addFace(split[0]);
+        result.addFace(split[1]);
 			}
 		}
 		
-		result.setPointsPerFace(4);
+		result.setPointsPerFace(3);
 		result.buildVBOs();
 		
 		loadingFronLHCoords = old;
 		
 		return result;
 	}
-	
-	/** Creates a simple 2x2 XY-aligned quad. */
+
+  // TODO(andrei): Move away from here.
+  /**
+   * Copies the three specified indices from a list of four vectors, to a list of three vectors.
+   */
+  public static Vector3[] vecCpy(Vector3[] vecs, int i1, int i2, int i3) {
+    return new Vector3[] { vecs[i1], vecs[i2], vecs[i3] };
+  }
+
+  /**
+   * Converts a quad face into two triangle faces.
+   */
+  public static Face[] quadToTriangles(Face quadFace) {
+    // ABCD => ABC, ACD
+
+    Face face1 = new Face();
+    Face face2 = new Face();
+
+    face1.normals = vecCpy(quadFace.normals, 0, 1, 2);
+    face2.normals = vecCpy(quadFace.normals, 0, 2, 3);
+
+    face1.points = vecCpy(quadFace.points, 0, 1, 2);
+    face2.points = vecCpy(quadFace.points, 0, 2, 3);
+
+    face1.texCoords = vecCpy(quadFace.texCoords, 0, 1, 2);
+    face2.texCoords = vecCpy(quadFace.texCoords, 0, 2, 3);
+
+    if (null != quadFace.binormals) {
+      face1.binormals = vecCpy(quadFace.binormals, 0, 1, 2);
+      face2.binormals = vecCpy(quadFace.binormals, 0, 2, 3);
+    }
+
+    if (null != quadFace.tangents) {
+      face1.tangents = vecCpy(quadFace.tangents, 0, 1, 2);
+      face2.tangents = vecCpy(quadFace.tangents, 0, 2, 3);
+    }
+
+    return new Face[] { face1, face2 };
+  }
+
+  /** Creates a simple 2x2 XY-aligned quad. */
 	public static StaticModel makeScreenQuad() {
 		return buildQuadXY(2.0f, 2.0f);
 	}
@@ -427,51 +468,105 @@ public class ModelLoader {
 	private static StaticModel buildQuad(float width, float height, boolean xz) {
 		GL gl = Yeti.get().gl;
 		StaticModel result = new StaticModel(gl, "quad");
-		result.setPointsPerFace(4);
+
+		result.setPointsPerFace(3);
 		
 		boolean old = loadingFronLHCoords;
 		loadingFronLHCoords = false;
 		
 		float hw = width / 2.0f;
 		float hh = height / 2.0f;
-		
-		Face face = new Face();
-		face.texCoords = new Vector3[] {
-				new Vector3(0, 0, 0),
+
+//		Face face = new Face();
+    Face face1 = new Face();
+    Face face2 = new Face();
+    face1.texCoords = new Vector3[] {
+        new Vector3(0, 0, 0),
 				new Vector3(0, 1, 0),
 				new Vector3(1, 1, 0),
+    };
+    face2.texCoords = new Vector3[] {
+				new Vector3(0, 0, 0),
+				new Vector3(1, 1, 0),
 				new Vector3(1, 0, 0)
-			};
+    };
+//		face.texCoords = new Vector3[] {
+//				new Vector3(0, 0, 0),
+//				new Vector3(0, 1, 0),
+//				new Vector3(1, 1, 0),
+//				new Vector3(1, 0, 0)
+//			};
+
 		if(xz) {
-			face.points = new Vector3[] {
-				new Vector3(-hw, 0, -hh),
+      face1.points = new Vector3[] {
+       	new Vector3(-hw, 0, -hh),
 				new Vector3(-hw, 0,  hh),
 				new Vector3( hw, 0,  hh),
+      };
+      face2.points = new Vector3[] {
+        new Vector3(-hw, 0, -hh),
+				new Vector3( hw, 0,  hh),
 				new Vector3( hw, 0, -hh),
-				
-			};
-			face.normals = new Vector3[] {
+      };
+//			face.points = new Vector3[] {
+//				new Vector3(-hw, 0, -hh),
+//				new Vector3(-hw, 0,  hh),
+//				new Vector3( hw, 0,  hh),
+//				new Vector3( hw, 0, -hh),
+//
+//			};
+      face1.normals = new Vector3[] {
+        new Vector3(0, 1, 0),
 				new Vector3(0, 1, 0),
 				new Vector3(0, 1, 0),
-				new Vector3(0, 1, 0),
-				new Vector3(0, 1, 0),
-			};
+      };
+      face2.normals = new Vector3[] {
+        new Vector3(0, 1, 0),
+        new Vector3(0, 1, 0),
+        new Vector3(0, 1, 0),
+      };
+//			face.normals = new Vector3[] {
+//				new Vector3(0, 1, 0),
+//				new Vector3(0, 1, 0),
+//				new Vector3(0, 1, 0),
+//				new Vector3(0, 1, 0),
+//			};
 		} else {
-			face.points = new Vector3[] {
-				new Vector3(-hw, -hh, 0),
+      face1.points = new Vector3[] {
+        new Vector3(-hw, -hh, 0),
 				new Vector3(-hw,  hh, 0),
 				new Vector3( hw,  hh, 0),
+      };
+      face2.points = new Vector3[] {
+				new Vector3(-hw, -hh, 0),
+				new Vector3( hw,  hh, 0),
 				new Vector3( hw, -hh, 0)
-			};
-			face.normals = new Vector3[] {
-				new Vector3(0, 0, 1),
-				new Vector3(0, 0, 1),
-				new Vector3(0, 0, 1),
-				new Vector3(0, 0, 1)
-			};
+      };
+//			face.points = new Vector3[] {
+//				new Vector3(-hw, -hh, 0),
+//				new Vector3(-hw,  hh, 0),
+//				new Vector3( hw,  hh, 0),
+//				new Vector3( hw, -hh, 0)
+//			};
+      face1.normals = new Vector3[] {
+        new Vector3(0, 0, 1),
+        new Vector3(0, 0, 1),
+        new Vector3(0, 0, 1),
+      };
+      face2.normals = new Vector3[] {
+        new Vector3(0, 0, 1),
+        new Vector3(0, 0, 1),
+        new Vector3(0, 0, 1),
+      };
+//			face.normals = new Vector3[] {
+//				new Vector3(0, 0, 1),
+//				new Vector3(0, 0, 1),
+//				new Vector3(0, 0, 1),
+//				new Vector3(0, 0, 1)
+//			};
 		}
-		result.addFace(face);
-		
+		result.addFace(face1);
+    result.addFace(face2);
 		result.buildVBOs();
 		
 		loadingFronLHCoords = old;

@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL3;
 
@@ -98,8 +98,8 @@ public class Shader {
 	
 	public Shader(GL4 gl, String name, String vertexSrc, String fragmentSrc, String geometrySrc, String[] args) {
 		
-		int vertex = gl.glCreateShader(GL2.GL_VERTEX_SHADER);
-		int fragment = gl.glCreateShader(GL2.GL_FRAGMENT_SHADER);
+		int vertex = gl.glCreateShader(GL4.GL_VERTEX_SHADER);
+		int fragment = gl.glCreateShader(GL4.GL_FRAGMENT_SHADER);
 		int geometry = 0;
 		boolean hasGeometry = (geometrySrc != null);
 		
@@ -295,9 +295,9 @@ public class Shader {
 		boolean logEmpty = true;
 		
 		if(isProgram) {
-			gl.glGetProgramiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
+			gl.glGetProgramiv(handle, GL4.GL_INFO_LOG_LENGTH, buff);
 		} else {
-			gl.glGetShaderiv(handle, GL2.GL_INFO_LOG_LENGTH, buff);
+			gl.glGetShaderiv(handle, GL4.GL_INFO_LOG_LENGTH, buff);
 		}
 		
 		int l = buff.get();
@@ -320,14 +320,14 @@ public class Shader {
 		}
 		
 		if(isProgram) {
-			gl.glGetProgramiv(handle, GL2.GL_LINK_STATUS, result, 0);
+			gl.glGetProgramiv(handle, GL4.GL_LINK_STATUS, result, 0);
 		} else {
-			gl.glGetShaderiv(handle, GL2.GL_COMPILE_STATUS, result, 0);
+			gl.glGetShaderiv(handle, GL4.GL_COMPILE_STATUS, result, 0);
 		}
 		
 		String action = isProgram ? "link" : "compile";
 		String actionPT = isProgram ? "linked" : "compiled";
-		if(result[0] == GL2.GL_FALSE) {
+		if(result[0] == GL4.GL_FALSE) {
 			Yeti.screwed(message + " failed to " + action + "!\n\t" + logContents);
 			return;
 		}

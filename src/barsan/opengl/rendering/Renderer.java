@@ -3,7 +3,7 @@ package barsan.opengl.rendering;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL3;
 
 import barsan.opengl.math.Matrix4;
@@ -68,16 +68,16 @@ public abstract class Renderer {
 
 	public Renderer(GL4 gl) {
 		state = new RendererState(this, gl);
-		state.maxAnisotropySamples = (int) GLHelp.get1f(gl, GL2.GL_TEXTURE_MAX_ANISOTROPY_EXT);
+		state.maxAnisotropySamples = (int) GLHelp.get1f(gl, GL4.GL_TEXTURE_MAX_ANISOTROPY_EXT);
 
 		this.gl = gl;
 
 		// Setup the initial GL state
 		gl.setSwapInterval(1);
 		gl.glClearColor(0.33f, 0.33f, 0.33f, 1.0f);
-		gl.glEnable(GL2.GL_DEPTH_TEST);
-		gl.glEnable(GL2.GL_CULL_FACE);
-		gl.glCullFace(GL2.GL_BACK);
+		gl.glEnable(GL4.GL_DEPTH_TEST);
+		gl.glEnable(GL4.GL_CULL_FACE);
+		gl.glCullFace(GL4.GL_BACK);
 
 		// Used in post-processing and debug rendering
 		screenQuad = ModelLoader.buildQuadXY(2.0f, 2.0f);

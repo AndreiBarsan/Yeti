@@ -1,13 +1,13 @@
 package barsan.opengl.rendering;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.math.Vector3;
 import barsan.opengl.resources.Face;
 
 public class Cylinder extends StaticModel {
 
-	public Cylinder(GL2 gl, int precision, float diameter, float height) {
+	public Cylinder(GL4 gl, int precision, float diameter, float height) {
 		super(gl, "procedural cylinder");
 		assert(precision >= 3);
 		

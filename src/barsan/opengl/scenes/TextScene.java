@@ -3,7 +3,7 @@ package barsan.opengl.scenes;
 import java.awt.Font;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GL3bc;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
@@ -49,7 +49,7 @@ public class TextScene extends Scene{
 	@Override
 	public void display(GLAutoDrawable drawable) {
 //		GL2 gl = Yeti.get().gl.getGL2();
-//		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+//		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
 //
 //		gl.glMatrixMode(GL2.GL_MODELVIEW);
 //		gl.glLoadIdentity();

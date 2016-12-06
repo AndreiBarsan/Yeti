@@ -69,7 +69,7 @@ public class DemoScene extends Scene {
 		modelInstances.add(sb);
 		
 		//*
-		StaticModel groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl.getGL2(),
+		StaticModel groundMesh = HeightmapBuilder.modelFromMap(Yeti.get().gl,
 				ResourceLoader.texture("heightmap01"),
 				ResourceLoader.textureData("heightmap01"),
 				4.0f, 4.0f,

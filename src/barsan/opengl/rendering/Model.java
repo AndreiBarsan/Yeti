@@ -3,7 +3,7 @@ package barsan.opengl.rendering;
 import java.util.List;
 
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import com.jogamp.opengl.GL4;
@@ -32,7 +32,7 @@ public abstract class Model {
 	public void render(int arrayLength) {
 		GL gl = Yeti.get().gl;
 		gl.glDrawArrays(faceMode, 0, arrayLength);
-		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 	}
 	
 	public List<MaterialGroup> getDefaultMaterialGroups() {
@@ -70,9 +70,11 @@ public abstract class Model {
 	 */
 	private void updateFaceMode() {
 		if(pointsPerFace == 3) {
-			faceMode = GL2.GL_TRIANGLES;
+			faceMode = GL4.GL_TRIANGLES;
 		} else if(pointsPerFace == 4) {
-			faceMode = GL2.GL_QUADS;
+			Yeti.screwed("Modern OpenGL does not support quads directly. Please split your quads into " +
+									 "triangles.");
+			faceMode = GL4.GL_QUADS;
 		} else {
 			Yeti.screwed("Disallowed number of points per face (can only be 3 or 4).");
 		}

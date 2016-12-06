@@ -3,7 +3,7 @@ package barsan.opengl.rendering;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GL4;
 
 import barsan.opengl.Yeti;
 import barsan.opengl.math.Matrix4Stack;
@@ -129,7 +129,7 @@ public class StaticModelInstance extends ModelInstance {
 			int ppf = model.getPointsPerFace();
 			rs.gl.glDrawArrays(model.getFaceMode(), sm.beginIndex * ppf, sm.length * ppf);
 		}
-		rs.gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
+		rs.gl.glBindBuffer(GL4.GL_ARRAY_BUFFER, 0);
 		
 		model.cleanUp(pindex, nindex, tindex, bindex, tcindex);
 	}
