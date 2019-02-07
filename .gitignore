@@ -84,4 +84,5 @@ local.properties
 .Trashes
 Icon?
 ehthumbs.db
-Thumbs.db
+Thumbs.db.idea/
+.idea/
