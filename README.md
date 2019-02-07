@@ -10,8 +10,15 @@ what nasty hacks to avoid in the future.
 
 Looking forward to any fork! :)
 
-![Renderer screenshot](http://siegedog.com/renderer.jpg "The renderer in action")
-Here's Yeti with a few Bioshock models loaded (deferred renderer).
+<img src="res/deferred.jpg" width="600px" alt="Renderer screenshot" />
+Here's Yeti with a few Bioshock models loaded | (deferred renderer).
+
+<img src="res/platformer.jpg" width="600px" alt="PlanetHeads screenshot" />
+This is an example of a (very) simple platformer game showcasing the engine.
+
+<img src="res/screenshot.jpg" width="600px" alt="Deferred rendering screenshot" />
+Another screenshot of the deferred renderer operating on a relatively large number of lights in
+a scene (39).
 
 Running the thing
 -----------------
@@ -78,7 +85,7 @@ License
 -------
 Yeti is licensed under the BSD 2-clause license.
 
-Copyright (c) 2012-2013, Andrei Bârsan
+Copyright (c) 2012-2013, Andrei Bï¿½rsan
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
