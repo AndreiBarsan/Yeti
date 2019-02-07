@@ -85,7 +85,7 @@ License
 -------
 Yeti is licensed under the BSD 2-clause license.
 
-Copyright (c) 2012-2013, Andrei B�rsan
+Copyright (c) 2012-2013, Andrei Bârsan
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
