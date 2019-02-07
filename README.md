@@ -33,6 +33,10 @@ the project doesn't work on most Macs due to them only supporting either GL2 or 
 Of course, Eclipse isn't *required* to build the engine. You can `javac` it, no 
 problem, you can use a different folder for the libs, and so on.
 
+You can also open the project in IntelliJ and it should "just work". Running
+`./src/barsan/opengl/editor/App.java` is  a good starting point, and so is the
+`DeferredTest` scene.
+
 Features
 --------
 Among the most important features implemented so far are:
