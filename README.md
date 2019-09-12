@@ -5,7 +5,7 @@ Summary
 -------
 This engine is a personal project of mine, so it's not really recommended for 
 serious projects (like for serious game development endeavors). I try to document
-it decently, so one might learn one or two things from it. Or at learn about 
+it decently, so one might learn a couple of things from it. Or at least learn about 
 what nasty hacks to avoid in the future.
 
 Looking forward to any fork! :)
